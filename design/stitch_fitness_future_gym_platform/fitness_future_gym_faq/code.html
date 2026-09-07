@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Oswald:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"outline":"#ab897f","secondary-fixed":"#ffdbcf","on-tertiary":"#33302a","surface-variant":"#363432","on-primary-fixed-variant":"#852400","secondary":"#ffb59c","error-container":"#93000a","on-secondary-fixed":"#390c00","background":"#141311","surface-container-high":"#2b2a27","surface-dim":"#141311","surface-container":"#211f1d","on-tertiary-fixed":"#1e1b16","tertiary-fixed":"#e9e1d8","on-surface-variant":"#e4beb3","outline-variant":"#5b4038","primary":"#ffb59e","surface-tint":"#ffb59e","surface-bright":"#3b3936","secondary-container":"#a63500","surface-container-highest":"#363432","primary-fixed-dim":"#ffb59e","inverse-on-surface":"#32302d","on-surface":"#e7e2dd","on-error":"#690005","on-secondary-container":"#ffc9b7","on-primary-container":"#541400","inverse-primary":"#ae3200","surface-container-lowest":"#0f0e0c","tertiary-fixed-dim":"#ccc6bd","tertiary":"#ccc6bd","on-primary-fixed":"#3a0b00","error":"#ffb4ab","tertiary-container":"#979189","on-background":"#e7e2dd","on-secondary-fixed-variant":"#822700","inverse-surface":"#e7e2dd","on-tertiary-fixed-variant":"#4a4640","surface-container-low":"#1d1b19","on-error-container":"#ffdad6","primary-container":"#ff5a1f","on-secondary":"#5c1900","secondary-fixed-dim":"#ffb59c","primary-fixed":"#ffdbd0","on-primary":"#5e1700","on-tertiary-container":"#2e2a24","surface":"#141311"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2rem","space-lg":"1.5rem","gutter-mobile":"1rem","space-xs":"0.25rem","gutter-desktop":"1.5rem","space-sm":"0.5rem","container-max":"80rem","space-3xl":"4.5rem","space-2xs":"0.125rem","space-2xl":"3rem","space-md":"1rem","space-4xl":"6rem"},fontFamily:{"headline-lg":["Bebas Neue"],"label-md":["Oswald"],"body-lg":["Inter"],"display-lg-mobile":["Bebas Neue"],"display-lg":["Bebas Neue"],"headline-md":["Bebas Neue"],"label-sm":["Oswald"],"headline-lg-mobile":["Bebas Neue"],"headline-sm":["Bebas Neue"],"display-xl":["Bebas Neue"],"body-md":["Inter"],"title-md":["Oswald"],"title-sm":["Oswald"],"display-xl-mobile":["Bebas Neue"],"body-sm":["Inter"],"label-lg":["Oswald"]},fontSize:{"headline-lg":["44px",{"lineHeight":"44px","letterSpacing":"0.03em","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.1em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"400"}],"display-lg-mobile":["40px",{"lineHeight":"40px","letterSpacing":"0.03em","fontWeight":"400"}],"display-lg":["64px",{"lineHeight":"64px","letterSpacing":"0.03em","fontWeight":"400"}],"headline-md":["32px",{"lineHeight":"34px","letterSpacing":"0.02em","fontWeight":"400"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.12em","fontWeight":"700"}],"headline-lg-mobile":["32px",{"lineHeight":"34px","letterSpacing":"0.03em","fontWeight":"400"}],"headline-sm":["24px",{"lineHeight":"26px","letterSpacing":"0.02em","fontWeight":"400"}],"display-xl":["96px",{"lineHeight":"92px","letterSpacing":"0.04em","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"400"}],"title-md":["20px",{"lineHeight":"26px","letterSpacing":"0.05em","fontWeight":"600"}],"title-sm":["16px",{"lineHeight":"22px","letterSpacing":"0.06em","fontWeight":"500"}],"display-xl-mobile":["56px",{"lineHeight":"54px","letterSpacing":"0.04em","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"18px","letterSpacing":"0.08em","fontWeight":"600"}]}}}}</script></head><body class="bg-background font-body-md text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-md"><div class="bg-surface-container border-b border-surface-variant/40 px-gutter-desktop py-1 text-center"><p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-semibold"><span class="inline-block mr-space-xs">🔥</span> SWEAT | GAIN | REPEAT — 8+ YEARS OF RAW STRENGTH IN NANGLOI • CALL: +91 98765 43210</p></div><div class="h-20 w-full border-b border-surface-variant/50"><div class="max-w-container-max mx-auto h-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><a class="flex items-center gap-space-sm" data-path="home" href="#"><img alt="Fitness Future Gym 2.0 Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VfvX-Ykht9vOSuPyPLH0QwVM1t3sE8SX6NGyGa3tWY1MIRJ_mMd-uznY9zIpDUVhu-iPtimKuaCpzBCFxDj9Kl1QN0s7LFo8BW0xjvZ7jsz2UcxJ3vocuZBTc_zYSVGjWom12ofve1mUe9o_b7w_LUKMa0LG3RdywwsumQYqFSI9lam7eeA2RqG2HyDdntcT579JQoCzrec4QtOHApvrilSl-1L2GrifAA3svNrXM4-cyXWQpimovRuac"/><span class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface hidden sm:inline-block">Fitness Future <span class="text-primary-container">2.0</span></span></a></div><nav class="hidden xl:flex items-center gap-space-md h-full" data-active-classes="text-primary-container font-bold border-b-2 border-primary-container"><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="home" href="#">Home</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="about" href="#">About</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="programs" href="#">Programs</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="membership" href="#">Membership</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="contact" href="#">Location &amp; Timings</a><a aria-current="page" class="uppercase tracking-wider transition-colors py-space-sm text-primary-container font-bold border-b-2 border-primary-container" data-path="faq" href="#">FAQ</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="blog" href="#">Blog</a><a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors py-space-sm" data-path="calculator" href="#">BMI Calculator</a></nav><div class="flex items-center gap-space-md shrink-0"><a class="inline-flex items-center justify-center bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold px-space-md py-space-sm transition-colors duration-150 rounded-none shadow-[2px_2px_0px_#000000]" data-path="membership" href="#">Claim 2-Day Trial</a><div class="flex items-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKMmaAL_MLcR94ZgzjYSAjTmL5-P1VwYx-n8BQtNEo6HQt9uEhGEOCiL2TooAdQOk58l5-TcXEn98_lKI1Ajb60XH7RejvH4yh0ab843KwGxuKLtQh6rpmECxBL973drNWpog8M-N3nzOxbfRNB_JOhHta_DKmlcoYuOpyrBGFC113EHV91FWeUAzTAyh4kAhifKp9zKnR3WflHqhU5K1FjKeOP-Jlar9T4hQP29j2-QytVs1NR7SM"/></div></div></div></div></header><main class="w-full pt-20 bg-background min-h-[calc(100vh-20rem)]"><div class="flex flex-col w-full">
+<!-- Top Industrial Signal Band -->
+<section class="relative w-full bg-surface-container-lowest overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#ff5a1f_1px,transparent_1px)] [background-size:24px_24px]"></div>
+<div class="max-w-container-max mx-auto px-gutter-desktop pt-space-2xl pb-space-xl relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-end">
+<div class="lg:col-span-8 flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">Official Knowledge Base // Nangloi Iron Facility</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg lg:font-display-lg lg:text-display-lg uppercase text-on-surface tracking-wide">
+            FREQUENTLY ASKED QUESTIONS
+          </h1>
+<p class="font-body-lg text-body-lg text-tertiary max-w-3xl">
+            Straight answers to common questions about training, memberships, and facility rules in Nangloi.
+          </p>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-space-xs">
+<div class="bg-surface-container p-space-md shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-tertiary">Quick Direct Access</span>
+<span class="font-label-sm text-label-sm text-primary-container font-bold">24/7 SUPPORT</span>
+</div>
+<div class="mt-space-xs flex items-center justify-between gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">NANGLOI DESK</span>
+<a class="font-label-md text-label-md uppercase text-primary-container hover:text-primary transition-colors flex items-center gap-space-2xs" href="tel:+919876543210">
+<span>+91 98765 43210</span>
+<span class="material-symbols-outlined text-title-sm">arrow_outward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Search / Filter Bar + Category Fast Jump -->
+<section class="w-full bg-surface-container-low shadow-sm">
+<div class="max-w-container-max mx-auto px-gutter-desktop py-space-md">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<!-- Live Filter Chips -->
+<div class="flex items-center gap-space-xs flex-wrap" id="faq-category-filters">
+<button class="faq-filter-btn px-space-md py-space-xs font-label-md text-label-md uppercase transition-all bg-primary-container text-on-primary-container font-bold" data-cat="all">
+            All Questions [07]
+          </button>
+<button class="faq-filter-btn px-space-md py-space-xs font-label-md text-label-md uppercase transition-all bg-surface-container text-tertiary hover:text-on-surface" data-cat="onboarding">
+            Beginners &amp; Culture
+          </button>
+<button class="faq-filter-btn px-space-md py-space-xs font-label-md text-label-md uppercase transition-all bg-surface-container text-tertiary hover:text-on-surface" data-cat="timing">
+            Hours &amp; Plans
+          </button>
+<button class="faq-filter-btn px-space-md py-space-xs font-label-md text-label-md uppercase transition-all bg-surface-container text-tertiary hover:text-on-surface" data-cat="gear">
+            Equipment &amp; Coaching
+          </button>
+</div>
+<!-- Metric Counter / Indicator -->
+<div class="flex items-center gap-space-sm self-start md:self-auto text-tertiary">
+<span class="material-symbols-outlined text-title-sm text-primary-container">verified_user</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Zero Lock-In Contracts • Unbiased Floor Rules</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Accordion Grid -->
+<section class="w-full py-space-2xl bg-background">
+<div class="max-w-container-max mx-auto px-gutter-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+<!-- Left 8 Columns: Master Accordion Stack -->
+<div class="lg:col-span-8 flex flex-col gap-space-sm" id="faq-accordion-group">
+<!-- FAQ Item 1 (Default Expanded) -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="onboarding">
+<button aria-expanded="true" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-primary-container shrink-0 mt-space-2xs">01</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">Onboarding • Safe Tech</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    Is Fitness Future Gym suitable for complete beginners who have never touched a barbell?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">remove</span>
+</div>
+</button>
+<div class="faq-content overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    Yes. Every new member receives an initial floor walk-through and technique onboarding. Our coaches ensure you learn safe posture, breathing, and bar movement before you lift heavy.
+                  </p>
+<div class="flex items-center gap-space-sm pt-space-xs text-tertiary">
+<span class="font-label-sm text-label-sm uppercase text-primary-container">Included:</span>
+<span class="font-body-sm text-body-sm">Postural screening, grip orientation, warm-up room protocol.</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 2 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="onboarding">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">02</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Facility Culture • Code of Conduct</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    Is the gym strictly unisex, and is there a safe training environment for female lifters?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    100% unisex and judgment-free. We pride ourselves on an intensely respectful, safe culture where female lifters, collegiate athletes, and working professionals train comfortably with zero harassment tolerance.
+                  </p>
+<div class="flex items-center gap-space-sm pt-space-xs text-tertiary">
+<span class="font-label-sm text-label-sm uppercase text-primary-container">Standard:</span>
+<span class="font-body-sm text-body-sm">CCTV covered perimeter, dedicated women's locker zones, strictly professional coaches.</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 3 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="timing">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">03</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Schedule • Operation Windows</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    What are your exact operational timings throughout the week?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    We are open Mon–Thu &amp; Sat from 6:00 AM to 11:00 PM, Fridays from 5:00 AM to 11:00 PM. Sundays are closed for floor deep cleaning and athlete recovery.
+                  </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-xs pt-space-xs">
+<div class="bg-surface-container p-space-xs">
+<span class="font-label-sm text-label-sm uppercase text-primary-container block">Regular Lifter Shift</span>
+<span class="font-body-sm text-body-sm text-tertiary-fixed-dim">06:00 — 23:00 (Mon–Thu, Sat)</span>
+</div>
+<div class="bg-surface-container p-space-xs">
+<span class="font-label-sm text-label-sm uppercase text-primary-container block">Friday Dawn Lifters</span>
+<span class="font-body-sm text-body-sm text-tertiary-fixed-dim">05:00 — 23:00 (Fri Special)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 4 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="timing">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">04</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Billing • Membership Terms</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    Do I need to sign an annual contract to train here?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    No contracts and no predatory lock-ins. We offer monthly, quarterly, and annual pass options. You choose the commitment that matches your goals.
+                  </p>
+<p class="font-body-sm text-body-sm text-tertiary">
+                    Cancel or freeze whenever life demands. No hidden maintenance cess, no automatic recurring card debits without explicit consent.
+                  </p>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 5 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="onboarding">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">05</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Floor Access • Trial Protocol</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    How does the 2-Day Free Trial work?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    Simply register online or walk in with valid ID. You get full access to the gym floor, locker bays, and equipment for 2 consecutive days with no sales pressure.
+                  </p>
+<div class="pt-space-xs flex items-center gap-space-sm flex-wrap">
+<span class="bg-surface-container px-space-xs py-space-2xs font-label-sm text-label-sm uppercase text-on-surface">Bring Training Shoes</span>
+<span class="bg-surface-container px-space-xs py-space-2xs font-label-sm text-label-sm uppercase text-on-surface">Personal Sweat Towel</span>
+<span class="bg-surface-container px-space-xs py-space-2xs font-label-sm text-label-sm uppercase text-primary-container">Govt Issued ID</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 6 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="gear">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">06</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Coaching • Floor Spotting</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    Is personal training mandatory, or are general trainers always available on the floor?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    General trainers are always actively spotting and supervising the floor. One-on-one personal training is optional for lifters seeking accelerated results or specialized prep.
+                  </p>
+<p class="font-body-sm text-body-sm text-tertiary">
+                    You never lift alone or unsupervised. If your bench press feels unstable, a coach will step behind you immediately.
+                  </p>
+</div>
+</div>
+</div>
+</article>
+<!-- FAQ Item 7 -->
+<article class="faq-item group bg-surface-container-high transition-colors" data-category="gear">
+<button aria-expanded="false" class="faq-trigger w-full text-left p-space-lg flex items-center justify-between gap-space-md focus:outline-none" type="button">
+<div class="flex items-start gap-space-md min-w-0">
+<span class="font-headline-sm text-headline-sm text-tertiary shrink-0 mt-space-2xs">07</span>
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary">Hardware • Rig Specs</span>
+<h3 class="font-title-md text-title-md text-on-surface leading-snug">
+                    What equipment do you have for heavy compound lifters?
+                  </h3>
+</div>
+</div>
+<div class="faq-icon-wrapper w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container text-tertiary group-hover:text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-title-md">add</span>
+</div>
+</button>
+<div class="faq-content hidden overflow-hidden px-space-lg pb-space-lg pt-0">
+<div class="bg-surface-container-lowest p-space-md flex items-start gap-space-md">
+<div class="w-1.5 self-stretch bg-primary-container shrink-0"></div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                    Olympic spec barbells, heavy-gauge squat racks, dedicated deadlift platforms with rubber sound-dampening, dumbbells up to 50kg+, plate-loaded rows, cable stacks, and functional conditioning gear.
+                  </p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-2xs pt-space-xs">
+<div class="bg-surface-container p-space-xs text-center">
+<span class="font-headline-sm text-headline-sm text-primary-container">50+ KG</span>
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Dumbbell Stack</span>
+</div>
+<div class="bg-surface-container p-space-xs text-center">
+<span class="font-headline-sm text-headline-sm text-primary-container">4 RACKS</span>
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Commercial Power</span>
+</div>
+<div class="bg-surface-container p-space-xs text-center">
+<span class="font-headline-sm text-headline-sm text-primary-container">3 DECK</span>
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Rubber Platforms</span>
+</div>
+<div class="bg-surface-container p-space-xs text-center">
+<span class="font-headline-sm text-headline-sm text-primary-container">CALIB.</span>
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Olympic Plates</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- Right 4 Columns: Contextual Sidebar & Gym Intel -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- Floor Visual Card -->
+<div class="bg-surface-container-high p-space-lg relative overflow-hidden">
+<div class="relative h-48 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover grayscale contrast-125" data-alt="Monochrome atmospheric low-key photograph of an authentic powerlifting gym in Nangloi Delhi, steel knurled barbells on power rack, chalk dust in dramatic amber spotlight, industrial concrete aesthetic, high contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf7ZIC2M8expKYqDh-UXyt3cQSbhSSWl5U6g_Jgie2jUprwPGIQw_9WT6Zsmahm876mnTRsZ7YTufHVc1folIMyXG3I16JhGIOU-fRDXZDNXVLqg-RmOZiArM6NXxKx_O2VV07jL678B94XoyNC61eXy6fIJLhpu18yn03vC4QIDWLpcj0glizH9k6OJ3I4vEfzuw5cgP7j1GhdnxKX5opXsY3ocqD3FBhPZ1MohvK7FGKtoB52LZY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+<div class="absolute bottom-2 left-2 bg-primary-container text-on-primary-container px-space-xs py-space-2xs font-label-sm text-label-sm uppercase font-bold">
+                Raw Nangloi Rig
+              </div>
+</div>
+<div class="mt-space-md flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">Facility Directive</span>
+<h4 class="font-headline-sm text-headline-sm uppercase text-on-surface">Zero Fluff. Heavy Iron.</h4>
+<p class="font-body-sm text-body-sm text-tertiary">
+                Unlike commercial wellness franchises, we do not waste floor footage on smoothie lounges or sales offices. Every square foot is geared toward force output and safe progression.
+              </p>
+</div>
+<div class="mt-space-md pt-space-md bg-surface-container p-space-sm">
+<div class="flex items-center justify-between text-tertiary">
+<span class="font-label-sm text-label-sm uppercase">Active Lifters</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">320+ Strong</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 mt-space-2xs">
+<div class="bg-primary-container h-1.5" style="width: 82%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary mt-space-2xs block">82% Member Retention Rate (Nangloi Record)</span>
+</div>
+</div>
+<!-- Walk-in Check-in Rules -->
+<div class="bg-surface-container p-space-lg">
+<div class="flex items-center gap-space-xs mb-space-sm">
+<span class="material-symbols-outlined text-primary-container">rule</span>
+<h4 class="font-title-sm text-title-sm uppercase text-on-surface">Floor Rules in Brief</h4>
+</div>
+<ul class="flex flex-col gap-space-sm text-tertiary font-body-sm text-body-sm">
+<li class="flex items-start gap-space-xs">
+<span class="text-primary-container font-bold">•</span>
+<span>Rerack plates and dumbbells after every working set. No exceptions.</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="text-primary-container font-bold">•</span>
+<span>Chalk is permitted on deadlift and heavy squat platforms. Keep it clean.</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="text-primary-container font-bold">•</span>
+<span>Indoor training footwear required. Sandal or open-toe access strictly prohibited.</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="text-primary-container font-bold">•</span>
+<span>Collars and safety pins are mandatory on all barbell lifts over 60kg.</span>
+</li>
+</ul>
+</div>
+<!-- Fast Stat Counter Block -->
+<div class="bg-surface-container-lowest p-space-lg flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Established</span>
+<span class="font-headline-lg text-headline-lg text-primary-container">2016</span>
+<span class="font-label-sm text-label-sm text-tertiary block">8+ Years Operating</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm uppercase text-tertiary block">Coaches on Duty</span>
+<span class="font-headline-lg text-headline-lg text-on-surface">5</span>
+<span class="font-label-sm text-label-sm text-tertiary block">Every Active Hour</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Still Have Questions CTA Strip -->
+<section class="w-full bg-surface-container-lowest py-space-2xl relative overflow-hidden">
+<div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-primary-container/10 to-transparent pointer-events-none"></div>
+<div class="max-w-container-max mx-auto px-gutter-desktop relative z-10">
+<div class="bg-surface-container-high p-space-xl lg:p-space-2xl">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-xl">
+<!-- Left: Pitch & Head Coach Callout -->
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="inline-flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs w-fit">
+<span class="w-2 h-2 bg-[#25D366] rounded-full inline-block animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface">Direct Head Coach Channel</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface tracking-wide mt-space-2xs">
+              Still Have Questions?
+            </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              Still have a specific question? Talk directly with our head coach on WhatsApp. We answer real training, diet, or scheduling queries in minutes.
+            </p>
+<div class="flex items-center gap-space-md mt-space-xs text-tertiary font-body-sm text-body-sm">
+<span class="flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-title-sm text-primary-container">schedule</span>
+                Typical reply: under 15 mins
+              </span>
+<span class="flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-title-sm text-primary-container">location_on</span>
+                Rohtak Rd, Nangloi, Delhi
+              </span>
+</div>
+</div>
+<!-- Right: Direct CTA Actions -->
+<div class="flex flex-col sm:flex-row lg:flex-col gap-space-sm shrink-0">
+<!-- Primary WhatsApp CTA (Aggressive industrial green-orange hybrid accent) -->
+<a class="inline-flex items-center justify-center gap-space-sm bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B0A08] font-title-sm text-title-sm uppercase font-bold px-space-xl py-space-md transition-all shadow-[4px_4px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5" href="https://wa.me/919876543210?text=Hi%20Coach,%20I%20have%20a%20question%20about%20Fitness%20Future%20Gym%202.0" rel="noopener noreferrer" target="_blank">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"></path>
+</svg>
+<span>Chat With Head Coach</span>
+</a>
+<!-- Secondary Quick Call Pass -->
+<a class="inline-flex items-center justify-center gap-space-xs bg-surface-container text-on-surface hover:text-primary-container font-title-sm text-title-sm uppercase font-semibold px-space-lg py-space-md transition-colors" href="tel:+919876543210">
+<span class="material-symbols-outlined text-title-sm">call</span>
+<span>Voice Call Desk</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Accordion & Filter Logic Script -->
+<script>
+    (function() {
+      // Accordion Functionality
+      const items = document.querySelectorAll('#faq-accordion-group .faq-item');
+      
+      items.forEach(item => {
+        const trigger = item.querySelector('.faq-trigger');
+        const content = item.querySelector('.faq-content');
+        const iconWrapper = item.querySelector('.faq-icon-wrapper');
+        const iconSpan = iconWrapper ? iconWrapper.querySelector('.material-symbols-outlined') : null;
+        const numberSpan = item.querySelector('.shrink-0');
+
+        trigger.addEventListener('click', () => {
+          const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+          // Close all siblings for tight, unified feel
+          items.forEach(otherItem => {
+            if (otherItem !== item) {
+              const otherTrigger = otherItem.querySelector('.faq-trigger');
+              const otherContent = otherItem.querySelector('.faq-content');
+              const otherIconSpan = otherItem.querySelector('.faq-icon-wrapper .material-symbols-outlined');
+              const otherNumber = otherItem.querySelector('.shrink-0');
+
+              otherTrigger.setAttribute('aria-expanded', 'false');
+              otherContent.classList.add('hidden');
+              if (otherIconSpan) otherIconSpan.textContent = 'add';
+              if (otherNumber) {
+                otherNumber.classList.remove('text-primary-container');
+                otherNumber.classList.add('text-tertiary');
+              }
+            }
+          });
+
+          // Toggle current
+          if (isOpen) {
+            trigger.setAttribute('aria-expanded', 'false');
+            content.classList.add('hidden');
+            if (iconSpan) iconSpan.textContent = 'add';
+            if (numberSpan) {
+              numberSpan.classList.remove('text-primary-container');
+              numberSpan.classList.add('text-tertiary');
+            }
+          } else {
+            trigger.setAttribute('aria-expanded', 'true');
+            content.classList.remove('hidden');
+            if (iconSpan) iconSpan.textContent = 'remove';
+            if (numberSpan) {
+              numberSpan.classList.remove('text-tertiary');
+              numberSpan.classList.add('text-primary-container');
+            }
+          }
+        });
+      });
+
+      // Filter Functionality
+      const filterButtons = document.querySelectorAll('.faq-filter-btn');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const selectedCat = btn.getAttribute('data-cat');
+
+          // Highlight Active Button
+          filterButtons.forEach(b => {
+            b.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
+            b.classList.add('bg-surface-container', 'text-tertiary');
+          });
+          btn.classList.remove('bg-surface-container', 'text-tertiary');
+          btn.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
+
+          // Show/Hide matching questions
+          items.forEach(item => {
+            const itemCat = item.getAttribute('data-category');
+            if (selectedCat === 'all' || itemCat === selectedCat) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest border-t border-surface-variant/60"><div class="max-w-container-max mx-auto px-gutter-desktop py-space-3xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl"><div class="flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><span class="font-headline-md text-headline-md uppercase tracking-wider text-on-surface">FITNESS FUTURE <span class="text-primary-container">2.0</span></span></div><p class="font-body-sm text-body-sm text-tertiary">Unvarnished, heavy-duty iron culture in the heart of Nangloi, Delhi. Built for lifters, conditioning athletes, and progressive overload discipline.</p><div class="pt-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">8+ Years of Power &amp; Conditioning</span></div></div><div class="flex flex-col gap-space-xs"><span class="font-title-sm text-title-sm uppercase tracking-wider text-on-surface border-b border-surface-variant/40 pb-space-2xs mb-space-xs">HQ &amp; Timings</span><p class="font-body-sm text-body-sm text-on-surface-variant">Main Rohtak Road, Near Metro Pillar, Nangloi, New Delhi, Delhi 110041</p><div class="mt-space-xs bg-surface-container p-space-sm border-l-2 border-primary-container"><p class="font-label-sm text-label-sm uppercase text-tertiary">Operational Hours</p><p class="font-title-sm text-title-sm text-on-surface">Mon - Sat: 6:00 AM – 11:00 PM</p><p class="font-body-sm text-body-sm text-tertiary-fixed-dim">Sunday: 8:00 AM – 2:00 PM</p></div></div><div class="flex flex-col gap-space-xs"><span class="font-title-sm text-title-sm uppercase tracking-wider text-on-surface border-b border-surface-variant/40 pb-space-2xs mb-space-xs">Navigation</span><div class="grid grid-cols-2 gap-space-2xs font-label-md text-label-md uppercase"><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="home" href="#">Home</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="about" href="#">About Us</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="programs" href="#">Programs</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="membership" href="#">Membership</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="contact" href="#">Contact</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="faq" href="#">FAQ</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="blog" href="#">Journal</a><a class="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" data-path="calculator" href="#">Calculator</a></div></div><div class="flex flex-col gap-space-xs"><span class="font-title-sm text-title-sm uppercase tracking-wider text-on-surface border-b border-surface-variant/40 pb-space-2xs mb-space-xs">Direct Line</span><p class="font-headline-sm text-headline-sm text-primary-container">+91 98765 43210</p><p class="font-body-sm text-body-sm text-tertiary">frontdesk@fitnessfuturegym.in</p><div class="flex items-center gap-space-sm mt-space-sm"><a aria-label="Location" class="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined text-title-md">location_on</span></a><a aria-label="Call" class="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined text-title-md">call</span></a><a aria-label="Email" class="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined text-title-md">mail</span></a></div></div></div><div class="mt-space-2xl pt-space-md border-t border-surface-variant/30 flex flex-col sm:flex-row items-center justify-between gap-space-sm"><p class="font-body-sm text-body-sm text-tertiary">© 2024 Fitness Future Gym 2.0. Nangloi, Delhi. All Rights Reserved. Built for Iron Athletes.</p><div class="flex items-center gap-space-md"><span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Powerlifting • Bodybuilding • Conditioning</span></div></div></div></footer></body></html>
