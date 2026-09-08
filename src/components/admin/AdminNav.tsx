@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/members", label: "Members" },
   { href: "/admin/attendance", label: "Attendance" },
+  { href: "/admin/qr", label: "QR Code" },
   { href: "/admin/fees", label: "Fees" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/broadcast", label: "WhatsApp" },
