@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Oswald, Inter } from "next/font/google";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
-import MobileTabBar from "@/components/MobileTabBar";
+import PwaInstallPrompt from "@/components/PwaInstallPrompt";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -26,6 +24,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Fitness Future Gym 2.0 | Nangloi Raw Strength Training",
   description: "Raw strength training, unisex floor, heavy calibrated iron, and progressive overload coaching in Nangloi, Delhi.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Fitness Future",
+  },
+  icons: {
+    icon: [{ url: "/icon-192.png" }, { url: "/icon-512.png" }],
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#141311",
 };
 
 export default function RootLayout({
@@ -45,12 +57,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-background antialiased selection:bg-primary-container selection:text-on-primary-container">
-        <SiteHeader />
-        <main className="pt-24 lg:pt-28 pb-16 xl:pb-0 flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-        <MobileTabBar />
+        {children}
+        <PwaInstallPrompt />
       </body>
     </html>
   );

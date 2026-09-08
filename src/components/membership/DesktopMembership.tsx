@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -72,7 +71,7 @@ export default function DesktopMembership() {
                   TEST THE IRON <span className="text-primary-container">BEFORE</span> COMMITTING.
                 </h1>
                 <p className="font-body-md text-body-md text-tertiary max-w-xl">
-                  Fitness Future 2.0 isn't for casual screen-scrollers. Step inside our raw iron facility in Nangloi for 2 consecutive days. Experience certified Olympic barbells, calibrated cast plates, and hard-hitting conditioning rigs with zero sales pressure.
+                  Fitness Future 2.0 isn&apos;t for casual screen-scrollers. Step inside our raw iron facility in Nangloi for 2 consecutive days. Experience certified Olympic barbells, calibrated cast plates, and hard-hitting conditioning rigs with zero sales pressure.
                 </p>
               </div>
 

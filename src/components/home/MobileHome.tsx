@@ -272,7 +272,7 @@ export default function MobileHome() {
             </div>
             <div className="flex flex-col">
               <span className="font-label-md text-label-md text-on-surface uppercase">
-                "DROP THE EGO BEFORE STEPPING ON THE FLOOR."
+                &quot;DROP THE EGO BEFORE STEPPING ON THE FLOOR.&quot;
               </span>
               <span className="font-body-sm text-body-sm text-primary-container font-semibold">
                 Head Strength Coach • Fitness Future 2.0
@@ -445,7 +445,7 @@ export default function MobileHome() {
           </div>
           <h4 className="font-title-sm text-title-sm text-on-surface uppercase">VIKRAM S. — PASSED PHYSICAL TEST</h4>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
-            "Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run."
+            &quot;Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run.&quot;
           </p>
         </div>
       </section>

@@ -26,6 +26,16 @@ export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  // Instant close on route change — adjusted during render (React's documented
+  // pattern for resetting state when a value changes) rather than in an effect,
+  // so it takes effect on the same render instead of one tick later.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    setMobileMenuOpen(false);
+    setIsAnimating(false);
+  }
+
   // Track scroll position for dynamic header compression
   useEffect(() => {
     const handleScroll = () => {
@@ -34,12 +44,6 @@ export default function SiteHeader() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Instant close on route change
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setIsAnimating(false);
-  }, [pathname]);
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {

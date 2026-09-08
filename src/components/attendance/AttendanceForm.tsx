@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getDeviceMember, saveDeviceMember } from "@/lib/deviceMember";
+import { useState } from "react";
+import { useDeviceMember, saveDeviceMember } from "@/lib/deviceMember";
 
 type SubmitState =
   | { phase: "idle" }
@@ -11,19 +11,15 @@ type SubmitState =
   | { phase: "error"; message: string };
 
 export default function AttendanceForm() {
-  const [name, setName] = useState("");
-  const [membershipNumber, setMembershipNumber] = useState("");
-  const [locked, setLocked] = useState(false);
+  const deviceMember = useDeviceMember();
+  const locked = deviceMember !== null;
+
+  const [draftName, setDraftName] = useState("");
+  const [draftMembershipNumber, setDraftMembershipNumber] = useState("");
   const [state, setState] = useState<SubmitState>({ phase: "idle" });
 
-  useEffect(() => {
-    const saved = getDeviceMember();
-    if (saved) {
-      setName(saved.name);
-      setMembershipNumber(saved.membershipNumber);
-      setLocked(true);
-    }
-  }, []);
+  const name = deviceMember?.name ?? draftName;
+  const membershipNumber = deviceMember?.membershipNumber ?? draftMembershipNumber;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,7 +37,8 @@ export default function AttendanceForm() {
 
       if (data.status === "success") {
         saveDeviceMember({ name: name.trim(), membershipNumber: membershipNumber.trim() });
-        setLocked(true);
+        // Re-rendering here (via setState below) makes useDeviceMember() re-read
+        // localStorage and pick up the value just saved above.
         setState({ phase: "success", name: data.member.fullName });
       } else if (data.status === "cooldown") {
         setState({ phase: "cooldown", retryAfterMinutes: data.retryAfterMinutes });
@@ -73,7 +70,7 @@ export default function AttendanceForm() {
           </label>
           <input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setDraftName(e.target.value)}
             disabled={locked}
             required
             placeholder="e.g. Vikram Sharma"
@@ -87,7 +84,7 @@ export default function AttendanceForm() {
           </label>
           <input
             value={membershipNumber}
-            onChange={(e) => setMembershipNumber(e.target.value)}
+            onChange={(e) => setDraftMembershipNumber(e.target.value)}
             disabled={locked}
             required
             placeholder="e.g. FF-0421"

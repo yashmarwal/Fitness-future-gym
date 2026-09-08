@@ -116,7 +116,7 @@ export default function DesktopAbout() {
                 </span>
               </div>
               <h2 className="about-anim-item font-headline-lg text-headline-lg text-on-surface uppercase tracking-wide">
-                FROM A SINGLE RACK TO NANGLOI'S STRONGEST UNISEX HAVEN
+                FROM A SINGLE RACK TO NANGLOI&apos;S STRONGEST UNISEX HAVEN
               </h2>
               <div className="about-anim-item flex flex-col gap-space-sm font-body-md text-body-md text-tertiary leading-relaxed">
                 <p>

@@ -797,7 +797,7 @@ export default function DesktopHome() {
                 </div>
                 <h4 className="font-title-md text-title-md text-on-surface uppercase">VIKRAM S. (NANGLOI)</h4>
                 <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  "Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run with 45 seconds to spare."
+                  &quot;Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run with 45 seconds to spare.&quot;
                 </p>
               </div>
               <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">
@@ -814,7 +814,7 @@ export default function DesktopHome() {
                 </div>
                 <h4 className="font-title-md text-title-md text-on-surface uppercase">POOJA M. (RAO VIHAR)</h4>
                 <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  "As a female powerlifter, finding a respectful gym floor was crucial. Added +35kg to my deadlift without any lumbar pain."
+                  &quot;As a female powerlifter, finding a respectful gym floor was crucial. Added +35kg to my deadlift without any lumbar pain.&quot;
                 </p>
               </div>
               <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">
@@ -831,7 +831,7 @@ export default function DesktopHome() {
                 </div>
                 <h4 className="font-title-md text-title-md text-on-surface uppercase">AMAN K. (ROHTAK ROAD)</h4>
                 <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  "Followed Coach Hritik's soya &amp; paneer macro plan combined with heavy compound squat cycles. Dropped 12kg body fat."
+                  &quot;Followed Coach Hritik&apos;s soya &amp; paneer macro plan combined with heavy compound squat cycles. Dropped 12kg body fat.&quot;
                 </p>
               </div>
               <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">

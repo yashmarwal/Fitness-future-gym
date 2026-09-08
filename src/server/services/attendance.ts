@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/server/db/client";
+import { getDb } from "@/server/db/client";
 import type { CheckInResult } from "@/types/member";
 
 const COOLDOWN_HOURS = 3;
@@ -7,6 +7,7 @@ const COOLDOWN_HOURS = 3;
 export async function checkInMember(
   membershipNumber: string
 ): Promise<CheckInResult> {
+  const db = getDb();
   const { data: member, error: memberError } = await db
     .from("members")
     .select("id, full_name, membership_number, is_active")
@@ -61,4 +62,17 @@ export async function checkInMember(
       membershipNumber: member.membership_number,
     },
   };
+}
+
+export async function getRecentAttendance(memberId: string, limit = 30): Promise<string[]> {
+  const db = getDb();
+  const { data, error } = await db
+    .from("attendance")
+    .select("checked_in_at")
+    .eq("member_id", memberId)
+    .order("checked_in_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(`Failed to load attendance history: ${error.message}`);
+  return (data ?? []).map((row) => row.checked_in_at as string);
 }

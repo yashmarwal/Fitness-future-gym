@@ -157,7 +157,7 @@ export default function MobileAbout() {
           </span>
         </div>
         <h2 className="mobile-dossier-anim font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase tracking-wide leading-tight">
-          FROM A SINGLE RACK TO NANGLOI'S STRONGEST UNISEX HAVEN
+          FROM A SINGLE RACK TO NANGLOI&apos;S STRONGEST UNISEX HAVEN
         </h2>
         <div className="mobile-dossier-anim flex flex-col gap-space-sm font-body-md text-body-md text-tertiary leading-relaxed">
           <p>
