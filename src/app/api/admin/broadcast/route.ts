@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/server/auth/session";
-import { sendBroadcast, type BroadcastSegment } from "@/server/services/admin/broadcast";
+import { sendBroadcast } from "@/server/services/admin/broadcast";
 import { recordAuditLog } from "@/server/services/admin/auditLog";
+import type { BroadcastSegment } from "@/types/admin";
 
 export async function POST(request: Request) {
   const session = await getAdminSession();

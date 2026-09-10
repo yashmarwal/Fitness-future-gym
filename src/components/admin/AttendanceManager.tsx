@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AttendanceRow } from "@/server/services/admin/attendanceAdmin";
-import type { AdminMember } from "@/server/services/admin/members";
+import type { AttendanceRow, AdminMember } from "@/types/admin";
 
 export default function AttendanceManager({
   records,

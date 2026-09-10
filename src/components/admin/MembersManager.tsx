@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AdminMember } from "@/server/services/admin/members";
+import type { AdminMember } from "@/types/admin";
 
 export default function MembersManager({ members }: { members: AdminMember[] }) {
   const router = useRouter();

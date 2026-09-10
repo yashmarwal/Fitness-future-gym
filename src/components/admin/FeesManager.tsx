@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { FeePaymentRow } from "@/server/services/admin/feesAdmin";
-import type { AdminMember } from "@/server/services/admin/members";
+import type { FeePaymentRow, AdminMember } from "@/types/admin";
 
 export default function FeesManager({ payments, members }: { payments: FeePaymentRow[]; members: AdminMember[] }) {
   const router = useRouter();

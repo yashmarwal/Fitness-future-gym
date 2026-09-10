@@ -1,8 +1,7 @@
 import "server-only";
 import { getDb } from "@/server/db/client";
 import { sendWhatsAppTemplate } from "@/server/services/whatsapp";
-
-export type BroadcastSegment = "all" | "overdue" | "inactive_14d";
+import type { BroadcastSegment } from "@/types/admin";
 
 async function resolveRecipients(segment: BroadcastSegment) {
   const db = getDb();

@@ -1,16 +1,6 @@
 import "server-only";
 import { getDb } from "@/server/db/client";
-
-export type FeePaymentRow = {
-  id: string;
-  memberName: string;
-  membershipNumber: string;
-  amount: number;
-  method: string;
-  status: string;
-  paidAt: string | null;
-  createdAt: string;
-};
+import type { FeePaymentRow } from "@/types/admin";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   const db = getDb();

@@ -1,13 +1,6 @@
 import "server-only";
 import { getDb } from "@/server/db/client";
-
-export type AttendanceRow = {
-  id: string;
-  memberId: string;
-  memberName: string;
-  membershipNumber: string;
-  checkedInAt: string;
-};
+import type { AttendanceRow } from "@/types/admin";
 
 export async function listRecentAttendance(limit = 100): Promise<AttendanceRow[]> {
   const db = getDb();

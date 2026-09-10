@@ -1,18 +1,6 @@
 import "server-only";
 import { getDb } from "@/server/db/client";
-
-export type AdminMember = {
-  id: string;
-  membershipNumber: string;
-  fullName: string;
-  phone: string | null;
-  dateOfBirth: string | null;
-  plan: string | null;
-  feeAmount: number | null;
-  feeDueDate: string | null;
-  joinedAt: string;
-  isActive: boolean;
-};
+import type { AdminMember, MemberInput } from "@/types/admin";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -51,16 +39,6 @@ export async function getMember(id: string): Promise<AdminMember | null> {
   if (error) throw new Error(`Failed to load member: ${error.message}`);
   return data ? mapRow(data) : null;
 }
-
-export type MemberInput = {
-  membershipNumber: string;
-  fullName: string;
-  phone?: string;
-  dateOfBirth?: string;
-  plan?: string;
-  feeAmount?: number;
-  feeDueDate?: string;
-};
 
 export async function createMember(input: MemberInput): Promise<AdminMember> {
   const db = getDb();

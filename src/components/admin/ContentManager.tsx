@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Announcement, Faq, BlogPost } from "@/server/services/admin/content";
+import type { Announcement, Faq, BlogPost } from "@/types/admin";
 
 export default function ContentManager({
   announcements,

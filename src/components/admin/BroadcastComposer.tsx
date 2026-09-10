@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BroadcastSegment } from "@/server/services/admin/broadcast";
+import type { BroadcastSegment } from "@/types/admin";
 
 export default function BroadcastComposer() {
   const [segment, setSegment] = useState<BroadcastSegment>("all");

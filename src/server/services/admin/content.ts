@@ -1,18 +1,6 @@
 import "server-only";
 import { getDb } from "@/server/db/client";
-
-export type Announcement = { id: string; title: string; body: string; isPublished: boolean; createdAt: string };
-export type Faq = { id: string; question: string; answer: string; sortOrder: number };
-export type BlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  tag: string | null;
-  excerpt: string | null;
-  body: string | null;
-  isPublished: boolean;
-  publishedAt: string;
-};
+import type { Announcement, Faq, BlogPost } from "@/types/admin";
 
 export async function listAnnouncements(): Promise<Announcement[]> {
   const db = getDb();
