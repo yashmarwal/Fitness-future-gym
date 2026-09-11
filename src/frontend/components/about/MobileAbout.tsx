@@ -245,33 +245,45 @@ export default function MobileAbout() {
         </div>
 
         <div className="flex flex-col gap-space-md">
-          <div className="bg-surface-container border border-surface-variant/40 shadow-sm overflow-hidden">
-            <div className="w-full h-56 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
-              <span className="material-symbols-outlined text-5xl text-outline">person</span>
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
+            <div className="flex items-center gap-space-sm">
+              <div className="w-12 h-12 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-xl text-primary-container font-bold">
+                V
+              </div>
+              <div className="flex flex-col">
+                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                  FITNESS PROFESSIONAL
+                </span>
+                <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Vaibhav</h3>
+              </div>
             </div>
-            <div className="p-space-md flex flex-col gap-space-2xs">
-              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                Bodybuilding Prep Coach
-              </span>
-              <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Rohit Malik</h3>
-              <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
-                Contest prep, posing, and stage-ready conditioning for athletes training toward a show or shoot.
-              </p>
+            <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
+              8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
+            </p>
+            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
+              <span className="text-on-surface">Best Squat: 260KG</span>
+              <span className="text-primary-container font-bold">Best Deadlift: 290KG</span>
             </div>
           </div>
 
-          <div className="bg-surface-container border border-surface-variant/40 shadow-sm overflow-hidden">
-            <div className="w-full h-56 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
-              <span className="material-symbols-outlined text-5xl text-outline">person</span>
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
+            <div className="flex items-center gap-space-sm">
+              <div className="w-12 h-12 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-xl text-on-surface font-bold">
+                H
+              </div>
+              <div className="flex flex-col">
+                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                  BODYBUILDING PREP COACH
+                </span>
+                <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Hritik</h3>
+              </div>
             </div>
-            <div className="p-space-md flex flex-col gap-space-2xs">
-              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                Fitness Professional
-              </span>
-              <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Priya Sharma</h3>
-              <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
-                General strength &amp; conditioning and beginner onboarding — the first coach most new members meet.
-              </p>
+            <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
+              Hypertrophy programming, physique architecture, and custom Indian nutrition blueprints for recomposition.
+            </p>
+            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
+              <span className="text-on-surface">Best Bench: 170KG</span>
+              <span className="text-primary-container font-bold">500+ Athletes</span>
             </div>
           </div>
         </div>

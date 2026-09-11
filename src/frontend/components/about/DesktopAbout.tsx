@@ -373,58 +373,68 @@ export default function DesktopAbout() {
           </div>
 
           <div className="grid grid-cols-2 gap-space-lg">
-            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col">
-              <div className="w-full h-72 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
-                <span className="material-symbols-outlined text-6xl text-outline">person</span>
+            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
+              <div className="flex items-center gap-space-md mb-space-md">
+                <div className="w-16 h-16 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-2xl text-primary-container font-bold shadow-md">
+                  V
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                    FITNESS PROFESSIONAL
+                  </span>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
+                    Coach Vaibhav
+                  </h3>
+                </div>
               </div>
-              <div className="p-space-lg flex flex-col gap-space-xs">
-                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                  Bodybuilding Prep Coach
-                </span>
-                <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
-                  Coach Rohit Malik
-                </h3>
-                <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-                  Runs contest prep and physique coaching — posing, cutting cycles, and stage-ready conditioning for athletes training toward a show or a photoshoot deadline.
-                </p>
-                <div className="flex flex-wrap gap-space-2xs pt-space-xs">
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Contest Prep
-                  </span>
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Posing
-                  </span>
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Cutting Cycles
-                  </span>
+              <p className="font-body-md text-body-md text-tertiary leading-relaxed">
+                8+ years strength &amp; biomechanics specialist. Maximal compound loading, lumbar safety protocols, and competition deadlift/squat setup — trained over 1,500+ lifters from raw beginners to 250kg+ pullers.
+              </p>
+              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Best Squat</span>
+                  <span className="font-title-sm text-title-sm text-on-surface">260 KG</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Best Deadlift</span>
+                  <span className="font-title-sm text-title-sm text-primary-container">290 KG</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Specialty</span>
+                  <span className="font-title-sm text-title-sm text-on-surface">Power &amp; PRs</span>
                 </div>
               </div>
             </div>
 
-            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col">
-              <div className="w-full h-72 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
-                <span className="material-symbols-outlined text-6xl text-outline">person</span>
+            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
+              <div className="flex items-center gap-space-md mb-space-md">
+                <div className="w-16 h-16 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-2xl text-on-surface font-bold shadow-md">
+                  H
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                    BODYBUILDING PREP COACH
+                  </span>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
+                    Coach Hritik
+                  </h3>
+                </div>
               </div>
-              <div className="p-space-lg flex flex-col gap-space-xs">
-                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                  Fitness Professional
-                </span>
-                <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
-                  Coach Priya Sharma
-                </h3>
-                <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-                  Covers general strength &amp; conditioning, beginner onboarding, and mobility — the first coach most new members work with on the floor.
-                </p>
-                <div className="flex flex-wrap gap-space-2xs pt-space-xs">
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Strength &amp; Conditioning
-                  </span>
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Beginner Onboarding
-                  </span>
-                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
-                    Mobility
-                  </span>
+              <p className="font-body-md text-body-md text-tertiary leading-relaxed">
+                Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints — oversees body transformation and recomposition protocols for 500+ athletes.
+              </p>
+              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Best Bench</span>
+                  <span className="font-title-sm text-title-sm text-on-surface">170 KG</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Body Recomp</span>
+                  <span className="font-title-sm text-title-sm text-primary-container">500+ Athletes</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-label-sm text-label-sm uppercase text-outline">Specialty</span>
+                  <span className="font-title-sm text-title-sm text-on-surface">Hypertrophy</span>
                 </div>
               </div>
             </div>

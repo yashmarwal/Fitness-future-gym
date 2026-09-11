@@ -51,8 +51,8 @@ export default function MobileHome() {
       const counterItems = [
         { selector: ".home-count-years", target: 8, suffix: "+" },
         { selector: ".home-count-days", target: 6, suffix: "" },
-        { selector: ".home-count-deadlift", target: 290, prefix: "Vaibhav: ", suffix: "KG Deadlift" },
-        { selector: ".home-count-bench", target: 170, prefix: "Hritik: ", suffix: "KG Bench" },
+        { selector: ".home-count-deadlift", target: 290, prefix: "Best Deadlift: ", suffix: "KG" },
+        { selector: ".home-count-bench", target: 170, prefix: "Best Bench: ", suffix: "KG" },
       ];
 
       counterItems.forEach((item) => {
@@ -289,26 +289,49 @@ export default function MobileHome() {
             DIRECTOR MASTERY
           </span>
           <h2 className="font-headline-md text-headline-md text-on-surface tracking-wide uppercase m-0">
-            COACH VAIBHAV &amp; HRITIK
+            MEET THE COACHES
           </h2>
         </div>
 
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
             <div className="w-12 h-12 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-xl text-primary-container font-bold">
-              VH
+              V
             </div>
             <div className="flex flex-col">
-              <span className="font-title-sm text-title-sm uppercase text-on-surface font-bold">CERTIFIED STRENGTH VETERANS</span>
-              <span className="font-body-sm text-body-sm text-tertiary">2,800+ Athletes Coached</span>
+              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                FITNESS PROFESSIONAL
+              </span>
+              <span className="font-title-sm text-title-sm uppercase text-on-surface font-bold">COACH VAIBHAV</span>
             </div>
           </div>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
-            Direct 1-on-1 form correction, lumbar safety auditing, and personalized Indian macro blueprints.
+            8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
           </p>
           <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
-            <span className="home-count-deadlift text-on-surface">Vaibhav: 290KG Deadlift</span>
-            <span className="home-count-bench text-primary-container font-bold">Hritik: 170KG Bench</span>
+            <span className="text-on-surface">Best Squat: 260KG</span>
+            <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 290KG</span>
+          </div>
+        </div>
+
+        <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
+          <div className="flex items-center gap-space-sm">
+            <div className="w-12 h-12 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-xl text-on-surface font-bold">
+              H
+            </div>
+            <div className="flex flex-col">
+              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                BODYBUILDING PREP COACH
+              </span>
+              <span className="font-title-sm text-title-sm uppercase text-on-surface font-bold">COACH HRITIK</span>
+            </div>
+          </div>
+          <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
+            Hypertrophy programming, physique architecture, and custom Indian nutrition blueprints for recomposition.
+          </p>
+          <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
+            <span className="home-count-bench text-on-surface">Best Bench: 170KG</span>
+            <span className="text-primary-container font-bold">500+ Athletes</span>
           </div>
         </div>
       </section>
