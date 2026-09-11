@@ -355,6 +355,82 @@ export default function DesktopAbout() {
           </div>
         </div>
       </section>
+
+      {/* 5. MEET THE COACHES */}
+      <section className="about-scroll-sec w-full bg-surface-container-low px-gutter-desktop py-space-3xl border-t border-surface-variant/40">
+        <div className="max-w-container-max mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-space-2xl">
+            <span className="font-label-md text-label-md uppercase tracking-widest text-primary-container font-bold">
+              The Floor Authority
+            </span>
+            <h2 className="font-display-lg text-display-lg text-on-surface uppercase tracking-tight mt-space-2xs">
+              MEET THE COACHES
+            </h2>
+            <div className="w-16 h-1 bg-primary-container mx-auto mt-space-xs mb-space-sm"></div>
+            <p className="font-body-md text-body-md text-tertiary">
+              The coaches on the floor every single day, running your sessions and checking your form.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-space-lg">
+            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col">
+              <div className="w-full h-72 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
+                <span className="material-symbols-outlined text-6xl text-outline">person</span>
+              </div>
+              <div className="p-space-lg flex flex-col gap-space-xs">
+                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                  Bodybuilding Prep Coach
+                </span>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
+                  Coach Rohit Malik
+                </h3>
+                <p className="font-body-md text-body-md text-tertiary leading-relaxed">
+                  Runs contest prep and physique coaching — posing, cutting cycles, and stage-ready conditioning for athletes training toward a show or a photoshoot deadline.
+                </p>
+                <div className="flex flex-wrap gap-space-2xs pt-space-xs">
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Contest Prep
+                  </span>
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Posing
+                  </span>
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Cutting Cycles
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col">
+              <div className="w-full h-72 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
+                <span className="material-symbols-outlined text-6xl text-outline">person</span>
+              </div>
+              <div className="p-space-lg flex flex-col gap-space-xs">
+                <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                  Fitness Professional
+                </span>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
+                  Coach Priya Sharma
+                </h3>
+                <p className="font-body-md text-body-md text-tertiary leading-relaxed">
+                  Covers general strength &amp; conditioning, beginner onboarding, and mobility — the first coach most new members work with on the floor.
+                </p>
+                <div className="flex flex-wrap gap-space-2xs pt-space-xs">
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Strength &amp; Conditioning
+                  </span>
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Beginner Onboarding
+                  </span>
+                  <span className="font-label-sm text-label-sm uppercase text-on-surface-variant bg-surface-container-high px-space-sm py-space-2xs border border-surface-variant/30">
+                    Mobility
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

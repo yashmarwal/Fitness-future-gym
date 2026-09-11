@@ -231,6 +231,51 @@ export default function MobileAbout() {
           </div>
         </div>
       </section>
+
+      {/* 4. MEET THE COACHES */}
+      <section className="px-space-md py-space-xl border-t border-surface-variant/40">
+        <div className="flex flex-col text-center mb-space-lg">
+          <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+            The Floor Authority
+          </span>
+          <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase tracking-tight mt-space-2xs">
+            MEET THE COACHES
+          </h2>
+          <div className="w-12 h-1 bg-primary-container mx-auto mt-space-xs"></div>
+        </div>
+
+        <div className="flex flex-col gap-space-md">
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm overflow-hidden">
+            <div className="w-full h-56 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
+              <span className="material-symbols-outlined text-5xl text-outline">person</span>
+            </div>
+            <div className="p-space-md flex flex-col gap-space-2xs">
+              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                Bodybuilding Prep Coach
+              </span>
+              <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Rohit Malik</h3>
+              <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
+                Contest prep, posing, and stage-ready conditioning for athletes training toward a show or shoot.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm overflow-hidden">
+            <div className="w-full h-56 bg-surface-container-high flex items-center justify-center border-b border-surface-variant/40">
+              <span className="material-symbols-outlined text-5xl text-outline">person</span>
+            </div>
+            <div className="p-space-md flex flex-col gap-space-2xs">
+              <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
+                Fitness Professional
+              </span>
+              <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Priya Sharma</h3>
+              <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
+                General strength &amp; conditioning and beginner onboarding — the first coach most new members meet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
