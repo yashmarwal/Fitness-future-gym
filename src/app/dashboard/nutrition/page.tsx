@@ -1,6 +1,6 @@
-import { getMemberSession } from "@/server/auth/session";
-import { listTodaysFoodLogs } from "@/server/services/nutrition";
-import FoodLogForm from "@/components/dashboard/FoodLogForm";
+import { getMemberSession } from "@/backend/auth/session";
+import { listTodaysFoodLogs } from "@/backend/services/nutrition";
+import FoodLogForm from "@/frontend/components/dashboard/FoodLogForm";
 
 export default async function NutritionPage() {
   const session = await getMemberSession();

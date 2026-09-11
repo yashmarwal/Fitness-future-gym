@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 import type { AttendanceRow } from "@/types/admin";
 
 export async function listRecentAttendance(limit = 100): Promise<AttendanceRow[]> {

@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 import type { AdminMember, MemberInput } from "@/types/admin";
 
 function mapRow(row: Record<string, unknown>): AdminMember {

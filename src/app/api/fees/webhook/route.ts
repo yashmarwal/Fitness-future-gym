@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyWebhookSignature, markFeePaid } from "@/server/services/razorpay";
+import { verifyWebhookSignature, markFeePaid } from "@/backend/services/razorpay";
 
 export async function POST(request: Request) {
   const rawBody = await request.text();

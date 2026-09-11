@@ -1,5 +1,5 @@
-import DesktopPrograms from "@/components/programs/DesktopPrograms";
-import MobilePrograms from "@/components/programs/MobilePrograms";
+import DesktopPrograms from "@/frontend/components/programs/DesktopPrograms";
+import MobilePrograms from "@/frontend/components/programs/MobilePrograms";
 
 export default function ProgramsPage() {
   return (

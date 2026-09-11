@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { verifySession, type MemberSession, type AdminSession } from "@/server/auth/jwt";
+import { verifySession, type MemberSession, type AdminSession } from "@/backend/auth/jwt";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

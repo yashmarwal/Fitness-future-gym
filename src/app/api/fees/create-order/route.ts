@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getMemberSession } from "@/server/auth/session";
-import { getMemberById } from "@/server/services/member";
-import { createFeeOrder } from "@/server/services/razorpay";
+import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
+import { createFeeOrder } from "@/backend/services/razorpay";
 
 export async function POST() {
   const session = await getMemberSession();

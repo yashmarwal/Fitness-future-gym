@@ -1,6 +1,6 @@
-import { listFeePayments } from "@/server/services/admin/feesAdmin";
-import { listMembers } from "@/server/services/admin/members";
-import FeesManager from "@/components/admin/FeesManager";
+import { listFeePayments } from "@/backend/services/admin/feesAdmin";
+import { listMembers } from "@/backend/services/admin/members";
+import FeesManager from "@/frontend/components/admin/FeesManager";
 
 export default async function AdminFeesPage() {
   const [payments, members] = await Promise.all([listFeePayments(100), listMembers()]);

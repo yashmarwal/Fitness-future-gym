@@ -1,5 +1,5 @@
-import DesktopMembership from "@/components/membership/DesktopMembership";
-import MobileMembership from "@/components/membership/MobileMembership";
+import DesktopMembership from "@/frontend/components/membership/DesktopMembership";
+import MobileMembership from "@/frontend/components/membership/MobileMembership";
 
 export default function MembershipPage() {
   return (

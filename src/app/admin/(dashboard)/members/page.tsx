@@ -1,5 +1,5 @@
-import { listMembers } from "@/server/services/admin/members";
-import MembersManager from "@/components/admin/MembersManager";
+import { listMembers } from "@/backend/services/admin/members";
+import MembersManager from "@/frontend/components/admin/MembersManager";
 
 export default async function AdminMembersPage() {
   const members = await listMembers();

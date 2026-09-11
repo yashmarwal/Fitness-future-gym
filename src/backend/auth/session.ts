@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { signSession, verifySession, type MemberSession, type AdminSession } from "@/server/auth/jwt";
+import { signSession, verifySession, type MemberSession, type AdminSession } from "@/backend/auth/jwt";
 
 const MEMBER_COOKIE = "ff_member_session";
 const ADMIN_COOKIE = "ff_admin_session";

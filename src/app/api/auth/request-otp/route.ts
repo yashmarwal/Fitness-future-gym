@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requestMemberOtp } from "@/server/services/memberAuth";
+import { requestMemberOtp } from "@/backend/services/memberAuth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);

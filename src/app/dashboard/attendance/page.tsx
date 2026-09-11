@@ -1,5 +1,5 @@
-import { getMemberSession } from "@/server/auth/session";
-import { getRecentAttendance } from "@/server/services/attendance";
+import { getMemberSession } from "@/backend/auth/session";
+import { getRecentAttendance } from "@/backend/services/attendance";
 
 export default async function AttendanceHistoryPage() {
   const session = await getMemberSession();

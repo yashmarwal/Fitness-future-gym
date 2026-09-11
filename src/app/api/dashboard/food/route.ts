@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getMemberSession } from "@/server/auth/session";
-import { logFood } from "@/server/services/nutrition";
+import { getMemberSession } from "@/backend/auth/session";
+import { logFood } from "@/backend/services/nutrition";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();

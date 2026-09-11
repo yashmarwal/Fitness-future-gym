@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { getAdminSession } from "@/server/auth/session";
-import AdminNav from "@/components/admin/AdminNav";
+import { getAdminSession } from "@/backend/auth/session";
+import AdminNav from "@/frontend/components/admin/AdminNav";
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdminSession();

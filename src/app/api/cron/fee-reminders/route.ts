@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { runFeeReminderCheck } from "@/server/services/notifications";
+import { runFeeReminderCheck } from "@/backend/services/notifications";
 
 export async function GET(request: Request) {
   const auth = request.headers.get("authorization");

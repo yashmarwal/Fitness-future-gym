@@ -1,4 +1,4 @@
-import BroadcastComposer from "@/components/admin/BroadcastComposer";
+import BroadcastComposer from "@/frontend/components/admin/BroadcastComposer";
 
 export default function AdminBroadcastPage() {
   return (

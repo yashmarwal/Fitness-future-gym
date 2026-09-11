@@ -1,8 +1,8 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
-import { issueOtp, verifyOtp } from "@/server/auth/otp";
-import { sendWhatsAppTemplate } from "@/server/services/whatsapp";
-import { createMemberSession } from "@/server/auth/session";
+import { getDb } from "@/backend/db/client";
+import { issueOtp, verifyOtp } from "@/backend/auth/otp";
+import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
+import { createMemberSession } from "@/backend/auth/session";
 
 export type RequestOtpResult =
   | { status: "sent"; devCode?: string }

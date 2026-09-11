@@ -1,6 +1,6 @@
-import { getMemberSession } from "@/server/auth/session";
-import { listWorkoutLogs } from "@/server/services/workouts";
-import WorkoutLogForm from "@/components/dashboard/WorkoutLogForm";
+import { getMemberSession } from "@/backend/auth/session";
+import { listWorkoutLogs } from "@/backend/services/workouts";
+import WorkoutLogForm from "@/frontend/components/dashboard/WorkoutLogForm";
 
 export default async function WorkoutsPage() {
   const session = await getMemberSession();

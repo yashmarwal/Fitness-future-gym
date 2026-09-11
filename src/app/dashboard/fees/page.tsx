@@ -1,7 +1,7 @@
-import { getMemberSession } from "@/server/auth/session";
-import { getMemberById } from "@/server/services/member";
-import PayFeeButton from "@/components/dashboard/PayFeeButton";
-import { isPastDate } from "@/lib/date";
+import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
+import PayFeeButton from "@/frontend/components/dashboard/PayFeeButton";
+import { isPastDate } from "@/frontend/lib/date";
 
 export default async function FeesPage() {
   const session = await getMemberSession();

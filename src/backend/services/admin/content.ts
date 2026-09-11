@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 import type { Announcement, Faq, BlogPost } from "@/types/admin";
 
 export async function listAnnouncements(): Promise<Announcement[]> {

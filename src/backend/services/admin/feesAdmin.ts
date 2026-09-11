@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 import type { FeePaymentRow } from "@/types/admin";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { clearMemberSession } from "@/server/auth/session";
+import { clearMemberSession } from "@/backend/auth/session";
 
 export async function POST() {
   await clearMemberSession();

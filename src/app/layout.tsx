@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Oswald, Inter } from "next/font/google";
-import PwaInstallPrompt from "@/components/PwaInstallPrompt";
+import PwaInstallPrompt from "@/frontend/components/PwaInstallPrompt";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({

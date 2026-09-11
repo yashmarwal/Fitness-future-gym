@@ -1,4 +1,4 @@
-import CalculatorForm from "@/components/calculator/CalculatorForm";
+import CalculatorForm from "@/frontend/components/calculator/CalculatorForm";
 
 export default function CalculatorPage() {
   return (

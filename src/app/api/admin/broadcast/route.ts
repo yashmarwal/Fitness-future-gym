@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/server/auth/session";
-import { sendBroadcast } from "@/server/services/admin/broadcast";
-import { recordAuditLog } from "@/server/services/admin/auditLog";
+import { getAdminSession } from "@/backend/auth/session";
+import { sendBroadcast } from "@/backend/services/admin/broadcast";
+import { recordAuditLog } from "@/backend/services/admin/auditLog";
 import type { BroadcastSegment } from "@/types/admin";
 
 export async function POST(request: Request) {

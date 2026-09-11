@@ -1,6 +1,6 @@
-import { listRecentAttendance } from "@/server/services/admin/attendanceAdmin";
-import { listMembers } from "@/server/services/admin/members";
-import AttendanceManager from "@/components/admin/AttendanceManager";
+import { listRecentAttendance } from "@/backend/services/admin/attendanceAdmin";
+import { listMembers } from "@/backend/services/admin/members";
+import AttendanceManager from "@/frontend/components/admin/AttendanceManager";
 
 export default async function AdminAttendancePage() {
   const [records, members] = await Promise.all([listRecentAttendance(100), listMembers()]);

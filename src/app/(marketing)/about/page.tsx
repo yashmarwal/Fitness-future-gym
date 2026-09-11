@@ -1,5 +1,5 @@
-import DesktopAbout from "@/components/about/DesktopAbout";
-import MobileAbout from "@/components/about/MobileAbout";
+import DesktopAbout from "@/frontend/components/about/DesktopAbout";
+import MobileAbout from "@/frontend/components/about/MobileAbout";
 
 export default function AboutPage() {
   return (

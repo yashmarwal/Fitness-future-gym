@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/server/auth/session";
-import { createFaq } from "@/server/services/admin/content";
+import { getAdminSession } from "@/backend/auth/session";
+import { createFaq } from "@/backend/services/admin/content";
 
 export async function POST(request: Request) {
   const session = await getAdminSession();

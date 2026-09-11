@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { getMemberSession } from "@/server/auth/session";
-import DesktopHome from "@/components/home/DesktopHome";
-import MobileHome from "@/components/home/MobileHome";
+import { getMemberSession } from "@/backend/auth/session";
+import DesktopHome from "@/frontend/components/home/DesktopHome";
+import MobileHome from "@/frontend/components/home/MobileHome";
 
 export default async function Home() {
   const session = await getMemberSession();

@@ -1,6 +1,6 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
-import { sendWhatsAppTemplate } from "@/server/services/whatsapp";
+import { getDb } from "@/backend/db/client";
+import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import type { BroadcastSegment } from "@/types/admin";
 
 async function resolveRecipients(segment: BroadcastSegment) {

@@ -1,5 +1,5 @@
-import { listAnnouncements, listFaqs, listBlogPosts } from "@/server/services/admin/content";
-import ContentManager from "@/components/admin/ContentManager";
+import { listAnnouncements, listFaqs, listBlogPosts } from "@/backend/services/admin/content";
+import ContentManager from "@/frontend/components/admin/ContentManager";
 
 export default async function AdminContentPage() {
   const [announcements, faqs, posts] = await Promise.all([listAnnouncements(), listFaqs(), listBlogPosts()]);

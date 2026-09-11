@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomInt } from "node:crypto";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 
 const OTP_TTL_MINUTES = 10;
 

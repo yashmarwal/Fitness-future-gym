@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/server/auth/session";
-import { updateMember, deleteMember } from "@/server/services/admin/members";
-import { recordAuditLog } from "@/server/services/admin/auditLog";
+import { getAdminSession } from "@/backend/auth/session";
+import { updateMember, deleteMember } from "@/backend/services/admin/members";
+import { recordAuditLog } from "@/backend/services/admin/auditLog";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getAdminSession();

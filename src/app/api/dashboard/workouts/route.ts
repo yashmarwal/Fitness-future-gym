@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getMemberSession } from "@/server/auth/session";
-import { logWorkout } from "@/server/services/workouts";
+import { getMemberSession } from "@/backend/auth/session";
+import { logWorkout } from "@/backend/services/workouts";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();

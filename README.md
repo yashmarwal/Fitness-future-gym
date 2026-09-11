@@ -17,7 +17,7 @@ daily birthday/fee-reminder jobs).
    ```
 
 2. **Create a Supabase project** at [supabase.com](https://supabase.com) (free tier is enough
-   to start), then run `src/server/db/schema.sql` in its SQL editor to create
+   to start), then run `src/backend/db/schema.sql` in its SQL editor to create
    all the tables.
 
 3. **Copy `.env.example` to `.env.local`** and fill in the values — see the
@@ -53,19 +53,30 @@ daily birthday/fee-reminder jobs).
 
 ## Project structure
 
-- `src/app/(marketing)/` — public pages (Home, About, Programs, Membership,
-  Location, FAQ, Blog, Calculator), plus `/attendance` outside that group.
-- `src/app/dashboard/` — logged-in member area (membership card, attendance
-  history, workouts, nutrition, rest timer, fees).
-- `src/app/admin/` — staff-only panel (members, attendance, fees, content,
-  WhatsApp broadcast).
-- `src/app/api/` — HTTP endpoints; each is a thin wrapper around a function
-  in `src/server/services/`.
-- `src/server/` — all backend logic (database access, auth, payments,
-  WhatsApp, business rules). Never imported from a Client Component — see
-  `server-only` on every file in here.
-- `src/components/` — UI only; receives data via props, no direct database
-  access.
+The codebase is split into three top-level pieces under `src/`:
+
+- **`src/app/`** — routing only. Next.js requires this exact folder (it can't
+  be renamed or moved) since it's how the framework maps URLs to code. Page
+  files here import from `frontend/`, and `api/*/route.ts` files import from
+  `backend/` — this folder is the thin wiring layer between the two, not
+  where logic lives.
+  - `(marketing)/` — public pages (Home, About, Programs, Membership,
+    Location, FAQ, Blog, Calculator), plus `/attendance` outside that group.
+  - `dashboard/` — logged-in member area (membership card, attendance
+    history, workouts, nutrition, rest timer, fees).
+  - `admin/` — staff-only panel (members, attendance, fees, content,
+    WhatsApp broadcast, QR code).
+  - `api/` — HTTP endpoints; each is a thin wrapper around a function in
+    `src/backend/services/`, never raw database calls inline.
+- **`src/backend/`** — all backend logic: database access (`db/`), auth
+  (`auth/`), and business rules (`services/`) — payments, WhatsApp, members,
+  attendance, etc. Every file starts with `import "server-only"`, which fails
+  the build if anything in `frontend/` ever imports it by mistake.
+- **`src/frontend/`** — all UI: `components/` (receives data via props only,
+  never queries the database) and `lib/` (pure client-safe helpers).
+- **`src/types/`** — shared contracts (e.g. `AdminMember`, `FeePaymentRow`)
+  that both `backend/` and `frontend/` import, so the UI never has to reach
+  into `backend/` just to know a type's shape.
 
 ## Deploying
 

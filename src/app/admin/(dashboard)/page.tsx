@@ -1,6 +1,6 @@
-import { countTodaysCheckIns } from "@/server/services/admin/attendanceAdmin";
-import { sumPaidThisMonth, countOverdueMembers } from "@/server/services/admin/feesAdmin";
-import { listMembers } from "@/server/services/admin/members";
+import { countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
+import { sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
+import { listMembers } from "@/backend/services/admin/members";
 
 export default async function AdminOverviewPage() {
   const [todaysCheckIns, revenueThisMonth, overdueCount, members] = await Promise.all([

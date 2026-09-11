@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getMemberSession } from "@/server/auth/session";
-import { getMemberById } from "@/server/services/member";
-import { getRecentAttendance } from "@/server/services/attendance";
-import { daysUntil } from "@/lib/date";
+import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
+import { getRecentAttendance } from "@/backend/services/attendance";
+import { daysUntil } from "@/frontend/lib/date";
 
 function computeStreak(checkIns: string[]): number {
   if (checkIns.length === 0) return 0;

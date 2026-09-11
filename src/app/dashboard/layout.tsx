@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
-import { getMemberSession } from "@/server/auth/session";
-import { getMemberById } from "@/server/services/member";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import DashboardDesktopNav from "@/components/dashboard/DashboardDesktopNav";
-import DashboardTabBar from "@/components/dashboard/DashboardTabBar";
+import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
+import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
+import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
+import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getMemberSession();

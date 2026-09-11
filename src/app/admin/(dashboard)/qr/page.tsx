@@ -1,4 +1,4 @@
-import AttendanceQrCode from "@/components/admin/AttendanceQrCode";
+import AttendanceQrCode from "@/frontend/components/admin/AttendanceQrCode";
 
 export default function AdminQrPage() {
   return (

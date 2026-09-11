@@ -1,5 +1,5 @@
-import { getMemberSession } from "@/server/auth/session";
-import { getMemberById } from "@/server/services/member";
+import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
 
 export default async function MembershipCardPage() {
   const session = await getMemberSession();

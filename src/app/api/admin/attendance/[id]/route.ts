@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/server/auth/session";
-import { deleteAttendance } from "@/server/services/admin/attendanceAdmin";
-import { recordAuditLog } from "@/server/services/admin/auditLog";
+import { getAdminSession } from "@/backend/auth/session";
+import { deleteAttendance } from "@/backend/services/admin/attendanceAdmin";
+import { recordAuditLog } from "@/backend/services/admin/auditLog";
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getAdminSession();

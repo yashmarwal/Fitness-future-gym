@@ -1,7 +1,7 @@
 import "server-only";
 import Razorpay from "razorpay";
 import { createHmac } from "node:crypto";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 
 function getClient() {
   const keyId = process.env.RAZORPAY_KEY_ID;

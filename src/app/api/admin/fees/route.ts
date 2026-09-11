@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/server/auth/session";
-import { recordManualPayment } from "@/server/services/admin/feesAdmin";
-import { recordAuditLog } from "@/server/services/admin/auditLog";
+import { getAdminSession } from "@/backend/auth/session";
+import { recordManualPayment } from "@/backend/services/admin/feesAdmin";
+import { recordAuditLog } from "@/backend/services/admin/auditLog";
 
 export async function POST(request: Request) {
   const session = await getAdminSession();

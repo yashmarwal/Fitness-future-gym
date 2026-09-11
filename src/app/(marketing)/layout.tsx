@@ -1,6 +1,6 @@
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
-import MobileTabBar from "@/components/MobileTabBar";
+import SiteHeader from "@/frontend/components/SiteHeader";
+import SiteFooter from "@/frontend/components/SiteFooter";
+import MobileTabBar from "@/frontend/components/MobileTabBar";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (

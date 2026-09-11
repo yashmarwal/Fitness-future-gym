@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 import type { CheckInResult } from "@/types/member";
 
 const COOLDOWN_HOURS = 3;

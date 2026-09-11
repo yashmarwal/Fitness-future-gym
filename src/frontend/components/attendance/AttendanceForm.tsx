@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useDeviceMember, saveDeviceMember } from "@/lib/deviceMember";
+import { useDeviceMember, saveDeviceMember } from "@/frontend/lib/deviceMember";
 
 type SubmitState =
   | { phase: "idle" }

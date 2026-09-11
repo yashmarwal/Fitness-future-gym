@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "@/server/db/client";
+import { getDb } from "@/backend/db/client";
 
 export async function recordAuditLog(adminId: string, action: string, details?: Record<string, unknown>): Promise<void> {
   const db = getDb();

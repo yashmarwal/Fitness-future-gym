@@ -1,7 +1,7 @@
 import "server-only";
 import bcrypt from "bcryptjs";
-import { getDb } from "@/server/db/client";
-import { createAdminSession } from "@/server/auth/session";
+import { getDb } from "@/backend/db/client";
+import { createAdminSession } from "@/backend/auth/session";
 
 export type AdminLoginResult = { status: "success" } | { status: "invalid" };
 
