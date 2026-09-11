@@ -56,10 +56,8 @@ create table if not exists fee_payments (
   id uuid primary key default gen_random_uuid(),
   member_id uuid not null references members(id) on delete cascade,
   amount numeric(10, 2) not null,
-  method text not null default 'razorpay', -- 'razorpay' | 'cash' | 'manual'
-  razorpay_order_id text,
-  razorpay_payment_id text,
-  status text not null default 'created', -- 'created' | 'paid' | 'failed'
+  method text not null default 'upi', -- 'upi' | 'cash' | 'manual'
+  status text not null default 'paid', -- 'paid' | 'pending_confirmation'
   paid_at timestamptz,
   created_at timestamptz not null default now()
 );

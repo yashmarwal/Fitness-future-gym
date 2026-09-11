@@ -8,7 +8,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
   const router = useRouter();
   const [memberId, setMemberId] = useState("");
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"cash" | "manual">("cash");
+  const [method, setMethod] = useState<"upi" | "cash" | "manual">("upi");
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,9 +58,10 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         />
         <select
           value={method}
-          onChange={(e) => setMethod(e.target.value as "cash" | "manual")}
+          onChange={(e) => setMethod(e.target.value as "upi" | "cash" | "manual")}
           className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         >
+          <option value="upi">UPI</option>
           <option value="cash">Cash</option>
           <option value="manual">Other</option>
         </select>

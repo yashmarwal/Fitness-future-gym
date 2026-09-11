@@ -13,8 +13,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "error", message: "Member and amount are required." }, { status: 400 });
   }
 
+  const method = body.method === "cash" || body.method === "upi" ? body.method : "manual";
+
   try {
-    await recordManualPayment(body.memberId, amount, body.method === "cash" ? "cash" : "manual");
+    await recordManualPayment(body.memberId, amount, method);
     await recordAuditLog(session.adminId, "manual_payment", { memberId: body.memberId, amount });
     return NextResponse.json({ status: "ok" });
   } catch (err) {

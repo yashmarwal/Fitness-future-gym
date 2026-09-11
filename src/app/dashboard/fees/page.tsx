@@ -1,6 +1,6 @@
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
-import PayFeeButton from "@/frontend/components/dashboard/PayFeeButton";
+import UpiPayButton from "@/frontend/components/dashboard/UpiPayButton";
 import { isPastDate } from "@/frontend/lib/date";
 
 export default async function FeesPage() {
@@ -11,6 +11,9 @@ export default async function FeesPage() {
 
   const dueDate = member.feeDueDate ? new Date(member.feeDueDate) : null;
   const isOverdue = member.feeDueDate ? isPastDate(member.feeDueDate) : false;
+
+  const upiVpa = process.env.GYM_UPI_ID;
+  const upiPayeeName = process.env.GYM_UPI_PAYEE_NAME ?? "Fitness Future Gym 2.0";
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-md mx-auto">
@@ -31,8 +34,12 @@ export default async function FeesPage() {
           </span>
         </div>
 
-        {member.feeAmount ? (
-          <PayFeeButton memberName={member.fullName} phone={member.phone} />
+        {member.feeAmount && upiVpa ? (
+          <UpiPayButton vpa={upiVpa} payeeName={upiPayeeName} amount={member.feeAmount} memberName={member.fullName} />
+        ) : member.feeAmount ? (
+          <p className="font-body text-sm text-tertiary">
+            Online payment isn&apos;t set up yet — please pay at the front desk.
+          </p>
         ) : (
           <p className="font-body text-sm text-tertiary">
             No fee amount on file yet — contact the front desk.

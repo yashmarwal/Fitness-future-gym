@@ -5,9 +5,10 @@ the supporting attendance/fees/WhatsApp backend.
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind, Supabase (Postgres), Razorpay,
-WhatsApp Business Cloud API, deployed on Vercel (with Vercel Cron for the
-daily birthday/fee-reminder jobs).
+Next.js (App Router) + TypeScript + Tailwind, Supabase (Postgres), direct
+UPI for fee payments (no gateway/commission), WhatsApp Business Cloud API,
+deployed on Vercel (with Vercel Cron for the daily birthday/fee-reminder
+jobs).
 
 ## First-time setup
 
@@ -23,8 +24,9 @@ daily birthday/fee-reminder jobs).
 3. **Copy `.env.example` to `.env.local`** and fill in the values — see the
    comments in that file for where each one comes from. At minimum, set
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `SESSION_SECRET` to run
-   the app locally. WhatsApp and Razorpay can stay blank while developing —
-   see "Dev mode" below.
+   the app locally. WhatsApp can stay blank while developing — see "Dev
+   mode" below. `GYM_UPI_ID` needs the gym's real UPI handle before fee
+   payment is real, but any placeholder works for testing the flow.
 
 4. **Create your first admin login**:
    ```bash
@@ -40,16 +42,26 @@ daily birthday/fee-reminder jobs).
    a member row with a matching `phone` in the `members` table — add one via
    the admin panel first).
 
-## Dev mode (no WhatsApp/Razorpay yet)
+## Dev mode (no WhatsApp yet)
 
 - **WhatsApp**: without `WHATSAPP_ACCESS_TOKEN`/`WHATSAPP_PHONE_NUMBER_ID` set,
   OTP codes are logged to the server console and also returned directly in
   the `/api/auth/request-otp` response (shown on the login screen) so you can
   test the full member login flow without a real WhatsApp account. Every
   send attempt is still logged to the `whatsapp_messages` table either way.
-- **Razorpay**: fee payments need real `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET`
-  to work — there's no dev-mode fallback for real money. The admin panel's
-  "Fees" page can record cash/manual payments without Razorpay.
+
+## Fee payments (direct UPI, not a gateway)
+
+The client asked to drop Razorpay to avoid its ~2% per-transaction fee. Fee
+payment is a direct UPI transfer instead: the member dashboard shows a QR
+code and a tappable `upi://pay` link (built from `GYM_UPI_ID` +
+`GYM_UPI_PAYEE_NAME`) that opens their UPI app with the amount pre-filled —
+a normal bank-to-bank transfer, no aggregator, no commission.
+
+The tradeoff is there's no webhook to auto-confirm payment (that automation
+is exactly what a gateway's fee pays for). Staff confirm it manually in
+**Admin → Fees → Record Manual Payment** (method: UPI) once they see it land
+in the gym's own bank/UPI app — same flow already used for cash payments.
 
 ## Project structure
 
@@ -83,6 +95,4 @@ The codebase is split into three top-level pieces under `src/`:
 Push to a Git repo and import it in Vercel. Add every variable from
 `.env.example` in the Vercel project's Environment Variables settings
 (`CRON_SECRET` in particular — Vercel automatically sends it as a Bearer
-token to the two `/api/cron/*` routes once it's set, per `vercel.json`). Add
-`https://yourdomain.com/api/fees/webhook` as a Razorpay webhook (subscribed
-to `payment.captured`) once you have a domain.
+token to the two `/api/cron/*` routes once it's set, per `vercel.json`).

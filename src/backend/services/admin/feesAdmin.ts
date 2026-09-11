@@ -27,7 +27,7 @@ export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   });
 }
 
-export async function recordManualPayment(memberId: string, amount: number, method: "cash" | "manual"): Promise<void> {
+export async function recordManualPayment(memberId: string, amount: number, method: "upi" | "cash" | "manual"): Promise<void> {
   const db = getDb();
   const { error } = await db.from("fee_payments").insert({
     member_id: memberId,
