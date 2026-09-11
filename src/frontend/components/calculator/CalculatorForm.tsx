@@ -5,7 +5,8 @@ import gsap from "gsap";
 
 export default function CalculatorForm() {
   const [weight, setWeight] = useState(74);
-  const [height, setHeight] = useState(176);
+  const [heightFt, setHeightFt] = useState(5);
+  const [heightIn, setHeightIn] = useState(9);
   const [age, setAge] = useState(26);
   const [gender, setGender] = useState<"male" | "female">("male");
   const [activity, setActivity] = useState(1.65);
@@ -23,6 +24,7 @@ export default function CalculatorForm() {
   }, []);
 
   const results = useMemo(() => {
+    const height = heightFt * 30.48 + heightIn * 2.54; // ft/in -> cm, for the formulas below
     const heightInMeters = height / 100;
     const bmi = weight / (heightInMeters * heightInMeters);
 
@@ -58,7 +60,7 @@ export default function CalculatorForm() {
       carbsGrams,
       fatsGrams,
     };
-  }, [weight, height, age, gender, activity, goal]);
+  }, [weight, heightFt, heightIn, age, gender, activity, goal]);
 
   return (
     <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
@@ -69,7 +71,7 @@ export default function CalculatorForm() {
             01 / Athlete Parameters
           </span>
           <span className="font-label-sm text-label-sm uppercase px-space-xs py-space-2xs bg-surface text-tertiary">
-            ISO UNITS (KG/CM)
+            ISO UNITS (KG / FT-IN)
           </span>
         </div>
 
@@ -98,20 +100,35 @@ export default function CalculatorForm() {
 
             <div>
               <label className="block font-label-md text-label-md uppercase text-tertiary mb-space-2xs">
-                Height (cm)
+                Height (ft / in)
               </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  min={100}
-                  max={250}
-                  value={height}
-                  onChange={(e) => setHeight(Number(e.target.value) || 170)}
-                  className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
-                />
-                <span className="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
-                  CM
-                </span>
+              <div className="flex gap-space-2xs">
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    min={3}
+                    max={8}
+                    value={heightFt}
+                    onChange={(e) => setHeightFt(Number(e.target.value) || 5)}
+                    className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                  />
+                  <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
+                    FT
+                  </span>
+                </div>
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    min={0}
+                    max={11}
+                    value={heightIn}
+                    onChange={(e) => setHeightIn(Number(e.target.value) || 0)}
+                    className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                  />
+                  <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
+                    IN
+                  </span>
+                </div>
               </div>
             </div>
           </div>

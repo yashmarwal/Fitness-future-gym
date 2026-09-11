@@ -105,11 +105,15 @@ export default function DesktopPrograms() {
               <div className="flex flex-col gap-space-sm">
                 <div className="flex items-baseline justify-between gap-space-md flex-wrap">
                   <h2 className="font-headline-md text-headline-md uppercase text-on-surface tracking-wide">
-                    WEIGHT TRAINING &amp; BODYBUILDING PREP
+                    GROUP TRAINING
                   </h2>
                   <span className="font-label-md text-label-md uppercase text-primary-container tracking-wider font-bold">
                     Heavy-Duty Iron Core
                   </span>
+                </div>
+                <div className="flex items-baseline gap-space-2xs">
+                  <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹3,000</span>
+                  <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                   Built on periodized volume, progressive barbell tension, and stage-ready physique mechanics. We discard soft cardio-style workouts for structured resistance training calibrated around true athletic failure and muscular adaptation.
@@ -170,11 +174,15 @@ export default function DesktopPrograms() {
               <div className="flex flex-col gap-space-sm">
                 <div className="flex items-baseline justify-between gap-space-md flex-wrap">
                   <h2 className="font-headline-md text-headline-md uppercase text-on-surface tracking-wide">
-                    ONE-ON-ONE PERSONAL TRAINING
+                    PERSONAL TRAINING
                   </h2>
                   <span className="font-label-md text-label-md uppercase text-primary-container tracking-wider font-bold">
                     Kinetic Precision
                   </span>
+                </div>
+                <div className="flex items-baseline gap-space-2xs">
+                  <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹6,000</span>
+                  <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                   Direct accountability under experienced strength coaches. We deconstruct mechanical dysfunctions, correct joint angles, and design customized intensity ramps that force muscular adaptation while protecting lumbar integrity.
@@ -235,11 +243,15 @@ export default function DesktopPrograms() {
               <div className="flex flex-col gap-space-sm">
                 <div className="flex items-baseline justify-between gap-space-md flex-wrap">
                   <h2 className="font-headline-md text-headline-md uppercase text-on-surface tracking-wide">
-                    CUSTOM NUTRITION GUIDANCE
+                    DIET PLAN
                   </h2>
                   <span className="font-label-md text-label-md uppercase text-primary-container tracking-wider font-bold">
                     Metabolic Fueling
                   </span>
+                </div>
+                <div className="flex items-baseline gap-space-2xs">
+                  <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹1,000</span>
+                  <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                   No generic Western diet templates. We build caloric partitioning and micronutrient blueprints mapped around local North Indian, vegetarian, and non-vegetarian pantry staples—calculating actual protein efficiency without gimmicks.

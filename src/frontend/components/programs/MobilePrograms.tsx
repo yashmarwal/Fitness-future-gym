@@ -121,8 +121,12 @@ export default function MobilePrograms() {
             </span>
           </div>
           <h2 className="font-headline-sm text-headline-sm uppercase text-on-surface">
-            Weight Training &amp; Bodybuilding Prep
+            Group Training
           </h2>
+          <div className="flex items-baseline gap-space-2xs">
+            <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹3,000</span>
+            <span className="font-label-sm text-[10px] text-tertiary uppercase">/ Month</span>
+          </div>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Periodized volume, progressive barbell tension, and stage-ready physique mechanics. Heavy deadlift bays and steel dumbbells up to 50kg+.
           </p>
@@ -145,8 +149,12 @@ export default function MobilePrograms() {
             </span>
           </div>
           <h2 className="font-headline-sm text-headline-sm uppercase text-on-surface">
-            1-on-1 Personal Training
+            Personal Training
           </h2>
+          <div className="flex items-baseline gap-space-2xs">
+            <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹6,000</span>
+            <span className="font-label-sm text-[10px] text-tertiary uppercase">/ Month</span>
+          </div>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Direct 1:1 floor ratio with technique audits, joint posture tracking, bi-weekly caliper measurements, and rapid strength progression.
           </p>
@@ -169,8 +177,12 @@ export default function MobilePrograms() {
             </span>
           </div>
           <h2 className="font-headline-sm text-headline-sm uppercase text-on-surface">
-            Custom Nutrition Guidance
+            Diet Plan
           </h2>
+          <div className="flex items-baseline gap-space-2xs">
+            <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹1,000</span>
+            <span className="font-label-sm text-[10px] text-tertiary uppercase">/ Month</span>
+          </div>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Macros mapped directly to North Indian, vegetarian, and non-vegetarian diet staples—factoring soya, paneer, eggs, and chicken with zero fads.
           </p>
