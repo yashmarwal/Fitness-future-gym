@@ -4,10 +4,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function CalculatorForm() {
-  const [weight, setWeight] = useState(74);
-  const [heightFt, setHeightFt] = useState(5);
-  const [heightIn, setHeightIn] = useState(9);
-  const [age, setAge] = useState(26);
+  const [weight, setWeight] = useState<number | "">(74);
+  const [heightFt, setHeightFt] = useState<number | "">(5);
+  const [heightIn, setHeightIn] = useState<number | "">(9);
+  const [age, setAge] = useState<number | "">(26);
   const [gender, setGender] = useState<"male" | "female">("male");
   const [activity, setActivity] = useState(1.65);
   const [goal, setGoal] = useState(0);
@@ -24,9 +24,14 @@ export default function CalculatorForm() {
   }, []);
 
   const results = useMemo(() => {
-    const height = heightFt * 30.48 + heightIn * 2.54; // ft/in -> cm, for the formulas below
+    const w = weight === "" ? 74 : weight;
+    const ft = heightFt === "" ? 5 : heightFt;
+    const inches = heightIn === "" ? 9 : heightIn;
+    const a = age === "" ? 26 : age;
+
+    const height = ft * 30.48 + inches * 2.54; // ft/in -> cm, for the formulas below
     const heightInMeters = height / 100;
-    const bmi = weight / (heightInMeters * heightInMeters);
+    const bmi = w / (heightInMeters * heightInMeters);
 
     let bmiTag = "NORMAL / OPTIMAL";
     if (bmi < 18.5) bmiTag = "UNDERWEIGHT";
@@ -35,14 +40,14 @@ export default function CalculatorForm() {
 
     const bmr =
       gender === "male"
-        ? 10 * weight + 6.25 * height - 5 * age + 5
-        : 10 * weight + 6.25 * height - 5 * age - 161;
+        ? 10 * w + 6.25 * height - 5 * a + 5
+        : 10 * w + 6.25 * height - 5 * a - 161;
 
     const tdee = Math.round(bmr * activity);
     const targetCalories = tdee + Number(goal);
     const restCalories = Math.round(tdee * 0.9);
 
-    const proteinGrams = Math.round(weight * 2.15);
+    const proteinGrams = Math.round(w * 2.15);
     const proteinCalories = proteinGrams * 4;
 
     const fatCalories = targetCalories * 0.25;
@@ -89,7 +94,7 @@ export default function CalculatorForm() {
                   max={220}
                   step={0.5}
                   value={weight}
-                  onChange={(e) => setWeight(Number(e.target.value) || 70)}
+                  onChange={(e) => setWeight(e.target.value === "" ? "" : Number(e.target.value))}
                   className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
                 />
                 <span className="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
@@ -109,7 +114,7 @@ export default function CalculatorForm() {
                     min={3}
                     max={8}
                     value={heightFt}
-                    onChange={(e) => setHeightFt(Number(e.target.value) || 5)}
+                    onChange={(e) => setHeightFt(e.target.value === "" ? "" : Number(e.target.value))}
                     className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
                   />
                   <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
@@ -122,7 +127,7 @@ export default function CalculatorForm() {
                     min={0}
                     max={11}
                     value={heightIn}
-                    onChange={(e) => setHeightIn(Number(e.target.value) || 0)}
+                    onChange={(e) => setHeightIn(e.target.value === "" ? "" : Number(e.target.value))}
                     className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
                   />
                   <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
@@ -145,7 +150,7 @@ export default function CalculatorForm() {
                   min={14}
                   max={90}
                   value={age}
-                  onChange={(e) => setAge(Number(e.target.value) || 25)}
+                  onChange={(e) => setAge(e.target.value === "" ? "" : Number(e.target.value))}
                   className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
                 />
                 <span className="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
@@ -336,15 +341,15 @@ export default function CalculatorForm() {
               </div>
             </div>
             <div className="mt-space-lg pt-space-md">
-              <div className="flex justify-between text-label-sm font-label-sm uppercase text-outline mb-space-2xs">
-                <span>Under (18.5)</span>
-                <span className="text-primary-container font-bold">Optimal (18.5-24.9)</span>
-                <span>Over (25.0+)</span>
+              <div className="grid grid-cols-[25%_40%_35%] text-label-sm font-label-sm uppercase text-outline mb-space-2xs">
+                <span className="text-left">Under (18.5)</span>
+                <span className="text-center text-primary-container font-bold">Optimal (18.5-24.9)</span>
+                <span className="text-right">Over (25.0+)</span>
               </div>
-              <div className="w-full h-2 bg-surface-container-lowest overflow-hidden flex">
-                <div className="h-full bg-surface-container-highest w-[25%]"></div>
-                <div className="h-full bg-primary-container w-[40%]"></div>
-                <div className="h-full bg-surface-container-highest w-[35%]"></div>
+              <div className="w-full h-2 bg-surface-container-lowest overflow-hidden grid grid-cols-[25%_40%_35%]">
+                <div className="h-full bg-surface-container-highest"></div>
+                <div className="h-full bg-primary-container"></div>
+                <div className="h-full bg-surface-container-highest"></div>
               </div>
             </div>
           </div>
