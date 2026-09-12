@@ -13,7 +13,7 @@ export default function SiteFooter() {
                 className="w-12 h-12 rounded-full object-cover border border-primary-container/40"
               />
               <span className="font-headline-md text-headline-md uppercase tracking-wider text-on-surface">
-                FITNESS FUTURE <span className="text-primary-container">2.0</span>
+                FITNESS FUTURE <span className="text-primary-container">GYM</span>
               </span>
             </div>
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
@@ -78,7 +78,7 @@ export default function SiteFooter() {
 
         <div className="mt-space-2xl pt-space-md border-t border-surface-variant/30 flex flex-col sm:flex-row items-center justify-between gap-space-sm">
           <p className="font-body-sm text-body-sm text-tertiary">
-            © {new Date().getFullYear()} Fitness Future Gym 2.0. Nangloi, Delhi. All Rights Reserved. Built for Iron Athletes.
+            © {new Date().getFullYear()} Fitness Future Gym. Nangloi, Delhi. All Rights Reserved. Built for Iron Athletes.
           </p>
           <div className="flex items-center gap-space-md">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">

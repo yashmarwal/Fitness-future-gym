@@ -68,7 +68,7 @@ export default function DesktopAbout() {
             </h1>
             <div className="about-hero-text w-24 h-1 bg-primary-container mt-space-2xs"></div>
             <p className="about-hero-text font-body-lg text-body-lg text-tertiary max-w-2xl pt-space-xs">
-              Fitness Future Gym 2.0 was established with an unapologetic standard: zero vanity mirrors, zero hollow wellness buzzwords, and an iron floor forged for unadulterated physical grit.
+              Fitness Future Gym was established with an unapologetic standard: zero vanity mirrors, zero hollow wellness buzzwords, and an iron floor forged for unadulterated physical grit.
             </p>
           </div>
 
@@ -120,13 +120,13 @@ export default function DesktopAbout() {
               </h2>
               <div className="about-anim-item flex flex-col gap-space-sm font-body-md text-body-md text-tertiary leading-relaxed">
                 <p>
-                  Founded 8 years ago in Rao Vihar, Nangloi, Fitness Future Gym 2.0 was built to give lifters an unpretentious sanctuary where work ethic speaks louder than trendy fitness fads. We opened our steel doors with a single heavy-gauge squat cage, mismatched cast iron, and an unwavering commitment to raw progression.
+                  Founded 8 years ago in Rao Vihar, Nangloi, Fitness Future Gym was built to give lifters an unpretentious sanctuary where work ethic speaks louder than trendy fitness fads. We opened our steel doors with a single heavy-gauge squat cage, mismatched cast iron, and an unwavering commitment to raw progression.
                 </p>
                 <p>
                   While contemporary commercial gyms chased neon decor and smoothie counters, we invested back into Olympic-standard knurling, thick rubber mats, and competition-spec barbells. Lifters from Rao Vihar, Inder Enclave, and Rohtak Road quickly recognized our training floor as the authentic ground truth of local strength culture.
                 </p>
                 <p className="text-on-surface font-medium">
-                  Today, version 2.0 stands as an expanded 5,000 sq ft unisex iron temple. We preserve the raw spirit of day one while arming every serious athlete with calibrated plates, isolated hypertrophy platforms, and zero-bullshit athletic coaching.
+                  Today, we stand as an expanded 5,000 sq ft unisex iron temple. We preserve the raw spirit of day one while arming every serious athlete with calibrated plates, isolated hypertrophy platforms, and zero-bullshit athletic coaching.
                 </p>
               </div>
               <div className="about-anim-item pt-space-xs flex items-center gap-space-md">

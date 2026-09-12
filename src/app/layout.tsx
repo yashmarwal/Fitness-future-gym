@@ -22,7 +22,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Fitness Future Gym 2.0 | Nangloi Raw Strength Training",
+  title: "Fitness Future Gym | Nangloi Raw Strength Training",
   description: "Raw strength training, unisex floor, heavy calibrated iron, and progressive overload coaching in Nangloi, Delhi.",
   manifest: "/manifest.json",
   appleWebApp: {

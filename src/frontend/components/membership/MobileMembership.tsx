@@ -164,7 +164,7 @@ export default function MobileMembership() {
             Full floor access 6 days/week. Standard locker &amp; floor trainer guidance.
           </p>
           <a
-            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass."
+            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass."
             target="_blank"
             rel="noreferrer"
             className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"
@@ -188,7 +188,7 @@ export default function MobileMembership() {
             Includes custom nutrition guide + 1 complimentary 1-on-1 PT Session and 15-day freeze allowance.
           </p>
           <a
-            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20inquire%20about%20Quarterly%20Pass."
+            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Quarterly%20Pass."
             target="_blank"
             rel="noreferrer"
             className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center font-label-lg text-label-lg uppercase font-bold tracking-wider mt-space-2xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
@@ -210,7 +210,7 @@ export default function MobileMembership() {
             Lowest daily training cost + 4 1-on-1 PT Sessions + official gym starter kit.
           </p>
           <a
-            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20inquire%20about%20Annual%20Pass."
+            href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Pass."
             target="_blank"
             rel="noreferrer"
             className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"

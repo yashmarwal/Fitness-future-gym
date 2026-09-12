@@ -16,7 +16,7 @@ export default async function MembershipCardPage() {
       <div className="bg-surface-container-low p-6 shadow-hard-lg relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary-container" />
         <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
-          Fitness Future 2.0
+          Fitness Future Gym
         </span>
         <h2 className="font-display text-3xl text-on-surface uppercase tracking-wide mt-1 mb-6">
           {member.fullName}

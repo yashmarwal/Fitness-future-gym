@@ -941,7 +941,7 @@ export default function DesktopHome() {
                 NO CONTRACT LOCKS • NO BULLSHIT
               </span>
               <h2 className="font-headline-lg text-headline-lg uppercase text-on-primary font-normal leading-tight tracking-wide">
-                READY TO PUT IN THE WORK? JOIN FITNESS FUTURE 2.0 TODAY
+                READY TO PUT IN THE WORK? JOIN FITNESS FUTURE GYM TODAY
               </h2>
               <p className="font-body-md text-body-md text-on-primary-fixed-variant mt-space-xs">
                 Stop waiting for the right moment. Walk onto the chalk-dusted platform in Nangloi and claim your first trial session today.

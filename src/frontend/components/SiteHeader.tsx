@@ -189,7 +189,7 @@ export default function SiteHeader() {
                 className="w-10 h-10 rounded-full object-cover border border-primary-container/40"
               />
               <span className="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">
-                Fitness Future <span className="text-primary-container">2.0</span>
+                Fitness Future <span className="text-primary-container">Gym</span>
               </span>
             </Link>
           </div>

@@ -1,4 +1,4 @@
-# Fitness Future Gym 2.0
+# Fitness Future Gym
 
 Gym website: public marketing pages, a member dashboard, an admin panel, and
 the supporting attendance/fees/WhatsApp backend.

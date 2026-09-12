@@ -263,7 +263,7 @@ export default function MobileHome() {
             BUILT ON IRON, NOT GIMMICKS.
           </h2>
           <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-            We stripped away the air-conditioned illusion of boutique wellness. Fitness Future 2.0 is engineered for lifters who respect the barbell, heavy dumbbells, and real overload.
+            We stripped away the air-conditioned illusion of boutique wellness. Fitness Future Gym is engineered for lifters who respect the barbell, heavy dumbbells, and real overload.
           </p>
 
           <div className="mt-space-xs pt-space-xs bg-surface-container-high/60 p-space-sm flex items-center gap-space-sm border border-surface-variant/30">
@@ -275,7 +275,7 @@ export default function MobileHome() {
                 &quot;DROP THE EGO BEFORE STEPPING ON THE FLOOR.&quot;
               </span>
               <span className="font-body-sm text-body-sm text-primary-container font-semibold">
-                Head Strength Coach • Fitness Future 2.0
+                Head Strength Coach • Fitness Future Gym
               </span>
             </div>
           </div>
@@ -480,7 +480,7 @@ export default function MobileHome() {
             NO CONTRACT LOCKS • NO BULLSHIT
           </span>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile uppercase text-on-primary leading-tight font-normal">
-            READY TO PUT IN THE WORK? JOIN FITNESS FUTURE 2.0
+            READY TO PUT IN THE WORK? JOIN FITNESS FUTURE GYM
           </h2>
           <p className="font-body-sm text-body-sm text-on-primary-fixed-variant">
             Walk onto the chalk-dusted platform in Nangloi and claim your first trial session today.

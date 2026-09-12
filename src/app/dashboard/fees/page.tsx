@@ -13,7 +13,7 @@ export default async function FeesPage() {
   const isOverdue = member.feeDueDate ? isPastDate(member.feeDueDate) : false;
 
   const upiVpa = process.env.GYM_UPI_ID;
-  const upiPayeeName = process.env.GYM_UPI_PAYEE_NAME ?? "Fitness Future Gym 2.0";
+  const upiPayeeName = process.env.GYM_UPI_PAYEE_NAME ?? "Fitness Future Gym";
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-md mx-auto">

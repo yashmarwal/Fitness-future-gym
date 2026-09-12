@@ -121,7 +121,7 @@ export default function MobileAbout() {
         </h1>
         <div className="mobile-about-hero w-16 h-1 bg-primary-container mt-space-xs mb-space-md"></div>
         <p className="mobile-about-hero font-body-md text-body-md text-tertiary leading-snug">
-          Fitness Future Gym 2.0 was established with an unapologetic standard: zero vanity mirrors, zero hollow wellness buzzwords, and an iron floor forged for unadulterated physical grit.
+          Fitness Future Gym was established with an unapologetic standard: zero vanity mirrors, zero hollow wellness buzzwords, and an iron floor forged for unadulterated physical grit.
         </p>
 
         {/* 2x2 Stats Grid */}
@@ -161,13 +161,13 @@ export default function MobileAbout() {
         </h2>
         <div className="mobile-dossier-anim flex flex-col gap-space-sm font-body-md text-body-md text-tertiary leading-relaxed">
           <p>
-            Founded 8 years ago in Rao Vihar, Nangloi, Fitness Future Gym 2.0 was built to give lifters an unpretentious sanctuary where work ethic speaks louder than trendy fitness fads.
+            Founded 8 years ago in Rao Vihar, Nangloi, Fitness Future Gym was built to give lifters an unpretentious sanctuary where work ethic speaks louder than trendy fitness fads.
           </p>
           <p>
             While contemporary commercial gyms chased neon decor and smoothie counters, we invested back into Olympic-standard knurling, thick rubber mats, and competition-spec barbells.
           </p>
           <p className="text-on-surface font-medium border-l-2 border-primary-container pl-space-xs">
-            Today, version 2.0 stands as an expanded 5,000 sq ft unisex iron temple equipped with calibrated plates, isolated hypertrophy platforms, and zero-bullshit coaching.
+            Today, we stand as an expanded 5,000 sq ft unisex iron temple equipped with calibrated plates, isolated hypertrophy platforms, and zero-bullshit coaching.
           </p>
         </div>
 

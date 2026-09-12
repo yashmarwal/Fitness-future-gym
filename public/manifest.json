@@ -1,7 +1,7 @@
 {
-  "name": "Fitness Future Gym 2.0",
+  "name": "Fitness Future Gym",
   "short_name": "Fitness Future",
-  "description": "Raw strength training, attendance, and member dashboard for Fitness Future Gym 2.0.",
+  "description": "Raw strength training, attendance, and member dashboard for Fitness Future Gym.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#141311",

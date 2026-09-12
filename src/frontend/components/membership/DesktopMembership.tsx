@@ -71,7 +71,7 @@ export default function DesktopMembership() {
                   TEST THE IRON <span className="text-primary-container">BEFORE</span> COMMITTING.
                 </h1>
                 <p className="font-body-md text-body-md text-tertiary max-w-xl">
-                  Fitness Future 2.0 isn&apos;t for casual screen-scrollers. Step inside our raw iron facility in Nangloi for 2 consecutive days. Experience certified Olympic barbells, calibrated cast plates, and hard-hitting conditioning rigs with zero sales pressure.
+                  Fitness Future Gym isn&apos;t for casual screen-scrollers. Step inside our raw iron facility in Nangloi for 2 consecutive days. Experience certified Olympic barbells, calibrated cast plates, and hard-hitting conditioning rigs with zero sales pressure.
                 </p>
               </div>
 
@@ -311,7 +311,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass%20pricing."
+                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass%20pricing."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"
@@ -385,7 +385,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20claim%20the%20Quarterly%20Pass."
+                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20claim%20the%20Quarterly%20Pass."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold py-space-md text-center block tracking-wider transition-colors shadow-hard"
@@ -448,7 +448,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%202.0%2C%20I%20want%20to%20inquire%20about%20Annual%20Commitment."
+                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Commitment."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant hover:border-primary-container text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"
