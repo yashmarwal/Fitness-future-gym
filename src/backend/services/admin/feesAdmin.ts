@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { FeePaymentRow } from "@/types/admin";
+import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   const db = getDb();
@@ -29,6 +30,15 @@ export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
 
 export async function recordManualPayment(memberId: string, amount: number, method: "upi" | "cash" | "manual"): Promise<void> {
   const db = getDb();
+
+  const { data: member, error: memberError } = await db
+    .from("members")
+    .select("full_name, phone, fee_due_date, joined_at")
+    .eq("id", memberId)
+    .maybeSingle();
+  if (memberError) throw new Error(`Failed to load member: ${memberError.message}`);
+  if (!member) throw new Error("Member not found.");
+
   const { error } = await db.from("fee_payments").insert({
     member_id: memberId,
     amount,
@@ -38,12 +48,24 @@ export async function recordManualPayment(memberId: string, amount: number, meth
   });
   if (error) throw new Error(`Failed to record payment: ${error.message}`);
 
-  const nextDueDate = new Date();
+  // Anchor the next due date to the CURRENT due date (the billing cycle),
+  // not to today — paying late (e.g. 10 days after the due date) must not
+  // push the whole cycle forward, and joined_at is never touched here.
+  const anchor = member.fee_due_date ? new Date(member.fee_due_date) : new Date();
+  const nextDueDate = new Date(anchor);
   nextDueDate.setMonth(nextDueDate.getMonth() + 1);
-  await db
-    .from("members")
-    .update({ fee_due_date: nextDueDate.toISOString().slice(0, 10) })
-    .eq("id", memberId);
+  const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
+
+  await db.from("members").update({ fee_due_date: nextDueDateStr }).eq("id", memberId);
+
+  if (member.phone) {
+    await sendWhatsAppTemplate({
+      phone: member.phone,
+      template: "payment_confirmation",
+      bodyParams: [member.full_name, String(amount), nextDueDateStr],
+      memberId,
+    }).catch(() => {});
+  }
 }
 
 export async function sumPaidThisMonth(): Promise<number> {

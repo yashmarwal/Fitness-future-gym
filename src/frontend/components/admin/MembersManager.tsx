@@ -4,35 +4,71 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
 
+const EMPTY_FORM = {
+  membershipNumber: "",
+  fullName: "",
+  phone: "",
+  dateOfBirth: "",
+  plan: "",
+  feeAmount: "",
+  feeDueDate: "",
+  joinedAt: "",
+};
+
 export default function MembersManager({ members }: { members: AdminMember[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({
-    membershipNumber: "",
-    fullName: "",
-    phone: "",
-    dateOfBirth: "",
-    plan: "",
-    feeAmount: "",
-    feeDueDate: "",
-  });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [query, setQuery] = useState("");
 
-  async function handleCreate(e: React.FormEvent) {
+  function startCreate() {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setShowForm(true);
+  }
+
+  function startEdit(member: AdminMember) {
+    setEditingId(member.id);
+    setForm({
+      membershipNumber: member.membershipNumber,
+      fullName: member.fullName,
+      phone: member.phone ?? "",
+      dateOfBirth: member.dateOfBirth ?? "",
+      plan: member.plan ?? "",
+      feeAmount: member.feeAmount != null ? String(member.feeAmount) : "",
+      feeDueDate: member.feeDueDate ?? "",
+      joinedAt: member.joinedAt ?? "",
+    });
+    setShowForm(true);
+  }
+
+  function closeForm() {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await fetch("/api/admin/members", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          feeAmount: form.feeAmount ? Number(form.feeAmount) : undefined,
-        }),
-      });
-      setForm({ membershipNumber: "", fullName: "", phone: "", dateOfBirth: "", plan: "", feeAmount: "", feeDueDate: "" });
-      setShowForm(false);
+      const payload = { ...form, feeAmount: form.feeAmount ? Number(form.feeAmount) : undefined };
+      if (editingId) {
+        await fetch(`/api/admin/members/${editingId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch("/api/admin/members", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+      closeForm();
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -70,7 +106,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           className="flex-1 bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
         />
         <button
-          onClick={() => setShowForm((s) => !s)}
+          onClick={showForm ? closeForm : startCreate}
           className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard shrink-0"
         >
           {showForm ? "Cancel" : "+ Add Member"}
@@ -78,7 +114,10 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-surface-container-low p-5 shadow-hard grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <span className="sm:col-span-2 font-label text-xs uppercase tracking-widest text-primary-container">
+            {editingId ? "Edit Member" : "New Member"}
+          </span>
           <input
             required
             placeholder="Membership Number"
@@ -99,13 +138,15 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
-          <input
-            type="date"
-            placeholder="Date of Birth"
-            value={form.dateOfBirth}
-            onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
-          />
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">Date of Birth</label>
+            <input
+              type="date"
+              value={form.dateOfBirth}
+              onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
           <input
             placeholder="Plan (e.g. Quarterly)"
             value={form.plan}
@@ -119,19 +160,30 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
             onChange={(e) => setForm({ ...form, feeAmount: e.target.value })}
             className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
-          <input
-            type="date"
-            placeholder="Fee Due Date"
-            value={form.feeDueDate}
-            onChange={(e) => setForm({ ...form, feeDueDate: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
-          />
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">Fee Due Date</label>
+            <input
+              type="date"
+              value={form.feeDueDate}
+              onChange={(e) => setForm({ ...form, feeDueDate: e.target.value })}
+              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">Joined Date</label>
+            <input
+              type="date"
+              value={form.joinedAt}
+              onChange={(e) => setForm({ ...form, joinedAt: e.target.value })}
+              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
           <button
             type="submit"
             disabled={submitting}
             className="sm:col-span-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
           >
-            {submitting ? "Creating..." : "Create Member"}
+            {submitting ? "Saving..." : editingId ? "Save Changes" : "Create Member"}
           </button>
         </form>
       )}
@@ -144,6 +196,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Name</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Phone</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Plan</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Joined</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Fee Due</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Status</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2"></th>
@@ -156,6 +209,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                 <td className="py-2 pr-4 font-body text-sm text-on-surface">{m.fullName}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.phone ?? "—"}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.plan ?? "—"}</td>
+                <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.joinedAt}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.feeDueDate ?? "—"}</td>
                 <td className="py-2 pr-4">
                   <button
@@ -167,11 +221,11 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     {m.isActive ? "Active" : "Inactive"}
                   </button>
                 </td>
-                <td className="py-2">
-                  <button
-                    onClick={() => handleDelete(m.id)}
-                    className="font-label text-[10px] uppercase text-error"
-                  >
+                <td className="py-2 flex gap-3">
+                  <button onClick={() => startEdit(m)} className="font-label text-[10px] uppercase text-primary-container">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(m.id)} className="font-label text-[10px] uppercase text-error">
                     Delete
                   </button>
                 </td>

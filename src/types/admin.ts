@@ -19,6 +19,7 @@ export type MemberInput = {
   plan?: string;
   feeAmount?: number;
   feeDueDate?: string;
+  joinedAt?: string;
 };
 
 export type AttendanceRow = {
@@ -54,3 +55,10 @@ export type BlogPost = {
 };
 
 export type BroadcastSegment = "all" | "overdue" | "inactive_14d";
+
+export type AlertMember = {
+  id: string;
+  fullName: string;
+  membershipNumber: string;
+  detail: string;
+};

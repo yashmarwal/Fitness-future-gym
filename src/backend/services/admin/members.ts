@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { AdminMember, MemberInput } from "@/types/admin";
+import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -17,12 +18,12 @@ function mapRow(row: Record<string, unknown>): AdminMember {
   };
 }
 
+const SELECT_COLUMNS =
+  "id, membership_number, full_name, phone, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active";
+
 export async function listMembers(): Promise<AdminMember[]> {
   const db = getDb();
-  const { data, error } = await db
-    .from("members")
-    .select("id, membership_number, full_name, phone, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active")
-    .order("created_at", { ascending: false });
+  const { data, error } = await db.from("members").select(SELECT_COLUMNS).order("created_at", { ascending: false });
 
   if (error) throw new Error(`Failed to load members: ${error.message}`);
   return (data ?? []).map(mapRow);
@@ -30,11 +31,7 @@ export async function listMembers(): Promise<AdminMember[]> {
 
 export async function getMember(id: string): Promise<AdminMember | null> {
   const db = getDb();
-  const { data, error } = await db
-    .from("members")
-    .select("id, membership_number, full_name, phone, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active")
-    .eq("id", id)
-    .maybeSingle();
+  const { data, error } = await db.from("members").select(SELECT_COLUMNS).eq("id", id).maybeSingle();
 
   if (error) throw new Error(`Failed to load member: ${error.message}`);
   return data ? mapRow(data) : null;
@@ -52,8 +49,9 @@ export async function createMember(input: MemberInput): Promise<AdminMember> {
       plan: input.plan || null,
       fee_amount: input.feeAmount ?? null,
       fee_due_date: input.feeDueDate || null,
+      joined_at: input.joinedAt || undefined,
     })
-    .select("id, membership_number, full_name, phone, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active")
+    .select(SELECT_COLUMNS)
     .single();
 
   if (error) throw new Error(`Failed to create member: ${error.message}`);
@@ -70,10 +68,26 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.plan !== undefined) patch.plan = input.plan || null;
   if (input.feeAmount !== undefined) patch.fee_amount = input.feeAmount;
   if (input.feeDueDate !== undefined) patch.fee_due_date = input.feeDueDate || null;
+  if (input.joinedAt !== undefined) patch.joined_at = input.joinedAt;
   if (input.isActive !== undefined) patch.is_active = input.isActive;
 
-  const { error } = await db.from("members").update(patch).eq("id", id);
+  const { data: updated, error } = await db.from("members").update(patch).eq("id", id).select(SELECT_COLUMNS).single();
   if (error) throw new Error(`Failed to update member: ${error.message}`);
+
+  const member = mapRow(updated);
+  if (member.phone) {
+    await sendWhatsAppTemplate({
+      phone: member.phone,
+      template: "profile_update",
+      bodyParams: [
+        member.fullName,
+        member.plan ?? "—",
+        member.feeDueDate ?? "—",
+        member.isActive ? "Active" : "Inactive",
+      ],
+      memberId: id,
+    }).catch(() => {});
+  }
 }
 
 export async function deleteMember(id: string): Promise<void> {

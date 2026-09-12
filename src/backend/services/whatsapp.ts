@@ -1,13 +1,23 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 
-export type WhatsAppTemplate = "otp" | "fee_reminder" | "birthday" | "announcement";
+export type WhatsAppTemplate =
+  | "otp"
+  | "fee_reminder"
+  | "birthday"
+  | "announcement"
+  | "welcome_card"
+  | "payment_confirmation"
+  | "profile_update";
 
 const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   otp: "WHATSAPP_TEMPLATE_OTP",
   fee_reminder: "WHATSAPP_TEMPLATE_FEE_REMINDER",
   birthday: "WHATSAPP_TEMPLATE_BIRTHDAY",
   announcement: "WHATSAPP_TEMPLATE_ANNOUNCEMENT",
+  welcome_card: "WHATSAPP_TEMPLATE_WELCOME_CARD",
+  payment_confirmation: "WHATSAPP_TEMPLATE_PAYMENT_CONFIRMATION",
+  profile_update: "WHATSAPP_TEMPLATE_PROFILE_UPDATE",
 };
 
 const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
@@ -15,6 +25,9 @@ const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
   fee_reminder: "ff_fee_reminder",
   birthday: "ff_birthday",
   announcement: "ff_announcement",
+  welcome_card: "ff_welcome_card",
+  payment_confirmation: "ff_payment_confirmation",
+  profile_update: "ff_profile_update",
 };
 
 function isConfigured() {

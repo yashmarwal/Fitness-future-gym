@@ -18,6 +18,10 @@ create table if not exists members (
   is_active boolean not null default true,
   is_frozen boolean not null default false,
   notes text,
+  -- Persists independently of the attendance log's 2-month retention policy
+  -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
+  -- still be detected after the underlying check-in rows have been purged.
+  last_checked_in_at timestamptz,
   created_at timestamptz not null default now()
 );
 

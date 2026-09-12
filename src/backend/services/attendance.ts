@@ -47,13 +47,20 @@ export async function checkInMember(
     }
   }
 
+  const checkedInAt = new Date().toISOString();
+
   const { error: insertError } = await db
     .from("attendance")
-    .insert({ member_id: member.id });
+    .insert({ member_id: member.id, checked_in_at: checkedInAt });
 
   if (insertError) {
     throw new Error(`Failed to log attendance: ${insertError.message}`);
   }
+
+  // Kept on the member row (not just the attendance log) since attendance
+  // rows are purged after 60 days but long-term inactivity still needs to
+  // be detectable — see deleteOldAttendance and listInactiveMembers.
+  await db.from("members").update({ last_checked_in_at: checkedInAt }).eq("id", member.id);
 
   return {
     status: "success",
@@ -75,4 +82,21 @@ export async function getRecentAttendance(memberId: string, limit = 30): Promise
 
   if (error) throw new Error(`Failed to load attendance history: ${error.message}`);
   return (data ?? []).map((row) => row.checked_in_at as string);
+}
+
+const ATTENDANCE_RETENTION_DAYS = 60;
+
+export async function deleteOldAttendance(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - ATTENDANCE_RETENTION_DAYS);
+
+  const { data, error } = await db
+    .from("attendance")
+    .delete()
+    .lt("checked_in_at", cutoff.toISOString())
+    .select("id");
+
+  if (error) throw new Error(`Failed to delete old attendance: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
 }

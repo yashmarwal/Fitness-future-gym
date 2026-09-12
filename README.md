@@ -38,9 +38,8 @@ jobs).
    npm run dev
    ```
    Visit `http://localhost:3000` for the public site, `/admin/login` for the
-   admin panel, and `/login` for the member dashboard (member login requires
-   a member row with a matching `phone` in the `members` table — add one via
-   the admin panel first).
+   admin panel, `/login` for member sign-in, and `/signup` for a member to
+   create their own account (no admin step needed — see below).
 
 ## Dev mode (no WhatsApp yet)
 
@@ -62,6 +61,49 @@ The tradeoff is there's no webhook to auto-confirm payment (that automation
 is exactly what a gateway's fee pays for). Staff confirm it manually in
 **Admin → Fees → Record Manual Payment** (method: UPI) once they see it land
 in the gym's own bank/UPI app — same flow already used for cash payments.
+
+## Member accounts
+
+Members self-register at `/signup` (name, phone, optional DOB) — no admin
+step required. Registration generates a membership number (`FF-1001`,
+incrementing), sends a welcome message with that number over WhatsApp
+(`welcome_card` template), then sends a login OTP the same way `/login`
+does, so the same phone-verification flow covers both. Admins still see
+every member (self-registered or admin-added) in **Admin → Members**, with
+full edit access to every field, including membership number, plan, fee
+amount, fee due date, and joined date.
+
+Admins are notified over WhatsApp on:
+- **Signup** — the welcome/card message above.
+- **Profile edits** — any change saved in Admin → Members sends the member
+  an updated-profile message.
+- **Payments** — recording a payment (Admin → Fees) sends a confirmation
+  with the amount and the new due date.
+
+### Fee due-date logic
+
+Paying late must not drift the billing cycle. If a member's fee is due on
+the 1st and they pay on the 11th, the **next** due date is still calculated
+from the 1st (their existing `fee_due_date`), not from the day they paid —
+so it lands on the next 1st, not the 11th of the following month. The
+member's `joined_at` is never touched by a payment. Admins can still
+directly edit either date by hand in the member edit form when a real
+exception is needed.
+
+### Admin alerts
+
+**Admin → Alerts** (and a summary strip on the Overview page) surfaces:
+fee overdue, fee due within 3 days, inactive 4+ months (no check-in —
+tracked via `members.last_checked_in_at`, which persists independently of
+the attendance log's 2-month retention below), trial not converted (no
+plan selected 2+ days after joining), and birthdays this week.
+
+### Attendance retention
+
+Individual check-in rows in `attendance` are deleted after 60 days by a
+daily cron job (`/api/cron/attendance-cleanup`) — only the log entries, not
+the member record itself, and not the `last_checked_in_at` marker alerts
+rely on for long-term inactivity detection.
 
 ## Project structure
 

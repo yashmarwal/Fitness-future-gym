@@ -26,11 +26,17 @@ export async function listRecentAttendance(limit = 100): Promise<AttendanceRow[]
 
 export async function addManualAttendance(memberId: string, checkedInAt?: string): Promise<void> {
   const db = getDb();
-  const { error } = await db.from("attendance").insert({
-    member_id: memberId,
-    checked_in_at: checkedInAt ?? new Date().toISOString(),
-  });
+  const timestamp = checkedInAt ?? new Date().toISOString();
+
+  const { error } = await db.from("attendance").insert({ member_id: memberId, checked_in_at: timestamp });
   if (error) throw new Error(`Failed to add attendance: ${error.message}`);
+
+  // Only move the member's "last checked in" marker forward — a backfilled
+  // old date shouldn't overwrite a more recent real check-in.
+  const { data: member } = await db.from("members").select("last_checked_in_at").eq("id", memberId).maybeSingle();
+  if (!member?.last_checked_in_at || new Date(timestamp) > new Date(member.last_checked_in_at)) {
+    await db.from("members").update({ last_checked_in_at: timestamp }).eq("id", memberId);
+  }
 }
 
 export async function deleteAttendance(id: string): Promise<void> {

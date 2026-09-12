@@ -1,26 +1,38 @@
+import Link from "next/link";
 import { countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
 import { sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
 import { listMembers } from "@/backend/services/admin/members";
+import {
+  listOverdueFeeMembers,
+  listUpcomingDueMembers,
+  listInactiveMembers,
+  listTrialOverMembers,
+  listUpcomingBirthdays,
+} from "@/backend/services/admin/alerts";
 
 export default async function AdminOverviewPage() {
-  const [todaysCheckIns, revenueThisMonth, overdueCount, members] = await Promise.all([
-    countTodaysCheckIns(),
-    sumPaidThisMonth(),
-    countOverdueMembers(),
-    listMembers(),
-  ]);
-
-  const today = new Date();
-  const upcomingBirthdays = members.filter((m) => {
-    if (!m.dateOfBirth) return false;
-    const dob = new Date(m.dateOfBirth);
-    const diffDays = Math.abs(
-      (new Date(today.getFullYear(), dob.getMonth(), dob.getDate()).getTime() - today.getTime()) / 86400000
-    );
-    return diffDays <= 7;
-  });
+  const [todaysCheckIns, revenueThisMonth, overdueCount, members, overdue, upcomingDue, inactive, trialOver, birthdays] =
+    await Promise.all([
+      countTodaysCheckIns(),
+      sumPaidThisMonth(),
+      countOverdueMembers(),
+      listMembers(),
+      listOverdueFeeMembers(),
+      listUpcomingDueMembers(),
+      listInactiveMembers(),
+      listTrialOverMembers(),
+      listUpcomingBirthdays(),
+    ]);
 
   const activeCount = members.filter((m) => m.isActive).length;
+
+  const alertCounts = [
+    { label: "Fee Overdue", count: overdue.length, tone: "text-error" },
+    { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container" },
+    { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container" },
+    { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container" },
+    { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface" },
+  ];
 
   return (
     <div className="flex flex-col gap-8">
@@ -46,21 +58,24 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div>
-        <h2 className="font-display text-xl text-on-surface uppercase tracking-wide mb-3">
-          Birthdays This Week
-        </h2>
-        {upcomingBirthdays.length === 0 ? (
-          <p className="font-body text-sm text-tertiary">None this week.</p>
-        ) : (
-          <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-hard">
-            {upcomingBirthdays.map((m) => (
-              <div key={m.id} className="flex justify-between px-5 py-3">
-                <span className="font-label text-sm uppercase text-on-surface">{m.fullName}</span>
-                <span className="font-body text-xs text-tertiary">{m.dateOfBirth}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-xl text-on-surface uppercase tracking-wide">Needs Attention</h2>
+          <Link href="/admin/alerts" className="font-label text-xs uppercase tracking-wider text-primary-container">
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {alertCounts.map((a) => (
+            <Link
+              key={a.label}
+              href="/admin/alerts"
+              className="bg-surface-container-low p-4 shadow-hard hover:border-primary-container border border-transparent transition-colors"
+            >
+              <span className={`font-display text-2xl ${a.tone}`}>{a.count}</span>
+              <p className="font-label text-[10px] uppercase tracking-wider text-tertiary mt-1">{a.label}</p>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

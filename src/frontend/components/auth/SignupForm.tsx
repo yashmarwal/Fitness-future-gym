@@ -4,31 +4,35 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginForm() {
+export default function SignupForm() {
   const router = useRouter();
-  const [step, setStep] = useState<"phone" | "code">("phone");
+  const [step, setStep] = useState<"details" | "code">("details");
+  const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
+  const [membershipNumber, setMembershipNumber] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleRequestOtp(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/request-otp", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ fullName, phone, dateOfBirth: dateOfBirth || undefined }),
       });
       const data = await res.json();
       if (data.status === "sent") {
         setDevCode(data.devCode ?? null);
+        setMembershipNumber(data.membershipNumber);
         setStep("code");
-      } else if (data.status === "not_found") {
-        setError("No membership found for this number. Contact the front desk.");
+      } else if (data.status === "already_registered") {
+        setError("This number is already registered — try signing in instead.");
       } else {
         setError(data.message ?? "Something went wrong.");
       }
@@ -56,7 +60,7 @@ export default function LoginForm() {
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code.");
       } else {
-        setError("No membership found for this number.");
+        setError("Something went wrong.");
       }
     } catch {
       setError("Network error. Please try again.");
@@ -68,14 +72,26 @@ export default function LoginForm() {
   return (
     <div className="max-w-sm mx-auto px-gutter-mobile py-16">
       <span className="font-label text-xs uppercase tracking-widest text-primary-container">
-        Member Sign In
+        Join The Floor
       </span>
       <h1 className="font-display text-headline-lg-mobile text-on-surface uppercase tracking-wide mt-2 mb-6">
-        Enter The Floor
+        Create Your Account
       </h1>
 
-      {step === "phone" ? (
-        <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
+      {step === "details" ? (
+        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
+              Full Name
+            </label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              placeholder="e.g. Vikram Sharma"
+              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            />
+          </div>
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">
               WhatsApp Number
@@ -88,21 +104,37 @@ export default function LoginForm() {
               className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
+              Date Of Birth (Optional)
+            </label>
+            <input
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
             className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
           >
-            {loading ? "Sending..." : "Send Login Code"}
+            {loading ? "Creating..." : "Create Account"}
           </button>
-          <Link href="/signup" className="text-center font-label text-xs uppercase tracking-wider text-tertiary">
-            New here? Create an account
+          <Link href="/login" className="text-center font-label text-xs uppercase tracking-wider text-tertiary">
+            Already a member? Sign in
           </Link>
         </form>
       ) : (
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+          {membershipNumber && (
+            <p className="font-body text-sm text-primary-container">
+              Your membership number is <strong>{membershipNumber}</strong> — also sent to your WhatsApp.
+            </p>
+          )}
           <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp.
+            Enter the 6-digit code sent to your WhatsApp to finish signing in.
           </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">
@@ -111,7 +143,7 @@ export default function LoginForm() {
           )}
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-              Login Code
+              Verification Code
             </label>
             <input
               value={code}
@@ -127,14 +159,7 @@ export default function LoginForm() {
             disabled={loading}
             className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
           >
-            {loading ? "Verifying..." : "Verify & Sign In"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setStep("phone")}
-            className="font-label text-xs uppercase tracking-wider text-tertiary"
-          >
-            ← Use a different number
+            {loading ? "Verifying..." : "Verify & Enter"}
           </button>
         </form>
       )}
