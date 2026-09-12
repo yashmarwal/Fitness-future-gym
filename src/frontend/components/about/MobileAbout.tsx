@@ -252,7 +252,7 @@ export default function MobileAbout() {
               </div>
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                  FITNESS PROFESSIONAL
+                  BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                 </span>
                 <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Vaibhav</h3>
               </div>
@@ -273,7 +273,7 @@ export default function MobileAbout() {
               </div>
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                  BODYBUILDING PREP COACH
+                  BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                 </span>
                 <h3 className="font-title-md text-title-md text-on-surface uppercase">Coach Hritik</h3>
               </div>

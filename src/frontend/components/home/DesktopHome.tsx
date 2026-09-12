@@ -519,7 +519,7 @@ export default function DesktopHome() {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                      FITNESS PROFESSIONAL
+                      BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                     </span>
                     <h3 className="font-headline-md text-headline-md uppercase text-on-surface">COACH VAIBHAV</h3>
                     <span className="font-body-sm text-body-sm text-tertiary">8+ Years Strength &amp; Biomechanics Specialist</span>
@@ -555,7 +555,7 @@ export default function DesktopHome() {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                      BODYBUILDING PREP COACH
+                      BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                     </span>
                     <h3 className="font-headline-md text-headline-md uppercase text-on-surface">COACH HRITIK</h3>
                     <span className="font-body-sm text-body-sm text-tertiary">Physique Architecture &amp; Recomp Specialist</span>

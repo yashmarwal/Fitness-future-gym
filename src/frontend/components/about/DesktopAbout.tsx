@@ -380,7 +380,7 @@ export default function DesktopAbout() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                    FITNESS PROFESSIONAL
+                    BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                   </span>
                   <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
                     Coach Vaibhav
@@ -413,7 +413,7 @@ export default function DesktopAbout() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                    BODYBUILDING PREP COACH
+                    BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
                   </span>
                   <h3 className="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">
                     Coach Hritik

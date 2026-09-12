@@ -300,7 +300,7 @@ export default function MobileHome() {
             </div>
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                FITNESS PROFESSIONAL
+                BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
               </span>
               <span className="font-title-sm text-title-sm uppercase text-on-surface font-bold">COACH VAIBHAV</span>
             </div>
@@ -321,7 +321,7 @@ export default function MobileHome() {
             </div>
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
-                BODYBUILDING PREP COACH
+                BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
               </span>
               <span className="font-title-sm text-title-sm uppercase text-on-surface font-bold">COACH HRITIK</span>
             </div>
