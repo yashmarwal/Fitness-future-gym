@@ -47,21 +47,44 @@ export type VerifyOtpResult =
   | { status: "invalid" }
   | { status: "not_found" };
 
-export async function verifyMemberOtpAndLogin(phone: string, code: string): Promise<VerifyOtpResult> {
+async function verifyAndCreateSession(phone: string, code: string) {
   const isValid = await verifyOtp(phone, code);
-  if (!isValid) return { status: "invalid" };
+  if (!isValid) return { status: "invalid" as const };
 
   const db = getDb();
   const { data: member, error } = await db
     .from("members")
-    .select("id, membership_number")
+    .select("id, membership_number, full_name")
     .eq("phone", phone)
     .maybeSingle();
 
   if (error) throw new Error(`Failed to look up member: ${error.message}`);
-  if (!member) return { status: "not_found" };
+  if (!member) return { status: "not_found" as const };
 
   await createMemberSession(member.id, member.membership_number);
+  return { status: "success" as const, member };
+}
+
+export async function verifyMemberOtpAndLogin(phone: string, code: string): Promise<VerifyOtpResult> {
+  const result = await verifyAndCreateSession(phone, code);
+  return { status: result.status };
+}
+
+// Signup's first verification: same as a regular login, but this is also
+// the moment the phone is confirmed to belong to the person who signed up —
+// so the welcome/card message is sent here, once, rather than at
+// registration time (before the number was verified at all).
+export async function verifySignupOtpAndLogin(phone: string, code: string): Promise<VerifyOtpResult> {
+  const result = await verifyAndCreateSession(phone, code);
+  if (result.status !== "success") return { status: result.status };
+
+  await sendWhatsAppTemplate({
+    phone,
+    template: "welcome_card",
+    bodyParams: [result.member.full_name, result.member.membership_number],
+    memberId: result.member.id,
+  }).catch(() => {});
+
   return { status: "success" };
 }
 
@@ -99,15 +122,9 @@ export async function registerMember(input: {
     .single();
   if (insertError) throw new Error(`Failed to create member: ${insertError.message}`);
 
-  // Welcome card first, OTP second — a failure to deliver the card shouldn't
-  // block the person from logging in.
-  await sendWhatsAppTemplate({
-    phone: input.phone,
-    template: "welcome_card",
-    bodyParams: [input.fullName, membershipNumber],
-    memberId: member.id,
-  }).catch(() => {});
-
+  // Card comes after the first successful login (verifySignupOtpAndLogin),
+  // not here — sending it before the phone is verified could hand someone's
+  // membership number to a mistyped or unverified number.
   const code = await issueOtp(input.phone);
   await sendWhatsAppTemplate({
     phone: input.phone,

@@ -1,7 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { AdminMember, MemberInput } from "@/types/admin";
-import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -71,23 +70,8 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.joinedAt !== undefined) patch.joined_at = input.joinedAt;
   if (input.isActive !== undefined) patch.is_active = input.isActive;
 
-  const { data: updated, error } = await db.from("members").update(patch).eq("id", id).select(SELECT_COLUMNS).single();
+  const { error } = await db.from("members").update(patch).eq("id", id);
   if (error) throw new Error(`Failed to update member: ${error.message}`);
-
-  const member = mapRow(updated);
-  if (member.phone) {
-    await sendWhatsAppTemplate({
-      phone: member.phone,
-      template: "profile_update",
-      bodyParams: [
-        member.fullName,
-        member.plan ?? "—",
-        member.feeDueDate ?? "—",
-        member.isActive ? "Active" : "Inactive",
-      ],
-      memberId: id,
-    }).catch(() => {});
-  }
 }
 
 export async function deleteMember(id: string): Promise<void> {

@@ -1,7 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { FeePaymentRow } from "@/types/admin";
-import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   const db = getDb();
@@ -33,7 +32,7 @@ export async function recordManualPayment(memberId: string, amount: number, meth
 
   const { data: member, error: memberError } = await db
     .from("members")
-    .select("full_name, phone, fee_due_date, joined_at")
+    .select("fee_due_date")
     .eq("id", memberId)
     .maybeSingle();
   if (memberError) throw new Error(`Failed to load member: ${memberError.message}`);
@@ -57,15 +56,6 @@ export async function recordManualPayment(memberId: string, amount: number, meth
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
   await db.from("members").update({ fee_due_date: nextDueDateStr }).eq("id", memberId);
-
-  if (member.phone) {
-    await sendWhatsAppTemplate({
-      phone: member.phone,
-      template: "payment_confirmation",
-      bodyParams: [member.full_name, String(amount), nextDueDateStr],
-      memberId,
-    }).catch(() => {});
-  }
 }
 
 export async function sumPaidThisMonth(): Promise<number> {

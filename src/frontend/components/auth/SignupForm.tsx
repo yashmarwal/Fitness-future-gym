@@ -51,7 +51,7 @@ export default function SignupForm() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code }),
+        body: JSON.stringify({ phone, code, isSignup: true }),
       });
       const data = await res.json();
       if (data.status === "success") {
@@ -130,11 +130,12 @@ export default function SignupForm() {
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
           {membershipNumber && (
             <p className="font-body text-sm text-primary-container">
-              Your membership number is <strong>{membershipNumber}</strong> — also sent to your WhatsApp.
+              Your membership number is <strong>{membershipNumber}</strong> — we&apos;ll send your digital card to
+              WhatsApp as soon as you verify below.
             </p>
           )}
           <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp to finish signing in.
+            Enter the 6-digit code sent to your WhatsApp to verify your number and finish signing in.
           </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">

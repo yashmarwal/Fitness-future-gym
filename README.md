@@ -66,19 +66,21 @@ in the gym's own bank/UPI app — same flow already used for cash payments.
 
 Members self-register at `/signup` (name, phone, optional DOB) — no admin
 step required. Registration generates a membership number (`FF-1001`,
-incrementing), sends a welcome message with that number over WhatsApp
-(`welcome_card` template), then sends a login OTP the same way `/login`
-does, so the same phone-verification flow covers both. Admins still see
-every member (self-registered or admin-added) in **Admin → Members**, with
-full edit access to every field, including membership number, plan, fee
-amount, fee due date, and joined date.
+incrementing — "FF" fixed, the number variable) and sends a login OTP, the
+same as `/login`. Once that first OTP is verified (i.e. the phone is
+confirmed to actually belong to the signer-upper), the welcome/card message
+with their membership number goes out over WhatsApp — deliberately *after*
+verification, not at registration, so a mistyped number never receives
+someone else's card. Admins see every member (self-registered or
+admin-added) in **Admin → Members**, with full edit access to every field,
+including membership number, plan, fee amount, fee due date, and joined
+date.
 
-Admins are notified over WhatsApp on:
-- **Signup** — the welcome/card message above.
-- **Profile edits** — any change saved in Admin → Members sends the member
-  an updated-profile message.
-- **Payments** — recording a payment (Admin → Fees) sends a confirmation
-  with the amount and the new due date.
+WhatsApp only fires for five things, on purpose — **not** on every admin
+edit or every payment recorded (that was tried and deliberately walked
+back): login/signup OTP, the signup welcome/card message, fee-due
+reminders (cron), birthday messages (cron), and admin-sent offers/gym
+updates via the broadcast tool.
 
 ### Fee due-date logic
 
