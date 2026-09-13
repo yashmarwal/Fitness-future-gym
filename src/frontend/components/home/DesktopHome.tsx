@@ -177,6 +177,27 @@ export default function DesktopHome() {
         );
       }
 
+      // 6b. MEMBER DASHBOARD FEATURES STAGGER
+      const dashboardSec = document.querySelector(".dashboard-sec");
+      if (dashboardSec) {
+        gsap.fromTo(
+          dashboardSec.querySelectorAll(".dash-card"),
+          { y: 40, opacity: 0, scale: 0.95 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.65,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: dashboardSec,
+              start: "top 80%",
+            },
+          }
+        );
+      }
+
       // 7. ATHLETE RESULTS BENCHMARKS
       const resultsSec = document.querySelector(".results-sec");
       if (resultsSec) {
@@ -764,6 +785,97 @@ export default function DesktopHome() {
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6b. MEMBER DASHBOARD FEATURES */}
+      <section className="dashboard-sec w-full bg-surface-container-lowest py-space-3xl border-t border-surface-variant/40">
+        <div className="max-w-container-max mx-auto px-gutter-desktop">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
+            <div>
+              <div className="flex items-center gap-space-xs text-primary-container mb-space-2xs">
+                <span className="material-symbols-outlined text-title-sm">dashboard</span>
+                <span className="font-label-md text-label-md uppercase tracking-widest font-bold">
+                  MORE THAN A GYM
+                </span>
+              </div>
+              <h2 className="font-headline-lg text-headline-lg uppercase text-on-surface tracking-wide">
+                YOUR OWN MEMBER <span className="text-primary-container">DASHBOARD</span>
+              </h2>
+            </div>
+            <p className="font-body-md text-body-md text-tertiary max-w-md">
+              Every membership includes a private dashboard — sign in with WhatsApp or email, no password to
+              remember.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-xl">
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">event_note</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Workout Planner</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Pick from 8 pre-built splits — Push/Pull/Legs, 5x5 Strength, Bro Split, and more — or build your own
+                with real exercises, sets, and reps.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">restaurant</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Auto Calorie Lookup</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Type a food name and calories, protein, carbs, and fat fill in automatically — scaled exactly to how
+                much you actually ate.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">
+                local_fire_department
+              </span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Streak Tracker</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                A simple daily check-in calendar with unlockable achievement badges — miss a day and it resets, so
+                consistency actually means something.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">timer</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Rest Timer</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                A proper interval timer with sound and vibration alerts between sets — never lose track mid-workout
+                again.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">badge</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Digital Membership Card</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Your card and membership number, always in your pocket — no plastic to forget at home, ready for
+                front-desk check-in.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">payments</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Direct UPI Fee Payments</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Pay your dues straight from the dashboard via UPI — a direct transfer, zero commission, no extra
+                apps to install.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-space-xs bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md shadow-hard transition-all hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <span className="material-symbols-outlined text-title-md">bolt</span>
+              CREATE YOUR FREE ACCOUNT
+            </Link>
           </div>
         </div>
       </section>

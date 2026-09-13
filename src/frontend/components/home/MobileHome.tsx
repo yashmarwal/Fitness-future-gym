@@ -459,6 +459,79 @@ export default function MobileHome() {
         </div>
       </section>
 
+      {/* 6b. MEMBER DASHBOARD FEATURES */}
+      <section className="mobile-anim-sec px-space-md pt-space-xl flex flex-col gap-space-md">
+        <div className="flex flex-col">
+          <span className="font-label-sm text-label-sm text-primary-container tracking-widest uppercase font-bold">
+            MORE THAN A GYM
+          </span>
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-wide uppercase m-0">
+            YOUR MEMBER DASHBOARD
+          </h2>
+          <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs">
+            Every membership includes a private dashboard — sign in with WhatsApp or email, no password needed.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-space-xs">
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">event_note</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              Workout Planner
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">8 pre-built splits or build your own</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">restaurant</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              Auto Calorie Lookup
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">Type a food, macros fill in themselves</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">
+              local_fire_department
+            </span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              Streak Tracker
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">Daily check-ins &amp; achievement badges</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">timer</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">Rest Timer</span>
+            <span className="font-body-sm text-body-sm text-tertiary">Sound &amp; vibration alerts between sets</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">badge</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              Membership Card
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">Always in your pocket, ready to scan</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">payments</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              UPI Fee Payments
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">Direct transfer, zero commission</span>
+          </div>
+        </div>
+
+        <Link
+          href="/signup"
+          className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
+        >
+          <span className="material-symbols-outlined text-title-md">bolt</span>
+          <span>CREATE YOUR FREE ACCOUNT</span>
+        </Link>
+      </section>
+
       {/* 7. ATHLETE RESULT HIGHLIGHT CARD */}
       <section className="mobile-anim-sec px-space-md pt-space-xl">
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs">
