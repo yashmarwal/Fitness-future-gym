@@ -9,6 +9,7 @@ export default function SignupForm() {
   const [step, setStep] = useState<"details" | "code">("details");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export default function SignupForm() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, phone, dateOfBirth: dateOfBirth || undefined }),
+        body: JSON.stringify({ fullName, phone, email: email || undefined, dateOfBirth: dateOfBirth || undefined }),
       });
       const data = await res.json();
       if (data.status === "sent") {
@@ -101,6 +102,18 @@ export default function SignupForm() {
               onChange={(e) => setPhone(e.target.value)}
               required
               placeholder="+91XXXXXXXXXX"
+              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
+              Email (Optional)
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
               className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>

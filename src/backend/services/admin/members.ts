@@ -8,6 +8,7 @@ function mapRow(row: Record<string, unknown>): AdminMember {
     membershipNumber: row.membership_number as string,
     fullName: row.full_name as string,
     phone: row.phone as string | null,
+    email: row.email as string | null,
     dateOfBirth: row.date_of_birth as string | null,
     plan: row.plan as string | null,
     feeAmount: row.fee_amount as number | null,
@@ -18,7 +19,7 @@ function mapRow(row: Record<string, unknown>): AdminMember {
 }
 
 const SELECT_COLUMNS =
-  "id, membership_number, full_name, phone, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active";
+  "id, membership_number, full_name, phone, email, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active";
 
 export async function listMembers(): Promise<AdminMember[]> {
   const db = getDb();
@@ -44,6 +45,7 @@ export async function createMember(input: MemberInput): Promise<AdminMember> {
       membership_number: input.membershipNumber,
       full_name: input.fullName,
       phone: input.phone || null,
+      email: input.email || null,
       date_of_birth: input.dateOfBirth || null,
       plan: input.plan || null,
       fee_amount: input.feeAmount ?? null,
@@ -63,6 +65,7 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.membershipNumber !== undefined) patch.membership_number = input.membershipNumber;
   if (input.fullName !== undefined) patch.full_name = input.fullName;
   if (input.phone !== undefined) patch.phone = input.phone || null;
+  if (input.email !== undefined) patch.email = input.email || null;
   if (input.dateOfBirth !== undefined) patch.date_of_birth = input.dateOfBirth || null;
   if (input.plan !== undefined) patch.plan = input.plan || null;
   if (input.feeAmount !== undefined) patch.fee_amount = input.feeAmount;

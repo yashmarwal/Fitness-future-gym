@@ -1,7 +1,10 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
+import { sendEmailTemplate } from "@/backend/services/email";
 import type { BroadcastSegment } from "@/types/admin";
+
+const HAS_CONTACT_INFO = "phone.not.is.null,email.not.is.null";
 
 async function resolveRecipients(segment: BroadcastSegment) {
   const db = getDb();
@@ -9,9 +12,9 @@ async function resolveRecipients(segment: BroadcastSegment) {
   if (segment === "overdue") {
     const { data, error } = await db
       .from("members")
-      .select("id, phone, full_name")
+      .select("id, phone, email, full_name")
       .eq("is_active", true)
-      .not("phone", "is", null)
+      .or(HAS_CONTACT_INFO)
       .lt("fee_due_date", new Date().toISOString().slice(0, 10));
     if (error) throw new Error(error.message);
     return data ?? [];
@@ -23,9 +26,9 @@ async function resolveRecipients(segment: BroadcastSegment) {
 
     const { data: members, error } = await db
       .from("members")
-      .select("id, phone, full_name")
+      .select("id, phone, email, full_name")
       .eq("is_active", true)
-      .not("phone", "is", null);
+      .or(HAS_CONTACT_INFO);
     if (error) throw new Error(error.message);
 
     const inactive = [];
@@ -44,21 +47,39 @@ async function resolveRecipients(segment: BroadcastSegment) {
     return inactive;
   }
 
-  const { data, error } = await db.from("members").select("id, phone, full_name").eq("is_active", true).not("phone", "is", null);
+  const { data, error } = await db
+    .from("members")
+    .select("id, phone, email, full_name")
+    .eq("is_active", true)
+    .or(HAS_CONTACT_INFO);
   if (error) throw new Error(error.message);
   return data ?? [];
 }
 
-export async function sendBroadcast(segment: BroadcastSegment, message: string): Promise<{ sent: number }> {
+export async function sendBroadcast(
+  segment: BroadcastSegment,
+  message: string,
+  subject?: string
+): Promise<{ sent: number }> {
   const recipients = await resolveRecipients(segment);
 
   for (const recipient of recipients) {
-    await sendWhatsAppTemplate({
-      phone: recipient.phone as string,
-      template: "announcement",
-      bodyParams: [message],
-      memberId: recipient.id,
-    });
+    if (recipient.phone) {
+      await sendWhatsAppTemplate({
+        phone: recipient.phone,
+        template: "announcement",
+        bodyParams: [message],
+        memberId: recipient.id,
+      }).catch(() => {});
+    }
+    if (recipient.email) {
+      await sendEmailTemplate({
+        to: recipient.email,
+        template: "announcement",
+        bodyParams: [message, subject ?? ""],
+        memberId: recipient.id,
+      }).catch(() => {});
+    }
   }
 
   return { sent: recipients.length };

@@ -3,6 +3,7 @@ export type AdminMember = {
   membershipNumber: string;
   fullName: string;
   phone: string | null;
+  email: string | null;
   dateOfBirth: string | null;
   plan: string | null;
   feeAmount: number | null;
@@ -15,6 +16,7 @@ export type MemberInput = {
   membershipNumber: string;
   fullName: string;
   phone?: string;
+  email?: string;
   dateOfBirth?: string;
   plan?: string;
   feeAmount?: number;

@@ -5,6 +5,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const fullName = body?.fullName?.trim();
   const phone = body?.phone?.trim();
+  const email = body?.email?.trim();
   const dateOfBirth = body?.dateOfBirth?.trim();
 
   if (!fullName || !phone) {
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await registerMember({ fullName, phone, dateOfBirth });
+    const result = await registerMember({ fullName, phone, email, dateOfBirth });
     return NextResponse.json(result);
   } catch (err) {
     console.error(err);

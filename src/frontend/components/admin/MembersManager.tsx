@@ -8,6 +8,7 @@ const EMPTY_FORM = {
   membershipNumber: "",
   fullName: "",
   phone: "",
+  email: "",
   dateOfBirth: "",
   plan: "",
   feeAmount: "",
@@ -35,6 +36,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
       membershipNumber: member.membershipNumber,
       fullName: member.fullName,
       phone: member.phone ?? "",
+      email: member.email ?? "",
       dateOfBirth: member.dateOfBirth ?? "",
       plan: member.plan ?? "",
       feeAmount: member.feeAmount != null ? String(member.feeAmount) : "",
@@ -138,6 +140,13 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
+          <input
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          />
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">Date of Birth</label>
             <input
@@ -195,6 +204,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">No.</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Name</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Phone</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Email</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Plan</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Joined</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Fee Due</th>
@@ -208,6 +218,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                 <td className="py-2 pr-4 font-body text-sm text-primary-container">{m.membershipNumber}</td>
                 <td className="py-2 pr-4 font-body text-sm text-on-surface">{m.fullName}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.phone ?? "—"}</td>
+                <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.email ?? "—"}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.plan ?? "—"}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.joinedAt}</td>
                 <td className="py-2 pr-4 font-body text-sm text-tertiary">{m.feeDueDate ?? "—"}</td>

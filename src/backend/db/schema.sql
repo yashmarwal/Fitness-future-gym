@@ -10,6 +10,7 @@ create table if not exists members (
   membership_number text not null unique,
   full_name text not null,
   phone text unique,
+  email text,
   date_of_birth date,
   plan text,
   fee_amount numeric(10, 2),
@@ -141,7 +142,20 @@ create table if not exists whatsapp_messages (
   id uuid primary key default gen_random_uuid(),
   member_id uuid references members(id) on delete set null,
   phone text not null,
-  template text not null, -- 'otp' | 'fee_reminder' | 'birthday' | 'announcement'
+  template text not null, -- 'otp' | 'fee_reminder' | 'birthday' | 'announcement' | 'welcome_card'
+  status text not null default 'sent', -- 'sent' | 'failed'
+  error text,
+  created_at timestamptz not null default now()
+);
+
+-- ── Email (Resend) ──────────────────────────────────────────────────────
+-- Same four categories as WhatsApp minus OTP — login stays WhatsApp-only.
+
+create table if not exists email_messages (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid references members(id) on delete set null,
+  email text not null,
+  template text not null, -- 'welcome_card' | 'fee_reminder' | 'birthday' | 'announcement'
   status text not null default 'sent', -- 'sent' | 'failed'
   error text,
   created_at timestamptz not null default now()

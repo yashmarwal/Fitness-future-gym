@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await sendBroadcast((body.segment as BroadcastSegment) ?? "all", body.message);
+    const result = await sendBroadcast((body.segment as BroadcastSegment) ?? "all", body.message, body.subject);
     await recordAuditLog(session.adminId, "broadcast", { segment: body.segment, sent: result.sent });
     return NextResponse.json({ status: "ok", ...result });
   } catch (err) {

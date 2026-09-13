@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import { issueOtp, verifyOtp } from "@/backend/auth/otp";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
+import { sendEmailTemplate } from "@/backend/services/email";
 import { createMemberSession } from "@/backend/auth/session";
 
 async function generateMembershipNumber(): Promise<string> {
@@ -54,7 +55,7 @@ async function verifyAndCreateSession(phone: string, code: string) {
   const db = getDb();
   const { data: member, error } = await db
     .from("members")
-    .select("id, membership_number, full_name")
+    .select("id, membership_number, full_name, email")
     .eq("phone", phone)
     .maybeSingle();
 
@@ -85,6 +86,15 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
     memberId: result.member.id,
   }).catch(() => {});
 
+  if (result.member.email) {
+    await sendEmailTemplate({
+      to: result.member.email,
+      template: "welcome_card",
+      bodyParams: [result.member.full_name, result.member.membership_number],
+      memberId: result.member.id,
+    }).catch(() => {});
+  }
+
   return { status: "success" };
 }
 
@@ -95,6 +105,7 @@ export type RegisterResult =
 export async function registerMember(input: {
   fullName: string;
   phone: string;
+  email?: string;
   dateOfBirth?: string;
 }): Promise<RegisterResult> {
   const db = getDb();
@@ -115,6 +126,7 @@ export async function registerMember(input: {
       membership_number: membershipNumber,
       full_name: input.fullName,
       phone: input.phone,
+      email: input.email || null,
       date_of_birth: input.dateOfBirth || null,
       is_active: true,
     })

@@ -5,6 +5,7 @@ import type { BroadcastSegment } from "@/types/admin";
 
 export default function BroadcastComposer() {
   const [segment, setSegment] = useState<BroadcastSegment>("all");
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -17,11 +18,12 @@ export default function BroadcastComposer() {
       const res = await fetch("/api/admin/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ segment, message }),
+        body: JSON.stringify({ segment, message, subject: subject || undefined }),
       });
       const data = await res.json();
       if (data.status === "ok") {
-        setResult(`Sent to ${data.sent} member(s).`);
+        setResult(`Sent to ${data.sent} member(s) (WhatsApp + email, whichever they have on file).`);
+        setSubject("");
         setMessage("");
       } else {
         setResult(data.message ?? "Something went wrong.");
@@ -46,6 +48,17 @@ export default function BroadcastComposer() {
         </select>
       </div>
       <div className="flex flex-col gap-1">
+        <label className="font-label text-[10px] uppercase tracking-widest text-outline">
+          Email Subject (WhatsApp ignores this)
+        </label>
+        <input
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Fitness Future Gym — Update"
+          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+        />
+      </div>
+      <div className="flex flex-col gap-1">
         <label className="font-label text-[10px] uppercase tracking-widest text-outline">Message</label>
         <textarea
           required
@@ -63,6 +76,10 @@ export default function BroadcastComposer() {
       >
         {submitting ? "Sending..." : "Send Broadcast"}
       </button>
+      <p className="font-body text-xs text-tertiary">
+        Sends over WhatsApp and email, whichever each member has on file — not a channel toggle, just uses
+        whatever&apos;s available.
+      </p>
       {result && <p className="font-body text-sm text-tertiary">{result}</p>}
     </form>
   );
