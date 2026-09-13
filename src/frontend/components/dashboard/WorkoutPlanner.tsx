@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { searchExercises } from "@/frontend/lib/exerciseLibrary";
 import { WORKOUT_TEMPLATES, type WorkoutTemplate } from "@/frontend/lib/workoutTemplates";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
@@ -22,13 +22,19 @@ function emptyExercise(): WorkoutPlanExercise {
 
 export default function WorkoutPlanner({ plans: initialPlans }: { plans: WorkoutPlan[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [plans, setPlans] = useState(initialPlans);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [days, setDays] = useState<WorkoutPlanDay[]>([]);
   const [building, setBuilding] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(initialPlans.length === 0);
+  // Arriving from the dashboard home's "Workout Templates" card
+  // (?tab=templates) opens straight to the gallery, same as having no
+  // saved plans yet.
+  const [showTemplates, setShowTemplates] = useState(
+    initialPlans.length === 0 || searchParams.get("tab") === "templates"
+  );
 
   function startNew() {
     setEditingId(null);
@@ -132,7 +138,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
 
   if (building) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-w-2xl mx-auto">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl text-on-surface uppercase tracking-wide">
             {editingId ? "Edit Plan" : "New Plan"}
@@ -291,7 +297,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
       </div>
 
       {showTemplates && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {WORKOUT_TEMPLATES.map((template) => (
             <div
               key={template.id}
@@ -325,7 +331,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
           exercises, sets, and reps.
         </DashboardEmptyState>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {plans.map((plan) => (
             <div key={plan.id} className="bg-surface-container-low shadow-hard p-5">
               <div className="flex items-center justify-between mb-3">
