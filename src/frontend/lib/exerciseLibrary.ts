@@ -105,13 +105,17 @@ export const EXERCISE_LIBRARY: { name: string; category: ExerciseCategory }[] = 
   { name: "Side Plank", category: "Core" },
   { name: "Mountain Climbers", category: "Core" },
   { name: "Woodchopper", category: "Core" },
+  { name: "Dead Bug", category: "Core" },
 
   // Cardio
   { name: "Treadmill Run", category: "Cardio" },
   { name: "Stationary Bike", category: "Cardio" },
   { name: "Rowing Machine", category: "Cardio" },
   { name: "Jump Rope", category: "Cardio" },
+  { name: "Jumping Jacks", category: "Cardio" },
   { name: "Stair Climber", category: "Cardio" },
+  { name: "Elliptical Trainer", category: "Cardio" },
+  { name: "Incline Treadmill Walk", category: "Cardio" },
   { name: "Battle Ropes", category: "Cardio" },
   { name: "Sled Push", category: "Cardio" },
   { name: "Burpees", category: "Cardio" },

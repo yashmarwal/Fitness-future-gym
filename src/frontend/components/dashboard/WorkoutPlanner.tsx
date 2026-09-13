@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchExercises } from "@/frontend/lib/exerciseLibrary";
+import { WORKOUT_TEMPLATES, type WorkoutTemplate } from "@/frontend/lib/workoutTemplates";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export type WorkoutPlanExercise = { name: string; sets: number; reps: string; notes?: string };
@@ -27,11 +28,19 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
   const [days, setDays] = useState<WorkoutPlanDay[]>([]);
   const [building, setBuilding] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(initialPlans.length === 0);
 
   function startNew() {
     setEditingId(null);
     setName("");
     setDays([]);
+    setBuilding(true);
+  }
+
+  function startFromTemplate(template: WorkoutTemplate) {
+    setEditingId(null);
+    setName(template.name);
+    setDays(template.days.map((d) => ({ ...d, exercises: d.exercises.map((e) => ({ ...e })) })));
     setBuilding(true);
   }
 
@@ -262,17 +271,58 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
 
   return (
     <div className="flex flex-col gap-4">
-      <button
-        onClick={startNew}
-        className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard transition-colors w-fit"
-      >
-        <span className="material-symbols-outlined text-base leading-none">add</span>
-        New Plan
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={startNew}
+          className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard transition-colors w-fit"
+        >
+          <span className="material-symbols-outlined text-base leading-none">add</span>
+          New Plan
+        </button>
+        <button
+          onClick={() => setShowTemplates((s) => !s)}
+          className="flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label text-sm uppercase px-6 py-3 transition-colors w-fit"
+        >
+          <span className="material-symbols-outlined text-base leading-none">
+            {showTemplates ? "expand_less" : "auto_awesome"}
+          </span>
+          {showTemplates ? "Hide Templates" : "Browse Templates"}
+        </button>
+      </div>
+
+      {showTemplates && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {WORKOUT_TEMPLATES.map((template) => (
+            <div
+              key={template.id}
+              className="bg-surface-container-low shadow-hard border-t-2 border-primary-container p-4 flex flex-col gap-2"
+            >
+              <h3 className="font-display text-base text-on-surface uppercase tracking-wide leading-tight">
+                {template.name}
+              </h3>
+              <span className="font-label text-[9px] uppercase tracking-wider text-primary-container">
+                {template.schedule}
+              </span>
+              <p className="font-body text-xs text-tertiary leading-relaxed flex-1">{template.tagline}</p>
+              <span className="font-label text-[9px] uppercase tracking-wider text-outline">
+                {template.days.length} day{template.days.length > 1 ? "s" : ""} · {template.days.reduce((n, d) => n + d.exercises.length, 0)} exercises
+              </span>
+              <button
+                onClick={() => startFromTemplate(template)}
+                className="flex items-center justify-center gap-1.5 bg-primary-container/15 hover:bg-primary-container/25 text-primary-container font-label text-[10px] uppercase font-bold px-4 py-2.5 transition-colors mt-1"
+              >
+                <span className="material-symbols-outlined text-sm leading-none">add_task</span>
+                Use This Template
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {plans.length === 0 ? (
         <DashboardEmptyState icon="event_note">
-          No workout plans yet — build one with days, exercises, sets, and reps.
+          No workout plans yet — pick a template above to start fast, or build one from scratch with your own days,
+          exercises, sets, and reps.
         </DashboardEmptyState>
       ) : (
         <div className="flex flex-col gap-4">

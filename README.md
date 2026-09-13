@@ -150,6 +150,12 @@ and the genuinely-free tier of ExerciseDB has largely moved to a commercial
 platform; a static list keeps this working offline, instantly, and forever
 with no new external account.
 
+**8 pre-built templates** (`src/frontend/lib/workoutTemplates.ts`) — Beginner
+Full Body, Cardio/Conditioning, Weight Loss Circuit, Body Recomposition,
+Push/Pull/Legs (3- and 6-day), 5x5 Strength, and a 5-day Bro Split. "Use This
+Template" drops the whole thing into the builder pre-filled, editable before
+saving — it never saves anything on its own.
+
 **Auto calorie lookup** (in the food log on `/dashboard/nutrition`) — type a
 food name, pick a match, calories/protein/carbs/fat fill in automatically
 (still editable before saving). Backed by USDA FoodData Central, which is
