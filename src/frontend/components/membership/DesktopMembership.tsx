@@ -154,7 +154,7 @@ export default function DesktopMembership() {
                   INSTANT PASS REGISTRATION
                 </h2>
                 <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs">
-                  Your trial credentials will be generated immediately via WhatsApp.
+                  Your trial credentials will be generated immediately via WhatsApp and email.
                 </p>
               </div>
 
@@ -182,7 +182,7 @@ export default function DesktopMembership() {
                       </span>
                       <input
                         className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-none placeholder:text-outline"
-                        placeholder="9876543210"
+                        placeholder="8700978341"
                         required
                         type="tel"
                         value={formData.phone}
@@ -358,7 +358,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass%20pricing."
+                  href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass%20pricing."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"
@@ -432,7 +432,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20claim%20the%20Quarterly%20Pass."
+                  href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20claim%20the%20Quarterly%20Pass."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold py-space-md text-center block tracking-wider transition-colors shadow-hard"
@@ -495,7 +495,7 @@ export default function DesktopMembership() {
               </div>
               <div className="p-space-lg pt-0">
                 <a
-                  href="https://wa.me/919876543210?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Commitment."
+                  href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Commitment."
                   target="_blank"
                   rel="noreferrer"
                   className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant hover:border-primary-container text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"

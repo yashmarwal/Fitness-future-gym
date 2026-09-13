@@ -171,7 +171,7 @@ export default function SiteHeader() {
         scrolled ? "max-h-0 py-0 opacity-0 overflow-hidden" : "max-h-12 py-1 opacity-100"
       }`}>
         <p className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-semibold truncate">
-          <span className="inline-block mr-space-xs">🔥</span> SWEAT | GAIN | REPEAT — 8+ YEARS OF RAW STRENGTH IN NANGLOI • CALL: +91 98765 43210
+          <span className="inline-block mr-space-xs">🔥</span> SWEAT | GAIN | REPEAT — 8+ YEARS OF RAW STRENGTH IN NANGLOI • CALL: +91 87009 78341
         </p>
       </div>
 
@@ -308,8 +308,8 @@ export default function SiteHeader() {
 
             <div className="bg-surface-container p-space-sm flex items-center justify-between border border-surface-variant/30 text-body-sm font-body-sm">
               <span className="text-tertiary">Front Desk Hotline:</span>
-              <a href="tel:+919876543210" className="text-primary-container font-bold font-mono">
-                +91 98765 43210
+              <a href="tel:+918700978341" className="text-primary-container font-bold font-mono">
+                +91 87009 78341
               </a>
             </div>
           </div>

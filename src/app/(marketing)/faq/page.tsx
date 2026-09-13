@@ -32,7 +32,7 @@ const FAQS: FAQItem[] = [
     id: "faq-3",
     category: "pricing",
     question: "How does the 2-Day Free Trial pass work?",
-    answer: "Register your phone on our Membership page. You get an instant WhatsApp pass granting 48 hours of full floor access, day locker privileges, and initial coach screening without high-pressure sales calls.",
+    answer: "Register on our Membership page. You get an instant pass via WhatsApp and email granting 48 hours of full floor access, day locker privileges, and initial coach screening without high-pressure sales calls.",
   },
   {
     id: "faq-4",
@@ -199,7 +199,7 @@ export default function FAQPage() {
             </div>
             <div className="flex items-center gap-space-sm shrink-0">
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/918700978341"
                 target="_blank"
                 rel="noreferrer"
                 className="bg-primary-container text-on-primary-container font-label-md text-label-md uppercase font-bold px-space-lg py-space-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform inline-flex items-center gap-space-xs"

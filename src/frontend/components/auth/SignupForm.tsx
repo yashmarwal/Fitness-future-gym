@@ -141,8 +141,8 @@ export default function SignupForm() {
       ) : (
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
           <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp to verify your number and finish signing in. Your
-            membership number and digital card are created once you verify below.
+            Enter the 6-digit code sent to your WhatsApp and email to verify your number and finish signing in.
+            Your membership number and digital card are created once you verify below.
           </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">

@@ -74,9 +74,9 @@ export default function LocationPage() {
                 </span>
                 <a
                   className="font-headline-sm text-headline-sm text-primary-container tracking-wider hover:text-on-surface transition-colors block mt-space-2xs"
-                  href="tel:+919876543210"
+                  href="tel:+918700978341"
                 >
-                  +91 98765 43210
+                  +91 87009 78341
                 </a>
                 <span className="font-body-sm text-body-sm text-on-surface-variant block">
                   Desk Attendants On Floor: 06:00 - 23:00
@@ -139,11 +139,11 @@ export default function LocationPage() {
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
                         VOICE COMM
                       </span>
-                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 98765 43210</p>
+                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 87009 78341</p>
                     </div>
                     <a
                       className="mt-space-sm inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
-                      href="tel:+919876543210"
+                      href="tel:+918700978341"
                     >
                       <span className="material-symbols-outlined text-label-lg">call</span> CALL FRONT DESK
                     </a>
@@ -153,11 +153,11 @@ export default function LocationPage() {
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
                         WHATSAPP ROSTER
                       </span>
-                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 98765 43210</p>
+                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 87009 78341</p>
                     </div>
                     <a
                       className="mt-space-sm inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
-                      href="https://wa.me/919876543210"
+                      href="https://wa.me/918700978341"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -260,7 +260,7 @@ export default function LocationPage() {
                       required
                       type="tel"
                       className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
-                      placeholder="+91 9876543210"
+                      placeholder="+91 87009 78341"
                     />
                   </div>
                   <div>

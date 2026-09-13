@@ -60,16 +60,16 @@ export default function SiteFooter() {
             <span className="font-title-sm text-title-sm uppercase tracking-wider text-on-surface border-b border-surface-variant/40 pb-space-2xs mb-space-xs">
               Direct Line
             </span>
-            <p className="font-headline-sm text-headline-sm text-primary-container">+91 98765 43210</p>
+            <p className="font-headline-sm text-headline-sm text-primary-container">+91 87009 78341</p>
             <p className="font-body-sm text-body-sm text-tertiary">frontdesk@fitnessfuturegym.in</p>
             <div className="flex items-center gap-space-sm mt-space-sm">
               <Link aria-label="Location" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/location">
                 <span className="material-symbols-outlined text-title-md">location_on</span>
               </Link>
-              <a aria-label="Call" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="tel:+919876543210">
+              <a aria-label="Call" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="tel:+918700978341">
                 <span className="material-symbols-outlined text-title-md">call</span>
               </a>
-              <a aria-label="WhatsApp" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
+              <a aria-label="WhatsApp" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="https://wa.me/918700978341" target="_blank" rel="noreferrer">
                 <span className="material-symbols-outlined text-title-md">chat</span>
               </a>
             </div>

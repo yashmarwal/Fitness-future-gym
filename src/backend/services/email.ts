@@ -213,7 +213,7 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
           bodyHtml:
             heading(`How Was It, ${name}?`) +
             paragraph(`Your trial pass (<strong>${escapeHtml(trialCode)}</strong>) has run its course. If you liked what you felt on the floor, let's get you set up with a full membership — no pressure, just message us.`) +
-            button("Message Us On WhatsApp", "https://wa.me/919876543210?text=Hi%2C%20I%20did%20the%202-day%20trial%20and%20want%20to%20join%20as%20a%20full%20member."),
+            button("Message Us On WhatsApp", "https://wa.me/918700978341?text=Hi%2C%20I%20did%20the%202-day%20trial%20and%20want%20to%20join%20as%20a%20full%20member."),
         }),
       };
     }

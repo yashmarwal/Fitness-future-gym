@@ -518,20 +518,6 @@ export default function MobileHome() {
         </Link>
       </section>
 
-      {/* 7. ATHLETE RESULT HIGHLIGHT CARD */}
-      <section className="mobile-anim-sec px-space-md pt-space-xl">
-        <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-label-sm text-label-sm text-primary-container font-bold uppercase">POLICE RECRUIT TEST</span>
-            <span className="font-label-sm text-label-sm text-tertiary font-mono">12 WEEKS</span>
-          </div>
-          <h4 className="font-title-sm text-title-sm text-on-surface uppercase">VIKRAM S. — PASSED PHYSICAL TEST</h4>
-          <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
-            &quot;Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run.&quot;
-          </p>
-        </div>
-      </section>
-
       {/* 8. CLOSING CTA BANNER */}
       <section className="mobile-anim-sec px-space-md pt-space-2xl">
         <div className="bg-primary-container p-space-lg flex flex-col gap-space-md shadow-md text-on-primary-container">

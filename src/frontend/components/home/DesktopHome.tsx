@@ -198,26 +198,6 @@ export default function DesktopHome() {
         );
       }
 
-      // 7. ATHLETE RESULTS BENCHMARKS
-      const resultsSec = document.querySelector(".results-sec");
-      if (resultsSec) {
-        gsap.fromTo(
-          resultsSec.querySelectorAll(".result-card"),
-          { y: 45, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            stagger: 0.12,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: resultsSec,
-              start: "top 80%",
-            },
-          }
-        );
-      }
-
       // 8. FAQ & CTA ANIMATION
       const faqSec = document.querySelector(".faq-sec");
       if (faqSec) {
@@ -889,81 +869,6 @@ export default function DesktopHome() {
         </div>
       </section>
 
-      {/* 7. ATHLETE RESULTS & BENCHMARKS */}
-      <section className="results-sec w-full bg-surface py-space-3xl border-t border-surface-variant/40">
-        <div className="max-w-container-max mx-auto px-gutter-desktop">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
-            <div>
-              <div className="flex items-center gap-space-xs text-primary-container mb-space-2xs">
-                <span className="material-symbols-outlined text-title-sm">verified</span>
-                <span className="font-label-md text-label-md uppercase tracking-widest font-bold">
-                  LOCAL ATHLETE BENCHMARKS
-                </span>
-              </div>
-              <h2 className="font-headline-lg text-headline-lg uppercase text-on-surface tracking-wide">
-                RESULTS EARNED <span className="text-primary-container">ON THE FLOOR</span>
-              </h2>
-            </div>
-            <p className="font-body-md text-body-md text-tertiary max-w-md">
-              Real lifters from Nangloi, Rao Vihar &amp; Inder Enclave who put in the work.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-            <div className="result-card bg-surface-container-low p-space-xl border border-surface-variant/40 shadow-hard flex flex-col justify-between hover:border-primary-container transition-colors">
-              <div>
-                <div className="flex items-center justify-between mb-space-xs">
-                  <span className="font-label-sm text-label-sm text-primary-container uppercase font-bold">POLICE PHYSICAL RECRUIT</span>
-                  <span className="font-label-sm text-label-sm text-tertiary uppercase">12 WEEKS</span>
-                </div>
-                <h4 className="font-title-md text-title-md text-on-surface uppercase">VIKRAM S. (NANGLOI)</h4>
-                <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  &quot;Prepared for Delhi Police physical endurance test under Coach Vaibhav. Cleared high jump and 1600m run with 45 seconds to spare.&quot;
-                </p>
-              </div>
-              <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">
-                <span className="font-label-sm text-label-sm text-outline uppercase">RESULT</span>
-                <span className="font-label-md text-label-md text-primary-container uppercase font-bold">PASSED RECRUITMENT</span>
-              </div>
-            </div>
-
-            <div className="result-card bg-surface-container-low p-space-xl border border-surface-variant/40 shadow-hard flex flex-col justify-between hover:border-primary-container transition-colors">
-              <div>
-                <div className="flex items-center justify-between mb-space-xs">
-                  <span className="font-label-sm text-label-sm text-primary-container uppercase font-bold">POWERLIFTING ATHLETE</span>
-                  <span className="font-label-sm text-label-sm text-tertiary uppercase">16 WEEKS</span>
-                </div>
-                <h4 className="font-title-md text-title-md text-on-surface uppercase">POOJA M. (RAO VIHAR)</h4>
-                <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  &quot;As a female powerlifter, finding a respectful gym floor was crucial. Added +35kg to my deadlift without any lumbar pain.&quot;
-                </p>
-              </div>
-              <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">
-                <span className="font-label-sm text-label-sm text-outline uppercase">DEADLIFT PR</span>
-                <span className="font-label-md text-label-md text-primary-container uppercase font-bold">145 KG CONVENTIONAL</span>
-              </div>
-            </div>
-
-            <div className="result-card bg-surface-container-low p-space-xl border border-surface-variant/40 shadow-hard flex flex-col justify-between hover:border-primary-container transition-colors">
-              <div>
-                <div className="flex items-center justify-between mb-space-xs">
-                  <span className="font-label-sm text-label-sm text-primary-container uppercase font-bold">BODY RECOMPOSITION</span>
-                  <span className="font-label-sm text-label-sm text-tertiary uppercase">16 WEEKS</span>
-                </div>
-                <h4 className="font-title-md text-title-md text-on-surface uppercase">AMAN K. (ROHTAK ROAD)</h4>
-                <p className="font-body-sm text-body-sm text-tertiary mt-space-xs leading-relaxed">
-                  &quot;Followed Coach Hritik&apos;s soya &amp; paneer macro plan combined with heavy compound squat cycles. Dropped 12kg body fat.&quot;
-                </p>
-              </div>
-              <div className="mt-space-md pt-space-xs border-t border-surface-variant/30 flex items-center justify-between">
-                <span className="font-label-sm text-label-sm text-outline uppercase">FAT LOSS</span>
-                <span className="font-label-md text-label-md text-primary-container uppercase font-bold">-12 KG &amp; LEAN RECOMP</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 8. OPERATIONAL SCHEDULE BANNER */}
       <section className="w-full bg-surface py-space-2xl border-t border-surface-variant/40">
         <div className="max-w-container-max mx-auto px-gutter-desktop">
@@ -1039,7 +944,7 @@ export default function DesktopHome() {
             <div className="faq-card bg-surface-container p-space-md border border-surface-variant/30 hover:border-primary-container transition-colors">
               <h4 className="font-title-sm text-title-sm uppercase text-on-surface mb-space-2xs">How does the 2-day free pass work?</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
-                Fill the 2-day trial form on our Membership page. You get instant access credentials via WhatsApp for 2 consecutive days with full floor privileges.
+                Fill the 2-day trial form on our Membership page. You get instant access credentials via WhatsApp and email for 2 consecutive days with full floor privileges.
               </p>
             </div>
 
