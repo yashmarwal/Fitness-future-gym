@@ -790,14 +790,14 @@ export default function DesktopHome() {
       </section>
 
       {/* 6b. MEMBER DASHBOARD FEATURES */}
-      <section className="dashboard-sec w-full bg-surface-container-lowest py-space-3xl border-t border-surface-variant/40">
+      <section className="dashboard-sec w-full bg-surface-container-lowest py-space-3xl border-y-2 border-primary-container/60">
         <div className="max-w-container-max mx-auto px-gutter-desktop">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
             <div>
-              <div className="flex items-center gap-space-xs text-primary-container mb-space-2xs">
-                <span className="material-symbols-outlined text-title-sm">dashboard</span>
+              <div className="inline-flex items-center gap-space-2xs text-primary-container mb-space-sm bg-primary-container/10 border border-primary-container/40 px-space-sm py-space-2xs">
+                <span className="material-symbols-outlined text-title-sm">verified</span>
                 <span className="font-label-md text-label-md uppercase tracking-widest font-bold">
-                  MORE THAN A GYM
+                  INCLUDED FREE WITH EVERY MEMBERSHIP
                 </span>
               </div>
               <h2 className="font-headline-lg text-headline-lg uppercase text-on-surface tracking-wide">
@@ -805,16 +805,16 @@ export default function DesktopHome() {
               </h2>
             </div>
             <p className="font-body-md text-body-md text-tertiary max-w-md">
-              Every membership includes a private dashboard — sign in with WhatsApp or email, no password to
-              remember.
+              Not just a floor pass — sign in with WhatsApp or email, no password to remember, and get real training
+              tools built for how you actually train.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-xl">
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
-              <span className="material-symbols-outlined text-primary-container text-headline-md">event_note</span>
-              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Workout Planner</h4>
-              <p className="font-body-sm text-body-sm text-tertiary">
+            <div className="dash-card bg-primary-container text-on-primary-container p-space-lg shadow-hard-lg flex flex-col gap-space-xs md:col-span-1">
+              <span className="material-symbols-outlined text-headline-md">event_note</span>
+              <h4 className="font-title-sm text-title-sm uppercase">Workout Planner</h4>
+              <p className="font-body-sm text-body-sm opacity-90">
                 Pick from 8 pre-built splits — Push/Pull/Legs, 5x5 Strength, Bro Split, and more — or build your own
                 with real exercises, sets, and reps.
               </p>

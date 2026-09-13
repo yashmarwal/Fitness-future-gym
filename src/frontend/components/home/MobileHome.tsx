@@ -460,26 +460,29 @@ export default function MobileHome() {
       </section>
 
       {/* 6b. MEMBER DASHBOARD FEATURES */}
-      <section className="mobile-anim-sec px-space-md pt-space-xl flex flex-col gap-space-md">
+      <section className="mobile-anim-sec pt-space-xl pb-space-xl px-space-md flex flex-col gap-space-md border-y-2 border-primary-container/60 bg-surface-container-lowest">
         <div className="flex flex-col">
-          <span className="font-label-sm text-label-sm text-primary-container tracking-widest uppercase font-bold">
-            MORE THAN A GYM
-          </span>
+          <div className="inline-flex items-center gap-space-2xs text-primary-container mb-space-xs bg-primary-container/10 border border-primary-container/40 px-space-sm py-space-2xs w-fit">
+            <span className="material-symbols-outlined text-title-sm">verified</span>
+            <span className="font-label-sm text-label-sm uppercase tracking-widest font-bold">
+              INCLUDED FREE
+            </span>
+          </div>
           <h2 className="font-headline-md text-headline-md text-on-surface tracking-wide uppercase m-0">
             YOUR MEMBER DASHBOARD
           </h2>
           <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs">
-            Every membership includes a private dashboard — sign in with WhatsApp or email, no password needed.
+            Not just a floor pass — sign in with WhatsApp or email, no password needed, and get real training tools.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-space-xs">
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
-            <span className="material-symbols-outlined text-primary-container text-title-md">event_note</span>
-            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
-              Workout Planner
+          <div className="col-span-2 bg-primary-container text-on-primary-container p-space-sm flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-title-md">event_note</span>
+            <span className="font-title-sm text-title-sm uppercase leading-tight">Workout Planner</span>
+            <span className="font-body-sm text-body-sm opacity-90">
+              8 pre-built splits — Push/Pull/Legs, 5x5 Strength, Bro Split &amp; more — or build your own
             </span>
-            <span className="font-body-sm text-body-sm text-tertiary">8 pre-built splits or build your own</span>
           </div>
 
           <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
