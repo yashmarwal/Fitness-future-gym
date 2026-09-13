@@ -7,7 +7,7 @@ const TABS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/programs", label: "Programs", icon: "fitness_center" },
   { href: "/membership", label: "Passes", icon: "badge" },
-  { href: "/location", label: "Location", icon: "pin_drop" },
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/calculator", label: "Calc", icon: "calculate" },
 ];
 

@@ -1,10 +1,15 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { signSession, verifySession, type MemberSession, type AdminSession } from "@/backend/auth/jwt";
+import {
+  signSession,
+  verifySession,
+  MEMBER_SESSION_SECONDS,
+  type MemberSession,
+  type AdminSession,
+} from "@/backend/auth/jwt";
 
 const MEMBER_COOKIE = "ff_member_session";
 const ADMIN_COOKIE = "ff_admin_session";
-const MEMBER_SESSION_SECONDS = 60 * 60 * 24 * 365; // 1 year — members should stay signed in
 const ADMIN_SESSION_SECONDS = 60 * 60 * 12; // 12 hours — admin sessions stay short-lived
 
 export async function createMemberSession(memberId: string, membershipNumber: string) {

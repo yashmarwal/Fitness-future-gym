@@ -59,37 +59,50 @@ export default function AttendanceManager({
         <button
           type="submit"
           disabled={submitting}
-          className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60"
+          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Add
         </button>
       </form>
 
-      <div className="overflow-x-auto">
+      <div className="bg-surface-container-low shadow-hard overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-surface-variant/50">
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Member</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">No.</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Time</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2"></th>
+            <tr className="border-b-2 border-surface-variant/60">
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Time</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-variant/30">
-            {records.map((r) => (
-              <tr key={r.id}>
-                <td className="py-2 pr-4 font-body text-sm text-on-surface">{r.memberName}</td>
-                <td className="py-2 pr-4 font-body text-sm text-primary-container">{r.membershipNumber}</td>
-                <td className="py-2 pr-4 font-body text-sm text-tertiary">
-                  {new Date(r.checkedInAt).toLocaleString()}
-                </td>
-                <td className="py-2">
-                  <button onClick={() => handleDelete(r.id)} className="font-label text-[10px] uppercase text-error">
-                    Delete
-                  </button>
+            {records.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-8 px-4 text-center font-body text-sm text-tertiary">
+                  No check-ins recorded yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              records.map((r) => (
+                <tr key={r.id} className="hover:bg-surface-container transition-colors">
+                  <td className="py-3 px-4 font-body text-sm text-on-surface">{r.memberName}</td>
+                  <td className="py-3 px-4 font-body text-sm text-primary-container">{r.membershipNumber}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">
+                    {new Date(r.checkedInAt).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      aria-label="Delete check-in"
+                      className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-sm leading-none">delete</span>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

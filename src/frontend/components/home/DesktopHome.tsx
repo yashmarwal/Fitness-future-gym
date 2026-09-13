@@ -535,7 +535,7 @@ export default function DesktopHome() {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST DEADLIFT</span>
-                    <span className="font-title-sm text-title-sm text-primary-container">290 KG</span>
+                    <span className="font-title-sm text-title-sm text-primary-container">250 KG</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">SPECIALTY</span>
@@ -562,7 +562,7 @@ export default function DesktopHome() {
                   </div>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-md">
-                  Focuses on hypertrophy programming, muscle hypertrophy partitioning, and custom Indian nutrition blueprints. Hritik oversees body transformation protocols and armed recruitment physical conditioning.
+                  Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints. Hritik oversees body transformation and recomposition protocols for 500+ athletes, plus conditioning work for armed-forces recruits.
                 </p>
                 <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
                   <div className="flex flex-col">
@@ -682,7 +682,7 @@ export default function DesktopHome() {
                   </span>
                 </div>
                 <h3 className="font-title-md text-title-md uppercase text-on-surface mb-space-sm group-hover:text-primary transition-colors">
-                  Weight Training &amp; Bodybuilding Prep
+                  Group Training
                 </h3>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-xl">
                   Heavy duty compound focus, hypertrophy programming, posing &amp; prep support. Designed for athletes targeting raw dense muscle accrual and physique refinement.
@@ -746,7 +746,7 @@ export default function DesktopHome() {
                   </span>
                 </div>
                 <h3 className="font-title-md text-title-md uppercase text-on-surface mb-space-sm group-hover:text-primary transition-colors">
-                  Custom Nutrition Guidance
+                  Diet Plan
                 </h3>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-xl">
                   Macro targets, desi diet adaptations, realistic bulking &amp; cutting protocols. Uncomplicated nutritional blueprints calculated directly for working schedules.

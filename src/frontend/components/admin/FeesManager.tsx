@@ -68,39 +68,47 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         <button
           type="submit"
           disabled={submitting}
-          className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60"
+          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Record
         </button>
       </form>
 
-      <div className="overflow-x-auto">
+      <div className="bg-surface-container-low shadow-hard overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-surface-variant/50">
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Member</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Amount</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Method</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2 pr-4">Status</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-2">Date</th>
+            <tr className="border-b-2 border-surface-variant/60">
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Amount</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Method</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Date</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-variant/30">
-            {payments.map((p) => (
-              <tr key={p.id}>
-                <td className="py-2 pr-4 font-body text-sm text-on-surface">{p.memberName}</td>
-                <td className="py-2 pr-4 font-body text-sm text-primary-container">₹{p.amount}</td>
-                <td className="py-2 pr-4 font-body text-sm text-tertiary uppercase">{p.method}</td>
-                <td className="py-2 pr-4 font-body text-sm">
-                  <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
-                    {p.status}
-                  </span>
-                </td>
-                <td className="py-2 font-body text-sm text-tertiary">
-                  {new Date(p.createdAt).toLocaleDateString()}
+            {payments.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-8 px-4 text-center font-body text-sm text-tertiary">
+                  No payments recorded yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              payments.map((p) => (
+                <tr key={p.id} className="hover:bg-surface-container transition-colors">
+                  <td className="py-3 px-4 font-body text-sm text-on-surface">{p.memberName}</td>
+                  <td className="py-3 px-4 font-body text-sm text-primary-container">₹{p.amount}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{p.method}</td>
+                  <td className="py-3 px-4 font-body text-sm">
+                    <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
+                      {p.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">
+                    {new Date(p.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

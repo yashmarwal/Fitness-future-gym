@@ -7,7 +7,8 @@ import Link from "next/link";
 export default function LoginForm() {
   const router = useRouter();
   const [step, setStep] = useState<"phone" | "code">("phone");
-  const [phone, setPhone] = useState("");
+  const [identifier, setIdentifier] = useState("");
+  const [resolvedPhone, setResolvedPhone] = useState("");
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -21,14 +22,15 @@ export default function LoginForm() {
       const res = await fetch("/api/auth/request-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ identifier }),
       });
       const data = await res.json();
       if (data.status === "sent") {
         setDevCode(data.devCode ?? null);
+        setResolvedPhone(data.phone);
         setStep("code");
       } else if (data.status === "not_found") {
-        setError("No membership found for this number. Contact the front desk.");
+        setError("No membership found for that phone or email. Contact the front desk.");
       } else {
         setError(data.message ?? "Something went wrong.");
       }
@@ -47,7 +49,7 @@ export default function LoginForm() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code }),
+        body: JSON.stringify({ phone: resolvedPhone, code }),
       });
       const data = await res.json();
       if (data.status === "success") {
@@ -56,7 +58,7 @@ export default function LoginForm() {
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code.");
       } else {
-        setError("No membership found for this number.");
+        setError("No membership found for that account.");
       }
     } catch {
       setError("Network error. Please try again.");
@@ -78,13 +80,13 @@ export default function LoginForm() {
         <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-              WhatsApp Number
+              Phone Or Email
             </label>
             <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
-              placeholder="+91XXXXXXXXXX"
+              placeholder="+91XXXXXXXXXX or you@example.com"
               className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
@@ -102,7 +104,7 @@ export default function LoginForm() {
       ) : (
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
           <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp.
+            Enter the 6-digit code sent to your WhatsApp (and email, if you have one on file).
           </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">

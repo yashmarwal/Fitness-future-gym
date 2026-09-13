@@ -30,7 +30,10 @@ export default function WorkoutLogForm() {
 
   return (
     <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-3 mb-6">
-      <span className="font-label text-xs uppercase tracking-widest text-primary-container">Log A Set</span>
+      <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+        <span className="material-symbols-outlined text-base leading-none">fitness_center</span>
+        Log A Set
+      </span>
       <input
         value={exerciseName}
         onChange={(e) => setExerciseName(e.target.value)}
@@ -39,34 +42,43 @@ export default function WorkoutLogForm() {
         className="bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
       />
       <div className="grid grid-cols-3 gap-2">
-        <input
-          type="number"
-          value={sets}
-          onChange={(e) => setSets(Number(e.target.value))}
-          min={1}
-          placeholder="Sets"
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
-        />
-        <input
-          type="number"
-          value={reps}
-          onChange={(e) => setReps(Number(e.target.value))}
-          min={1}
-          placeholder="Reps"
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
-        />
-        <input
-          type="number"
-          value={weightKg}
-          onChange={(e) => setWeightKg(e.target.value)}
-          placeholder="Kg"
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
-        />
+        <label className="flex flex-col gap-1">
+          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Sets</span>
+          <input
+            type="number"
+            value={sets}
+            onChange={(e) => setSets(Number(e.target.value))}
+            min={1}
+            placeholder="Sets"
+            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Reps</span>
+          <input
+            type="number"
+            value={reps}
+            onChange={(e) => setReps(Number(e.target.value))}
+            min={1}
+            placeholder="Reps"
+            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Kg</span>
+          <input
+            type="number"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value)}
+            placeholder="Kg"
+            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+          />
+        </label>
       </div>
       <button
         type="submit"
         disabled={submitting}
-        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 transition-colors"
       >
         {submitting ? "Saving..." : "Log Set"}
       </button>

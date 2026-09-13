@@ -37,7 +37,7 @@ const FAQS: FAQItem[] = [
   {
     id: "faq-4",
     category: "coaching",
-    question: "What makes Coach Vaibhav & Hritik's personal training different from commercial gyms?",
+    question: "What makes Coach Vaibhav & Coach Hritik's personal training different from commercial gyms?",
     answer: "Direct biomechanical coaching. We do not stand around scrolling on phones. We audit your bar path, intra-abdominal pressure, and strength curves, ensuring every rep pushes progressive overload safely.",
   },
   {
@@ -118,7 +118,7 @@ export default function FAQPage() {
               FREQUENTLY ASKED QUESTIONS
             </h1>
             <p className="faq-hero-anim font-body-lg text-body-lg text-tertiary">
-              Direct, unvarnished answers about floor etiquette, personal training with Coach Vaibhav &amp; Hritik, trial pass access, and membership rules.
+              Direct, unvarnished answers about floor etiquette, personal training with Coach Vaibhav &amp; Coach Hritik, trial pass access, and membership rules.
             </p>
           </div>
         </div>

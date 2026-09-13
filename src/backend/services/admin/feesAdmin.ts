@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { FeePaymentRow } from "@/types/admin";
+import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   const db = getDb();
@@ -32,7 +33,7 @@ export async function recordManualPayment(memberId: string, amount: number, meth
 
   const { data: member, error: memberError } = await db
     .from("members")
-    .select("fee_due_date")
+    .select("full_name, membership_number, phone, email, plan, joined_at, fee_due_date")
     .eq("id", memberId)
     .maybeSingle();
   if (memberError) throw new Error(`Failed to load member: ${memberError.message}`);
@@ -56,6 +57,19 @@ export async function recordManualPayment(memberId: string, amount: number, meth
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
   await db.from("members").update({ fee_due_date: nextDueDateStr }).eq("id", memberId);
+
+  // Recording a payment is one of the two explicit triggers for re-sending
+  // the membership card (the other is a plan change, in admin/members.ts) —
+  // best-effort, a delivery failure shouldn't fail the payment record.
+  await deliverMembershipCard({
+    id: memberId,
+    fullName: member.full_name,
+    membershipNumber: member.membership_number,
+    phone: member.phone,
+    email: member.email,
+    plan: member.plan,
+    joinedAt: member.joined_at,
+  }).catch(() => {});
 }
 
 export async function sumPaidThisMonth(): Promise<number> {

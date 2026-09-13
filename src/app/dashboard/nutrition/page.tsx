@@ -1,6 +1,7 @@
 import { getMemberSession } from "@/backend/auth/session";
 import { listTodaysFoodLogs } from "@/backend/services/nutrition";
 import FoodLogForm from "@/frontend/components/dashboard/FoodLogForm";
+import { StatCard, DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function NutritionPage() {
   const session = await getMemberSession();
@@ -21,25 +22,22 @@ export default async function NutritionPage() {
       </p>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-surface-container-low p-5 shadow-hard">
-          <span className="font-display text-3xl text-primary-container">{totalCalories}</span>
-          <p className="font-label text-[10px] uppercase tracking-wider text-tertiary mt-1">Kcal Today</p>
-        </div>
-        <div className="bg-surface-container-low p-5 shadow-hard">
-          <span className="font-display text-3xl text-on-surface">{totalProtein}g</span>
-          <p className="font-label text-[10px] uppercase tracking-wider text-tertiary mt-1">Protein Today</p>
-        </div>
+        <StatCard value={totalCalories} label="Kcal Today" tone="accent" />
+        <StatCard value={`${totalProtein}g`} label="Protein Today" />
       </div>
 
       <FoodLogForm />
 
       {logs.length === 0 ? (
-        <p className="font-body text-sm text-tertiary">Nothing logged yet today.</p>
+        <DashboardEmptyState icon="restaurant">Nothing logged yet today.</DashboardEmptyState>
       ) : (
         <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-hard">
           {logs.map((log) => (
-            <div key={log.id} className="flex justify-between items-center px-5 py-3">
-              <p className="font-label text-sm uppercase tracking-wide text-on-surface">{log.description}</p>
+            <div key={log.id} className="flex items-center gap-3 px-5 py-3">
+              <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">
+                restaurant
+              </span>
+              <p className="font-label text-sm uppercase tracking-wide text-on-surface flex-1">{log.description}</p>
               <p className="font-display text-lg text-primary-container">{log.calories} kcal</p>
             </div>
           ))}

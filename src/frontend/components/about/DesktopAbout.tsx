@@ -397,7 +397,7 @@ export default function DesktopAbout() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Deadlift</span>
-                  <span className="font-title-sm text-title-sm text-primary-container">290 KG</span>
+                  <span className="font-title-sm text-title-sm text-primary-container">250 KG</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Specialty</span>

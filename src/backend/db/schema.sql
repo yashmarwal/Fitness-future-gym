@@ -48,6 +48,20 @@ create table if not exists login_otps (
 
 create index if not exists login_otps_phone_idx on login_otps (phone);
 
+-- Holds a signup's details between "Create Account" and OTP verification.
+-- The members row (and its membership number) is only created once the code
+-- is verified — otherwise an abandoned/never-finished signup would burn a
+-- membership number and permanently occupy that phone/email, blocking the
+-- person from ever successfully signing up with it again.
+create table if not exists pending_signups (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null unique,
+  full_name text not null,
+  email text,
+  date_of_birth date,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists admin_users (
   id uuid primary key default gen_random_uuid(),
   username text not null unique,
@@ -158,6 +172,26 @@ create table if not exists email_messages (
   template text not null, -- 'welcome_card' | 'fee_reminder' | 'birthday' | 'announcement'
   status text not null default 'sent', -- 'sent' | 'failed'
   error text,
+  created_at timestamptz not null default now()
+);
+
+-- ── Free trial (marketing site "2-Day Free Trial" claim) ───────────────
+-- Separate from `members` entirely — a trial claim is a lead, not yet an
+-- account. `phone unique` is what enforces "one trial per mobile number,
+-- ever" at the database level (client-side localStorage is just a fast-path
+-- UX hint, not the real guard).
+
+create table if not exists trial_registrations (
+  id uuid primary key default gen_random_uuid(),
+  full_name text not null,
+  phone text not null unique,
+  email text not null,
+  shift text not null, -- 'morning' | 'evening'
+  trial_code text not null,
+  status text not null default 'active', -- 'active' | 'converted' | 'expired'
+  starts_at date not null default current_date,
+  ends_at date not null,
+  reminder_sent_at timestamptz,
   created_at timestamptz not null default now()
 );
 

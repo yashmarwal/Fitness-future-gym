@@ -48,6 +48,26 @@ jobs).
   the `/api/auth/request-otp` response (shown on the login screen) so you can
   test the full member login flow without a real WhatsApp account. Every
   send attempt is still logged to the `whatsapp_messages` table either way.
+  If the member also has an email on file, the same code is sent by email
+  too (see below) — WhatsApp is still required (it's the only channel every
+  member is guaranteed to have), email is just a second copy of the code.
+- **Email**: without `RESEND_API_KEY` set, emails are logged to the server
+  console instead of sent, and still recorded in `email_messages`.
+
+## Email (Resend) — second notification channel
+
+Mirrors WhatsApp's scope, including OTP now: login/signup codes go out on
+WhatsApp always, and by email too whenever the member has one on file
+(email is a convenience copy, not a replacement — WhatsApp/phone is still
+required to have an account at all). Email also covers the welcome
+message, fee reminders, birthdays, and admin broadcasts (**Admin →
+Broadcast** sends over both channels at once — whichever contact info
+each member has on file). Content is composed directly in
+`src/backend/services/email.ts` since Resend doesn't require Meta-style
+pre-approved templates. Requires a verified sending domain in Resend (or
+their `onboarding@resend.dev` test address, which can only send to your
+own account email, not real members) — `RESEND_FROM_EMAIL` sets the
+from-address.
 
 ## Fee payments (direct UPI, not a gateway)
 
@@ -80,7 +100,8 @@ WhatsApp only fires for five things, on purpose — **not** on every admin
 edit or every payment recorded (that was tried and deliberately walked
 back): login/signup OTP, the signup welcome/card message, fee-due
 reminders (cron), birthday messages (cron), and admin-sent offers/gym
-updates via the broadcast tool.
+updates via the broadcast tool. Email mirrors that same list one-for-one,
+sent additionally whenever the member has an email on file.
 
 ### Fee due-date logic
 
@@ -106,6 +127,25 @@ Individual check-in rows in `attendance` are deleted after 60 days by a
 daily cron job (`/api/cron/attendance-cleanup`) — only the log entries, not
 the member record itself, and not the `last_checked_in_at` marker alerts
 rely on for long-term inactivity detection.
+
+## Member dashboard extras
+
+**Workout planner** (`/dashboard/plan`) — a real structured planner, not a
+notes field: pick days, add real exercises (autocompleted from a bundled
+~180-exercise list in `src/frontend/lib/exerciseLibrary.ts`) with target
+sets/reps per day, save multiple named plans. That exercise list is bundled
+rather than pulled from a live API on purpose — wger.de's public API was
+tested and its search/filter query params don't actually filter server-side,
+and the genuinely-free tier of ExerciseDB has largely moved to a commercial
+platform; a static list keeps this working offline, instantly, and forever
+with no new external account.
+
+**Auto calorie lookup** (in the food log on `/dashboard/nutrition`) — type a
+food name, pick a match, calories/protein/carbs/fat fill in automatically
+(still editable before saving). Backed by USDA FoodData Central, which is
+genuinely free forever and works out of the box with no signup (falls back
+to USDA's shared `DEMO_KEY`) — see `USDA_FDC_API_KEY` in `.env.example` for
+getting your own free key with a much higher rate limit.
 
 ## Project structure
 

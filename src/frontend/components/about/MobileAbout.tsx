@@ -262,7 +262,7 @@ export default function MobileAbout() {
             </p>
             <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
               <span className="text-on-surface">Best Squat: 260KG</span>
-              <span className="text-primary-container font-bold">Best Deadlift: 290KG</span>
+              <span className="text-primary-container font-bold">Best Deadlift: 250KG</span>
             </div>
           </div>
 

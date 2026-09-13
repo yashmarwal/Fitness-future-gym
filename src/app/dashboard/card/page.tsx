@@ -44,7 +44,11 @@ export default async function MembershipCardPage() {
           </div>
           <div className="text-right">
             <span className="font-label text-[10px] uppercase tracking-widest text-outline">Status</span>
-            <p className={`font-body text-xs ${member.isActive ? "text-primary-container" : "text-error"}`}>
+            <p
+              className={`font-label text-[10px] uppercase tracking-wide inline-block px-2 py-0.5 mt-0.5 ${
+                member.isActive ? "bg-primary-container/15 text-primary-container" : "bg-error-container/40 text-error"
+              }`}
+            >
               {member.isActive ? "Active" : "Inactive"}
             </p>
           </div>

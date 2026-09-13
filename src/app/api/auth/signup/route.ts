@@ -8,8 +8,11 @@ export async function POST(request: Request) {
   const email = body?.email?.trim();
   const dateOfBirth = body?.dateOfBirth?.trim();
 
-  if (!fullName || !phone) {
-    return NextResponse.json({ status: "error", message: "Name and phone number are required." }, { status: 400 });
+  if (!fullName || !phone || !email) {
+    return NextResponse.json(
+      { status: "error", message: "Name, phone number, and email are required." },
+      { status: 400 }
+    );
   }
 
   try {

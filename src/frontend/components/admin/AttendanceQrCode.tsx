@@ -19,7 +19,7 @@ export default function AttendanceQrCode() {
 
   return (
     <div className="flex flex-col gap-6 max-w-md">
-      <div className="flex flex-col gap-1">
+      <div className="bg-surface-container-low shadow-hard p-5 flex flex-col gap-1">
         <label className="font-label text-[10px] uppercase tracking-widest text-outline">
           Site URL (edit once you have your real domain)
         </label>
@@ -27,7 +27,7 @@ export default function AttendanceQrCode() {
           value={baseUrl}
           onChange={(e) => setOverride(e.target.value.replace(/\/$/, ""))}
           placeholder="https://yourdomain.com"
-          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+          className="bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
         />
       </div>
 
@@ -41,8 +41,9 @@ export default function AttendanceQrCode() {
           <a
             href={dataUrl}
             download="attendance-qr-code.png"
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard"
+            className="flex items-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard transition-colors"
           >
+            <span className="material-symbols-outlined text-lg leading-none">download</span>
             Download PNG For Printing
           </a>
         </div>

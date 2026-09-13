@@ -116,7 +116,7 @@ export default function DesktopPrograms() {
                   <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-                  Built on periodized volume, progressive barbell tension, and stage-ready physique mechanics. We discard soft cardio-style workouts for structured resistance training calibrated around true athletic failure and muscular adaptation.
+                  Built on periodized volume, progressive barbell tension, and stage-ready physique mechanics. We discard soft cardio-style workouts for structured resistance training calibrated around real training failure and muscular adaptation.
                 </p>
                 <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
                   <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
@@ -185,7 +185,7 @@ export default function DesktopPrograms() {
                   <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-                  Direct accountability under experienced strength coaches. We deconstruct mechanical dysfunctions, correct joint angles, and design customized intensity ramps that force muscular adaptation while protecting lumbar integrity.
+                  Direct accountability under experienced strength coaches. We diagnose movement dysfunctions, correct joint angles, and build customized intensity ramps that force muscular adaptation while protecting lumbar integrity.
                 </p>
                 <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
                   <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">

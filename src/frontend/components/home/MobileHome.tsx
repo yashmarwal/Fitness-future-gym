@@ -51,7 +51,7 @@ export default function MobileHome() {
       const counterItems = [
         { selector: ".home-count-years", target: 8, suffix: "+" },
         { selector: ".home-count-days", target: 6, suffix: "" },
-        { selector: ".home-count-deadlift", target: 290, prefix: "Best Deadlift: ", suffix: "KG" },
+        { selector: ".home-count-deadlift", target: 250, prefix: "Best Deadlift: ", suffix: "KG" },
         { selector: ".home-count-bench", target: 170, prefix: "Best Bench: ", suffix: "KG" },
       ];
 
@@ -310,7 +310,7 @@ export default function MobileHome() {
           </p>
           <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
             <span className="text-on-surface">Best Squat: 260KG</span>
-            <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 290KG</span>
+            <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 250KG</span>
           </div>
         </div>
 
@@ -393,7 +393,7 @@ export default function MobileHome() {
               </span>
             </div>
             <h3 className="font-title-md text-title-md uppercase text-on-surface">
-              Weight Training &amp; Bodybuilding Prep
+              Group Training
             </h3>
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
               Heavy compound focus, hypertrophy programming, and physique refinement for lifters chasing raw muscle.
@@ -443,7 +443,7 @@ export default function MobileHome() {
               </span>
             </div>
             <h3 className="font-title-md text-title-md uppercase text-on-surface">
-              Custom Nutrition Guidance
+              Diet Plan
             </h3>
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
               Macro targets and realistic diet protocols calculated directly for your training schedule.

@@ -3,14 +3,18 @@
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTrialClaim, saveTrialClaim } from "@/frontend/lib/trialClaim";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function MobileMembership() {
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({ name: "", phone: "", shift: "morning" });
+  const deviceClaim = useTrialClaim();
+  const [submitted, setSubmitted] = useState<{ phone: string; trialCode: string; endsAt: string } | null>(null);
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "", shift: "morning" });
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,10 +54,34 @@ export default function MobileMembership() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.phone) {
-      setSubmitted(true);
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/trial/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          shift: formData.shift,
+        }),
+      });
+      const data = await res.json();
+      if (data.status === "claimed") {
+        saveTrialClaim({ phone: formData.phone, trialCode: data.trialCode, endsAt: data.endsAt });
+        setSubmitted({ phone: formData.phone, trialCode: data.trialCode, endsAt: data.endsAt });
+      } else if (data.status === "already_claimed") {
+        setError("This phone number has already claimed a free trial — one per member, for life.");
+      } else {
+        setError(data.message ?? "Something went wrong.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,7 +112,7 @@ export default function MobileMembership() {
             INSTANT PASS REGISTRATION
           </h2>
 
-          {!submitted ? (
+          {!(submitted ?? deviceClaim) ? (
             <form className="flex flex-col gap-space-sm" onSubmit={handleSubmit}>
               <div>
                 <label className="block font-label-sm text-label-sm uppercase tracking-wider text-outline mb-space-2xs">
@@ -111,12 +139,60 @@ export default function MobileMembership() {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
+              <div>
+                <label className="block font-label-sm text-label-sm uppercase tracking-wider text-outline mb-space-2xs">
+                  Email
+                </label>
+                <input
+                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-none"
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block font-label-sm text-label-sm uppercase tracking-wider text-outline mb-space-2xs">
+                  Preferred Floor Shift
+                </label>
+                <div className="grid grid-cols-2 gap-space-xs">
+                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs flex items-center justify-between">
+                    <span className="flex items-center gap-space-2xs">
+                      <input
+                        type="radio"
+                        name="shift"
+                        value="morning"
+                        checked={formData.shift === "morning"}
+                        onChange={() => setFormData({ ...formData, shift: "morning" })}
+                        className="accent-primary-container"
+                      />
+                      <span className="font-label-sm text-label-sm uppercase text-on-surface">Morning</span>
+                    </span>
+                  </label>
+                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs flex items-center justify-between">
+                    <span className="flex items-center gap-space-2xs">
+                      <input
+                        type="radio"
+                        name="shift"
+                        value="evening"
+                        checked={formData.shift === "evening"}
+                        onChange={() => setFormData({ ...formData, shift: "evening" })}
+                        className="accent-primary-container"
+                      />
+                      <span className="font-label-sm text-label-sm uppercase text-on-surface">Evening</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+              {error && <p className="font-body-sm text-body-sm text-error">{error}</p>}
               <button
                 type="submit"
-                className="mt-space-2xs w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider flex items-center justify-center gap-space-xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform cursor-pointer"
+                disabled={loading}
+                className="mt-space-2xs w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider flex items-center justify-center gap-space-xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform cursor-pointer disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-title-md">bolt</span>
-                Book 2-Day Free Trial
+                {loading ? "Booking..." : "Book 2-Day Free Trial"}
               </button>
             </form>
           ) : (
@@ -128,13 +204,17 @@ export default function MobileMembership() {
                 TRIAL PASS RESERVED
               </span>
               <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs">
-                Show registered phone ({formData.phone}) at front desk.
+                Show registered phone ({(submitted ?? deviceClaim)!.phone}) at front desk. Your pass was also
+                emailed to you.
               </p>
               <div className="mt-space-sm p-space-xs bg-surface-container border border-surface-variant w-full text-center">
                 <span className="font-label-sm text-label-sm uppercase text-primary-container tracking-widest font-bold">
-                  CODE: FF2-TRIAL-NANGLOI
+                  CODE: {(submitted ?? deviceClaim)!.trialCode}
                 </span>
               </div>
+              <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs">
+                Valid through {(submitted ?? deviceClaim)!.endsAt}.
+              </p>
             </div>
           )}
         </div>

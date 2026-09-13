@@ -18,13 +18,15 @@ export default function ContentManager({
 
   return (
     <div>
-      <div className="flex gap-1 mb-6 bg-surface-container-low w-fit">
+      <div className="flex gap-1 mb-6 bg-surface-container-low shadow-hard w-fit">
         {(["announcements", "faqs", "blog"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`font-label text-xs uppercase tracking-wide px-4 py-2 ${
-              tab === t ? "bg-primary-container text-on-primary-container" : "text-on-surface-variant"
+            className={`font-label text-xs uppercase tracking-wide px-4 py-2 transition-colors ${
+              tab === t
+                ? "bg-primary-container text-on-primary-container"
+                : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
             }`}
           >
             {t}
@@ -78,21 +80,33 @@ function AnnouncementsTab({ items, onChange }: { items: Announcement[]; onChange
           rows={3}
           className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
-        <button className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit">
+        <button className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit transition-colors">
           Publish
         </button>
       </form>
-      {items.map((a) => (
-        <div key={a.id} className="bg-surface-container p-4 flex justify-between items-start gap-4">
-          <div>
-            <p className="font-label text-sm uppercase text-on-surface">{a.title}</p>
-            <p className="font-body text-xs text-tertiary mt-1">{a.body}</p>
+      {items.length === 0 ? (
+        <p className="font-body text-sm text-tertiary">No announcements yet.</p>
+      ) : (
+        items.map((a) => (
+          <div
+            key={a.id}
+            className="bg-surface-container-low shadow-hard border-l-4 border-primary-container p-4 flex justify-between items-start gap-4"
+          >
+            <div>
+              <p className="font-label text-sm uppercase text-on-surface">{a.title}</p>
+              <p className="font-body text-xs text-tertiary mt-1">{a.body}</p>
+            </div>
+            <button
+              onClick={() => handleDelete(a.id)}
+              aria-label="Delete announcement"
+              className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-sm leading-none">delete</span>
+              Delete
+            </button>
           </div>
-          <button onClick={() => handleDelete(a.id)} className="font-label text-[10px] uppercase text-error shrink-0">
-            Delete
-          </button>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
@@ -136,21 +150,33 @@ function FaqsTab({ items, onChange }: { items: Faq[]; onChange: () => void }) {
           rows={3}
           className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
-        <button className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit">
+        <button className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit transition-colors">
           Add FAQ
         </button>
       </form>
-      {items.map((f) => (
-        <div key={f.id} className="bg-surface-container p-4 flex justify-between items-start gap-4">
-          <div>
-            <p className="font-label text-sm uppercase text-on-surface">{f.question}</p>
-            <p className="font-body text-xs text-tertiary mt-1">{f.answer}</p>
+      {items.length === 0 ? (
+        <p className="font-body text-sm text-tertiary">No FAQs yet.</p>
+      ) : (
+        items.map((f) => (
+          <div
+            key={f.id}
+            className="bg-surface-container-low shadow-hard border-l-4 border-primary-container p-4 flex justify-between items-start gap-4"
+          >
+            <div>
+              <p className="font-label text-sm uppercase text-on-surface">{f.question}</p>
+              <p className="font-body text-xs text-tertiary mt-1">{f.answer}</p>
+            </div>
+            <button
+              onClick={() => handleDelete(f.id)}
+              aria-label="Delete FAQ"
+              className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-sm leading-none">delete</span>
+              Delete
+            </button>
           </div>
-          <button onClick={() => handleDelete(f.id)} className="font-label text-[10px] uppercase text-error shrink-0">
-            Delete
-          </button>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
@@ -194,21 +220,33 @@ function BlogTab({ items, onChange }: { items: BlogPost[]; onChange: () => void 
           rows={2}
           className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
-        <button className="bg-primary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit">
+        <button className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard w-fit transition-colors">
           Publish Post
         </button>
       </form>
-      {items.map((p) => (
-        <div key={p.id} className="bg-surface-container p-4 flex justify-between items-start gap-4">
-          <div>
-            <p className="font-label text-sm uppercase text-on-surface">{p.title}</p>
-            <p className="font-body text-xs text-tertiary mt-1">{p.excerpt}</p>
+      {items.length === 0 ? (
+        <p className="font-body text-sm text-tertiary">No blog posts yet.</p>
+      ) : (
+        items.map((p) => (
+          <div
+            key={p.id}
+            className="bg-surface-container-low shadow-hard border-l-4 border-primary-container p-4 flex justify-between items-start gap-4"
+          >
+            <div>
+              <p className="font-label text-sm uppercase text-on-surface">{p.title}</p>
+              <p className="font-body text-xs text-tertiary mt-1">{p.excerpt}</p>
+            </div>
+            <button
+              onClick={() => handleDelete(p.id)}
+              aria-label="Delete blog post"
+              className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-sm leading-none">delete</span>
+              Delete
+            </button>
           </div>
-          <button onClick={() => handleDelete(p.id)} className="font-label text-[10px] uppercase text-error shrink-0">
-            Delete
-          </button>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }

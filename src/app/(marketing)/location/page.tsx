@@ -49,31 +49,6 @@ export default function LocationPage() {
 
   return (
     <div ref={containerRef} className="flex flex-col w-full">
-      {/* 1. TOP COORDINATES BANNER */}
-      <section className="w-full bg-surface-container-lowest text-on-surface py-space-sm px-gutter-mobile lg:px-gutter-desktop border-b border-surface-variant/40">
-        <div className="max-w-container-max mx-auto flex flex-wrap items-center justify-between gap-space-sm text-tertiary font-label-sm text-label-sm uppercase tracking-widest">
-          <div className="flex items-center gap-space-md">
-            <span className="text-primary-container font-bold flex items-center gap-2">
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
-              </span>
-              <span>DEL-110041</span>
-            </span>
-            <span className="hidden md:inline text-surface-variant">/</span>
-            <span className="hidden md:inline">GEO: 28.6835° N, 77.0655° E</span>
-            <span className="hidden md:inline text-surface-variant">/</span>
-            <span className="text-on-surface">NANGLOI SECTOR 02</span>
-          </div>
-          <div className="flex items-center gap-space-md">
-            <span className="bg-surface-container-high px-space-xs py-space-2xs text-secondary font-bold">
-              STATUS: IRON FLOOR OPEN
-            </span>
-            <span className="hidden sm:inline">PEAK HOURS: 18:00 – 21:30 IST</span>
-          </div>
-        </div>
-      </section>
-
       {/* 2. TITLE BLOCK */}
       <section className="w-full bg-surface-container-low py-space-2xl px-gutter-mobile lg:px-gutter-desktop border-b border-surface-variant/40">
         <div className="max-w-container-max mx-auto">
@@ -256,7 +231,7 @@ export default function LocationPage() {
                 DIRECT INQUIRY DISPATCH
               </span>
               <h3 className="font-headline-sm text-headline-sm uppercase text-on-surface mb-space-md">
-                SEND MESSAGING TO FRONT DESK
+                SEND A MESSAGE TO FRONT DESK
               </h3>
 
               {!submitted ? (

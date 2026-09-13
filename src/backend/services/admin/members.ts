@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { AdminMember, MemberInput } from "@/types/admin";
+import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -73,8 +74,36 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.joinedAt !== undefined) patch.joined_at = input.joinedAt;
   if (input.isActive !== undefined) patch.is_active = input.isActive;
 
+  // Only re-send the card when the plan actually changes — not on every
+  // edit (address/notes/etc. shouldn't trigger a resend). Read the prior
+  // value first since the frontend may send the whole form back unchanged.
+  let planChanged = false;
+  if (input.plan !== undefined) {
+    const { data: before } = await db.from("members").select("plan").eq("id", id).maybeSingle();
+    planChanged = Boolean(before) && (before!.plan || null) !== (input.plan || null);
+  }
+
   const { error } = await db.from("members").update(patch).eq("id", id);
   if (error) throw new Error(`Failed to update member: ${error.message}`);
+
+  if (planChanged) {
+    const { data: member } = await db
+      .from("members")
+      .select("id, full_name, membership_number, phone, email, plan, joined_at")
+      .eq("id", id)
+      .maybeSingle();
+    if (member) {
+      await deliverMembershipCard({
+        id: member.id,
+        fullName: member.full_name,
+        membershipNumber: member.membership_number,
+        phone: member.phone,
+        email: member.email,
+        plan: member.plan,
+        joinedAt: member.joined_at,
+      }).catch(() => {});
+    }
+  }
 }
 
 export async function deleteMember(id: string): Promise<void> {

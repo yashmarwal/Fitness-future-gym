@@ -4,7 +4,16 @@ import { getDb } from "@/backend/db/client";
 // Deliberately narrow: WhatsApp only fires for signup, fee reminders, and
 // admin-sent offers/gym updates (the "announcement" broadcast) — not for
 // every profile edit or payment, which was over-broad in an earlier pass.
-export type WhatsAppTemplate = "otp" | "fee_reminder" | "birthday" | "announcement" | "welcome_card";
+// trial_pass/trial_reminder are the one exception, for leads who aren't
+// members yet (the marketing site's 2-day free trial claim).
+export type WhatsAppTemplate =
+  | "otp"
+  | "fee_reminder"
+  | "birthday"
+  | "announcement"
+  | "welcome_card"
+  | "trial_pass"
+  | "trial_reminder";
 
 const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   otp: "WHATSAPP_TEMPLATE_OTP",
@@ -12,6 +21,8 @@ const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   birthday: "WHATSAPP_TEMPLATE_BIRTHDAY",
   announcement: "WHATSAPP_TEMPLATE_ANNOUNCEMENT",
   welcome_card: "WHATSAPP_TEMPLATE_WELCOME_CARD",
+  trial_pass: "WHATSAPP_TEMPLATE_TRIAL_PASS",
+  trial_reminder: "WHATSAPP_TEMPLATE_TRIAL_REMINDER",
 };
 
 const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
@@ -20,6 +31,8 @@ const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
   birthday: "ff_birthday",
   announcement: "ff_announcement",
   welcome_card: "ff_welcome_card",
+  trial_pass: "ff_trial_pass",
+  trial_reminder: "ff_trial_reminder",
 };
 
 function isConfigured() {

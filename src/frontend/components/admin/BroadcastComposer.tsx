@@ -72,15 +72,15 @@ export default function BroadcastComposer() {
       <button
         type="submit"
         disabled={submitting}
-        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 w-fit"
+        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors w-fit"
       >
         {submitting ? "Sending..." : "Send Broadcast"}
       </button>
-      <p className="font-body text-xs text-tertiary">
-        Sends over WhatsApp and email, whichever each member has on file — not a channel toggle, just uses
-        whatever&apos;s available.
-      </p>
-      {result && <p className="font-body text-sm text-tertiary">{result}</p>}
+      {result && (
+        <div className="bg-surface-container border-l-4 border-primary-container p-3">
+          <p className="font-body text-sm text-on-surface">{result}</p>
+        </div>
+      )}
     </form>
   );
 }

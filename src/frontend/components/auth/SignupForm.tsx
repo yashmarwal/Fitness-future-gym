@@ -13,7 +13,6 @@ export default function SignupForm() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
-  const [membershipNumber, setMembershipNumber] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,12 +24,11 @@ export default function SignupForm() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, phone, email: email || undefined, dateOfBirth: dateOfBirth || undefined }),
+        body: JSON.stringify({ fullName, phone, email, dateOfBirth: dateOfBirth || undefined }),
       });
       const data = await res.json();
       if (data.status === "sent") {
         setDevCode(data.devCode ?? null);
-        setMembershipNumber(data.membershipNumber);
         setStep("code");
       } else if (data.status === "already_registered") {
         setError("This number is already registered — try signing in instead.");
@@ -107,12 +105,13 @@ export default function SignupForm() {
           </div>
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-              Email (Optional)
+              Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               placeholder="you@example.com"
               className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
@@ -141,14 +140,9 @@ export default function SignupForm() {
         </form>
       ) : (
         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-          {membershipNumber && (
-            <p className="font-body text-sm text-primary-container">
-              Your membership number is <strong>{membershipNumber}</strong> — we&apos;ll send your digital card to
-              WhatsApp as soon as you verify below.
-            </p>
-          )}
           <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp to verify your number and finish signing in.
+            Enter the 6-digit code sent to your WhatsApp to verify your number and finish signing in. Your
+            membership number and digital card are created once you verify below.
           </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">

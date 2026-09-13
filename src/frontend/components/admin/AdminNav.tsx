@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const LINKS = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/alerts", label: "Alerts" },
-  { href: "/admin/members", label: "Members" },
-  { href: "/admin/attendance", label: "Attendance" },
-  { href: "/admin/qr", label: "QR Code" },
-  { href: "/admin/fees", label: "Fees" },
-  { href: "/admin/content", label: "Content" },
-  { href: "/admin/broadcast", label: "WhatsApp" },
+  { href: "/admin", label: "Overview", icon: "dashboard" },
+  { href: "/admin/alerts", label: "Alerts", icon: "notifications" },
+  { href: "/admin/members", label: "Members", icon: "group" },
+  { href: "/admin/trials", label: "Trials", icon: "person_add" },
+  { href: "/admin/attendance", label: "Attendance", icon: "event_available" },
+  { href: "/admin/qr", label: "QR Code", icon: "qr_code_2" },
+  { href: "/admin/fees", label: "Fees", icon: "payments" },
+  { href: "/admin/content", label: "Content", icon: "article" },
+  { href: "/admin/broadcast", label: "Broadcast", icon: "campaign" },
 ];
 
 export default function AdminNav({ username }: { username: string }) {
@@ -25,7 +26,7 @@ export default function AdminNav({ username }: { username: string }) {
   }
 
   return (
-    <header className="w-full bg-surface-container-lowest border-b border-surface-variant/50">
+    <header className="sticky top-0 z-20 w-full bg-surface-container-lowest border-b border-surface-variant/50">
       <div className="flex items-center justify-between px-gutter-mobile lg:px-gutter-desktop h-16">
         <span className="font-display text-xl text-on-surface uppercase tracking-wide">
           Admin <span className="text-primary-container">Panel</span>
@@ -36,8 +37,9 @@ export default function AdminNav({ username }: { username: string }) {
           </span>
           <button
             onClick={handleLogout}
-            className="font-label text-xs uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors"
+            className="flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors"
           >
+            <span className="material-symbols-outlined text-base leading-none">logout</span>
             Sign Out
           </button>
         </div>
@@ -47,12 +49,13 @@ export default function AdminNav({ username }: { username: string }) {
           <Link
             key={link.href}
             href={link.href}
-            className={`font-label text-xs uppercase tracking-wider px-4 py-3 whitespace-nowrap border-b-2 transition-colors ${
+            className={`flex items-center gap-1.5 font-label text-xs uppercase tracking-wider px-4 py-3 whitespace-nowrap border-b-2 transition-colors ${
               pathname === link.href
-                ? "text-primary-container border-primary-container"
-                : "text-on-surface-variant border-transparent hover:text-on-surface"
+                ? "text-primary-container border-primary-container bg-surface-container-low/60"
+                : "text-on-surface-variant border-transparent hover:text-on-surface hover:bg-surface-container-low/30"
             }`}
           >
+            <span className="material-symbols-outlined text-base leading-none">{link.icon}</span>
             {link.label}
           </Link>
         ))}

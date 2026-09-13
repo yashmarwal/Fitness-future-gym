@@ -7,14 +7,33 @@ export type DeviceMember = {
   membershipNumber: string;
 };
 
+// getSnapshot must return a referentially stable value when the underlying
+// data hasn't changed, or useSyncExternalStore treats every render as a new
+// snapshot and errors with "should be cached to avoid an infinite loop" —
+// JSON.parse-ing localStorage fresh on every call (as this used to) creates
+// a new object reference each time even when the raw string is identical.
+let cachedRaw: string | null = null;
+let cachedValue: DeviceMember | null = null;
+
 export function getDeviceMember(): DeviceMember | null {
   if (typeof window === "undefined") return null;
+
+  let raw: string | null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as DeviceMember) : null;
+    raw = window.localStorage.getItem(STORAGE_KEY);
   } catch {
-    return null;
+    raw = null;
   }
+
+  if (raw === cachedRaw) return cachedValue;
+
+  cachedRaw = raw;
+  try {
+    cachedValue = raw ? (JSON.parse(raw) as DeviceMember) : null;
+  } catch {
+    cachedValue = null;
+  }
+  return cachedValue;
 }
 
 export function saveDeviceMember(member: DeviceMember) {

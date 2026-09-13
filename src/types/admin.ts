@@ -64,3 +64,16 @@ export type AlertMember = {
   membershipNumber: string;
   detail: string;
 };
+
+export type TrialRegistration = {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  shift: string;
+  trialCode: string;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  createdAt: string;
+};

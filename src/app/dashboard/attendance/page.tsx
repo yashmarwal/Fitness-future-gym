@@ -1,5 +1,6 @@
 import { getMemberSession } from "@/backend/auth/session";
 import { getRecentAttendance } from "@/backend/services/attendance";
+import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function AttendanceHistoryPage() {
   const session = await getMemberSession();
@@ -12,14 +13,19 @@ export default async function AttendanceHistoryPage() {
       </h1>
 
       {attendance.length === 0 ? (
-        <p className="font-body text-sm text-tertiary">No check-ins yet. Scan the QR code at the front desk.</p>
+        <DashboardEmptyState icon="calendar_month">
+          No check-ins yet. Scan the QR code at the front desk.
+        </DashboardEmptyState>
       ) : (
         <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-hard">
           {attendance.map((iso) => {
             const date = new Date(iso);
             return (
-              <div key={iso} className="flex justify-between px-5 py-3">
-                <span className="font-label text-xs uppercase tracking-wide text-on-surface">
+              <div key={iso} className="flex items-center gap-3 px-5 py-3">
+                <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">
+                  check_circle
+                </span>
+                <span className="font-label text-xs uppercase tracking-wide text-on-surface flex-1">
                   {date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                 </span>
                 <span className="font-body text-sm text-tertiary">

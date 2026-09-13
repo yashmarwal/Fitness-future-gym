@@ -33,14 +33,17 @@ export default function UpiPayButton({
   return (
     <div className="flex flex-col items-center gap-4">
       {dataUrl && (
-        /* eslint-disable-next-line @next/next/no-img-element -- data: URL, next/image can't optimize it */
-        <img src={dataUrl} alt="UPI payment QR code" className="w-48 h-48" />
+        <div className="bg-surface-container-lowest p-3 shadow-hard">
+          {/* eslint-disable-next-line @next/next/no-img-element -- data: URL, next/image can't optimize it */}
+          <img src={dataUrl} alt="UPI payment QR code" className="w-48 h-48" />
+        </div>
       )}
 
       <a
         href={upiLink}
-        className="w-full inline-flex items-center justify-center bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard"
+        className="w-full inline-flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard transition-colors"
       >
+        <span className="material-symbols-outlined text-lg leading-none">qr_code_scanner</span>
         Pay ₹{amount} Via UPI App
       </a>
 
