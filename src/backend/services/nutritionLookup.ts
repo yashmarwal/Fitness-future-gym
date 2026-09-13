@@ -50,6 +50,26 @@ function extractNutrient(nutrients: UsdaFoodNutrient[] | undefined, name: string
   return Math.round(match.value * 10) / 10;
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// USDA's edge (nginx, in front of the actual API) intermittently 400s
+// perfectly valid, correctly-encoded requests under bursty traffic —
+// confirmed by hand: the exact same URL failed once and then succeeded
+// three times in a row immediately after, with nothing about the request
+// itself changing. One quick retry absorbs that instead of surfacing a
+// false "lookup failed" to the member typing a food name.
+async function fetchWithRetry(url: string, attempts = 2): Promise<Response> {
+  let lastRes: Response | undefined;
+  for (let i = 0; i < attempts; i++) {
+    lastRes = await fetch(url);
+    if (lastRes.ok) return lastRes;
+    if (i < attempts - 1) await sleep(250);
+  }
+  return lastRes!;
+}
+
 export async function searchFoods(query: string): Promise<NutritionSearchResult[]> {
   const apiKey = process.env.USDA_FDC_API_KEY || "DEMO_KEY";
   const url = new URL(USDA_SEARCH_URL);
@@ -58,7 +78,7 @@ export async function searchFoods(query: string): Promise<NutritionSearchResult[
   url.searchParams.set("dataType", PREFERRED_DATA_TYPES);
   url.searchParams.set("api_key", apiKey);
 
-  const res = await fetch(url.toString());
+  const res = await fetchWithRetry(url.toString());
   if (!res.ok) {
     throw new Error(`USDA FoodData Central error (${res.status})`);
   }

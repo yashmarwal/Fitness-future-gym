@@ -28,6 +28,23 @@ export async function logFood(
   if (error) throw new Error(`Failed to log food: ${error.message}`);
 }
 
+const FOOD_LOG_RETENTION_DAYS = 30;
+
+export async function deleteOldFoodLogs(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - FOOD_LOG_RETENTION_DAYS);
+
+  const { data, error } = await db
+    .from("food_logs")
+    .delete()
+    .lt("logged_at", cutoff.toISOString())
+    .select("id");
+
+  if (error) throw new Error(`Failed to delete old food logs: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}
+
 export async function listTodaysFoodLogs(memberId: string): Promise<FoodLog[]> {
   const db = getDb();
   const startOfDay = new Date();

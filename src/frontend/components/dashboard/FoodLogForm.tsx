@@ -13,6 +13,23 @@ type NutritionResult = {
   fatG: number | null;
 };
 
+type BaseValues = {
+  calories: number | null;
+  proteinG: number | null;
+  carbsG: number | null;
+  fatG: number | null;
+};
+
+// USDA's Foundation/SR Legacy/Survey data (the only types this app queries —
+// see nutritionLookup.ts) always reports nutrients per 100g, so scaling by
+// quantity/100 is exact, not an approximation.
+function scalePer100g(base: number | null, quantityG: string): string {
+  if (base == null) return "";
+  const qty = Number(quantityG);
+  if (!qty || qty <= 0) return "";
+  return String(Math.round(((base * qty) / 100) * 10) / 10);
+}
+
 export default function FoodLogForm() {
   const router = useRouter();
   const [description, setDescription] = useState("");
@@ -27,6 +44,13 @@ export default function FoodLogForm() {
   const [showResults, setShowResults] = useState(false);
   const [autofilledFrom, setAutofilledFrom] = useState<string | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState("100");
+  // Non-null only while the four macro fields are still "live" against a
+  // picked USDA result — set on pick, cleared the moment the member edits
+  // any of the four fields by hand (a manual override should stick, not get
+  // silently overwritten the next time quantity changes) or types a new
+  // food name.
+  const [baseValues, setBaseValues] = useState<BaseValues | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Picking a result sets `description` programmatically, which would
   // otherwise re-trigger this same search 500ms later and pop the dropdown
@@ -82,30 +106,64 @@ export default function FoodLogForm() {
     // something new — stop treating the old numbers as auto-filled.
     setAutofilledFrom(null);
     setLookupError(null);
+    setBaseValues(null);
+    setQuantity("100");
   }
 
   function pickResult(result: NutritionResult) {
     skipNextSearchRef.current = true;
     setDescription(result.description);
-    setCalories(result.calories != null ? String(result.calories) : "");
-    setProteinG(result.proteinG != null ? String(result.proteinG) : "");
-    setCarbsG(result.carbsG != null ? String(result.carbsG) : "");
-    setFatG(result.fatG != null ? String(result.fatG) : "");
+    setQuantity("100");
+    const base: BaseValues = {
+      calories: result.calories,
+      proteinG: result.proteinG,
+      carbsG: result.carbsG,
+      fatG: result.fatG,
+    };
+    setBaseValues(base);
+    setCalories(scalePer100g(base.calories, "100"));
+    setProteinG(scalePer100g(base.proteinG, "100"));
+    setCarbsG(scalePer100g(base.carbsG, "100"));
+    setFatG(scalePer100g(base.fatG, "100"));
     setAutofilledFrom(result.servingInfo);
     setLookupError(null);
     setResults([]);
     setShowResults(false);
   }
 
+  function handleQuantityChange(value: string) {
+    setQuantity(value);
+    if (baseValues) {
+      setCalories(scalePer100g(baseValues.calories, value));
+      setProteinG(scalePer100g(baseValues.proteinG, value));
+      setCarbsG(scalePer100g(baseValues.carbsG, value));
+      setFatG(scalePer100g(baseValues.fatG, value));
+    }
+  }
+
+  // A direct edit to any of the four macro fields breaks the live link to
+  // quantity for all four at once — simpler and more predictable than
+  // tracking per-field overrides, which could otherwise leave some fields
+  // silently still tied to quantity while others aren't.
+  function handleMacroFieldChange(setter: (v: string) => void, value: string) {
+    setBaseValues(null);
+    setter(value);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Quantity isn't its own database column (see food_logs schema) — it's
+      // baked into the saved description instead, so the log history still
+      // shows how much was eaten without needing a migration.
+      const finalDescription = baseValues ? `${description} (${quantity}g)` : description;
+
       await fetch("/api/dashboard/food", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          description,
+          description: finalDescription,
           calories,
           proteinG: proteinG || undefined,
           carbsG: carbsG || undefined,
@@ -118,6 +176,8 @@ export default function FoodLogForm() {
       setCarbsG("");
       setFatG("");
       setAutofilledFrom(null);
+      setBaseValues(null);
+      setQuantity("100");
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -174,13 +234,29 @@ export default function FoodLogForm() {
       )}
       {lookupError && <p className="font-body text-xs text-error -mt-1">{lookupError}</p>}
 
+      {baseValues && (
+        <label className="flex flex-col gap-1">
+          <span className="font-label text-[9px] uppercase tracking-wider text-primary-container">
+            Quantity (g) — values scale automatically
+          </span>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) => handleQuantityChange(e.target.value)}
+            min={1}
+            placeholder="100"
+            className="w-full bg-surface-container border border-primary-container text-on-surface font-body px-3 py-3 outline-none"
+          />
+        </label>
+      )}
+
       <div className="grid grid-cols-3 gap-2">
         <label className="flex flex-col gap-1">
           <span className="font-label text-[9px] uppercase tracking-wider text-outline">Calories</span>
           <input
             type="number"
             value={calories}
-            onChange={(e) => setCalories(e.target.value)}
+            onChange={(e) => handleMacroFieldChange(setCalories, e.target.value)}
             required
             placeholder="Calories"
             className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
@@ -191,7 +267,7 @@ export default function FoodLogForm() {
           <input
             type="number"
             value={proteinG}
-            onChange={(e) => setProteinG(e.target.value)}
+            onChange={(e) => handleMacroFieldChange(setProteinG, e.target.value)}
             placeholder="Protein"
             className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
           />
@@ -201,7 +277,7 @@ export default function FoodLogForm() {
           <input
             type="number"
             value={carbsG}
-            onChange={(e) => setCarbsG(e.target.value)}
+            onChange={(e) => handleMacroFieldChange(setCarbsG, e.target.value)}
             placeholder="Carbs"
             className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
           />
@@ -212,7 +288,7 @@ export default function FoodLogForm() {
         <input
           type="number"
           value={fatG}
-          onChange={(e) => setFatG(e.target.value)}
+          onChange={(e) => handleMacroFieldChange(setFatG, e.target.value)}
           placeholder="Fat"
           className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
         />

@@ -128,6 +128,16 @@ daily cron job (`/api/cron/attendance-cleanup`) — only the log entries, not
 the member record itself, and not the `last_checked_in_at` marker alerts
 rely on for long-term inactivity detection.
 
+### Workout & food log retention
+
+Same idea, shorter window: rows in `workout_logs` and `food_logs` are
+deleted after 30 days by a daily cron job (`/api/cron/logs-cleanup`).
+Saved workout **plans** (`workout_plans` — the templates from the planner)
+are untouched, since those are meant to be kept indefinitely, not dated
+records. The streak tracker isn't in this database at all — it lives
+entirely in each member's browser `localStorage`, so there's nothing to
+delete for it, ever.
+
 ## Member dashboard extras
 
 **Workout planner** (`/dashboard/plan`) — a real structured planner, not a
@@ -145,7 +155,12 @@ food name, pick a match, calories/protein/carbs/fat fill in automatically
 (still editable before saving). Backed by USDA FoodData Central, which is
 genuinely free forever and works out of the box with no signup (falls back
 to USDA's shared `DEMO_KEY`) — see `USDA_FDC_API_KEY` in `.env.example` for
-getting your own free key with a much higher rate limit.
+getting your own free key with a much higher rate limit. A **Quantity (g)**
+field appears once a result is picked (USDA's Foundation/SR Legacy/Survey
+data is always per 100g, so this is an exact scale, not an estimate) and
+recalculates all four values live as it changes — editing any of the four
+by hand afterward breaks that live link for all four, so a manual tweak
+never gets silently overwritten.
 
 ## Project structure
 
