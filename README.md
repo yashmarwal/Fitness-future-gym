@@ -5,10 +5,10 @@ the supporting attendance/fees/WhatsApp backend.
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind, Supabase (Postgres), direct
-UPI for fee payments (no gateway/commission), WhatsApp Business Cloud API,
-deployed on Vercel (with Vercel Cron for the daily birthday/fee-reminder
-jobs).
+Next.js (App Router) + TypeScript + Tailwind, Supabase (Postgres), fees paid
+in person at the front desk (no online payment/gateway), WhatsApp Business
+Cloud API, deployed on Vercel (with Vercel Cron for the daily birthday/fee-
+reminder jobs).
 
 ## First-time setup
 
@@ -25,8 +25,7 @@ jobs).
    comments in that file for where each one comes from. At minimum, set
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `SESSION_SECRET` to run
    the app locally. WhatsApp can stay blank while developing — see "Dev
-   mode" below. `GYM_UPI_ID` needs the gym's real UPI handle before fee
-   payment is real, but any placeholder works for testing the flow.
+   mode" below.
 
 4. **Create your first admin login**:
    ```bash
@@ -69,18 +68,16 @@ their `onboarding@resend.dev` test address, which can only send to your
 own account email, not real members) — `RESEND_FROM_EMAIL` sets the
 from-address.
 
-## Fee payments (direct UPI, not a gateway)
+## Fee payments (in person, no online payment option)
 
-The client asked to drop Razorpay to avoid its ~2% per-transaction fee. Fee
-payment is a direct UPI transfer instead: the member dashboard shows a QR
-code and a tappable `upi://pay` link (built from `GYM_UPI_ID` +
-`GYM_UPI_PAYEE_NAME`) that opens their UPI app with the amount pre-filled —
-a normal bank-to-bank transfer, no aggregator, no commission.
-
-The tradeoff is there's no webhook to auto-confirm payment (that automation
-is exactly what a gateway's fee pays for). Staff confirm it manually in
-**Admin → Fees → Record Manual Payment** (method: UPI) once they see it land
-in the gym's own bank/UPI app — same flow already used for cash payments.
+The client asked to drop Razorpay to avoid its ~2% per-transaction fee — a
+direct-UPI self-service option (QR code + `upi://pay` link on the member
+dashboard) was built and then removed again: members now pay at the front
+desk, cash or UPI, whichever's easiest for them in person. The dashboard's
+Fee Status page only shows the amount due and due date, plus a note to pay
+at the front desk. Staff record the payment in **Admin → Fees → Record
+Manual Payment** (method: cash, UPI, or manual) — same flow either way,
+there's just no member-facing payment button anymore.
 
 ## Member accounts
 

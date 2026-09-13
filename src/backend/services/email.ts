@@ -156,7 +156,7 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
           bodyHtml:
             heading("Fee due reminder") +
             paragraph(`Hi ${escapeHtml(name)}, this is a reminder that your membership fee is due on <strong>${escapeHtml(dueDate)}</strong>.`) +
-            paragraph("You can pay instantly via UPI from your member dashboard — no fees, no cards needed."),
+            paragraph("Please pay at the front desk — cash or UPI, whichever's easiest."),
         }),
       };
     }
