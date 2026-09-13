@@ -5,7 +5,7 @@ import {
   listTrialOverMembers,
   listUpcomingBirthdays,
 } from "@/backend/services/admin/alerts";
-import AlertsList from "@/frontend/components/admin/AlertsList";
+import AlertsList, { AlertSummaryPill } from "@/frontend/components/admin/AlertsList";
 
 export default async function AdminAlertsPage() {
   const [overdue, upcomingDue, inactive, trialOver, birthdays] = await Promise.all([
@@ -16,47 +16,37 @@ export default async function AdminAlertsPage() {
     listUpcomingBirthdays(),
   ]);
 
+  const categories = [
+    { key: "overdue", title: "Fee Overdue", tone: "error" as const, icon: "error", members: overdue },
+    { key: "upcomingDue", title: "Fee Due Within 3 Days", tone: "warning" as const, icon: "schedule", members: upcomingDue },
+    { key: "inactive", title: "Inactive 4+ Months", tone: "warning" as const, icon: "person_off", members: inactive },
+    { key: "trialOver", title: "Trial Over, No Plan", tone: "warning" as const, icon: "person_add", members: trialOver },
+    { key: "birthdays", title: "Birthdays This Week", tone: "info" as const, icon: "cake", members: birthdays },
+  ];
+
+  const totalAlerts = categories.reduce((sum, c) => sum + c.members.length, 0);
+
   return (
     <div className="flex flex-col gap-8">
       <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide">Alerts &amp; Needs Attention</h1>
 
-      <div className="flex flex-col gap-6">
-        <AlertsList
-          title="Fee Overdue"
-          tone="error"
-          icon="error"
-          emptyMessage="No overdue fees right now."
-          members={overdue}
-        />
-        <AlertsList
-          title="Fee Due Within 3 Days"
-          tone="warning"
-          icon="schedule"
-          emptyMessage="Nothing due in the next 3 days."
-          members={upcomingDue}
-        />
-        <AlertsList
-          title="Inactive 4+ Months"
-          tone="warning"
-          icon="person_off"
-          emptyMessage="No long-term inactive members."
-          members={inactive}
-        />
-        <AlertsList
-          title="Trial Over, No Plan Selected"
-          tone="warning"
-          icon="person_add"
-          emptyMessage="No pending trial conversions."
-          members={trialOver}
-        />
-        <AlertsList
-          title="Birthdays This Week"
-          tone="info"
-          icon="cake"
-          emptyMessage="No birthdays this week."
-          members={birthdays}
-        />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {categories.map((c) => (
+          <AlertSummaryPill key={c.key} title={c.title} tone={c.tone} icon={c.icon} count={c.members.length} />
+        ))}
       </div>
+
+      {totalAlerts === 0 ? (
+        <p className="font-body text-sm text-tertiary bg-surface-container-low/60 border border-dashed border-surface-variant px-6 py-10 text-center">
+          Everything&apos;s clear — nothing needs your attention right now.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {categories.map((c) => (
+            <AlertsList key={c.key} title={c.title} tone={c.tone} icon={c.icon} members={c.members} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

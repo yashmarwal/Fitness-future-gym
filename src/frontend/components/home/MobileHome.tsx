@@ -142,29 +142,6 @@ export default function MobileHome() {
         </div>
       </div>
 
-      {/* Real-Time Gym Status Pill */}
-      <div className="px-space-md -mt-3 relative z-20">
-        <div className="bg-surface-container px-space-md py-space-sm shadow-md flex items-center justify-between border border-surface-variant/40">
-          <div className="flex items-center gap-space-sm min-w-0">
-            <span className="relative flex h-2.5 w-2.5 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-container"></span>
-            </span>
-            <div className="flex flex-col min-w-0">
-              <span className="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">
-                FLOOR OCCUPANCY: MODERATE
-              </span>
-              <span className="font-body-sm text-body-sm text-tertiary truncate">
-                Deadlift platforms &amp; squat cages free
-              </span>
-            </div>
-          </div>
-          <span className="font-label-md text-label-md text-primary-container whitespace-nowrap uppercase font-bold">
-            LIVE
-          </span>
-        </div>
-      </div>
-
       {/* 2. TRUST METRICS GRID */}
       <section className="mobile-anim-sec px-space-md pt-space-lg flex flex-col gap-space-sm">
         <div className="flex items-center justify-between">
