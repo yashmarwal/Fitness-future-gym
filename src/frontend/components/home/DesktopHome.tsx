@@ -810,7 +810,7 @@ export default function DesktopHome() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-space-md mb-space-xl">
             <div className="dash-card bg-primary-container text-on-primary-container p-space-lg shadow-hard-lg flex flex-col gap-space-xs md:col-span-1">
               <span className="material-symbols-outlined text-headline-md">event_note</span>
               <h4 className="font-title-sm text-title-sm uppercase">Workout Planner</h4>
@@ -859,11 +859,20 @@ export default function DesktopHome() {
             </div>
 
             <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
-              <span className="material-symbols-outlined text-primary-container text-headline-md">payments</span>
-              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Direct UPI Fee Payments</h4>
+              <span className="material-symbols-outlined text-primary-container text-headline-md">calendar_month</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Attendance History</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
-                Pay your dues straight from the dashboard via UPI — a direct transfer, zero commission, no extra
-                apps to install.
+                Every check-in tracked automatically — see your visit history and streak at a glance, no manual
+                logging.
+              </p>
+            </div>
+
+            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+              <span className="material-symbols-outlined text-primary-container text-headline-md">fitness_center</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Workout Log</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Log every set, rep, and weight after training — a real record of your progress, not just a plan on
+                paper.
               </p>
             </div>
           </div>

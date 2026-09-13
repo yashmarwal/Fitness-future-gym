@@ -518,11 +518,17 @@ export default function MobileHome() {
           </div>
 
           <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
-            <span className="material-symbols-outlined text-primary-container text-title-md">payments</span>
+            <span className="material-symbols-outlined text-primary-container text-title-md">calendar_month</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
-              UPI Fee Payments
+              Attendance History
             </span>
-            <span className="font-body-sm text-body-sm text-tertiary">Direct transfer, zero commission</span>
+            <span className="font-body-sm text-body-sm text-tertiary">Every check-in tracked automatically</span>
+          </div>
+
+          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+            <span className="material-symbols-outlined text-primary-container text-title-md">fitness_center</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">Workout Log</span>
+            <span className="font-body-sm text-body-sm text-tertiary">Track every set, rep &amp; weight</span>
           </div>
         </div>
 
