@@ -120,36 +120,6 @@ create table if not exists food_logs (
 create index if not exists food_logs_member_id_logged_at_idx
   on food_logs (member_id, logged_at desc);
 
--- ── Content management ─────────────────────────────────────────────────
-
-create table if not exists announcements (
-  id uuid primary key default gen_random_uuid(),
-  title text not null,
-  body text not null,
-  is_published boolean not null default true,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists blog_posts (
-  id uuid primary key default gen_random_uuid(),
-  title text not null,
-  slug text not null unique,
-  tag text,
-  excerpt text,
-  body text,
-  is_published boolean not null default true,
-  published_at timestamptz not null default now(),
-  created_at timestamptz not null default now()
-);
-
-create table if not exists faqs (
-  id uuid primary key default gen_random_uuid(),
-  question text not null,
-  answer text not null,
-  sort_order integer not null default 0,
-  created_at timestamptz not null default now()
-);
-
 -- ── WhatsApp ────────────────────────────────────────────────────────────
 
 create table if not exists whatsapp_messages (

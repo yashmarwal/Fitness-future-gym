@@ -43,19 +43,6 @@ export type FeePaymentRow = {
   createdAt: string;
 };
 
-export type Announcement = { id: string; title: string; body: string; isPublished: boolean; createdAt: string };
-export type Faq = { id: string; question: string; answer: string; sortOrder: number };
-export type BlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  tag: string | null;
-  excerpt: string | null;
-  body: string | null;
-  isPublished: boolean;
-  publishedAt: string;
-};
-
 export type BroadcastSegment = "all" | "overdue" | "inactive_14d";
 
 export type AlertMember = {
