@@ -59,16 +59,7 @@ export default async function DashboardPage() {
         />
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-6 bg-surface-container-low p-5 shadow-hard mb-6">
-        <AttendanceCheckInButton />
-        <div className="flex-1">
-          <h2 className="font-display text-lg text-on-surface uppercase tracking-wide">Mark Your Attendance</h2>
-          <p className="font-body text-sm text-tertiary mt-1">
-            Tap the button to check in from here — same as scanning the QR at the front desk. Unlocks the rest of
-            your dashboard for the next 3 hours.
-          </p>
-        </div>
-      </div>
+      <AttendanceCheckInButton />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatCard value={streak} label="Day Streak" tone="accent" />

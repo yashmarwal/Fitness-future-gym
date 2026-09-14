@@ -53,34 +53,38 @@ export default function AttendanceCheckInButton() {
   const checkedIn = status?.checkedIn ?? false;
   const loading = status === null;
 
+  const statusText = loading
+    ? "Loading…"
+    : marking
+      ? "Checking in…"
+      : checkedIn
+        ? `Marked — unlocked for ${Math.ceil((status!.retryAfterMinutes ?? 0) / 60)}h`
+        : "Tap to check in and unlock your dashboard";
+
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-hard mb-6">
       <button
         onClick={handleTap}
         disabled={checkedIn || marking || loading}
         aria-label={checkedIn ? "Attendance already marked" : "Tap to mark attendance"}
-        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center gap-1 shadow-hard-lg transition-all
+        className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-hard transition-all
           ${
             checkedIn
               ? "bg-surface-container-high text-primary-container cursor-default"
-              : "bg-primary-container text-on-primary-container hover:bg-secondary-container active:scale-95"
+              : "bg-primary-container text-on-primary-container hover:bg-secondary-container active:scale-90"
           }
-          disabled:opacity-100
         `}
       >
-        <span className="material-symbols-outlined text-3xl leading-none">
+        <span className="material-symbols-outlined text-xl leading-none">
           {checkedIn ? "check_circle" : "qr_code_scanner"}
         </span>
-        <span className="font-label text-[9px] uppercase tracking-wide leading-none">
-          {loading ? "..." : marking ? "Marking" : checkedIn ? "Marked" : "Check In"}
-        </span>
       </button>
-      {checkedIn && status?.retryAfterMinutes != null && (
-        <p className="font-body text-[10px] text-outline text-center">
-          Next check-in in {Math.ceil(status.retryAfterMinutes / 60)}h
+      <div className="flex-1 min-w-0">
+        <p className="font-label text-xs uppercase tracking-wide text-on-surface">Attendance</p>
+        <p className={`font-body text-xs truncate ${error ? "text-error" : "text-tertiary"}`}>
+          {error ?? statusText}
         </p>
-      )}
-      {error && <p className="font-body text-xs text-error text-center max-w-40">{error}</p>}
+      </div>
     </div>
   );
 }
