@@ -13,31 +13,57 @@ export default function LoginForm() {
   const [devCode, setDevCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
+  async function requestCode(): Promise<boolean> {
+    const res = await fetch("/api/auth/request-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier }),
+    });
+    const data = await res.json();
+    if (data.status === "sent") {
+      setDevCode(data.devCode ?? null);
+      setResolvedPhone(data.phone);
+      return true;
+    }
+    if (data.status === "not_found") {
+      setError("No membership found for that phone or email. Contact the front desk.");
+    } else {
+      setError(data.message ?? "Something went wrong.");
+    }
+    return false;
+  }
 
   async function handleRequestOtp(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/request-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier }),
-      });
-      const data = await res.json();
-      if (data.status === "sent") {
-        setDevCode(data.devCode ?? null);
-        setResolvedPhone(data.phone);
-        setStep("code");
-      } else if (data.status === "not_found") {
-        setError("No membership found for that phone or email. Contact the front desk.");
-      } else {
-        setError(data.message ?? "Something went wrong.");
-      }
+      const ok = await requestCode();
+      if (ok) setStep("code");
     } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResend() {
+    setResending(true);
+    setError(null);
+    setResendMessage(null);
+    try {
+      const ok = await requestCode();
+      if (ok) {
+        setCode("");
+        setResendMessage("A new code is on its way — check your WhatsApp and email (spam folder too).");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -56,7 +82,7 @@ export default function LoginForm() {
         router.push("/dashboard");
         router.refresh();
       } else if (data.status === "invalid") {
-        setError("Incorrect or expired code.");
+        setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
       } else {
         setError("No membership found for that account.");
       }
@@ -106,6 +132,9 @@ export default function LoginForm() {
           <p className="font-body text-sm text-tertiary">
             Enter the 6-digit code sent to your WhatsApp (and email, if you have one on file).
           </p>
+          <p className="font-body text-xs text-tertiary">
+            Don&apos;t see it? Check your email&apos;s spam/junk folder — the code is valid for 15 minutes.
+          </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">
               Dev mode (no WhatsApp configured yet) — your code is <strong>{devCode}</strong>.
@@ -131,13 +160,24 @@ export default function LoginForm() {
           >
             {loading ? "Verifying..." : "Verify & Sign In"}
           </button>
-          <button
-            type="button"
-            onClick={() => setStep("phone")}
-            className="font-label text-xs uppercase tracking-wider text-tertiary"
-          >
-            ← Use a different number
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setStep("phone")}
+              className="font-label text-xs uppercase tracking-wider text-tertiary"
+            >
+              ← Use A Different Number
+            </button>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="font-label text-xs uppercase tracking-wider text-primary-container disabled:opacity-60"
+            >
+              {resending ? "Sending..." : "Resend Code"}
+            </button>
+          </div>
+          {resendMessage && <p className="font-body text-xs text-primary-container">{resendMessage}</p>}
         </form>
       )}
 

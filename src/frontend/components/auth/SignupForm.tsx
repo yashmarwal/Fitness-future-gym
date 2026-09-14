@@ -15,30 +15,56 @@ export default function SignupForm() {
   const [devCode, setDevCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
+  async function requestCode(): Promise<boolean> {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullName, phone, email, dateOfBirth: dateOfBirth || undefined }),
+    });
+    const data = await res.json();
+    if (data.status === "sent") {
+      setDevCode(data.devCode ?? null);
+      return true;
+    }
+    if (data.status === "already_registered") {
+      setError("This number is already registered — try signing in instead.");
+    } else {
+      setError(data.message ?? "Something went wrong.");
+    }
+    return false;
+  }
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, phone, email, dateOfBirth: dateOfBirth || undefined }),
-      });
-      const data = await res.json();
-      if (data.status === "sent") {
-        setDevCode(data.devCode ?? null);
-        setStep("code");
-      } else if (data.status === "already_registered") {
-        setError("This number is already registered — try signing in instead.");
-      } else {
-        setError(data.message ?? "Something went wrong.");
-      }
+      const ok = await requestCode();
+      if (ok) setStep("code");
     } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResend() {
+    setResending(true);
+    setError(null);
+    setResendMessage(null);
+    try {
+      const ok = await requestCode();
+      if (ok) {
+        setCode("");
+        setResendMessage("A new code is on its way — check your WhatsApp and email (spam folder too).");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -57,7 +83,7 @@ export default function SignupForm() {
         router.push("/dashboard");
         router.refresh();
       } else if (data.status === "invalid") {
-        setError("Incorrect or expired code.");
+        setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
       } else {
         setError("Something went wrong.");
       }
@@ -144,6 +170,9 @@ export default function SignupForm() {
             Enter the 6-digit code sent to your WhatsApp and email to verify your number and finish signing in.
             Your membership number and digital card are created once you verify below.
           </p>
+          <p className="font-body text-xs text-tertiary">
+            Don&apos;t see it? Check your email&apos;s spam/junk folder — the code is valid for 15 minutes.
+          </p>
           {devCode && (
             <p className="font-body text-xs text-primary-container">
               Dev mode (no WhatsApp configured yet) — your code is <strong>{devCode}</strong>.
@@ -169,6 +198,24 @@ export default function SignupForm() {
           >
             {loading ? "Verifying..." : "Verify & Enter"}
           </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setStep("details")}
+              className="font-label text-xs uppercase tracking-wider text-tertiary"
+            >
+              ← Edit Details
+            </button>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="font-label text-xs uppercase tracking-wider text-primary-container disabled:opacity-60"
+            >
+              {resending ? "Sending..." : "Resend Code"}
+            </button>
+          </div>
+          {resendMessage && <p className="font-body text-xs text-primary-container">{resendMessage}</p>}
         </form>
       )}
 

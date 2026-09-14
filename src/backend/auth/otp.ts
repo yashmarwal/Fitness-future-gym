@@ -2,7 +2,11 @@ import "server-only";
 import { createHash, randomInt } from "node:crypto";
 import { getDb } from "@/backend/db/client";
 
-const OTP_TTL_MINUTES = 10;
+// Bumped from 10 → 15 minutes: with WhatsApp not yet configured, email is
+// the only real delivery channel right now, and a brand-new sending domain
+// often lands in spam long enough that 10 minutes wasn't always enough time
+// for someone to actually find the code.
+const OTP_TTL_MINUTES = 15;
 
 function hashCode(phone: string, code: string) {
   return createHash("sha256").update(`${phone}:${code}:${process.env.SESSION_SECRET ?? "dev"}`).digest("hex");
@@ -11,6 +15,19 @@ function hashCode(phone: string, code: string) {
 export async function issueOtp(phone: string): Promise<string> {
   const code = randomInt(100000, 999999).toString();
   const db = getDb();
+
+  // Invalidate any previously-issued-but-unused code for this phone first.
+  // Without this, verifyOtp's "most recent still-unconsumed" lookup means
+  // an OLD code stays valid indefinitely (until its own expiry) even after
+  // a newer one is issued and used — confirmed live: requesting a code
+  // twice then verifying with the FIRST (stale) one still succeeded,
+  // because it was still sitting there unconsumed. Only the code just sent
+  // should ever be valid.
+  await db
+    .from("login_otps")
+    .update({ consumed_at: new Date().toISOString() })
+    .eq("phone", phone)
+    .is("consumed_at", null);
 
   const { error } = await db.from("login_otps").insert({
     phone,
