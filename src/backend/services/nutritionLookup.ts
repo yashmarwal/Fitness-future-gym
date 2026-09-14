@@ -1,4 +1,5 @@
 import "server-only";
+import { INDIAN_FOODS, type LocalFood } from "@/backend/lib/indianFoodLibrary";
 
 // USDA FoodData Central — free, US government nutrition database, no signup
 // required to start (the shared DEMO_KEY works out of the box, just with a
@@ -42,7 +43,47 @@ export type NutritionSearchResult = {
   proteinG: number | null;
   carbsG: number | null;
   fatG: number | null;
+  source: "local" | "usda";
 };
+
+function titleCase(name: string): string {
+  return name.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// Checked before ever touching the USDA API — see indianFoodLibrary.ts for
+// why. Matches against every listed spelling of a food (not just its
+// primary name), ranked exact > starts-with > contains, so typing "dal"
+// finds the dal entry before some unrelated food whose description merely
+// contains "dal" as a substring somewhere.
+function searchLocalFoods(query: string): NutritionSearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+
+  const matches: { food: LocalFood; matchedName: string; rank: number }[] = [];
+  for (const food of INDIAN_FOODS) {
+    let best: { name: string; rank: number } | null = null;
+    for (const name of food.names) {
+      const lower = name.toLowerCase();
+      const rank = lower === q ? 0 : lower.startsWith(q) ? 1 : lower.includes(q) ? 2 : -1;
+      if (rank === -1) continue;
+      if (!best || rank < best.rank) best = { name, rank };
+    }
+    if (best) matches.push({ food, matchedName: best.name, rank: best.rank });
+  }
+
+  matches.sort((a, b) => a.rank - b.rank);
+
+  return matches.slice(0, 8).map(({ food, matchedName }, i) => ({
+    fdcId: -(i + 1),
+    description: titleCase(matchedName),
+    servingInfo: "per 100g",
+    calories: food.calories,
+    proteinG: food.proteinG,
+    carbsG: food.carbsG,
+    fatG: food.fatG,
+    source: "local" as const,
+  }));
+}
 
 function extractNutrient(nutrients: UsdaFoodNutrient[] | undefined, name: string): number | null {
   const match = nutrients?.find((n) => n.nutrientName === name);
@@ -71,6 +112,13 @@ async function fetchWithRetry(url: string, attempts = 2): Promise<Response> {
 }
 
 export async function searchFoods(query: string): Promise<NutritionSearchResult[]> {
+  // Local-first: if the bundled Indian food list has any match at all, use
+  // it and skip the USDA call entirely — both to save the request and
+  // because it's usually the more relevant result anyway (USDA's generic
+  // dataset barely covers Indian home cooking).
+  const localMatches = searchLocalFoods(query);
+  if (localMatches.length > 0) return localMatches;
+
   const apiKey = process.env.USDA_FDC_API_KEY || "DEMO_KEY";
   const url = new URL(USDA_SEARCH_URL);
   url.searchParams.set("query", query);
@@ -93,5 +141,6 @@ export async function searchFoods(query: string): Promise<NutritionSearchResult[
     proteinG: extractNutrient(food.foodNutrients, "Protein"),
     carbsG: extractNutrient(food.foodNutrients, "Carbohydrate, by difference"),
     fatG: extractNutrient(food.foodNutrients, "Total lipid (fat)"),
+    source: "usda" as const,
   }));
 }

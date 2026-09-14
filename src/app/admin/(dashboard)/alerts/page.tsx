@@ -1,6 +1,7 @@
 import {
   listOverdueFeeMembers,
   listUpcomingDueMembers,
+  listRecentlyMissedMembers,
   listInactiveMembers,
   listTrialOverMembers,
   listUpcomingBirthdays,
@@ -8,9 +9,10 @@ import {
 import AlertsList, { AlertSummaryPill } from "@/frontend/components/admin/AlertsList";
 
 export default async function AdminAlertsPage() {
-  const [overdue, upcomingDue, inactive, trialOver, birthdays] = await Promise.all([
+  const [overdue, upcomingDue, recentlyMissed, inactive, trialOver, birthdays] = await Promise.all([
     listOverdueFeeMembers(),
     listUpcomingDueMembers(),
+    listRecentlyMissedMembers(),
     listInactiveMembers(),
     listTrialOverMembers(),
     listUpcomingBirthdays(),
@@ -19,6 +21,7 @@ export default async function AdminAlertsPage() {
   const categories = [
     { key: "overdue", title: "Fee Overdue", tone: "error" as const, icon: "error", members: overdue },
     { key: "upcomingDue", title: "Fee Due Within 3 Days", tone: "warning" as const, icon: "schedule", members: upcomingDue },
+    { key: "recentlyMissed", title: "No Check-In In 3+ Days", tone: "warning" as const, icon: "event_busy", members: recentlyMissed },
     { key: "inactive", title: "Inactive 4+ Months", tone: "warning" as const, icon: "person_off", members: inactive },
     { key: "trialOver", title: "Trial Over, No Plan", tone: "warning" as const, icon: "person_add", members: trialOver },
     { key: "birthdays", title: "Birthdays This Week", tone: "info" as const, icon: "cake", members: birthdays },

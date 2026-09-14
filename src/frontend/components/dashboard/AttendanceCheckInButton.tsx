@@ -29,6 +29,8 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         setStatus({ checkedIn: true, retryAfterMinutes: data.retryAfterMinutes });
       } else if (data.status === "inactive") {
         setError("Membership inactive — see the front desk.");
+      } else if (data.status === "outside_hours") {
+        setError("Floor's closed — attendance opens 5–11 AM and 4–10:30 PM.");
       } else {
         setError("Couldn't check you in right now.");
       }

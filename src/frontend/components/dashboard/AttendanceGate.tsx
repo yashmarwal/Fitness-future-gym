@@ -29,11 +29,16 @@ export default function AttendanceGate({
   const [error, setError] = useState<string | null>(null);
   const checkedIn = initialCheckedIn || locallyMarked;
 
-  // Only the overview is always reachable — that's where the check-in
-  // button itself lives, plus this same blocking modal for anyone who
-  // navigates straight to a sub-page's URL.
+  // The overview is always reachable (that's where the check-in button
+  // itself lives), and so is nutrition logging — deliberately exempt, since
+  // attendance can now only be marked 5–11 AM / 4–10:30 PM (see
+  // isWithinAttendanceHours in attendance.ts). Without this exemption, a
+  // member logging dinner at 9pm and then a late snack at midnight would
+  // find the gate impossible to satisfy at all outside those windows —
+  // food logging needs to work any time of day, not just gym hours.
   const isOverview = pathname === "/dashboard";
-  const blocked = !checkedIn && !isOverview;
+  const isNutrition = pathname.startsWith("/dashboard/nutrition");
+  const blocked = !checkedIn && !isOverview && !isNutrition;
 
   async function handleMark() {
     setMarking(true);
@@ -46,6 +51,8 @@ export default function AttendanceGate({
         router.refresh();
       } else if (data.status === "inactive") {
         setError("Your membership isn't active — see the front desk.");
+      } else if (data.status === "outside_hours") {
+        setError("The floor's closed right now — attendance opens 5–11 AM and 4–10:30 PM.");
       } else {
         setError(data.message ?? "Couldn't check you in. Ask the front desk for help.");
       }

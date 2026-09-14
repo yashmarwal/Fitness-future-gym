@@ -11,6 +11,7 @@ type NutritionResult = {
   proteinG: number | null;
   carbsG: number | null;
   fatG: number | null;
+  source: "local" | "usda";
 };
 
 type BaseValues = {
@@ -42,7 +43,9 @@ export default function FoodLogForm() {
   const [results, setResults] = useState<NutritionResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [autofilledFrom, setAutofilledFrom] = useState<string | null>(null);
+  const [autofilledFrom, setAutofilledFrom] = useState<{ servingInfo: string; source: "local" | "usda" } | null>(
+    null
+  );
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("100");
   // Non-null only while the four macro fields are still "live" against a
@@ -125,7 +128,7 @@ export default function FoodLogForm() {
     setProteinG(scalePer100g(base.proteinG, "100"));
     setCarbsG(scalePer100g(base.carbsG, "100"));
     setFatG(scalePer100g(base.fatG, "100"));
-    setAutofilledFrom(result.servingInfo);
+    setAutofilledFrom({ servingInfo: result.servingInfo, source: result.source });
     setLookupError(null);
     setResults([]);
     setShowResults(false);
@@ -229,7 +232,8 @@ export default function FoodLogForm() {
 
       {autofilledFrom && (
         <p className="font-body text-xs text-tertiary -mt-1">
-          Auto-filled from USDA FoodData Central ({autofilledFrom}) — edit any value below before saving.
+          Auto-filled from {autofilledFrom.source === "local" ? "the Indian food reference" : "USDA FoodData Central"}{" "}
+          ({autofilledFrom.servingInfo}) — edit any value below before saving.
         </p>
       )}
       {lookupError && <p className="font-body text-xs text-error -mt-1">{lookupError}</p>}

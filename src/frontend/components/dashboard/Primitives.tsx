@@ -38,6 +38,15 @@ export function StatCard({
   );
 }
 
+/**
+ * A pulsing placeholder block for loading.tsx skeletons — one shared shape
+ * so every skeleton across the dashboard reads as the same visual language
+ * instead of each route inventing its own gray boxes.
+ */
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-surface-container-high ${className}`} />;
+}
+
 /** Shared empty-state block for "no logs yet" style messages. */
 export function DashboardEmptyState({ icon, children }: { icon: string; children: ReactNode }) {
   return (

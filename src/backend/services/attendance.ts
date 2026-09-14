@@ -6,6 +6,33 @@ import type { CheckInResult } from "@/types/member";
 const COOLDOWN_HOURS = 3;
 const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 
+// The gym floor's actual open windows. Computed in IST specifically (not
+// server-local time) since Vercel's serverless functions run in UTC — using
+// the server's own clock would silently gate attendance by the wrong hours
+// in production even though it happened to look right in local dev on an
+// IST machine.
+const MORNING_START_MIN = 5 * 60; // 5:00 AM
+const MORNING_END_MIN = 11 * 60; // 11:00 AM
+const EVENING_START_MIN = 16 * 60; // 4:00 PM
+const EVENING_END_MIN = 22 * 60 + 30; // 10:30 PM
+
+function isWithinAttendanceHours(): boolean {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  }).formatToParts(new Date());
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? "0") % 24;
+  const minute = Number(parts.find((p) => p.type === "minute")?.value ?? "0");
+  const totalMinutes = hour * 60 + minute;
+
+  return (
+    (totalMinutes >= MORNING_START_MIN && totalMinutes <= MORNING_END_MIN) ||
+    (totalMinutes >= EVENING_START_MIN && totalMinutes <= EVENING_END_MIN)
+  );
+}
+
 type MemberRow = { id: string; full_name: string; membership_number: string; is_active: boolean };
 
 // Shared by both check-in paths: the front-desk QR poster (looked up by
@@ -17,6 +44,10 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
 
   if (!member.is_active) {
     return { status: "inactive" };
+  }
+
+  if (!isWithinAttendanceHours()) {
+    return { status: "outside_hours" };
   }
 
   const { data: lastVisit, error: attendanceError } = await db

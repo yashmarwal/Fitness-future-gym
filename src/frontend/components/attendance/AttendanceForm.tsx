@@ -46,6 +46,11 @@ export default function AttendanceForm() {
         setState({ phase: "error", message: "Membership number not found. Please check with the front desk." });
       } else if (data.status === "inactive") {
         setState({ phase: "error", message: "This membership is inactive. Please see the front desk." });
+      } else if (data.status === "outside_hours") {
+        setState({
+          phase: "error",
+          message: "The floor is closed right now. Attendance can only be marked 5:00–11:00 AM or 4:00–10:30 PM.",
+        });
       } else {
         setState({ phase: "error", message: data.message ?? "Something went wrong." });
       }

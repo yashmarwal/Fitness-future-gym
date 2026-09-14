@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { AlertMember } from "@/types/admin";
 
+const RECENT_MISS_DAYS = 3;
 const INACTIVE_DAYS = 120;
 const TRIAL_DAYS = 2;
 const UPCOMING_DUE_DAYS = 3;
@@ -58,6 +59,35 @@ export async function listUpcomingDueMembers(): Promise<AlertMember[]> {
   }));
 }
 
+// Short-term, actionable version of listInactiveMembers below — catches
+// someone falling off within days, early enough to actually follow up
+// before they quit for good, rather than waiting for the 4-month chronic
+// alert. Deliberately allowed to overlap with that one (a 4-month-inactive
+// member trivially also hasn't checked in recently) rather than trying to
+// exclude them — simpler, and seeing them in both isn't confusing, just
+// consistent.
+export async function listRecentlyMissedMembers(): Promise<AlertMember[]> {
+  const db = getDb();
+  const cutoff = daysAgo(RECENT_MISS_DAYS);
+
+  const { data, error } = await db
+    .from("members")
+    .select("id, full_name, membership_number, last_checked_in_at, joined_at")
+    .eq("is_active", true)
+    .lt("joined_at", cutoff.slice(0, 10))
+    .or(`last_checked_in_at.is.null,last_checked_in_at.lt.${cutoff}`);
+
+  if (error) throw new Error(`Failed to load recently-missed members: ${error.message}`);
+  return (data ?? []).map((m) => ({
+    id: m.id,
+    fullName: m.full_name,
+    membershipNumber: m.membership_number,
+    detail: m.last_checked_in_at
+      ? `Last visit ${new Date(m.last_checked_in_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
+      : `Never checked in (joined ${m.joined_at})`,
+  }));
+}
+
 export async function listInactiveMembers(): Promise<AlertMember[]> {
   const db = getDb();
   const cutoff = daysAgo(INACTIVE_DAYS);
@@ -75,7 +105,7 @@ export async function listInactiveMembers(): Promise<AlertMember[]> {
     fullName: m.full_name,
     membershipNumber: m.membership_number,
     detail: m.last_checked_in_at
-      ? `Last visit ${new Date(m.last_checked_in_at).toLocaleDateString()}`
+      ? `Last visit ${new Date(m.last_checked_in_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
       : `Never checked in (joined ${m.joined_at})`,
   }));
 }

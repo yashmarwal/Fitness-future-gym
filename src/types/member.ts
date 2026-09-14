@@ -10,4 +10,5 @@ export type CheckInResult =
   | { status: "success"; member: Pick<Member, "fullName" | "membershipNumber"> }
   | { status: "not_found" }
   | { status: "inactive" }
-  | { status: "cooldown"; retryAfterMinutes: number };
+  | { status: "cooldown"; retryAfterMinutes: number }
+  | { status: "outside_hours" };

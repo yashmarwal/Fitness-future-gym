@@ -5,24 +5,36 @@ import { listMembers } from "@/backend/services/admin/members";
 import {
   listOverdueFeeMembers,
   listUpcomingDueMembers,
+  listRecentlyMissedMembers,
   listInactiveMembers,
   listTrialOverMembers,
   listUpcomingBirthdays,
 } from "@/backend/services/admin/alerts";
 
 export default async function AdminOverviewPage() {
-  const [todaysCheckIns, revenueThisMonth, overdueCount, members, overdue, upcomingDue, inactive, trialOver, birthdays] =
-    await Promise.all([
-      countTodaysCheckIns(),
-      sumPaidThisMonth(),
-      countOverdueMembers(),
-      listMembers(),
-      listOverdueFeeMembers(),
-      listUpcomingDueMembers(),
-      listInactiveMembers(),
-      listTrialOverMembers(),
-      listUpcomingBirthdays(),
-    ]);
+  const [
+    todaysCheckIns,
+    revenueThisMonth,
+    overdueCount,
+    members,
+    overdue,
+    upcomingDue,
+    recentlyMissed,
+    inactive,
+    trialOver,
+    birthdays,
+  ] = await Promise.all([
+    countTodaysCheckIns(),
+    sumPaidThisMonth(),
+    countOverdueMembers(),
+    listMembers(),
+    listOverdueFeeMembers(),
+    listUpcomingDueMembers(),
+    listRecentlyMissedMembers(),
+    listInactiveMembers(),
+    listTrialOverMembers(),
+    listUpcomingBirthdays(),
+  ]);
 
   const activeCount = members.filter((m) => m.isActive).length;
 
@@ -42,6 +54,7 @@ export default async function AdminOverviewPage() {
   const alertCounts = [
     { label: "Fee Overdue", count: overdue.length, tone: "text-error", icon: "error" },
     { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container", icon: "schedule" },
+    { label: "No Check-In 3+ Days", count: recentlyMissed.length, tone: "text-primary-container", icon: "event_busy" },
     { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container", icon: "person_off" },
     { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container", icon: "person_add" },
     { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface", icon: "cake" },
