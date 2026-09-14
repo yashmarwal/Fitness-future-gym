@@ -2,8 +2,13 @@ import Link from "next/link";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
 import { getRecentAttendance } from "@/backend/services/attendance";
+import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import { daysUntil } from "@/frontend/lib/date";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
+import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
+import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
+import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
+import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBanner";
 
 function computeStreak(checkIns: string[]): number {
   if (checkIns.length === 0) return 0;
@@ -37,11 +42,34 @@ export default async function DashboardPage() {
   const member = await getMemberById(session!.memberId);
   const attendance = await getRecentAttendance(session!.memberId, 60);
   const streak = computeStreak(attendance);
+  const todaysWorkout = await findTodaysWorkout(session!.memberId);
 
   const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-(--container-max) mx-auto">
+      <PersonalNoteArea />
+
+      {todaysWorkout && (
+        <TodayWorkoutBanner
+          planName={todaysWorkout.planName}
+          day={todaysWorkout.day}
+          focus={todaysWorkout.focus}
+          exercises={todaysWorkout.exercises}
+        />
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6 bg-surface-container-low p-5 shadow-hard mb-6">
+        <AttendanceCheckInButton />
+        <div className="flex-1">
+          <h2 className="font-display text-lg text-on-surface uppercase tracking-wide">Mark Your Attendance</h2>
+          <p className="font-body text-sm text-tertiary mt-1">
+            Tap the button to check in from here — same as scanning the QR at the front desk. Unlocks the rest of
+            your dashboard for the next 3 hours.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatCard value={streak} label="Day Streak" tone="accent" />
         <StatCard value={attendance.length} label="Recent Check-Ins" />
@@ -56,7 +84,7 @@ export default async function DashboardPage() {
       </div>
 
       <h2 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         {QUICK_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -70,6 +98,8 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
+
+      <NotificationBar />
     </div>
   );
 }

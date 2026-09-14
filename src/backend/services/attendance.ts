@@ -3,24 +3,16 @@ import { getDb } from "@/backend/db/client";
 import type { CheckInResult } from "@/types/member";
 
 const COOLDOWN_HOURS = 3;
+const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 
-export async function checkInMember(
-  membershipNumber: string
-): Promise<CheckInResult> {
+type MemberRow = { id: string; full_name: string; membership_number: string; is_active: boolean };
+
+// Shared by both check-in paths: the front-desk QR poster (looked up by
+// membership number, no login needed) and the dashboard's own one-tap
+// button (already-authenticated member, looked up by id) — same cooldown,
+// same attendance row, same last_checked_in_at update either way.
+async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   const db = getDb();
-  const { data: member, error: memberError } = await db
-    .from("members")
-    .select("id, full_name, membership_number, is_active")
-    .eq("membership_number", membershipNumber)
-    .maybeSingle();
-
-  if (memberError) {
-    throw new Error(`Failed to look up member: ${memberError.message}`);
-  }
-
-  if (!member) {
-    return { status: "not_found" };
-  }
 
   if (!member.is_active) {
     return { status: "inactive" };
@@ -40,9 +32,8 @@ export async function checkInMember(
 
   if (lastVisit) {
     const elapsedMs = Date.now() - new Date(lastVisit.checked_in_at).getTime();
-    const cooldownMs = COOLDOWN_HOURS * 60 * 60 * 1000;
-    if (elapsedMs < cooldownMs) {
-      const retryAfterMinutes = Math.ceil((cooldownMs - elapsedMs) / 60000);
+    if (elapsedMs < COOLDOWN_MS) {
+      const retryAfterMinutes = Math.ceil((COOLDOWN_MS - elapsedMs) / 60000);
       return { status: "cooldown", retryAfterMinutes };
     }
   }
@@ -68,6 +59,77 @@ export async function checkInMember(
       fullName: member.full_name,
       membershipNumber: member.membership_number,
     },
+  };
+}
+
+export async function checkInMember(membershipNumber: string): Promise<CheckInResult> {
+  const db = getDb();
+  const { data: member, error: memberError } = await db
+    .from("members")
+    .select("id, full_name, membership_number, is_active")
+    .eq("membership_number", membershipNumber)
+    .maybeSingle();
+
+  if (memberError) {
+    throw new Error(`Failed to look up member: ${memberError.message}`);
+  }
+  if (!member) {
+    return { status: "not_found" };
+  }
+
+  return checkInMemberRow(member);
+}
+
+// Dashboard's one-tap button — the member is already authenticated, so no
+// membership-number lookup or device-binding trick is needed at all, just
+// check them in directly by their session's member id.
+export async function checkInMemberById(memberId: string): Promise<CheckInResult> {
+  const db = getDb();
+  const { data: member, error: memberError } = await db
+    .from("members")
+    .select("id, full_name, membership_number, is_active")
+    .eq("id", memberId)
+    .maybeSingle();
+
+  if (memberError) {
+    throw new Error(`Failed to look up member: ${memberError.message}`);
+  }
+  if (!member) {
+    return { status: "not_found" };
+  }
+
+  return checkInMemberRow(member);
+}
+
+export type AttendanceStatus = {
+  checkedIn: boolean;
+  lastCheckedInAt: string | null;
+  retryAfterMinutes: number | null;
+};
+
+// Powers both the dashboard's check-in button state (active vs. "marked,
+// disabled for 3h") and the whole-dashboard attendance gate — same
+// cooldown window as checkInMemberRow, read-only.
+export async function getAttendanceStatus(memberId: string): Promise<AttendanceStatus> {
+  const db = getDb();
+  const { data: lastVisit, error } = await db
+    .from("attendance")
+    .select("checked_in_at")
+    .eq("member_id", memberId)
+    .order("checked_in_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to check attendance status: ${error.message}`);
+  if (!lastVisit) return { checkedIn: false, lastCheckedInAt: null, retryAfterMinutes: null };
+
+  const elapsedMs = Date.now() - new Date(lastVisit.checked_in_at).getTime();
+  const withinCooldown = elapsedMs < COOLDOWN_MS;
+
+  return {
+    checkedIn: withinCooldown,
+    lastCheckedInAt: lastVisit.checked_in_at,
+    retryAfterMinutes: withinCooldown ? Math.ceil((COOLDOWN_MS - elapsedMs) / 60000) : null,
   };
 }
 

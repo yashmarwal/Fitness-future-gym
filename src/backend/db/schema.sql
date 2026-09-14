@@ -120,6 +120,24 @@ create table if not exists food_logs (
 create index if not exists food_logs_member_id_logged_at_idx
   on food_logs (member_id, logged_at desc);
 
+-- ── In-app notifications (dashboard notification bar) ──────────────────
+-- Mirrors what already goes out over WhatsApp/email for broadcasts and fee
+-- reminders, so members also see it inside the dashboard itself. Purged
+-- after 7 days by the same cron that cleans up workout/food logs.
+
+create table if not exists member_notifications (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  type text not null, -- 'broadcast' | 'fee_reminder'
+  title text not null,
+  body text not null,
+  read_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists member_notifications_member_id_created_at_idx
+  on member_notifications (member_id, created_at desc);
+
 -- ── WhatsApp ────────────────────────────────────────────────────────────
 
 create table if not exists whatsapp_messages (

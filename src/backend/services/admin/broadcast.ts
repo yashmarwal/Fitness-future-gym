@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
+import { createNotification } from "@/backend/services/memberNotifications";
 import type { BroadcastSegment } from "@/types/admin";
 
 const HAS_CONTACT_INFO = "phone.not.is.null,email.not.is.null";
@@ -80,6 +81,12 @@ export async function sendBroadcast(
         memberId: recipient.id,
       }).catch(() => {});
     }
+    await createNotification({
+      memberId: recipient.id,
+      type: "broadcast",
+      title: subject || "Gym Update",
+      body: message,
+    }).catch(() => {});
   }
 
   return { sent: recipients.length };

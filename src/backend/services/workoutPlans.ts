@@ -30,6 +30,30 @@ function mapRow(row: { id: string; name: string; days: unknown; created_at: stri
   };
 }
 
+export type TodaysWorkout = {
+  planName: string;
+  day: string;
+  focus?: string;
+  exercises: WorkoutPlanExercise[];
+};
+
+// Best-effort: only fires for plans whose day labels happen to be real
+// weekday names (the builder's day field is free text — templates like
+// Push/Pull/Legs or "Day A/B/C" don't match anything, which is fine, this
+// is opportunistic, not a guarantee for every plan).
+export async function findTodaysWorkout(memberId: string): Promise<TodaysWorkout | null> {
+  const plans = await listWorkoutPlans(memberId);
+  const todayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+  for (const plan of plans) {
+    const match = plan.days.find((d) => d.day.trim().toLowerCase() === todayName.toLowerCase());
+    if (match && match.exercises.length > 0) {
+      return { planName: plan.name, day: match.day, focus: match.focus, exercises: match.exercises };
+    }
+  }
+  return null;
+}
+
 export async function listWorkoutPlans(memberId: string): Promise<WorkoutPlan[]> {
   const db = getDb();
   const { data, error } = await db

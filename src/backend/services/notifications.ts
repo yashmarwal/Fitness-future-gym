@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
+import { createNotification } from "@/backend/services/memberNotifications";
 
 const FEE_REMINDER_WINDOW_DAYS = 3;
 
@@ -75,6 +76,12 @@ export async function runFeeReminderCheck(): Promise<{ sent: number }> {
         memberId: member.id,
       }).catch(() => {});
     }
+    await createNotification({
+      memberId: member.id,
+      type: "fee_reminder",
+      title: "Fee Due Reminder",
+      body: `Your membership fee is due on ${member.fee_due_date}.`,
+    }).catch(() => {});
   }
 
   return { sent: (members ?? []).length };
