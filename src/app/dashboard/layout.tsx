@@ -11,10 +11,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getMemberSession();
   if (!session) redirect("/login");
 
-  const member = await getMemberById(session.memberId);
+  const [member, { checkedIn }] = await Promise.all([
+    getMemberById(session.memberId),
+    getAttendanceStatus(session.memberId),
+  ]);
   if (!member) redirect("/login");
-
-  const { checkedIn } = await getAttendanceStatus(session.memberId);
 
   return (
     <div className="flex flex-col min-h-screen">

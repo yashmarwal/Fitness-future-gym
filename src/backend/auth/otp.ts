@@ -12,9 +12,41 @@ function hashCode(phone: string, code: string) {
   return createHash("sha256").update(`${phone}:${code}:${process.env.SESSION_SECRET ?? "dev"}`).digest("hex");
 }
 
-export async function issueOtp(phone: string): Promise<string> {
-  const code = randomInt(100000, 999999).toString();
+// How long a just-issued, still-valid code is left completely untouched on
+// a repeat request, instead of being invalidated for a new one. Without
+// this, a slow-feeling tap that gets pressed twice (or "Resend" hit right
+// after the first send actually landed) invalidates the code already on
+// its way in the first email/WhatsApp message — the user then types that
+// exact, correctly-copied code and gets "invalid" because a newer one
+// silently replaced it seconds earlier. We never store the plaintext code
+// (only its hash), so a deduped request can't literally resend the same
+// digits — instead it returns null and the caller skips sending a new
+// message entirely, leaving the original (still valid) one as the one to
+// use.
+const REISSUE_DEDUPE_SECONDS = 20;
+
+export async function issueOtp(phone: string): Promise<string | null> {
   const db = getDb();
+
+  const { data: recent, error: recentError } = await db
+    .from("login_otps")
+    .select("expires_at, created_at")
+    .eq("phone", phone)
+    .is("consumed_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (recentError) throw new Error(`Failed to check recent OTP: ${recentError.message}`);
+
+  if (
+    recent &&
+    new Date(recent.expires_at) > new Date() &&
+    Date.now() - new Date(recent.created_at).getTime() < REISSUE_DEDUPE_SECONDS * 1000
+  ) {
+    return null;
+  }
+
+  const code = randomInt(100000, 999999).toString();
 
   // Invalidate any previously-issued-but-unused code for this phone first.
   // Without this, verifyOtp's "most recent still-unconsumed" lookup means

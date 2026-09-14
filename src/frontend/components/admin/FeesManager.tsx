@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { FeePaymentRow, AdminMember } from "@/types/admin";
+
+type StatusFilter = "all" | "paid" | "pending";
+type MethodFilter = "all" | "upi" | "cash" | "manual";
 
 export default function FeesManager({ payments, members }: { payments: FeePaymentRow[]; members: AdminMember[] }) {
   const router = useRouter();
@@ -10,6 +13,26 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<"upi" | "cash" | "manual">("upi");
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [methodFilter, setMethodFilter] = useState<MethodFilter>("all");
+
+  const filteredPayments = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return payments.filter((p) => {
+      if (statusFilter !== "all" && p.status !== statusFilter) return false;
+      if (methodFilter !== "all" && p.method !== methodFilter) return false;
+      if (q && !p.memberName.toLowerCase().includes(q) && !p.membershipNumber.toLowerCase().includes(q)) {
+        return false;
+      }
+      return true;
+    });
+  }, [payments, search, statusFilter, methodFilter]);
+
+  const totalCollected = useMemo(
+    () => filteredPayments.reduce((sum, p) => (p.status === "paid" ? sum + p.amount : sum), 0),
+    [filteredPayments]
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -74,11 +97,54 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         </button>
       </form>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-56">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg pointer-events-none">
+            search
+          </span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by member name or membership no."
+            className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body pl-10 pr-3 py-2.5 outline-none focus:border-primary-container"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
+        >
+          <option value="all">All Statuses</option>
+          <option value="paid">Paid</option>
+          <option value="pending">Pending</option>
+        </select>
+        <select
+          value={methodFilter}
+          onChange={(e) => setMethodFilter(e.target.value as MethodFilter)}
+          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
+        >
+          <option value="all">All Methods</option>
+          <option value="upi">UPI</option>
+          <option value="cash">Cash</option>
+          <option value="manual">Other</option>
+        </select>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 bg-surface-container-low px-5 py-3 shadow-hard">
+        <span className="font-label text-xs uppercase tracking-wider text-outline">
+          {filteredPayments.length} Payment{filteredPayments.length === 1 ? "" : "s"}
+        </span>
+        <span className="font-label text-xs uppercase tracking-wider text-primary-container">
+          Total Collected: ₹{totalCollected.toLocaleString("en-IN")}
+        </span>
+      </div>
+
       <div className="bg-surface-container-low shadow-hard overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b-2 border-surface-variant/60">
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Membership No.</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Amount</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Method</th>
               <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
@@ -86,16 +152,17 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-variant/30">
-            {payments.length === 0 ? (
+            {filteredPayments.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 px-4 text-center font-body text-sm text-tertiary">
-                  No payments recorded yet.
+                <td colSpan={6} className="py-8 px-4 text-center font-body text-sm text-tertiary">
+                  {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
                 </td>
               </tr>
             ) : (
-              payments.map((p) => (
+              filteredPayments.map((p) => (
                 <tr key={p.id} className="hover:bg-surface-container transition-colors">
                   <td className="py-3 px-4 font-body text-sm text-on-surface">{p.memberName}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">{p.membershipNumber}</td>
                   <td className="py-3 px-4 font-body text-sm text-primary-container">₹{p.amount}</td>
                   <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{p.method}</td>
                   <td className="py-3 px-4 font-body text-sm">
@@ -104,7 +171,11 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
                     </span>
                   </td>
                   <td className="py-3 px-4 font-body text-sm text-tertiary">
-                    {new Date(p.createdAt).toLocaleDateString()}
+                    {new Date(p.createdAt).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </td>
                 </tr>
               ))

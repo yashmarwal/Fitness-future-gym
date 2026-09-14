@@ -38,11 +38,17 @@ export async function requestMemberOtp(identifier: string): Promise<RequestOtpRe
   if (!member || !member.phone) return { status: "not_found" };
 
   const code = await issueOtp(member.phone);
-  // Each channel is independent — a WhatsApp failure (bad token, rate limit,
-  // API outage) must not stop the email from going out, and vice versa.
-  await sendWhatsAppTemplate({ phone: member.phone, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
-  if (member.email) {
-    await sendEmailTemplate({ to: member.email, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
+  // null means a still-valid code was issued moments ago (see issueOtp) —
+  // don't fire a second round of messages for what's almost certainly a
+  // double-tap or an immediate resend; the original message is still good.
+  if (code) {
+    // Each channel is independent — a WhatsApp failure (bad token, rate
+    // limit, API outage) must not stop the email from going out, and vice
+    // versa.
+    await sendWhatsAppTemplate({ phone: member.phone, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
+    if (member.email) {
+      await sendEmailTemplate({ to: member.email, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
+    }
   }
 
   // Gated purely on NODE_ENV, not on whether WhatsApp is configured — email
@@ -51,7 +57,7 @@ export async function requestMemberOtp(identifier: string): Promise<RequestOtpRe
   // in an HTTP response body once this is actually deployed (Vercel sets
   // NODE_ENV=production for both Production and Preview deployments).
   const isDev = process.env.NODE_ENV !== "production";
-  return { status: "sent", devCode: isDev ? code : undefined, phone: member.phone };
+  return { status: "sent", devCode: isDev ? (code ?? undefined) : undefined, phone: member.phone };
 }
 
 export type VerifyOtpResult =
@@ -182,14 +188,19 @@ export async function registerMember(input: {
   if (upsertError) throw new Error(`Failed to stage signup: ${upsertError.message}`);
 
   const code = await issueOtp(input.phone);
-  // Each channel is independent — a WhatsApp failure must not stop the
-  // email from going out, and vice versa.
-  await sendWhatsAppTemplate({
-    phone: input.phone,
-    template: "otp",
-    bodyParams: [code],
-  }).catch(() => {});
-  await sendEmailTemplate({ to: input.email, template: "otp", bodyParams: [code] }).catch(() => {});
+  // null means a still-valid code was issued moments ago (see issueOtp) —
+  // don't fire a second round of messages for what's almost certainly a
+  // double-tap or an immediate resend; the original message is still good.
+  if (code) {
+    // Each channel is independent — a WhatsApp failure must not stop the
+    // email from going out, and vice versa.
+    await sendWhatsAppTemplate({
+      phone: input.phone,
+      template: "otp",
+      bodyParams: [code],
+    }).catch(() => {});
+    await sendEmailTemplate({ to: input.email, template: "otp", bodyParams: [code] }).catch(() => {});
+  }
 
   // Gated purely on NODE_ENV, not on whether WhatsApp is configured — email
   // is a required field now and always gets the code independently, so an
@@ -197,5 +208,5 @@ export async function registerMember(input: {
   // in an HTTP response body once this is actually deployed (Vercel sets
   // NODE_ENV=production for both Production and Preview deployments).
   const isDev = process.env.NODE_ENV !== "production";
-  return { status: "sent", devCode: isDev ? code : undefined };
+  return { status: "sent", devCode: isDev ? (code ?? undefined) : undefined };
 }

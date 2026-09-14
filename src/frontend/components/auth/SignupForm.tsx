@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -17,8 +17,23 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
+  // A synchronous guard, not state — two taps landing in the same JS tick
+  // (common on mobile) both start before a re-render can disable the
+  // button, so relying on `loading`/`resending` state alone still lets a
+  // second request slip through.
+  const inFlight = useRef(false);
 
   async function requestCode(): Promise<boolean> {
+    if (inFlight.current) return false;
+    inFlight.current = true;
+    try {
+      return await sendCodeRequest();
+    } finally {
+      inFlight.current = false;
+    }
+  }
+
+  async function sendCodeRequest(): Promise<boolean> {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,7 +41,10 @@ export default function SignupForm() {
     });
     const data = await res.json();
     if (data.status === "sent") {
-      setDevCode(data.devCode ?? null);
+      // A dedupe response (see issueOtp) omits devCode entirely rather than
+      // sending a new one — keep showing whatever was already on screen
+      // instead of wiping it.
+      if (data.devCode) setDevCode(data.devCode);
       return true;
     }
     if (data.status === "already_registered") {

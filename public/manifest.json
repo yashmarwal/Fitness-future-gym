@@ -3,7 +3,7 @@
   "name": "Fitness Future Gym",
   "short_name": "Fitness Future",
   "description": "Raw strength training, attendance, and member dashboard for Fitness Future Gym.",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

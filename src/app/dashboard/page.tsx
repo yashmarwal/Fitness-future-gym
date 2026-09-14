@@ -39,10 +39,12 @@ const QUICK_LINKS = [
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const member = await getMemberById(session!.memberId);
-  const attendance = await getRecentAttendance(session!.memberId, 60);
+  const [member, attendance, todaysWorkout] = await Promise.all([
+    getMemberById(session!.memberId),
+    getRecentAttendance(session!.memberId, 60),
+    findTodaysWorkout(session!.memberId),
+  ]);
   const streak = computeStreak(attendance);
-  const todaysWorkout = await findTodaysWorkout(session!.memberId);
 
   const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
 

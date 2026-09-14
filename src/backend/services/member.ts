@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { getDb } from "@/backend/db/client";
 
 export type MemberProfile = {
@@ -13,7 +14,12 @@ export type MemberProfile = {
   isActive: boolean;
 };
 
-export async function getMemberById(memberId: string): Promise<MemberProfile | null> {
+// Wrapped in React's cache() so the layout and a page rendering under it
+// (both calling this with the same memberId in one request) share a single
+// Supabase round-trip instead of each firing its own — this was previously
+// duplicated on every dashboard page load (layout + page.tsx both called
+// it), doubling that query for no reason.
+export const getMemberById = cache(async function getMemberById(memberId: string): Promise<MemberProfile | null> {
   const db = getDb();
   const { data, error } = await db
     .from("members")
@@ -35,4 +41,4 @@ export async function getMemberById(memberId: string): Promise<MemberProfile | n
     joinedAt: data.joined_at,
     isActive: data.is_active,
   };
-}
+});
