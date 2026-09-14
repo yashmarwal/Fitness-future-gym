@@ -74,22 +74,30 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.joinedAt !== undefined) patch.joined_at = input.joinedAt;
   if (input.isActive !== undefined) patch.is_active = input.isActive;
 
-  // Only re-send the card when the plan actually changes — not on every
-  // edit (address/notes/etc. shouldn't trigger a resend). Read the prior
-  // value first since the frontend may send the whole form back unchanged.
-  let planChanged = false;
-  if (input.plan !== undefined) {
-    const { data: before } = await db.from("members").select("plan").eq("id", id).maybeSingle();
-    planChanged = Boolean(before) && (before!.plan || null) !== (input.plan || null);
+  // Only attempt a card (re)send when plan or fee actually changes — not on
+  // every edit, since the admin form always submits the full record whether
+  // or not those two fields were touched. deliverMembershipCard itself
+  // still won't send anything unless BOTH end up set — this just avoids the
+  // wasted attempt (and a duplicate audit-log-worthy send) on an unrelated
+  // save once a member is already fully set up.
+  let cardRelevantChange = false;
+  if (input.plan !== undefined || input.feeAmount !== undefined) {
+    const { data: before } = await db.from("members").select("plan, fee_amount").eq("id", id).maybeSingle();
+    if (before) {
+      const newPlan = input.plan !== undefined ? input.plan || null : before.plan;
+      const newFeeAmount = input.feeAmount !== undefined ? input.feeAmount : before.fee_amount;
+      cardRelevantChange =
+        (before.plan || null) !== newPlan || (before.fee_amount ?? null) !== (newFeeAmount ?? null);
+    }
   }
 
   const { error } = await db.from("members").update(patch).eq("id", id);
   if (error) throw new Error(`Failed to update member: ${error.message}`);
 
-  if (planChanged) {
+  if (cardRelevantChange) {
     const { data: member } = await db
       .from("members")
-      .select("id, full_name, membership_number, phone, email, plan, joined_at")
+      .select("id, full_name, membership_number, phone, email, plan, fee_amount, joined_at")
       .eq("id", id)
       .maybeSingle();
     if (member) {
@@ -100,6 +108,7 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
         phone: member.phone,
         email: member.email,
         plan: member.plan,
+        feeAmount: member.fee_amount,
         joinedAt: member.joined_at,
       }).catch(() => {});
     }

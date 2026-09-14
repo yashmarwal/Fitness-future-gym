@@ -3,7 +3,6 @@ import { getDb } from "@/backend/db/client";
 import { issueOtp, verifyOtp } from "@/backend/auth/otp";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
-import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 import { generateMembershipNumber } from "@/backend/services/membershipNumber";
 import { createMemberSession } from "@/backend/auth/session";
 
@@ -135,15 +134,10 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
 
   await createMemberSession(member.id, member.membership_number);
 
-  await deliverMembershipCard({
-    id: member.id,
-    fullName: member.full_name,
-    membershipNumber: member.membership_number,
-    phone,
-    email: member.email,
-    plan: member.plan,
-    joinedAt: member.joined_at,
-  });
+  // No welcome/card message here on purpose — a fresh signup has no plan
+  // or fee assigned yet, and deliverMembershipCard withholds the card
+  // until admin sets both via Admin → Members. That later edit is what
+  // actually sends it (see admin/members.ts).
 
   return { status: "success" };
 }

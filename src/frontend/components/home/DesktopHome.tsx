@@ -821,11 +821,11 @@ export default function DesktopHome() {
             </div>
 
             <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
-              <span className="material-symbols-outlined text-primary-container text-headline-md">timer</span>
-              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Rest Timer</h4>
+              <span className="material-symbols-outlined text-primary-container text-headline-md">qr_code_scanner</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">One-Tap Attendance</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
-                A proper interval timer with sound and vibration alerts between sets — never lose track mid-workout
-                again.
+                Scan the QR code at the front desk and you&apos;re checked in — no scanning hardware, no queue, no
+                app to open first.
               </p>
             </div>
 

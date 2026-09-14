@@ -40,8 +40,10 @@ export type ConvertTrialResult =
 
 // Converting a trial claim creates the actual `members` row (the trial
 // itself is just a lead, not an account) — program + payment are asked for
-// but both optional (the admin UI's "skip" button just omits them), and a
-// membership card always goes out either way since a real account now exists.
+// but both optional (the admin UI's "skip" button just omits them). The
+// card only actually goes out if both were provided now (deliverMembershipCard
+// withholds it otherwise); skipping just means it'll send later once admin
+// assigns a plan and fee amount from Admin → Members.
 export async function convertTrialToMember(trialId: string, input: ConvertTrialInput): Promise<ConvertTrialResult> {
   const db = getDb();
 
@@ -77,7 +79,7 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
       fee_due_date: feeDueDate,
       is_active: true,
     })
-    .select("id, full_name, membership_number, phone, email, plan, joined_at")
+    .select("id, full_name, membership_number, phone, email, plan, fee_amount, joined_at")
     .single();
   if (insertError) throw new Error(`Failed to create member: ${insertError.message}`);
 
@@ -100,6 +102,7 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
     phone: member.phone,
     email: member.email,
     plan: member.plan,
+    feeAmount: member.fee_amount,
     joinedAt: member.joined_at,
   }).catch(() => {});
 

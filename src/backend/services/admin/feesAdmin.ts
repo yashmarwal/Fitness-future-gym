@@ -33,7 +33,7 @@ export async function recordManualPayment(memberId: string, amount: number, meth
 
   const { data: member, error: memberError } = await db
     .from("members")
-    .select("full_name, membership_number, phone, email, plan, joined_at, fee_due_date")
+    .select("full_name, membership_number, phone, email, plan, fee_amount, joined_at, fee_due_date")
     .eq("id", memberId)
     .maybeSingle();
   if (memberError) throw new Error(`Failed to load member: ${memberError.message}`);
@@ -61,6 +61,8 @@ export async function recordManualPayment(memberId: string, amount: number, meth
   // Recording a payment is one of the two explicit triggers for re-sending
   // the membership card (the other is a plan change, in admin/members.ts) —
   // best-effort, a delivery failure shouldn't fail the payment record.
+  // deliverMembershipCard itself still won't send anything until the member
+  // also has a plan assigned.
   await deliverMembershipCard({
     id: memberId,
     fullName: member.full_name,
@@ -68,6 +70,7 @@ export async function recordManualPayment(memberId: string, amount: number, meth
     phone: member.phone,
     email: member.email,
     plan: member.plan,
+    feeAmount: member.fee_amount,
     joinedAt: member.joined_at,
   }).catch(() => {});
 }

@@ -481,9 +481,11 @@ export default function MobileHome() {
           </div>
 
           <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
-            <span className="material-symbols-outlined text-primary-container text-title-md">timer</span>
-            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">Rest Timer</span>
-            <span className="font-body-sm text-body-sm text-tertiary">Sound &amp; vibration alerts between sets</span>
+            <span className="material-symbols-outlined text-primary-container text-title-md">qr_code_scanner</span>
+            <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
+              One-Tap Attendance
+            </span>
+            <span className="font-body-sm text-body-sm text-tertiary">Scan the QR code, you&apos;re checked in</span>
           </div>
 
           <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
