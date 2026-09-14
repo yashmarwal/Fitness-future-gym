@@ -2,6 +2,8 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { AdminMember, MemberInput } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
+import { normalizePhone } from "@/backend/lib/phone";
+import { normalizeEmail } from "@/backend/lib/email";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -45,8 +47,8 @@ export async function createMember(input: MemberInput): Promise<AdminMember> {
     .insert({
       membership_number: input.membershipNumber,
       full_name: input.fullName,
-      phone: input.phone || null,
-      email: input.email || null,
+      phone: input.phone ? normalizePhone(input.phone) : null,
+      email: input.email ? normalizeEmail(input.email) : null,
       date_of_birth: input.dateOfBirth || null,
       plan: input.plan || null,
       fee_amount: input.feeAmount ?? null,
@@ -65,8 +67,8 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   const patch: Record<string, unknown> = {};
   if (input.membershipNumber !== undefined) patch.membership_number = input.membershipNumber;
   if (input.fullName !== undefined) patch.full_name = input.fullName;
-  if (input.phone !== undefined) patch.phone = input.phone || null;
-  if (input.email !== undefined) patch.email = input.email || null;
+  if (input.phone !== undefined) patch.phone = input.phone ? normalizePhone(input.phone) : null;
+  if (input.email !== undefined) patch.email = input.email ? normalizeEmail(input.email) : null;
   if (input.dateOfBirth !== undefined) patch.date_of_birth = input.dateOfBirth || null;
   if (input.plan !== undefined) patch.plan = input.plan || null;
   if (input.feeAmount !== undefined) patch.fee_amount = input.feeAmount;

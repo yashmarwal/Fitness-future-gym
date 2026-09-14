@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -228,10 +229,13 @@ export default function DesktopHome() {
       <section className="relative w-full overflow-hidden bg-background min-h-[90vh] flex flex-col justify-center">
         {/* Atmospheric Background Image with Cast-Iron Overlays */}
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             alt="Raw Iron Gym Training"
-            className="w-full h-full object-cover object-center opacity-30 mix-blend-luminosity filter contrast-125 brightness-75"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfuztx_KuxR7dyaDmDQ2sOgRHhkZK4EQZ47BO3Zs_DlzHcvOZSk4f9tqHhUAY_0NPNwXTMXiTJIhqYh1pEIifU8GAsouBYdkSaRMryTjielqqZA71tiNywEUnxqafE8cG9vDpHDVRF-kzbZ8F0J2Knl8uD79gyQbPel_gsWCyuZspvlp_4lDhfQ1kZPgiiXjqdYfkEZeMoTnM_bXF0A5ZlCZkz_T56OTOyV_8yQjKRcT--MpgQRiJc"
+            src="/images/desktop-hero.jpg"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center opacity-30 mix-blend-luminosity filter contrast-125 brightness-75"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50"></div>
           <div className="absolute inset-0 bg-surface-container-lowest/60"></div>
@@ -451,10 +455,12 @@ export default function DesktopHome() {
 
             <div className="lg:col-span-5 relative flex flex-col gap-space-md">
               <div className="philo-anim relative w-full h-[400px] overflow-hidden bg-surface-container-low shadow-hard-lg border border-surface-variant/40 group">
-                <img
-                  className="w-full h-full object-cover filter contrast-125 brightness-90 group-hover:scale-105 transition-transform duration-700"
+                <Image
                   alt="Atmospheric gym environment"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoDc7LE968UtaSu_qfUMmI4W1YMjUlEq0qsd9uunoOOLW1R4iz5ja1K38GqQSpZEEoGuwRoCWNtRYM4ze9z3sinOgv9fooW_vx7n5unW2XeGnQUZ5QDWmCXjFQ3khaS-Z9tHCgjGFEDkxeTpJblLMuisWqOM_GPw2CCoOdBmlQnlNKPjmdE-3n-Y2HCOlu1Pin-Bu5G_PMhK3oHvD4fTQPFTf7XKMQb_BEi6_Iu-nzH-L2hYSVmuZa"
+                  src="/images/gym-facility.jpg"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover filter contrast-125 brightness-90 group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-space-md bg-gradient-to-t from-background via-background/80 to-transparent">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">

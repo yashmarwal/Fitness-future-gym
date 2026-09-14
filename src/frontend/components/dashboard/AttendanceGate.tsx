@@ -13,9 +13,21 @@ export default function AttendanceGate({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [checkedIn, setCheckedIn] = useState(initialCheckedIn);
+  // Not copied into its own useState: the dashboard home page's own
+  // check-in button (AttendanceCheckInButton, rendered as part of
+  // `children` here) marks attendance and calls router.refresh(), which
+  // only gives this component a NEW `checkedIn` prop — a useState seeded
+  // from that prop only reads it on the very first render and goes stale
+  // after that, which used to re-block the very next page the member
+  // navigated to even though they'd genuinely just checked in seconds
+  // earlier. Deriving straight from the (always-current) prop during
+  // render avoids that entirely; `locallyMarked` only covers the gap
+  // between this gate's own "Mark Attendance" tap and the refresh actually
+  // landing.
+  const [locallyMarked, setLocallyMarked] = useState(false);
   const [marking, setMarking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const checkedIn = initialCheckedIn || locallyMarked;
 
   // Only the overview is always reachable — that's where the check-in
   // button itself lives, plus this same blocking modal for anyone who
@@ -30,7 +42,7 @@ export default function AttendanceGate({
       const res = await fetch("/api/dashboard/checkin", { method: "POST" });
       const data = await res.json();
       if (data.status === "success" || data.status === "cooldown") {
-        setCheckedIn(true);
+        setLocallyMarked(true);
         router.refresh();
       } else if (data.status === "inactive") {
         setError("Your membership isn't active — see the front desk.");

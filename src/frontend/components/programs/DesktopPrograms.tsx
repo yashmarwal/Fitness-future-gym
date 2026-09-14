@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -90,10 +91,12 @@ export default function DesktopPrograms() {
           <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
-              <img
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
+              <Image
                 alt="Bodybuilding prep deadlift"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBji6DSI8suqAh32bsNa_KZLoB42sUWR_VVQqr4OG1cnhrHI8qdOGS1mZ7XkOHdIfbcoCf0lCAbDUN77oo75D4_dyLRP8gktskYVU6kH2ZwCFgDt-bbvJ2m9XYtjrGup-STR3tAK9_89PXdzJilEnvOSP6-eLtilIW_KeKxmp0hb7g5rR8OKHVTB2tkzlecDMAJnrVvyE505_cQmx0CYGN49eVVCtB0sM17UzGA9MQ6Vtg-212VWfbJ"
+                src="/images/program-hypertrophy.jpg"
+                fill
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
@@ -159,10 +162,12 @@ export default function DesktopPrograms() {
           <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row-reverse items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 right-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
-              <img
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
+              <Image
                 alt="Personal trainer coaching squat"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4q9It0jmBYytDIkJ3Z0gk5z1oInxDTfr8qVgq5NoiUGvn0LT8EUomq-KEIVlMAA0AbKttTxuR5gffwJTsRiNJ5WfdyBsaUL2vJGmyF7Xc8fAiFq4xvYa6OPdSRgnlDuGRiW6FAT2SWHN5_BE9d8zmQSCNlLlW5ReM9CPmKlViJcFrYesD0SjG5K8KhcgbTRruHmHud2MrFTyVD4Qb0dxFHeSPUa9qNnTHqRLj3pInpZ4uthLOiwZK"
+                src="/images/program-coaching.jpg"
+                fill
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
@@ -228,10 +233,12 @@ export default function DesktopPrograms() {
           <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
-              <img
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
+              <Image
                 alt="High protein meal prep"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSQrq3e-YLoZ-s_PvMwXdX7IrMhC5B6HanQjR4U4k75zyYT6tuD-l8kWuT8ZMWEjU0qyrMd_CYB5en_VeRDM_1RIEIgF-KJKcvJmYhq51uKkfuHrRrSa628yMpP3Q1ODGxo3bfE9qpfgddeC7eAQyZcDpVxph1u07Ej2zC1c9jsOF6GcGX9m7KQ9kXpFLC3QDBZt-5ec9VYbuPrI0ftTlOM53EUHlCRcikYNI2RnQ5DNhrHIico3WN"
+                src="/images/program-nutrition.jpg"
+                fill
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">

@@ -1,7 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { TrialRegistration } from "@/types/admin";
-import { generateMembershipNumber } from "@/backend/services/membershipNumber";
+import { insertMemberWithFreshNumber } from "@/backend/services/membershipNumber";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 
 export async function listTrialRegistrations(): Promise<TrialRegistration[]> {
@@ -63,13 +63,21 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
   if (existingError) throw new Error(`Failed to check existing member: ${existingError.message}`);
   if (existingMember) return { status: "already_member" };
 
-  const membershipNumber = await generateMembershipNumber();
   const hasPayment = Boolean(input.feeAmount && input.paymentMethod);
   const feeDueDate = hasPayment || input.plan ? oneMonthFromToday() : null;
 
-  const { data: member, error: insertError } = await db
-    .from("members")
-    .insert({
+  type MemberRow = {
+    id: string;
+    full_name: string;
+    membership_number: string;
+    phone: string | null;
+    email: string | null;
+    plan: string | null;
+    fee_amount: number | null;
+    joined_at: string;
+  };
+  const member = await insertMemberWithFreshNumber<MemberRow>(
+    (membershipNumber) => ({
       membership_number: membershipNumber,
       full_name: trial.full_name,
       phone: trial.phone,
@@ -78,10 +86,9 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
       fee_amount: input.feeAmount ?? null,
       fee_due_date: feeDueDate,
       is_active: true,
-    })
-    .select("id, full_name, membership_number, phone, email, plan, fee_amount, joined_at")
-    .single();
-  if (insertError) throw new Error(`Failed to create member: ${insertError.message}`);
+    }),
+    "id, full_name, membership_number, phone, email, plan, fee_amount, joined_at"
+  );
 
   if (hasPayment) {
     await db.from("fee_payments").insert({

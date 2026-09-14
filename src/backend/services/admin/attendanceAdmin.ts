@@ -45,6 +45,23 @@ export async function deleteAttendance(id: string): Promise<void> {
   if (error) throw new Error(`Failed to delete attendance: ${error.message}`);
 }
 
+// Powers the admin calendar view of one member's check-ins — bounded by
+// the existing 30-day attendance retention (deleteOldAttendance), so this
+// never needs its own date-range filter; whatever's in the table is
+// already "the last month," which is exactly the view's scope. Navigating
+// to an earlier month will just show empty — there's no older data to see.
+export async function getMemberAttendanceTimestamps(memberId: string): Promise<string[]> {
+  const db = getDb();
+  const { data, error } = await db
+    .from("attendance")
+    .select("checked_in_at")
+    .eq("member_id", memberId)
+    .order("checked_in_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load member attendance: ${error.message}`);
+  return (data ?? []).map((row) => row.checked_in_at as string);
+}
+
 export async function countTodaysCheckIns(): Promise<number> {
   const db = getDb();
   const startOfDay = new Date();

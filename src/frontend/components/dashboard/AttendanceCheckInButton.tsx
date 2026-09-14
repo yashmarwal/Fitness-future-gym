@@ -1,33 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Status = { checkedIn: boolean; retryAfterMinutes: number | null };
 
-export default function AttendanceCheckInButton() {
+// initialStatus comes from the server render (dashboard/page.tsx already
+// fetches getAttendanceStatus for this), so the button shows real,
+// interactive state on first paint instead of a disabled "Loading…" that
+// only resolves after a second client→API round-trip.
+export default function AttendanceCheckInButton({ initialStatus }: { initialStatus: Status }) {
   const router = useRouter();
-  const [status, setStatus] = useState<Status | null>(null);
+  const [status, setStatus] = useState<Status>(initialStatus);
   const [marking, setMarking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/dashboard/attendance-status")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && data.status === "ok") {
-          setStatus({ checkedIn: data.checkedIn, retryAfterMinutes: data.retryAfterMinutes });
-        }
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   async function handleTap() {
-    if (marking || status?.checkedIn) return;
+    if (marking || status.checkedIn) return;
     setMarking(true);
     setError(null);
     try {
@@ -50,22 +39,19 @@ export default function AttendanceCheckInButton() {
     }
   }
 
-  const checkedIn = status?.checkedIn ?? false;
-  const loading = status === null;
+  const checkedIn = status.checkedIn;
 
-  const statusText = loading
-    ? "Loading…"
-    : marking
-      ? "Checking in…"
-      : checkedIn
-        ? `Marked — unlocked for ${Math.ceil((status!.retryAfterMinutes ?? 0) / 60)}h`
-        : "Tap to check in and unlock your dashboard";
+  const statusText = marking
+    ? "Checking in…"
+    : checkedIn
+      ? `Marked — unlocked for ${Math.ceil((status.retryAfterMinutes ?? 0) / 60)}h`
+      : "Tap to check in and unlock your dashboard";
 
   return (
     <div className="flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-hard mb-6">
       <button
         onClick={handleTap}
-        disabled={checkedIn || marking || loading}
+        disabled={checkedIn || marking}
         aria-label={checkedIn ? "Attendance already marked" : "Tap to mark attendance"}
         className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-hard transition-all
           ${

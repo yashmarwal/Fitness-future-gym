@@ -15,11 +15,13 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
-  // A synchronous guard, not state — two taps landing in the same JS tick
+  // Synchronous guards, not state — two taps landing in the same JS tick
   // (common on mobile) both start before a re-render can disable the
   // button, so relying on `loading`/`resending` state alone still lets a
-  // second request slip through.
+  // second request slip through. Separate refs since request-code and
+  // verify hit different endpoints and can't usefully block each other.
   const inFlight = useRef(false);
+  const verifyInFlight = useRef(false);
 
   async function requestCode(): Promise<boolean> {
     if (inFlight.current) return false;
@@ -87,6 +89,14 @@ export default function LoginForm() {
 
   async function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
+    // A double-tap here fires two concurrent verify requests with the
+    // identical code — whichever one loses the race can come back
+    // "invalid" even though the code was typed correctly, since the OTP
+    // gets consumed by whichever request wins. Blocking the second tap
+    // synchronously (not via `loading` state, which can't react fast
+    // enough) avoids that entirely.
+    if (verifyInFlight.current) return;
+    verifyInFlight.current = true;
     setError(null);
     setLoading(true);
     try {
@@ -108,6 +118,7 @@ export default function LoginForm() {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+      verifyInFlight.current = false;
     }
   }
 

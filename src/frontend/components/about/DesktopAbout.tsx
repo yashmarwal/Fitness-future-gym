@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -147,10 +148,12 @@ export default function DesktopAbout() {
 
             <div className="col-span-6 grid grid-cols-2 gap-space-md">
               <div className="about-anim-item relative bg-surface-container-low shadow-hard overflow-hidden group border border-surface-variant/40">
-                <img
-                  className="w-full h-80 object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                <Image
                   alt="Atmospheric training session"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2etdSpBCKPEQa3-hHDMkEnpyB-xU2SbBqVWERyO-rW3GfVvknNer4zAf8TrPIHH5CtXT_CLcGGtQIYmS8YZyQu4axWhh8SqSI9c-2mqfGYqe97rLpJXcodH9Q7rPJR5lkMsu9VL45WjP7MbT3cHo5Nem4ntt7erHsa2hyZDa2WZWoRdCaZa327EK8-ZVb3KhYxg6ZmxZMbJvWphd4cKoRaJX4MVKmAg3_JWEUbc3DbKkJZILouDbA"
+                  src="/images/about-training.jpg"
+                  width={512}
+                  height={286}
+                  className="w-full h-80 object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest/90 p-space-sm">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">
@@ -163,10 +166,17 @@ export default function DesktopAbout() {
               </div>
 
               <div className="about-anim-item relative bg-surface-container-low shadow-hard overflow-hidden group mt-space-xl border border-surface-variant/40">
-                <img
+                {/* TODO: temporary stand-in — the original hotlinked source for this
+                    tile ("Knurled steel barbell") was already dead (400 from Google's
+                    temp CDN) when this was self-hosted on 2026-09-14. Reusing the
+                    gym-facility photo so nothing shows a broken image; replace
+                    public/images/about-barbell.jpg with a real photo when available. */}
+                <Image
+                  alt="Gym equipment and training area"
+                  src="/images/about-barbell.jpg"
+                  width={512}
+                  height={279}
                   className="w-full h-80 object-cover contrast-125 group-hover:contrast-100 group-hover:scale-105 transition-all duration-500"
-                  alt="Knurled steel barbell"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpLiATVkD4lwXQ08WrQgG2i6ClwPBh_RhMfMPNVBxBv1yNviNIvsAtfWwa6BcClTHwOIYYrm2wKDG41WYkpFAsgAiN2D2VaOCXRC2BpyX7cj4T-1zIpp0t4T29x6brJbg9AhKFqGjdlSyycxGw9kBldzYaJ0BVBI9mhh_heo2ALzprxfJQoTCzQSWIzzxg0su2GnI0JgyDapTzmk-CR3pdL4wrlCGAsuWQ4OnO0IeChdPYeO4ZrEw"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest/90 p-space-sm">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">

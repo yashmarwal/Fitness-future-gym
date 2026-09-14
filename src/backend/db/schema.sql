@@ -3,6 +3,24 @@
 
 create extension if not exists pgcrypto;
 
+-- ── Migration for an already-existing database (2026-09-14) ───────────────
+-- `create table if not exists` below won't retroactively add a constraint
+-- to a table that already exists. If you've run this schema before, run
+-- this one statement in the Supabase SQL editor once — it's what stops two
+-- different phone numbers from completing signup with the same email
+-- (which used to silently break email-based login for both of them):
+--
+--   alter table members add constraint members_email_key unique (email);
+--
+-- If it fails with a duplicate-email error, that means real dirty data
+-- already exists — find it first with:
+--   select email, count(*) from members where email is not null group by email having count(*) > 1;
+-- and fix those rows (merge or clear the duplicate email) before retrying.
+--
+-- Also run this one, for OTP brute-force lockout (see checkOtp in otp.ts):
+--
+--   alter table login_otps add column if not exists attempt_count integer not null default 0;
+
 -- ── Members ─────────────────────────────────────────────────────────────
 
 create table if not exists members (
@@ -10,7 +28,7 @@ create table if not exists members (
   membership_number text not null unique,
   full_name text not null,
   phone text unique,
-  email text,
+  email text unique,
   date_of_birth date,
   plan text,
   fee_amount numeric(10, 2),
@@ -19,7 +37,7 @@ create table if not exists members (
   is_active boolean not null default true,
   is_frozen boolean not null default false,
   notes text,
-  -- Persists independently of the attendance log's 2-month retention policy
+  -- Persists independently of the attendance log's 1-month retention policy
   -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
   -- still be detected after the underlying check-in rows have been purged.
   last_checked_in_at timestamptz,
@@ -43,6 +61,11 @@ create table if not exists login_otps (
   code_hash text not null,
   expires_at timestamptz not null,
   consumed_at timestamptz,
+  -- Counts wrong-code guesses against this row; checkOtp locks it out
+  -- (treats it as invalid regardless of the code entered) once this hits
+  -- MAX_VERIFY_ATTEMPTS, forcing a resend rather than allowing unlimited
+  -- brute-force guesses at a 6-digit code within its 15-minute TTL.
+  attempt_count integer not null default 0,
   created_at timestamptz not null default now()
 );
 

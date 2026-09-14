@@ -3,6 +3,8 @@ import { randomInt } from "node:crypto";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
+import { normalizePhone } from "@/backend/lib/phone";
+import { normalizeEmail } from "@/backend/lib/email";
 
 const TRIAL_DURATION_DAYS = 2;
 
@@ -28,11 +30,17 @@ export async function claimTrial(input: {
   shift: "morning" | "evening";
 }): Promise<ClaimTrialResult> {
   const db = getDb();
+  const phone = normalizePhone(input.phone);
+  const email = normalizeEmail(input.email);
 
+  // Without normalizing first, "+91 98765 43210" and "9876543210" are
+  // different strings to this .eq() check even though they're the same
+  // number — the actual "one free trial per mobile, ever" enforcement
+  // (the phone unique constraint) has the same gap.
   const { data: existing, error: existingError } = await db
     .from("trial_registrations")
     .select("id")
-    .eq("phone", input.phone)
+    .eq("phone", phone)
     .maybeSingle();
   if (existingError) throw new Error(`Failed to check existing trial: ${existingError.message}`);
   if (existing) return { status: "already_claimed" };
@@ -45,8 +53,8 @@ export async function claimTrial(input: {
 
   const { error: insertError } = await db.from("trial_registrations").insert({
     full_name: input.fullName,
-    phone: input.phone,
-    email: input.email,
+    phone,
+    email,
     shift: input.shift,
     trial_code: trialCode,
     starts_at: startsAt.toISOString().slice(0, 10),
@@ -56,12 +64,12 @@ export async function claimTrial(input: {
 
   const label = shiftLabel(input.shift);
   await sendWhatsAppTemplate({
-    phone: input.phone,
+    phone,
     template: "trial_pass",
     bodyParams: [input.fullName, trialCode, label, endsAtStr],
   }).catch(() => {});
   await sendEmailTemplate({
-    to: input.email,
+    to: email,
     template: "trial_pass",
     bodyParams: [input.fullName, trialCode, label, endsAtStr],
   }).catch(() => {});

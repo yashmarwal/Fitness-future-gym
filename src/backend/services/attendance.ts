@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { getDb } from "@/backend/db/client";
 import type { CheckInResult } from "@/types/member";
 
@@ -49,7 +50,7 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   }
 
   // Kept on the member row (not just the attendance log) since attendance
-  // rows are purged after 60 days but long-term inactivity still needs to
+  // rows are purged after 30 days but long-term inactivity still needs to
   // be detectable — see deleteOldAttendance and listInactiveMembers.
   await db.from("members").update({ last_checked_in_at: checkedInAt }).eq("id", member.id);
 
@@ -109,8 +110,11 @@ export type AttendanceStatus = {
 
 // Powers both the dashboard's check-in button state (active vs. "marked,
 // disabled for 3h") and the whole-dashboard attendance gate — same
-// cooldown window as checkInMemberRow, read-only.
-export async function getAttendanceStatus(memberId: string): Promise<AttendanceStatus> {
+// cooldown window as checkInMemberRow, read-only. Wrapped in React's
+// cache() so dashboard/layout.tsx (the gate) and dashboard/page.tsx (the
+// check-in button's initial state) share one Supabase call per request
+// instead of each firing its own — same pattern as getMemberById.
+export const getAttendanceStatus = cache(async function getAttendanceStatus(memberId: string): Promise<AttendanceStatus> {
   const db = getDb();
   const { data: lastVisit, error } = await db
     .from("attendance")
@@ -131,7 +135,7 @@ export async function getAttendanceStatus(memberId: string): Promise<AttendanceS
     lastCheckedInAt: lastVisit.checked_in_at,
     retryAfterMinutes: withinCooldown ? Math.ceil((COOLDOWN_MS - elapsedMs) / 60000) : null,
   };
-}
+});
 
 export async function getRecentAttendance(memberId: string, limit = 30): Promise<string[]> {
   const db = getDb();
@@ -146,7 +150,7 @@ export async function getRecentAttendance(memberId: string, limit = 30): Promise
   return (data ?? []).map((row) => row.checked_in_at as string);
 }
 
-const ATTENDANCE_RETENTION_DAYS = 60;
+const ATTENDANCE_RETENTION_DAYS = 30;
 
 export async function deleteOldAttendance(): Promise<{ deleted: number }> {
   const db = getDb();

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
-import { getRecentAttendance } from "@/backend/services/attendance";
+import { getRecentAttendance, getAttendanceStatus } from "@/backend/services/attendance";
 import { findTodaysWorkout } from "@/backend/services/workoutPlans";
+import { listNotifications } from "@/backend/services/memberNotifications";
 import { daysUntil } from "@/frontend/lib/date";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
@@ -39,10 +40,12 @@ const QUICK_LINKS = [
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout] = await Promise.all([
+  const [member, attendance, todaysWorkout, attendanceStatus, notifications] = await Promise.all([
     getMemberById(session!.memberId),
     getRecentAttendance(session!.memberId, 60),
     findTodaysWorkout(session!.memberId),
+    getAttendanceStatus(session!.memberId),
+    listNotifications(session!.memberId),
   ]);
   const streak = computeStreak(attendance);
 
@@ -61,7 +64,7 @@ export default async function DashboardPage() {
         />
       )}
 
-      <AttendanceCheckInButton />
+      <AttendanceCheckInButton initialStatus={attendanceStatus} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatCard value={streak} label="Day Streak" tone="accent" />
@@ -92,7 +95,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <NotificationBar />
+      <NotificationBar initialNotifications={notifications} />
     </div>
   );
 }

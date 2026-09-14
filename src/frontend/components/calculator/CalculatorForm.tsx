@@ -59,8 +59,8 @@ export default function CalculatorForm() {
     return {
       bmi: bmi.toFixed(1),
       bmiTag,
-      tdee: targetCalories.toLocaleString(),
-      restCalories: restCalories.toLocaleString(),
+      tdee: targetCalories.toLocaleString("en-IN"),
+      restCalories: restCalories.toLocaleString("en-IN"),
       proteinGrams,
       carbsGrams,
       fatsGrams,

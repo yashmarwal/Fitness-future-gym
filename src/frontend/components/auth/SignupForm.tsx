@@ -9,6 +9,10 @@ export default function SignupForm() {
   const [step, setStep] = useState<"details" | "code">("details");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  // The server normalizes phone formatting (see normalizePhone) and this is
+  // what actually gets staged/OTP'd — must be what verify-otp submits, not
+  // necessarily the exact string the user typed.
+  const [resolvedPhone, setResolvedPhone] = useState("");
   const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [code, setCode] = useState("");
@@ -17,11 +21,13 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
-  // A synchronous guard, not state — two taps landing in the same JS tick
+  // Synchronous guards, not state — two taps landing in the same JS tick
   // (common on mobile) both start before a re-render can disable the
   // button, so relying on `loading`/`resending` state alone still lets a
-  // second request slip through.
+  // second request slip through. Separate refs since request-code and
+  // verify hit different endpoints and can't usefully block each other.
   const inFlight = useRef(false);
+  const verifyInFlight = useRef(false);
 
   async function requestCode(): Promise<boolean> {
     if (inFlight.current) return false;
@@ -45,10 +51,15 @@ export default function SignupForm() {
       // sending a new one — keep showing whatever was already on screen
       // instead of wiping it.
       if (data.devCode) setDevCode(data.devCode);
+      setResolvedPhone(data.phone);
       return true;
     }
     if (data.status === "already_registered") {
       setError("This number is already registered — try signing in instead.");
+    } else if (data.status === "email_already_registered") {
+      setError("This email is already registered to another account — try signing in, or use a different email.");
+    } else if (data.status === "invalid_phone") {
+      setError("That doesn't look like a valid phone number — double-check it.");
     } else {
       setError(data.message ?? "Something went wrong.");
     }
@@ -88,13 +99,21 @@ export default function SignupForm() {
 
   async function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
+    // A double-tap here fires two concurrent verify requests with the
+    // identical code — whichever one loses the race can come back
+    // "invalid" even though the code was typed correctly, since the OTP
+    // gets consumed by whichever request wins. Blocking the second tap
+    // synchronously (not via `loading` state, which can't react fast
+    // enough) avoids that entirely.
+    if (verifyInFlight.current) return;
+    verifyInFlight.current = true;
     setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code, isSignup: true }),
+        body: JSON.stringify({ phone: resolvedPhone, code, isSignup: true }),
       });
       const data = await res.json();
       if (data.status === "success") {
@@ -102,6 +121,10 @@ export default function SignupForm() {
         router.refresh();
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
+      } else if (data.status === "email_already_registered") {
+        setError("This email got claimed by someone else in the meantime — go back and use a different one.");
+      } else if (data.status === "not_found") {
+        setError("This signup session expired — go back and create your account again.");
       } else {
         setError("Something went wrong.");
       }
@@ -109,6 +132,7 @@ export default function SignupForm() {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+      verifyInFlight.current = false;
     }
   }
 

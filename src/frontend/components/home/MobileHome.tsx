@@ -84,8 +84,7 @@ export default function MobileHome() {
         <div
           className="relative w-full h-[440px] bg-cover bg-center flex flex-col justify-end"
           style={{
-            backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqrdTBrQQviO5BZ5h8EB-z1FtPa88FBsMBevq2reZEN4mTWZNpLeV5aPt_8RFSUPEeNwlYCS_RXUZRMzVlZK0FFRK1fm63bkzzOwMYMvlZ3duZMLP8Byy54PV2zrbCGAaciFlAQvzD19pjjl8i9uZkG2O1HQJGTTyIUzQ9lgrhMMGmFhdrVyxCCirPNd_0z3IKtzTBWYH4HUyW1En7--d6cbK23mht46Pwv92qTLXhZSI8sWg_75E6')",
+            backgroundImage: "url('/images/mobile-hero.jpg')",
           }}
         >
           {/* Dark Scrim */}

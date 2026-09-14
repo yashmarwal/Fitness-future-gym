@@ -74,7 +74,44 @@ export async function issueOtp(phone: string): Promise<string | null> {
   return code;
 }
 
-export async function verifyOtp(phone: string, code: string): Promise<boolean> {
+export type OtpCheckResult = { valid: true; otpId: string } | { valid: false };
+
+// A 6-digit code is only 1,000,000 combinations — within the 15-minute TTL
+// that's brute-forceable with unlimited guesses otherwise. Once a single
+// OTP row accumulates this many wrong guesses, it's locked out (treated as
+// invalid regardless of what's typed) and the member has to request a
+// fresh code.
+const MAX_VERIFY_ATTEMPTS = 5;
+
+// Both of these read/write a login_otps.attempt_count column that may not
+// exist yet on an older database (see the migration in schema.sql) — they
+// deliberately fail OPEN (no lockout, current behavior) rather than
+// throwing, so shipping this can't break login/signup for anyone who
+// hasn't run that migration yet. Once it's run, lockout starts working
+// automatically with no further deploy needed.
+async function isLockedOut(otpId: string): Promise<boolean> {
+  const db = getDb();
+  const { data, error } = await db.from("login_otps").select("attempt_count").eq("id", otpId).maybeSingle();
+  if (error || !data) return false;
+  return ((data as { attempt_count?: number }).attempt_count ?? 0) >= MAX_VERIFY_ATTEMPTS;
+}
+
+async function recordFailedAttempt(otpId: string): Promise<void> {
+  const db = getDb();
+  const { data } = await db.from("login_otps").select("attempt_count").eq("id", otpId).maybeSingle();
+  const current = (data as { attempt_count?: number } | null)?.attempt_count ?? 0;
+  await db.from("login_otps").update({ attempt_count: current + 1 }).eq("id", otpId);
+}
+
+// Checks a code WITHOUT consuming it. Split out from the old all-in-one
+// verifyOtp so a caller with follow-up work that can fail (creating a
+// members row, generating a membership number, ...) can defer consumption
+// until that work actually succeeds — see consumeOtp below and its callers
+// in memberAuth.ts. Consuming eagerly meant a genuinely correct code got
+// permanently burned the instant something *else* downstream failed, and
+// every retry with that same correct code then failed too, misleadingly,
+// with "incorrect or expired code."
+export async function checkOtp(phone: string, code: string): Promise<OtpCheckResult> {
   const db = getDb();
   const { data, error } = await db
     .from("login_otps")
@@ -89,10 +126,29 @@ export async function verifyOtp(phone: string, code: string): Promise<boolean> {
     throw new Error(`Failed to look up OTP: ${error.message}`);
   }
 
-  if (!data) return false;
-  if (new Date(data.expires_at) < new Date()) return false;
-  if (data.code_hash !== hashCode(phone, code)) return false;
+  if (!data) return { valid: false };
+  if (new Date(data.expires_at) < new Date()) return { valid: false };
+  if (await isLockedOut(data.id)) return { valid: false };
 
-  await db.from("login_otps").update({ consumed_at: new Date().toISOString() }).eq("id", data.id);
+  if (data.code_hash !== hashCode(phone, code)) {
+    await recordFailedAttempt(data.id);
+    return { valid: false };
+  }
+
+  return { valid: true, otpId: data.id };
+}
+
+export async function consumeOtp(otpId: string): Promise<void> {
+  const db = getDb();
+  const { error } = await db.from("login_otps").update({ consumed_at: new Date().toISOString() }).eq("id", otpId);
+  if (error) throw new Error(`Failed to consume OTP: ${error.message}`);
+}
+
+// Convenience all-in-one for callers with no follow-up work that can fail
+// (kept so nothing else needs to change) — checks and immediately consumes.
+export async function verifyOtp(phone: string, code: string): Promise<boolean> {
+  const result = await checkOtp(phone, code);
+  if (!result.valid) return false;
+  await consumeOtp(result.otpId);
   return true;
 }

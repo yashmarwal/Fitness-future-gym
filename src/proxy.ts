@@ -12,6 +12,24 @@ const MEMBER_COOKIE = "ff_member_session";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Logged-in members always land on their dashboard, never the marketing
+  // homepage (see project spec: "persistent login / auto dashboard"). Doing
+  // this check here — rather than reading cookies inside the Home page
+  // component — matters for performance: a Server Component that reads
+  // cookies() is forced dynamic on every single request, so it previously
+  // made the ENTIRE marketing homepage (heavy hero content, most-visited
+  // page on the site) skip Next's static rendering for every visitor, not
+  // just logged-in ones. Middleware can redirect before the page even
+  // renders, without that cost — the page itself now has no dynamic APIs.
+  if (pathname === "/") {
+    const token = request.cookies.get(MEMBER_COOKIE)?.value;
+    const session = token ? await verifySession<MemberSession>(token) : null;
+    if (session) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/dashboard")) {
     const token = request.cookies.get(MEMBER_COOKIE)?.value;
     const session = token ? await verifySession<MemberSession>(token) : null;
@@ -47,5 +65,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/", "/dashboard/:path*", "/admin/:path*"],
 };

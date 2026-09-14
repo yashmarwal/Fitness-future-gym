@@ -1,10 +1,35 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
-import { issueOtp, verifyOtp } from "@/backend/auth/otp";
+import { issueOtp, checkOtp, consumeOtp } from "@/backend/auth/otp";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
-import { generateMembershipNumber } from "@/backend/services/membershipNumber";
+import { insertMemberWithFreshNumber } from "@/backend/services/membershipNumber";
 import { createMemberSession } from "@/backend/auth/session";
+import { normalizePhone, looksLikePhone, isPlausiblePhone } from "@/backend/lib/phone";
+import { normalizeEmail } from "@/backend/lib/email";
+
+const PENDING_SIGNUP_RETENTION_DAYS = 2;
+
+// An abandoned signup (code requested, never verified) otherwise sits in
+// pending_signups forever — not data-corrupting (a retry just upserts over
+// it, since phone is unique with onConflict: "phone"), but unbounded and
+// inconsistent with every other dated table in this app having a retention
+// policy. 2 days comfortably outlives the 15-minute OTP TTL and any
+// reasonable "let me find my phone" delay.
+export async function deleteOldPendingSignups(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - PENDING_SIGNUP_RETENTION_DAYS);
+
+  const { data, error } = await db
+    .from("pending_signups")
+    .delete()
+    .lt("created_at", cutoff.toISOString())
+    .select("id");
+
+  if (error) throw new Error(`Failed to delete old pending signups: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}
 
 export type RequestOtpResult =
   | { status: "sent"; devCode?: string; phone: string }
@@ -16,20 +41,27 @@ export type RequestOtpResult =
 // filter-string syntax.
 export async function requestMemberOtp(identifier: string): Promise<RequestOtpResult> {
   const db = getDb();
+  const phoneCandidate = looksLikePhone(identifier) ? normalizePhone(identifier) : identifier;
 
   const { data: byPhone, error: phoneError } = await db
     .from("members")
     .select("id, phone, email")
-    .eq("phone", identifier)
+    .eq("phone", phoneCandidate)
     .maybeSingle();
   if (phoneError) throw new Error(`Failed to look up member: ${phoneError.message}`);
 
   let member = byPhone;
   if (!member) {
+    // .limit(1) before .maybeSingle() defensively guards against a 500 if
+    // more than one member ever ends up sharing an email (email has no DB
+    // unique constraint prior to this — see registerMember for the new
+    // app-level check, and the ALTER TABLE migration this needs).
     const { data: byEmail, error: emailError } = await db
       .from("members")
       .select("id, phone, email")
-      .eq("email", identifier)
+      .eq("email", normalizeEmail(identifier))
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (emailError) throw new Error(`Failed to look up member: ${emailError.message}`);
     member = byEmail;
@@ -63,11 +95,12 @@ export async function requestMemberOtp(identifier: string): Promise<RequestOtpRe
 export type VerifyOtpResult =
   | { status: "success" }
   | { status: "invalid" }
-  | { status: "not_found" };
+  | { status: "not_found" }
+  | { status: "email_already_registered" };
 
 async function verifyAndCreateSession(phone: string, code: string) {
-  const isValid = await verifyOtp(phone, code);
-  if (!isValid) return { status: "invalid" as const };
+  const check = await checkOtp(phone, code);
+  if (!check.valid) return { status: "invalid" as const };
 
   const db = getDb();
   const { data: member, error } = await db
@@ -80,6 +113,9 @@ async function verifyAndCreateSession(phone: string, code: string) {
   if (!member) return { status: "not_found" as const };
 
   await createMemberSession(member.id, member.membership_number);
+  // Only spent once the session was actually created — a code that
+  // checked out correctly must not be burned by an unrelated failure.
+  await consumeOtp(check.otpId);
   return { status: "success" as const, member };
 }
 
@@ -93,8 +129,15 @@ export async function verifyMemberOtpAndLogin(phone: string, code: string): Prom
 // registerMember time. That's what guarantees an abandoned signup never
 // occupies a phone/email or burns a membership number (see registerMember).
 export async function verifySignupOtpAndLogin(phone: string, code: string): Promise<VerifyOtpResult> {
-  const isValid = await verifyOtp(phone, code);
-  if (!isValid) return { status: "invalid" };
+  // Checked, not yet consumed: account creation below has several steps
+  // that can throw (a membership-number collision, an email race, a
+  // transient DB error), and none of those are the code's fault. Consuming
+  // it up front meant any one of those failures permanently burned a
+  // genuinely correct code — every retry with it then wrongly reported
+  // "incorrect or expired." The code is only spent once signup actually
+  // finishes, right before each `return`.
+  const check = await checkOtp(phone, code);
+  if (!check.valid) return { status: "invalid" };
 
   const db = getDb();
 
@@ -109,6 +152,7 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
 
   if (existingMember) {
     await createMemberSession(existingMember.id, existingMember.membership_number);
+    await consumeOtp(check.otpId);
     return { status: "success" };
   }
 
@@ -120,25 +164,39 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
   if (pendingError) throw new Error(`Failed to look up pending signup: ${pendingError.message}`);
   if (!pending) return { status: "not_found" };
 
-  const membershipNumber = await generateMembershipNumber();
-
-  const { data: member, error: insertError } = await db
-    .from("members")
-    .insert({
-      membership_number: membershipNumber,
-      full_name: pending.full_name,
-      phone,
-      email: pending.email,
-      date_of_birth: pending.date_of_birth,
-      is_active: true,
-    })
-    .select("id, membership_number, full_name, email, joined_at, plan")
-    .single();
-  if (insertError) throw new Error(`Failed to create member: ${insertError.message}`);
+  // registerMember already checked the email wasn't taken at staging time,
+  // but two people can stage a pending signup with the same brand-new email
+  // seconds apart and both verify around the same time — this is the real,
+  // race-safe backstop (relies on the members.email unique constraint; see
+  // the migration in schema.sql).
+  type MemberRow = { id: string; membership_number: string; full_name: string; email: string | null };
+  let member: MemberRow;
+  try {
+    member = await insertMemberWithFreshNumber<MemberRow>(
+      (membershipNumber) => ({
+        membership_number: membershipNumber,
+        full_name: pending.full_name,
+        phone,
+        email: pending.email,
+        date_of_birth: pending.date_of_birth,
+        is_active: true,
+      }),
+      "id, membership_number, full_name, email, joined_at, plan"
+    );
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("email")) {
+      // The code was still genuinely correct — this just isn't a usable
+      // outcome, so leave it unconsumed rather than burn it on a failure
+      // that a different email (not a different code) is what fixes.
+      return { status: "email_already_registered" };
+    }
+    throw err;
+  }
 
   await db.from("pending_signups").delete().eq("phone", phone);
 
   await createMemberSession(member.id, member.membership_number);
+  await consumeOtp(check.otpId);
 
   // No welcome/card message here on purpose — a fresh signup has no plan
   // or fee assigned yet, and deliverMembershipCard withholds the card
@@ -149,8 +207,10 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
 }
 
 export type RegisterResult =
-  | { status: "sent"; devCode?: string }
-  | { status: "already_registered" };
+  | { status: "sent"; devCode?: string; phone: string }
+  | { status: "already_registered" }
+  | { status: "email_already_registered" }
+  | { status: "invalid_phone" };
 
 // Only stages the signup — nothing is written to `members` (and no
 // membership number is generated) until the OTP is verified in
@@ -167,27 +227,49 @@ export async function registerMember(input: {
   dateOfBirth?: string;
 }): Promise<RegisterResult> {
   const db = getDb();
+  const phone = normalizePhone(input.phone);
+  const email = normalizeEmail(input.email);
+
+  // Catches garbage input before it's staged and silently fails WhatsApp
+  // delivery with nothing useful surfaced to the signer-upper — they'd
+  // otherwise see "sent" and only the email (if valid) would ever arrive.
+  if (!isPlausiblePhone(phone)) return { status: "invalid_phone" };
 
   const { data: existing, error: existingError } = await db
     .from("members")
     .select("id")
-    .eq("phone", input.phone)
+    .eq("phone", phone)
     .maybeSingle();
   if (existingError) throw new Error(`Failed to check existing member: ${existingError.message}`);
   if (existing) return { status: "already_registered" };
 
+  // Email has no DB-level unique constraint prior to this fix (see the
+  // migration in schema.sql), and without this check two different phone
+  // numbers could both complete signup with the identical email — which
+  // then breaks email-based login outright (requestMemberOtp's .eq("email",
+  // ...).maybeSingle() throws once more than one row matches). This is a
+  // best-effort app-level check; verifySignupOtpAndLogin's insert is the
+  // real, race-safe backstop once the DB constraint is in place.
+  const { data: existingEmail, error: existingEmailError } = await db
+    .from("members")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (existingEmailError) throw new Error(`Failed to check existing email: ${existingEmailError.message}`);
+  if (existingEmail) return { status: "email_already_registered" };
+
   const { error: upsertError } = await db.from("pending_signups").upsert(
     {
-      phone: input.phone,
+      phone,
       full_name: input.fullName,
-      email: input.email || null,
+      email,
       date_of_birth: input.dateOfBirth || null,
     },
     { onConflict: "phone" }
   );
   if (upsertError) throw new Error(`Failed to stage signup: ${upsertError.message}`);
 
-  const code = await issueOtp(input.phone);
+  const code = await issueOtp(phone);
   // null means a still-valid code was issued moments ago (see issueOtp) —
   // don't fire a second round of messages for what's almost certainly a
   // double-tap or an immediate resend; the original message is still good.
@@ -195,11 +277,11 @@ export async function registerMember(input: {
     // Each channel is independent — a WhatsApp failure must not stop the
     // email from going out, and vice versa.
     await sendWhatsAppTemplate({
-      phone: input.phone,
+      phone,
       template: "otp",
       bodyParams: [code],
     }).catch(() => {});
-    await sendEmailTemplate({ to: input.email, template: "otp", bodyParams: [code] }).catch(() => {});
+    await sendEmailTemplate({ to: email, template: "otp", bodyParams: [code] }).catch(() => {});
   }
 
   // Gated purely on NODE_ENV, not on whether WhatsApp is configured — email
@@ -208,5 +290,8 @@ export async function registerMember(input: {
   // in an HTTP response body once this is actually deployed (Vercel sets
   // NODE_ENV=production for both Production and Preview deployments).
   const isDev = process.env.NODE_ENV !== "production";
-  return { status: "sent", devCode: isDev ? (code ?? undefined) : undefined };
+  // Returning the normalized phone (not necessarily what the user typed)
+  // matters: the client must submit this exact string back to verify-otp,
+  // since that's the key issueOtp/pending_signups actually stored it under.
+  return { status: "sent", devCode: isDev ? (code ?? undefined) : undefined, phone };
 }

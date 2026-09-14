@@ -37,7 +37,7 @@ export default function StreakTracker() {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
-  const monthLabel = viewDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  const monthLabel = viewDate.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
 
   function changeMonth(delta: number) {
     setViewDate(new Date(year, month + delta, 1));

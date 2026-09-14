@@ -15,6 +15,20 @@ export async function POST(request: Request) {
     );
   }
 
+  // The <input type="date"> picker always sends YYYY-MM-DD, but this field
+  // is reachable directly (not just through the form), and an invalid date
+  // string reaching the pending_signups insert previously surfaced as a
+  // raw Postgres type error instead of a clean 400.
+  if (dateOfBirth) {
+    const parsed = /^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth) ? new Date(dateOfBirth) : null;
+    if (!parsed || Number.isNaN(parsed.getTime()) || parsed > new Date()) {
+      return NextResponse.json(
+        { status: "error", message: "Date of birth isn't a valid date." },
+        { status: 400 }
+      );
+    }
+  }
+
   try {
     const result = await registerMember({ fullName, phone, email, dateOfBirth });
     return NextResponse.json(result);

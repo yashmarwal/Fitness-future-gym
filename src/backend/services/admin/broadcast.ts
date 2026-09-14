@@ -25,27 +25,19 @@ async function resolveRecipients(segment: BroadcastSegment) {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 14);
 
-    const { data: members, error } = await db
+    // members.last_checked_in_at is maintained on every check-in (both the
+    // self-service and admin-manual paths — see attendance.ts) specifically
+    // so inactivity can be read straight off the members row instead of
+    // querying the attendance log per member (which used to run one extra
+    // query per active member here) — alerts.ts already does it this way.
+    const { data, error } = await db
       .from("members")
       .select("id, phone, email, full_name")
       .eq("is_active", true)
-      .or(HAS_CONTACT_INFO);
+      .or(HAS_CONTACT_INFO)
+      .or(`last_checked_in_at.is.null,last_checked_in_at.lt.${cutoff.toISOString()}`);
     if (error) throw new Error(error.message);
-
-    const inactive = [];
-    for (const member of members ?? []) {
-      const { data: lastVisit } = await db
-        .from("attendance")
-        .select("checked_in_at")
-        .eq("member_id", member.id)
-        .order("checked_in_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!lastVisit || new Date(lastVisit.checked_in_at) < cutoff) {
-        inactive.push(member);
-      }
-    }
-    return inactive;
+    return data ?? [];
   }
 
   const { data, error } = await db
