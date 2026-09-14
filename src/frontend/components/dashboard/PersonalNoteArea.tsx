@@ -16,10 +16,8 @@ export default function PersonalNoteArea() {
   }
 
   return (
-    <div className="flex items-center gap-3 bg-surface-container-low pl-4 pr-3 py-2.5 shadow-hard mb-6">
-      <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">
-        edit_note
-      </span>
+    <div className="flex items-center gap-3 bg-primary-container text-on-primary-container pl-4 pr-3 py-3 shadow-hard mb-6">
+      <span className="material-symbols-outlined text-xl leading-none shrink-0">bolt</span>
       <input
         // Remounts (and re-seeds defaultValue) the one time the stored value
         // flips from the server-safe "" to the real localStorage content —
@@ -28,11 +26,11 @@ export default function PersonalNoteArea() {
         type="text"
         defaultValue={savedNote}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder="Your goal or a note to yourself — saved on this device only"
-        className="flex-1 min-w-0 bg-transparent text-on-surface font-body text-sm outline-none placeholder:text-outline"
+        placeholder="Your Goal Or A Note To Yourself"
+        className="flex-1 min-w-0 bg-transparent font-headline-sm text-lg uppercase tracking-wide outline-none placeholder:text-on-primary-container/70"
       />
       <span
-        className="material-symbols-outlined text-sm text-outline leading-none shrink-0"
+        className="material-symbols-outlined text-base leading-none shrink-0 opacity-70"
         title="Saved on this device only"
         aria-label="Saved on this device only"
       >
