@@ -8,18 +8,23 @@ import { Skeleton } from "@/frontend/components/dashboard/Primitives";
 export default function DashboardLoading() {
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-(--container-max) mx-auto">
+      <Skeleton className="h-4 w-24 mb-2" />
+      <Skeleton className="h-7 w-40 mb-6" />
+
       <Skeleton className="h-[52px] w-full mb-6" />
       <Skeleton className="h-[52px] w-full mb-6" />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-24 w-full" />
         ))}
       </div>
 
+      <Skeleton className="h-28 w-full mb-6" />
+
       <Skeleton className="h-7 w-40 mb-4" />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-        {Array.from({ length: 9 }).map((_, i) => (
+        {Array.from({ length: 10 }).map((_, i) => (
           <Skeleton key={i} className="h-24 w-full" />
         ))}
       </div>

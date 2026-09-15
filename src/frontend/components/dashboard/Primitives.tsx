@@ -19,15 +19,20 @@ export function StatCard({
   tone = "default",
   size = "lg",
   uppercase = false,
+  icon,
 }: {
   value: ReactNode;
   label: string;
   tone?: Tone;
   size?: "md" | "lg";
   uppercase?: boolean;
+  icon?: string;
 }) {
   return (
-    <div className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-1">
+    <div className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-1 transition-transform hover:-translate-y-0.5">
+      {icon && (
+        <span className={`material-symbols-outlined text-lg leading-none mb-1 ${toneClass(tone)}`}>{icon}</span>
+      )}
       <span
         className={`font-display leading-none ${size === "md" ? "text-2xl" : "text-3xl"} ${uppercase ? "uppercase" : ""} ${toneClass(tone)}`}
       >

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
 import { logWorkout } from "@/backend/services/workouts";
+import { awardWorkoutXp } from "@/backend/services/muscleProgress";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();
@@ -20,6 +21,7 @@ export async function POST(request: Request) {
 
   try {
     await logWorkout(session.memberId, { exerciseName, sets, reps, weightKg });
+    await awardWorkoutXp(session.memberId, exerciseName, sets).catch(() => {});
     return NextResponse.json({ status: "ok" });
   } catch (err) {
     console.error(err);
