@@ -124,18 +124,37 @@ export default function MobilePrograms() {
             Group Training
           </h2>
           <div className="flex items-baseline gap-space-2xs">
-            <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹3,000</span>
+            <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹2,000</span>
             <span className="font-label-sm text-[10px] text-tertiary uppercase">/ Month</span>
           </div>
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Periodized volume, progressive barbell tension, and stage-ready physique mechanics. Heavy deadlift bays and steel dumbbells up to 50kg+.
           </p>
-          <Link
-            href="/membership"
-            className="w-full h-11 bg-primary-container text-on-primary-container flex items-center justify-center font-label-md text-label-md uppercase font-bold tracking-wider mt-space-2xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
-          >
-            Inquire Program Loadout
-          </Link>
+          <div className="grid grid-cols-3 gap-space-2xs mt-space-2xs">
+            <a
+              href="tel:+919643526435"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">call</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
+            </a>
+            <Link
+              href="/location#inquiry"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">edit_note</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
+            </Link>
+            <a
+              href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Group%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
+            </a>
+          </div>
         </div>
 
         {/* Modality 2 */}
@@ -158,12 +177,31 @@ export default function MobilePrograms() {
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Direct 1:1 floor ratio with technique audits, joint posture tracking, bi-weekly caliper measurements, and rapid strength progression.
           </p>
-          <Link
-            href="/location"
-            className="w-full h-11 bg-primary-container text-on-primary-container flex items-center justify-center font-label-md text-label-md uppercase font-bold tracking-wider mt-space-2xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
-          >
-            Book 1:1 Assessment
-          </Link>
+          <div className="grid grid-cols-3 gap-space-2xs mt-space-2xs">
+            <a
+              href="tel:+919643526435"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">call</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
+            </a>
+            <Link
+              href="/location#inquiry"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">edit_note</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
+            </Link>
+            <a
+              href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Personal%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
+            </a>
+          </div>
         </div>
 
         {/* Modality 3 */}
@@ -192,6 +230,31 @@ export default function MobilePrograms() {
           >
             Calculate Daily Targets
           </Link>
+          <div className="grid grid-cols-3 gap-space-2xs">
+            <a
+              href="tel:+919643526435"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">call</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
+            </a>
+            <Link
+              href="/location#inquiry"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">edit_note</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
+            </Link>
+            <a
+              href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20the%20Diet%20Plan%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
+            </a>
+          </div>
         </div>
       </section>
     </div>

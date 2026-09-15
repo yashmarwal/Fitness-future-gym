@@ -206,10 +206,22 @@ export default function CalculatorForm() {
                 }`}
               >
                 <div>
-                  <span className="block font-title-sm text-title-sm uppercase">Sedentary / Desk Work</span>
+                  <span
+                    className={`block font-title-sm text-title-sm uppercase ${
+                      activity === 1.2 ? "text-primary-container font-bold" : "text-on-surface"
+                    }`}
+                  >
+                    Sedentary / Desk Work
+                  </span>
                   <span className="block font-body-sm text-body-sm text-tertiary">Little to no movement</span>
                 </div>
-                <span className="font-label-md text-label-md text-outline">1.2x</span>
+                <span
+                  className={`font-label-md text-label-md ${
+                    activity === 1.2 ? "text-primary-container font-bold" : "text-outline"
+                  }`}
+                >
+                  1.2x
+                </span>
               </button>
 
               <button
@@ -222,10 +234,22 @@ export default function CalculatorForm() {
                 }`}
               >
                 <div>
-                  <span className="block font-title-sm text-title-sm uppercase">Moderate Lifter</span>
+                  <span
+                    className={`block font-title-sm text-title-sm uppercase ${
+                      activity === 1.45 ? "text-primary-container font-bold" : "text-on-surface"
+                    }`}
+                  >
+                    Moderate Lifter
+                  </span>
                   <span className="block font-body-sm text-body-sm text-tertiary">3–4 Training Sessions</span>
                 </div>
-                <span className="font-label-md text-label-md text-outline">1.45x</span>
+                <span
+                  className={`font-label-md text-label-md ${
+                    activity === 1.45 ? "text-primary-container font-bold" : "text-outline"
+                  }`}
+                >
+                  1.45x
+                </span>
               </button>
 
               <button
@@ -238,14 +262,24 @@ export default function CalculatorForm() {
                 }`}
               >
                 <div>
-                  <span className="block font-title-sm text-title-sm uppercase text-primary-container font-bold">
+                  <span
+                    className={`block font-title-sm text-title-sm uppercase ${
+                      activity === 1.65 ? "text-primary-container font-bold" : "text-on-surface"
+                    }`}
+                  >
                     Heavy Iron Lifter
                   </span>
-                  <span className="block font-body-sm text-body-sm text-on-surface">
+                  <span className="block font-body-sm text-body-sm text-tertiary">
                     5–6 Days Resistance &amp; Compounds
                   </span>
                 </div>
-                <span className="font-label-md text-label-md text-primary-container font-bold">1.65x</span>
+                <span
+                  className={`font-label-md text-label-md ${
+                    activity === 1.65 ? "text-primary-container font-bold" : "text-outline"
+                  }`}
+                >
+                  1.65x
+                </span>
               </button>
             </div>
           </div>
@@ -256,7 +290,13 @@ export default function CalculatorForm() {
               Primary Training Goal
             </label>
             <div className="flex flex-col gap-space-xs">
-              <label className="cursor-pointer p-space-sm bg-surface-container-lowest flex items-center justify-between border border-surface-variant/40 hover:bg-surface-container transition-colors">
+              <label
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                  goal === -500
+                    ? "bg-surface-container border-primary-container"
+                    : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
+                }`}
+              >
                 <div className="flex items-center gap-space-sm">
                   <input
                     type="radio"
@@ -267,7 +307,11 @@ export default function CalculatorForm() {
                     className="accent-primary-container"
                   />
                   <div>
-                    <span className="font-title-sm text-title-sm uppercase block text-on-surface">
+                    <span
+                      className={`font-title-sm text-title-sm uppercase block ${
+                        goal === -500 ? "text-primary-container font-bold" : "text-on-surface"
+                      }`}
+                    >
                       Fat Loss / Aggressive Cut
                     </span>
                     <span className="font-body-sm text-body-sm text-tertiary">Deficit preserving lean mass</span>
@@ -276,7 +320,13 @@ export default function CalculatorForm() {
                 <span className="font-label-md text-label-md text-error-container font-bold">-500 KCAL</span>
               </label>
 
-              <label className="cursor-pointer p-space-sm bg-surface-container flex items-center justify-between border border-primary-container">
+              <label
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                  goal === 0
+                    ? "bg-surface-container border-primary-container"
+                    : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
+                }`}
+              >
                 <div className="flex items-center gap-space-sm">
                   <input
                     type="radio"
@@ -287,16 +337,26 @@ export default function CalculatorForm() {
                     className="accent-primary-container"
                   />
                   <div>
-                    <span className="font-title-sm text-title-sm uppercase block text-primary-container font-bold">
+                    <span
+                      className={`font-title-sm text-title-sm uppercase block ${
+                        goal === 0 ? "text-primary-container font-bold" : "text-on-surface"
+                      }`}
+                    >
                       Strength Maintenance / Recomp
                     </span>
-                    <span className="font-body-sm text-body-sm text-on-surface">Fuel compound progress</span>
+                    <span className="font-body-sm text-body-sm text-tertiary">Fuel compound progress</span>
                   </div>
                 </div>
                 <span className="font-label-md text-label-md text-on-surface">MAINTAIN</span>
               </label>
 
-              <label className="cursor-pointer p-space-sm bg-surface-container-lowest flex items-center justify-between border border-surface-variant/40 hover:bg-surface-container transition-colors">
+              <label
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                  goal === 350
+                    ? "bg-surface-container border-primary-container"
+                    : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
+                }`}
+              >
                 <div className="flex items-center gap-space-sm">
                   <input
                     type="radio"
@@ -307,7 +367,11 @@ export default function CalculatorForm() {
                     className="accent-primary-container"
                   />
                   <div>
-                    <span className="font-title-sm text-title-sm uppercase block text-on-surface">
+                    <span
+                      className={`font-title-sm text-title-sm uppercase block ${
+                        goal === 350 ? "text-primary-container font-bold" : "text-on-surface"
+                      }`}
+                    >
                       Lean Muscle Hypertrophy / Bulk
                     </span>
                     <span className="font-body-sm text-body-sm text-tertiary">Surplus for power growth</span>

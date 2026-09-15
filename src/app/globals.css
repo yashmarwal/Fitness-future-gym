@@ -165,3 +165,57 @@ body {
     box-shadow: 0 0 10px 4px rgba(255, 90, 31, 0.55);
   }
 }
+
+@keyframes rank-pop {
+  0% {
+    transform: scale(0.5) rotate(-8deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.18) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-in {
+  0% {
+    transform: translate(-50%, -16px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* A slow "chase light" travelling through a row of cards — each card gets
+   the same animation with a different animation-delay (set inline per
+   card), so only one card's border/glow is lit at a time and it looks like
+   the highlight is moving down the row, continuously, forever. Kept subtle
+   (a border-color shift + soft glow, not a scale/movement change) so it
+   reads as ambient rather than distracting. */
+@keyframes card-highlight-cycle {
+  0%,
+  85%,
+  100% {
+    border-color: var(--color-surface-variant);
+    box-shadow: 4px 4px 0px #000000;
+  }
+  4%,
+  10% {
+    border-color: var(--color-primary-container);
+    box-shadow: 4px 4px 0px #000000, 0 0 16px 1px rgba(255, 90, 31, 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card-highlight-cycle {
+    /* 7 cards × 1.5s stagger = 10.5s, so the delays set per-card (0s, 1.5s,
+       3s, ... 9s) space evenly around one full loop. */
+    animation: card-highlight-cycle 10.5s ease-in-out infinite;
+  }
+}

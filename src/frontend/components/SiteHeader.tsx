@@ -14,9 +14,7 @@ const NAV_LINKS = [
   { href: "/programs", label: "Programs", num: "03" },
   { href: "/membership", label: "Membership Tiers", num: "04" },
   { href: "/location", label: "Location & Timings", num: "05" },
-  { href: "/faq", label: "FAQ", num: "06" },
-  { href: "/blog", label: "Journal", num: "07" },
-  { href: "/calculator", label: "BMI & Macro Calc", num: "08" },
+  { href: "/calculator", label: "BMI & Macro Calc", num: "06" },
 ];
 
 export default function SiteHeader() {
@@ -171,7 +169,7 @@ export default function SiteHeader() {
         scrolled ? "max-h-0 py-0 opacity-0 overflow-hidden" : "max-h-12 py-1 opacity-100"
       }`}>
         <p className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-semibold truncate">
-          <span className="inline-block mr-space-xs">🔥</span> SWEAT | GAIN | REPEAT — 8+ YEARS OF RAW STRENGTH IN NANGLOI • CALL: +91 87009 78341
+          <span className="inline-block mr-space-xs">🔥</span> SWEAT | GAIN | REPEAT — 8+ YEARS OF RAW STRENGTH IN NANGLOI • CALL: Vaibhav +91 96435 26435 / Hritik +91 87009 78341
         </p>
       </div>
 
@@ -248,7 +246,7 @@ export default function SiteHeader() {
         <div
           ref={drawerRef}
           style={{ opacity: 0, transform: "translateY(-20px)" }}
-          className="xl:hidden absolute top-full left-0 right-0 w-full h-[calc(100dvh-100%)] bg-gradient-to-b from-surface-container-lowest via-surface-container-low to-surface-container-lowest/98 backdrop-blur-2xl flex flex-col justify-between p-space-lg overflow-y-auto border-t border-primary-container/30 shadow-2xl z-50"
+          className="xl:hidden absolute top-full left-0 right-0 w-full min-h-[calc(100dvh-100%)] bg-gradient-to-b from-surface-container-lowest via-surface-container-low to-surface-container-lowest/98 backdrop-blur-2xl flex flex-col p-space-lg overflow-y-auto border-t border-primary-container/30 shadow-2xl z-50"
         >
           <div className="flex flex-col gap-space-md">
             <div className="mobile-nav-header flex items-center justify-between pb-space-xs border-b border-surface-variant/40" style={{ opacity: 0 }}>
@@ -306,11 +304,19 @@ export default function SiteHeader() {
               <span>Claim Your 2-Day Free Trial</span>
             </Link>
 
-            <div className="bg-surface-container p-space-sm flex items-center justify-between border border-surface-variant/30 text-body-sm font-body-sm">
-              <span className="text-tertiary">Front Desk Hotline:</span>
-              <a href="tel:+918700978341" className="text-primary-container font-bold font-mono">
-                +91 87009 78341
-              </a>
+            <div className="bg-surface-container p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30 text-body-sm font-body-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-tertiary">Coach Vaibhav:</span>
+                <a href="tel:+919643526435" className="text-primary-container font-bold font-mono">
+                  +91 96435 26435
+                </a>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-tertiary">Coach Hritik:</span>
+                <a href="tel:+918700978341" className="text-primary-container font-bold font-mono">
+                  +91 87009 78341
+                </a>
+              </div>
             </div>
           </div>
         </div>

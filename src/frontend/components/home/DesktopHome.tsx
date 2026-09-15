@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CoachAvatar from "@/frontend/components/CoachAvatar";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -199,25 +200,6 @@ export default function DesktopHome() {
         );
       }
 
-      // 8. FAQ & CTA ANIMATION
-      const faqSec = document.querySelector(".faq-sec");
-      if (faqSec) {
-        gsap.fromTo(
-          faqSec.querySelectorAll(".faq-card"),
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: faqSec,
-              start: "top 85%",
-            },
-          }
-        );
-      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -521,9 +503,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <div className="w-16 h-16 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-2xl text-primary-container font-bold shadow-md">
-                    V
-                  </div>
+                  <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -538,7 +518,7 @@ export default function DesktopHome() {
                 <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST SQUAT</span>
-                    <span className="font-title-sm text-title-sm text-on-surface">260 KG</span>
+                    <span className="font-title-sm text-title-sm text-on-surface">220 KG</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST DEADLIFT</span>
@@ -549,6 +529,14 @@ export default function DesktopHome() {
                     <span className="font-title-sm text-title-sm text-on-surface">Power &amp; PRs</span>
                   </div>
                 </div>
+                <div className="flex items-center gap-space-md mt-space-sm">
+                  <a href="tel:+919643526435" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
+                  </a>
+                  <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -557,9 +545,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <div className="w-16 h-16 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-2xl text-on-surface font-bold shadow-md">
-                    H
-                  </div>
+                  <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -569,7 +555,7 @@ export default function DesktopHome() {
                   </div>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-md">
-                  Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints. Hritik oversees body transformation and recomposition protocols for 500+ athletes, plus conditioning work for armed-forces recruits.
+                  Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints. Hritik oversees body transformation and recomposition protocols for 70+ athletes, plus conditioning work for armed-forces recruits.
                 </p>
                 <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
                   <div className="flex flex-col">
@@ -578,12 +564,20 @@ export default function DesktopHome() {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BODY RECOMP</span>
-                    <span className="font-title-sm text-title-sm text-primary-container">500+ Athletes</span>
+                    <span className="font-title-sm text-title-sm text-primary-container">70+ Athletes</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">SPECIALTY</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Hypertrophy</span>
                   </div>
+                </div>
+                <div className="flex items-center gap-space-md mt-space-sm">
+                  <a href="tel:+918700978341" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
+                  </a>
+                  <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                  </a>
                 </div>
               </div>
             </div>
@@ -797,16 +791,22 @@ export default function DesktopHome() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-space-md mb-space-xl">
-            <div className="dash-card bg-primary-container text-on-primary-container p-space-lg shadow-hard-lg flex flex-col gap-space-xs md:col-span-1">
-              <span className="material-symbols-outlined text-headline-md">event_note</span>
-              <h4 className="font-title-sm text-title-sm uppercase">Workout Planner</h4>
-              <p className="font-body-sm text-body-sm opacity-90">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200 md:col-span-1"
+              style={{ animationDelay: "9s" }}
+            >
+              <span className="material-symbols-outlined text-primary-container text-headline-md">event_note</span>
+              <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Workout Planner</h4>
+              <p className="font-body-sm text-body-sm text-tertiary">
                 Pick from 8 pre-built splits — Push/Pull/Legs, 5x5 Strength, Bro Split, and more — or build your own
                 with real exercises, sets, and reps.
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "0s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">restaurant</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Auto Calorie Lookup</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -815,7 +815,10 @@ export default function DesktopHome() {
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "1.5s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">
                 local_fire_department
               </span>
@@ -826,7 +829,10 @@ export default function DesktopHome() {
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "3s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">qr_code_scanner</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">One-Tap Attendance</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -835,7 +841,10 @@ export default function DesktopHome() {
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "4.5s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">badge</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Digital Membership Card</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -844,7 +853,10 @@ export default function DesktopHome() {
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "6s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">calendar_month</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Attendance History</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -853,7 +865,10 @@ export default function DesktopHome() {
               </p>
             </div>
 
-            <div className="dash-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              style={{ animationDelay: "7.5s" }}
+            >
               <span className="material-symbols-outlined text-primary-container text-headline-md">fitness_center</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Workout Log</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -913,52 +928,6 @@ export default function DesktopHome() {
                   04:30 PM — 10:30 PM
                 </span>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. FAQ PREVIEW TEASER */}
-      <section className="faq-sec w-full bg-surface-container-lowest py-space-3xl border-t border-surface-variant/40">
-        <div className="max-w-container-max mx-auto px-gutter-desktop">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
-            <div>
-              <span className="font-label-md text-label-md uppercase tracking-widest text-primary-container font-bold">CLEAR ANSWERS</span>
-              <h2 className="font-headline-lg text-headline-lg uppercase text-on-surface">FREQUENTLY ASKED QUESTIONS</h2>
-            </div>
-            <Link href="/faq" className="font-label-md text-label-md uppercase text-primary-container hover:underline flex items-center gap-2xs">
-              <span>View All 10 FAQs</span>
-              <span className="material-symbols-outlined text-body-sm">arrow_forward</span>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-            <div className="faq-card bg-surface-container p-space-md border border-surface-variant/30 hover:border-primary-container transition-colors">
-              <h4 className="font-title-sm text-title-sm uppercase text-on-surface mb-space-2xs">Are beginners welcome?</h4>
-              <p className="font-body-sm text-body-sm text-tertiary">
-                Yes. Every beginner receives a mandatory 15-minute movement assessment by Coach Vaibhav or Hritik to establish safe squat, bench, and deadlift mechanics.
-              </p>
-            </div>
-
-            <div className="faq-card bg-surface-container p-space-md border border-surface-variant/30 hover:border-primary-container transition-colors">
-              <h4 className="font-title-sm text-title-sm uppercase text-on-surface mb-space-2xs">Is the gym floor 100% unisex?</h4>
-              <p className="font-body-sm text-body-sm text-tertiary">
-                Absolutely. We maintain a zero-harassment, strictly disciplined floor environment where male and female lifters train with total safety and equal access.
-              </p>
-            </div>
-
-            <div className="faq-card bg-surface-container p-space-md border border-surface-variant/30 hover:border-primary-container transition-colors">
-              <h4 className="font-title-sm text-title-sm uppercase text-on-surface mb-space-2xs">How does the 2-day free pass work?</h4>
-              <p className="font-body-sm text-body-sm text-tertiary">
-                Fill the 2-day trial form on our Membership page. You get instant access credentials via WhatsApp and email for 2 consecutive days with full floor privileges.
-              </p>
-            </div>
-
-            <div className="faq-card bg-surface-container p-space-md border border-surface-variant/30 hover:border-primary-container transition-colors">
-              <h4 className="font-title-sm text-title-sm uppercase text-on-surface mb-space-2xs">What are the peak operational hours?</h4>
-              <p className="font-body-sm text-body-sm text-tertiary">
-                Morning peak is 07:00–09:30 AM; Evening peak is 06:30–09:00 PM. Off-peak hours offer open platform availability for heavy compound lifters.
-              </p>
             </div>
           </div>
         </div>

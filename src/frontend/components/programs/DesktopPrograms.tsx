@@ -115,7 +115,7 @@ export default function DesktopPrograms() {
                   </span>
                 </div>
                 <div className="flex items-baseline gap-space-2xs">
-                  <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹3,000</span>
+                  <span className="font-headline-sm text-headline-sm text-primary-container font-bold">₹2,000</span>
                   <span className="font-label-sm text-label-sm text-tertiary uppercase">/ Month</span>
                 </div>
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed">
@@ -135,7 +135,7 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-row items-center justify-between gap-space-md border border-surface-variant/40">
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
                 <div className="flex items-center gap-space-md flex-wrap">
                   <div>
                     <span className="font-headline-sm text-headline-sm text-on-surface">4</span>
@@ -147,13 +147,31 @@ export default function DesktopPrograms() {
                     <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Cable Stacks</span>
                   </div>
                 </div>
-                <Link
-                  href="/membership"
-                  className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm shadow-hard hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  Inquire Loadout
-                  <span className="material-symbols-outlined ml-space-xs text-body-md">arrow_forward</span>
-                </Link>
+                <div className="grid grid-cols-3 gap-space-2xs">
+                  <a
+                    href="tel:+919643526435"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">call</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
+                  </a>
+                  <Link
+                    href="/location#inquiry"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">edit_note</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
+                  </Link>
+                  <a
+                    href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Group%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -206,7 +224,7 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-row items-center justify-between gap-space-md border border-surface-variant/40">
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
                 <div className="flex items-center gap-space-md flex-wrap">
                   <div>
                     <span className="font-headline-sm text-headline-sm text-on-surface">1:1</span>
@@ -218,13 +236,31 @@ export default function DesktopPrograms() {
                     <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Cycle Audits</span>
                   </div>
                 </div>
-                <Link
-                  href="/location"
-                  className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm shadow-hard hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  Book Assessment
-                  <span className="material-symbols-outlined ml-space-xs text-body-md">arrow_forward</span>
-                </Link>
+                <div className="grid grid-cols-3 gap-space-2xs">
+                  <a
+                    href="tel:+919643526435"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">call</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
+                  </a>
+                  <Link
+                    href="/location#inquiry"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">edit_note</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
+                  </Link>
+                  <a
+                    href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Personal%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -277,25 +313,52 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-row items-center justify-between gap-space-md border border-surface-variant/40">
-                <div className="flex items-center gap-space-md flex-wrap">
-                  <div>
-                    <span className="font-headline-sm text-headline-sm text-on-surface">100%</span>
-                    <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Local Staples</span>
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
+                <div className="flex items-center justify-between gap-space-md flex-wrap">
+                  <div className="flex items-center gap-space-md flex-wrap">
+                    <div>
+                      <span className="font-headline-sm text-headline-sm text-on-surface">100%</span>
+                      <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Local Staples</span>
+                    </div>
+                    <div className="w-px h-4 bg-surface-variant"></div>
+                    <div>
+                      <span className="font-headline-sm text-headline-sm font-bold text-primary-container">ZERO</span>
+                      <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Fads</span>
+                    </div>
                   </div>
-                  <div className="w-px h-4 bg-surface-variant"></div>
-                  <div>
-                    <span className="font-headline-sm text-headline-sm font-bold text-primary-container">ZERO</span>
-                    <span className="font-label-sm text-label-sm uppercase text-tertiary ml-space-2xs">Fads</span>
-                  </div>
+                  <Link
+                    href="/calculator"
+                    className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm shadow-hard hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  >
+                    Calculate Caloric Target
+                    <span className="material-symbols-outlined ml-space-xs text-body-md">calculate</span>
+                  </Link>
                 </div>
-                <Link
-                  href="/calculator"
-                  className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm shadow-hard hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  Calculate Caloric Target
-                  <span className="material-symbols-outlined ml-space-xs text-body-md">calculate</span>
-                </Link>
+                <div className="grid grid-cols-3 gap-space-2xs">
+                  <a
+                    href="tel:+919643526435"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">call</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
+                  </a>
+                  <Link
+                    href="/location#inquiry"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">edit_note</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
+                  </Link>
+                  <a
+                    href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20the%20Diet%20Plan%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

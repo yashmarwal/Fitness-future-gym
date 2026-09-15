@@ -31,7 +31,7 @@ export default function SiteFooter() {
               HQ &amp; Timings
             </span>
             <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-              KH.No.52, Shop No.5, Plot No.8-A, Near Rao Vihar, Inder Enclave, Nangloi, Delhi – 110041
+              KH.No.52, Shop No.5 Plot No.8-A, 18, near Rao Vihar, Rao Vihar, Nangloi, Delhi, 110041
             </p>
             <div className="mt-space-xs bg-surface-container p-space-sm border-l-2 border-primary-container">
               <p className="font-label-sm text-label-sm uppercase text-tertiary">Operational Hours</p>
@@ -50,8 +50,6 @@ export default function SiteFooter() {
               <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/programs">Programs</Link>
               <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/membership">Membership</Link>
               <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/location">Location</Link>
-              <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/faq">FAQ</Link>
-              <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/blog">Journal</Link>
               <Link className="text-on-surface-variant hover:text-primary-container transition-colors py-space-2xs" href="/calculator">Calculator</Link>
             </div>
           </div>
@@ -60,17 +58,65 @@ export default function SiteFooter() {
             <span className="font-title-sm text-title-sm uppercase tracking-wider text-on-surface border-b border-surface-variant/40 pb-space-2xs mb-space-xs">
               Direct Line
             </span>
-            <p className="font-headline-sm text-headline-sm text-primary-container">+91 87009 78341</p>
-            <p className="font-body-sm text-body-sm text-tertiary">frontdesk@fitnessfuturegym.in</p>
+            <div className="flex flex-col gap-space-2xs">
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Coach Vaibhav: <a href="tel:+919643526435" className="text-primary-container font-bold">+91 96435 26435</a>
+              </p>
+              <p className="font-body-sm text-body-sm text-tertiary">
+                Coach Hritik: <a href="tel:+918700978341" className="text-primary-container font-bold">+91 87009 78341</a>
+              </p>
+            </div>
+            <p className="font-body-sm text-body-sm text-tertiary">contact.fitnessfuture@gmail.com</p>
             <div className="flex items-center gap-space-sm mt-space-sm">
               <Link aria-label="Location" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/location">
                 <span className="material-symbols-outlined text-title-md">location_on</span>
               </Link>
-              <a aria-label="Call" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="tel:+918700978341">
+              {/* Each icon carries a small V/H badge so the two Call icons
+                  (and the two WhatsApp icons) never read as an unlabeled
+                  duplicate of each other. */}
+              <a
+                aria-label="Call Coach Vaibhav"
+                className="relative p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                href="tel:+919643526435"
+              >
                 <span className="material-symbols-outlined text-title-md">call</span>
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center bg-primary-container text-on-primary-container text-[8px] font-bold leading-none">
+                  V
+                </span>
               </a>
-              <a aria-label="WhatsApp" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="https://wa.me/918700978341" target="_blank" rel="noreferrer">
+              <a
+                aria-label="WhatsApp Coach Vaibhav"
+                className="relative p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                href="https://wa.me/919643526435"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <span className="material-symbols-outlined text-title-md">chat</span>
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center bg-primary-container text-on-primary-container text-[8px] font-bold leading-none">
+                  V
+                </span>
+              </a>
+              <a
+                aria-label="Call Coach Hritik"
+                className="relative p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                href="tel:+918700978341"
+              >
+                <span className="material-symbols-outlined text-title-md">call</span>
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center bg-primary-container text-on-primary-container text-[8px] font-bold leading-none">
+                  H
+                </span>
+              </a>
+              <a
+                aria-label="WhatsApp Coach Hritik"
+                className="relative p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                href="https://wa.me/918700978341"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="material-symbols-outlined text-title-md">chat</span>
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center bg-primary-container text-on-primary-container text-[8px] font-bold leading-none">
+                  H
+                </span>
               </a>
             </div>
           </div>
@@ -85,6 +131,20 @@ export default function SiteFooter() {
               Powerlifting • Bodybuilding • Conditioning
             </span>
           </div>
+        </div>
+
+        <div className="mt-space-sm pt-space-sm border-t border-surface-variant/20 flex justify-center">
+          <p className="font-body-sm text-body-sm text-tertiary-fixed-dim">
+            Developed by{" "}
+            <a
+              href="https://wa.me/918595475007?text=Hello%2C%20I%E2%80%99m%20interested%20in%20developing%20a%20website."
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-container hover:underline"
+            >
+              Yash Marwal
+            </a>
+          </p>
         </div>
       </div>
     </footer>

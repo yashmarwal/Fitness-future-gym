@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CoachAvatar from "@/frontend/components/CoachAvatar";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -41,10 +42,10 @@ export default function MobileAbout() {
 
       // Number Count-Up Tickers
       const counterItems = [
-        { selector: ".count-athletes", target: 2800, suffix: "+" },
+        { selector: ".count-athletes", target: 500, suffix: "+" },
         { selector: ".count-years", target: 8, suffix: "+" },
         { selector: ".count-unisex", target: 100, suffix: "%" },
-        { selector: ".count-recruits", target: 350, suffix: "+" },
+        { selector: ".count-recruits", target: 25, suffix: "+" },
       ];
 
       counterItems.forEach((item) => {
@@ -127,7 +128,7 @@ export default function MobileAbout() {
         {/* 2x2 Stats Grid */}
         <div className="mobile-stat-sec grid grid-cols-2 gap-space-xs mt-space-lg pt-space-md bg-surface-container-low p-space-md border border-surface-variant/40">
           <div className="mobile-stat-card flex flex-col">
-            <span className="count-athletes font-headline-md text-headline-md text-primary-container font-bold">2,800+</span>
+            <span className="count-athletes font-headline-md text-headline-md text-primary-container font-bold">500+</span>
             <span className="font-label-sm text-label-sm uppercase text-tertiary">Athletes Molded</span>
           </div>
           <div className="mobile-stat-card flex flex-col">
@@ -139,7 +140,7 @@ export default function MobileAbout() {
             <span className="font-label-sm text-label-sm uppercase text-tertiary">Unisex Floor</span>
           </div>
           <div className="mobile-stat-card flex flex-col pt-space-xs border-t border-surface-variant/30">
-            <span className="count-recruits font-headline-md text-headline-md text-on-surface font-bold">350+</span>
+            <span className="count-recruits font-headline-md text-headline-md text-on-surface font-bold">25+</span>
             <span className="font-label-sm text-label-sm uppercase text-tertiary">Police Recruits</span>
           </div>
         </div>
@@ -247,9 +248,7 @@ export default function MobileAbout() {
         <div className="flex flex-col gap-space-md">
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <div className="w-12 h-12 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-xl text-primary-container font-bold">
-                V
-              </div>
+              <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -261,16 +260,22 @@ export default function MobileAbout() {
               8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
             </p>
             <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
-              <span className="text-on-surface">Best Squat: 260KG</span>
+              <span className="text-on-surface">Best Squat: 220KG</span>
               <span className="text-primary-container font-bold">Best Deadlift: 250KG</span>
+            </div>
+            <div className="flex items-center gap-space-md">
+              <a href="tel:+919643526435" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
+              </a>
+              <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+              </a>
             </div>
           </div>
 
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <div className="w-12 h-12 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-xl text-on-surface font-bold">
-                H
-              </div>
+              <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -283,7 +288,15 @@ export default function MobileAbout() {
             </p>
             <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
               <span className="text-on-surface">Best Bench: 170KG</span>
-              <span className="text-primary-container font-bold">500+ Athletes</span>
+              <span className="text-primary-container font-bold">70+ Athletes</span>
+            </div>
+            <div className="flex items-center gap-space-md">
+              <a href="tel:+918700978341" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
+              </a>
+              <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+              </a>
             </div>
           </div>
         </div>

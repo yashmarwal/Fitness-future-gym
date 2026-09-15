@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CoachAvatar from "@/frontend/components/CoachAvatar";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -75,7 +76,7 @@ export default function DesktopAbout() {
 
           <div className="grid grid-cols-4 gap-space-md mt-space-2xl pt-space-md bg-surface-container-low p-space-lg shadow-hard border border-surface-variant/40">
             <div className="about-stat-item flex flex-col">
-              <span className="font-headline-lg text-headline-lg text-primary-container">2,800+</span>
+              <span className="font-headline-lg text-headline-lg text-primary-container">500+</span>
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-tertiary">
                 Athletes Molded
               </span>
@@ -93,7 +94,7 @@ export default function DesktopAbout() {
               </span>
             </div>
             <div className="about-stat-item flex flex-col">
-              <span className="font-headline-lg text-headline-lg text-on-surface">350+</span>
+              <span className="font-headline-lg text-headline-lg text-on-surface">25+</span>
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-tertiary">
                 Police &amp; Recruits
               </span>
@@ -385,9 +386,7 @@ export default function DesktopAbout() {
           <div className="grid grid-cols-2 gap-space-lg">
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <div className="w-16 h-16 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-2xl text-primary-container font-bold shadow-md">
-                  V
-                </div>
+                <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -403,7 +402,7 @@ export default function DesktopAbout() {
               <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Squat</span>
-                  <span className="font-title-sm text-title-sm text-on-surface">260 KG</span>
+                  <span className="font-title-sm text-title-sm text-on-surface">220 KG</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Deadlift</span>
@@ -414,13 +413,19 @@ export default function DesktopAbout() {
                   <span className="font-title-sm text-title-sm text-on-surface">Power &amp; PRs</span>
                 </div>
               </div>
+              <div className="flex items-center gap-space-md mt-space-sm">
+                <a href="tel:+919643526435" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                  <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
+                </a>
+                <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                  <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                </a>
+              </div>
             </div>
 
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <div className="w-16 h-16 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-2xl text-on-surface font-bold shadow-md">
-                  H
-                </div>
+                <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -431,7 +436,7 @@ export default function DesktopAbout() {
                 </div>
               </div>
               <p className="font-body-md text-body-md text-tertiary leading-relaxed">
-                Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints — oversees body transformation and recomposition protocols for 500+ athletes.
+                Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints — oversees body transformation and recomposition protocols for 70+ athletes.
               </p>
               <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
                 <div className="flex flex-col">
@@ -440,12 +445,20 @@ export default function DesktopAbout() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Body Recomp</span>
-                  <span className="font-title-sm text-title-sm text-primary-container">500+ Athletes</span>
+                  <span className="font-title-sm text-title-sm text-primary-container">70+ Athletes</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Specialty</span>
                   <span className="font-title-sm text-title-sm text-on-surface">Hypertrophy</span>
                 </div>
+              </div>
+              <div className="flex items-center gap-space-md mt-space-sm">
+                <a href="tel:+918700978341" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                  <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
+                </a>
+                <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                  <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                </a>
               </div>
             </div>
           </div>

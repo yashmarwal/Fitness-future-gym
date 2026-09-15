@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CoachAvatar from "@/frontend/components/CoachAvatar";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -271,9 +272,7 @@ export default function MobileHome() {
 
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
-            <div className="w-12 h-12 bg-surface-container-high border border-primary-container flex items-center justify-center font-display text-xl text-primary-container font-bold">
-              V
-            </div>
+            <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                 BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -285,16 +284,22 @@ export default function MobileHome() {
             8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
           </p>
           <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
-            <span className="text-on-surface">Best Squat: 260KG</span>
+            <span className="text-on-surface">Best Squat: 220KG</span>
             <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 250KG</span>
+          </div>
+          <div className="flex items-center gap-space-md">
+            <a href="tel:+919643526435" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+              <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
+            </a>
+            <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+              <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+            </a>
           </div>
         </div>
 
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
-            <div className="w-12 h-12 bg-surface-container-high border border-surface-variant flex items-center justify-center font-display text-xl text-on-surface font-bold">
-              H
-            </div>
+            <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                 BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -307,7 +312,15 @@ export default function MobileHome() {
           </p>
           <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
             <span className="home-count-bench text-on-surface">Best Bench: 170KG</span>
-            <span className="text-primary-container font-bold">500+ Athletes</span>
+            <span className="text-primary-container font-bold">70+ Athletes</span>
+          </div>
+          <div className="flex items-center gap-space-md">
+            <a href="tel:+918700978341" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+              <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
+            </a>
+            <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+              <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+            </a>
           </div>
         </div>
       </section>
@@ -453,15 +466,21 @@ export default function MobileHome() {
         </div>
 
         <div className="grid grid-cols-2 gap-space-xs">
-          <div className="col-span-2 bg-primary-container text-on-primary-container p-space-sm flex flex-col gap-space-2xs">
-            <span className="material-symbols-outlined text-title-md">event_note</span>
-            <span className="font-title-sm text-title-sm uppercase leading-tight">Workout Planner</span>
-            <span className="font-body-sm text-body-sm opacity-90">
+          <div
+            className="card-highlight-cycle col-span-2 bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "9s" }}
+          >
+            <span className="material-symbols-outlined text-primary-container text-title-md">event_note</span>
+            <span className="font-title-sm text-title-sm uppercase leading-tight text-on-surface">Workout Planner</span>
+            <span className="font-body-sm text-body-sm text-tertiary">
               8 pre-built splits — Push/Pull/Legs, 5x5 Strength, Bro Split &amp; more — or build your own
             </span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "0s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">restaurant</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
               Auto Calorie Lookup
@@ -469,7 +488,10 @@ export default function MobileHome() {
             <span className="font-body-sm text-body-sm text-tertiary">Type a food, macros fill in themselves</span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "1.5s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">
               local_fire_department
             </span>
@@ -479,7 +501,10 @@ export default function MobileHome() {
             <span className="font-body-sm text-body-sm text-tertiary">Daily check-ins &amp; achievement badges</span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "3s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">qr_code_scanner</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
               One-Tap Attendance
@@ -487,7 +512,10 @@ export default function MobileHome() {
             <span className="font-body-sm text-body-sm text-tertiary">Scan the QR code, you&apos;re checked in</span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "4.5s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">badge</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
               Membership Card
@@ -495,7 +523,10 @@ export default function MobileHome() {
             <span className="font-body-sm text-body-sm text-tertiary">Always in your pocket, ready to scan</span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "6s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">calendar_month</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">
               Attendance History
@@ -503,7 +534,10 @@ export default function MobileHome() {
             <span className="font-body-sm text-body-sm text-tertiary">Every check-in tracked automatically</span>
           </div>
 
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs">
+          <div
+            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            style={{ animationDelay: "7.5s" }}
+          >
             <span className="material-symbols-outlined text-primary-container text-title-md">fitness_center</span>
             <span className="font-title-sm text-title-sm uppercase text-on-surface leading-tight">Workout Log</span>
             <span className="font-body-sm text-body-sm text-tertiary">Track every set, rep &amp; weight</span>

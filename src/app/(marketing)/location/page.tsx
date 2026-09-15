@@ -3,21 +3,45 @@
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { submitToWeb3Forms } from "@/frontend/lib/web3forms";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const HOURS = [
-  { day: "Monday – Thursday", time: "6:00 AM – 11:00 PM", status: "Full Access" },
-  { day: "Friday", time: "6:00 AM – 11:00 PM", status: "Full Access" },
-  { day: "Saturday", time: "6:00 AM – 11:00 PM", status: "Heavy Lifting Day" },
+  { day: "Monday – Thursday", time: "5:00 AM – 11:00 AM & 4:00 PM – 11:00 PM", status: "Full Access" },
+  { day: "Friday", time: "5:00 AM – 11:00 AM & 4:00 PM – 11:00 PM", status: "Full Access" },
+  { day: "Saturday", time: "5:00 AM – 11:00 AM & 4:00 PM – 11:00 PM", status: "Heavy Lifting Day" },
   { day: "Sunday", time: "Closed", status: "Tactical Recovery" },
 ];
 
 export default function LocationPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  async function handleInquirySubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const result = await submitToWeb3Forms({
+      subject: "New Inquiry — Fitness Future Gym Location Page",
+      from_name: "Fitness Future Gym Website",
+      name: String(data.get("name") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      message: String(data.get("message") ?? ""),
+    });
+    setSubmitting(false);
+    if (result.ok) {
+      setSubmitted(true);
+    } else {
+      setError(result.message ?? "Something went wrong. Please try again.");
+    }
+  }
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -72,13 +96,27 @@ export default function LocationPage() {
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline block">
                   QUICK ACCESS HOTLINE
                 </span>
-                <a
-                  className="font-headline-sm text-headline-sm text-primary-container tracking-wider hover:text-on-surface transition-colors block mt-space-2xs"
-                  href="tel:+918700978341"
-                >
-                  +91 87009 78341
-                </a>
-                <span className="font-body-sm text-body-sm text-on-surface-variant block">
+                <div className="mt-space-2xs flex flex-col gap-space-2xs">
+                  <div>
+                    <span className="font-label-sm text-label-sm uppercase text-outline">Coach Vaibhav</span>
+                    <a
+                      className="font-headline-sm text-headline-sm text-primary-container tracking-wider hover:text-on-surface transition-colors block"
+                      href="tel:+919643526435"
+                    >
+                      +91 96435 26435
+                    </a>
+                  </div>
+                  <div>
+                    <span className="font-label-sm text-label-sm uppercase text-outline">Coach Hritik</span>
+                    <a
+                      className="font-headline-sm text-headline-sm text-primary-container tracking-wider hover:text-on-surface transition-colors block"
+                      href="tel:+918700978341"
+                    >
+                      +91 87009 78341
+                    </a>
+                  </div>
+                </div>
+                <span className="font-body-sm text-body-sm text-on-surface-variant block mt-space-2xs">
                   Desk Attendants On Floor: 06:00 - 23:00
                 </span>
               </div>
@@ -113,7 +151,7 @@ export default function LocationPage() {
                     MAILING ADDRESS &amp; COMPOUND
                   </span>
                   <p className="font-body-lg text-body-lg text-on-surface font-semibold mt-space-2xs leading-snug">
-                    KH.No.52, Shop No.5, Plot No.8-A, Near Rao Vihar, Inder Enclave, Nangloi, Delhi – 110041
+                    KH.No.52, Shop No.5 Plot No.8-A, 18, near Rao Vihar, Rao Vihar, Nangloi, Delhi, 110041
                   </p>
                 </div>
 
@@ -127,7 +165,7 @@ export default function LocationPage() {
                         Tactical Landmark Guide
                       </span>
                       <p className="font-body-sm text-body-sm text-on-surface mt-space-2xs">
-                        Near RR Motors and SBI ATM — easily accessible from Nangloi Metro Station. Direct turn into Inder Enclave service lane.
+                        Near RR Motors and SBI ATM.
                       </p>
                     </div>
                   </div>
@@ -137,32 +175,50 @@ export default function LocationPage() {
                   <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
                     <div>
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
-                        VOICE COMM
+                        COACH VAIBHAV
                       </span>
-                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 87009 78341</p>
+                      <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 96435 26435</p>
                     </div>
-                    <a
-                      className="mt-space-sm inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
-                      href="tel:+918700978341"
-                    >
-                      <span className="material-symbols-outlined text-label-lg">call</span> CALL FRONT DESK
-                    </a>
+                    <div className="mt-space-sm flex items-center gap-space-md">
+                      <a
+                        className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
+                        href="tel:+919643526435"
+                      >
+                        <span className="material-symbols-outlined text-label-lg">call</span> CALL
+                      </a>
+                      <a
+                        className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
+                        href="https://wa.me/919643526435"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span className="material-symbols-outlined text-label-lg">chat</span> CHAT
+                      </a>
+                    </div>
                   </div>
                   <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
                     <div>
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
-                        WHATSAPP ROSTER
+                        COACH HRITIK
                       </span>
                       <p className="font-title-sm text-title-sm text-on-surface mt-space-2xs">+91 87009 78341</p>
                     </div>
-                    <a
-                      className="mt-space-sm inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
-                      href="https://wa.me/918700978341"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <span className="material-symbols-outlined text-label-lg">chat</span> INITIATE CHAT
-                    </a>
+                    <div className="mt-space-sm flex items-center gap-space-md">
+                      <a
+                        className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
+                        href="tel:+918700978341"
+                      >
+                        <span className="material-symbols-outlined text-label-lg">call</span> CALL
+                      </a>
+                      <a
+                        className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors"
+                        href="https://wa.me/918700978341"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span className="material-symbols-outlined text-label-lg">chat</span> CHAT
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -202,23 +258,33 @@ export default function LocationPage() {
           <div className="lg:col-span-6 flex flex-col gap-space-2xl">
             {/* Embedded Location Map Preview */}
             <div className="loc-card-anim bg-surface-container-low p-space-lg shadow-hard border border-surface-variant/40 flex flex-col gap-space-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-space-xs">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
                   MAP VECTOR // NANGLOI STATION
                 </span>
-                <a
-                  href="https://maps.google.com/?q=Nangloi+Delhi+110041"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-label-sm text-label-sm uppercase text-primary-container hover:underline"
-                >
-                  Open in Google Maps ↗
-                </a>
+                <div className="flex items-center gap-space-md">
+                  <a
+                    href="https://maps.app.goo.gl/za8QGX3eCtruW7FK7"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-label-sm text-label-sm uppercase text-primary-container hover:underline"
+                  >
+                    Open in Google Maps ↗
+                  </a>
+                  <a
+                    href="https://maps.app.goo.gl/za8QGX3eCtruW7FK7"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-label-sm text-label-sm uppercase text-primary-container hover:underline"
+                  >
+                    Rate Us on Google ↗
+                  </a>
+                </div>
               </div>
               <div className="w-full h-72 bg-surface-container flex items-center justify-center relative overflow-hidden border border-surface-variant/30">
                 <iframe
                   title="Nangloi Location Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13998.243577366367!2d77.0543666!3d28.6835467!2m3!1f00!2f00!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d0b0451cf1ec7%3A0xbcefb142e032d847!2sNangloi%2C%20Delhi%2C%20110041!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                  src="https://www.google.com/maps?q=KH.No.52%2C%20Shop%20No.5%20Plot%20No.8-A%2C%2018%2C%20near%20Rao%20Vihar%2C%20Rao%20Vihar%2C%20Nangloi%2C%20Delhi%2C%20110041&output=embed"
                   className="w-full h-full border-0 filter contrast-125 brightness-90 grayscale opacity-80 hover:opacity-100 transition-opacity"
                   loading="lazy"
                 ></iframe>
@@ -226,7 +292,7 @@ export default function LocationPage() {
             </div>
 
             {/* Quick Inquiry Form */}
-            <div className="loc-card-anim bg-surface-container p-space-xl shadow-hard border border-surface-variant/40">
+            <div id="inquiry" className="loc-card-anim bg-surface-container p-space-xl shadow-hard border border-surface-variant/40 scroll-mt-24">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold block mb-space-2xs">
                 DIRECT INQUIRY DISPATCH
               </span>
@@ -235,19 +301,14 @@ export default function LocationPage() {
               </h3>
 
               {!submitted ? (
-                <form
-                  className="flex flex-col gap-space-sm"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setSubmitted(true);
-                  }}
-                >
+                <form className="flex flex-col gap-space-sm" onSubmit={handleInquirySubmit}>
                   <div>
                     <label className="block font-label-sm text-label-sm uppercase tracking-wider text-outline mb-space-2xs">
                       Full Name
                     </label>
                     <input
                       required
+                      name="name"
                       className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="e.g. Rahul Sharma"
                     />
@@ -258,6 +319,7 @@ export default function LocationPage() {
                     </label>
                     <input
                       required
+                      name="phone"
                       type="tel"
                       className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="+91 87009 78341"
@@ -269,15 +331,22 @@ export default function LocationPage() {
                     </label>
                     <textarea
                       rows={3}
+                      name="message"
                       className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="e.g. Want to inquire about personal training slots or monthly pass."
                     />
                   </div>
+                  {error && (
+                    <p className="font-body-sm text-body-sm text-error-container bg-error/10 border border-error-container/40 px-space-sm py-space-xs">
+                      {error}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md shadow-hard transition-all cursor-pointer mt-space-2xs hover:scale-[1.01] active:scale-[0.99]"
+                    disabled={submitting}
+                    className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md shadow-hard transition-all cursor-pointer mt-space-2xs hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
-                    Submit Inquiry
+                    {submitting ? "Sending…" : "Submit Inquiry"}
                   </button>
                 </form>
               ) : (
