@@ -4,6 +4,7 @@ import type { AdminMember } from "@/types/admin";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
 import { createNotification } from "@/backend/services/memberNotifications";
+import { sendPushToMember } from "@/backend/services/pushNotifications";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -187,6 +188,11 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
       type: "account_blocked",
       title: "Membership Blocked — Fee Overdue",
       body: "Your check-in and dashboard access is on hold until your fee is paid. Please pay at the front desk to reactivate.",
+    }).catch(() => {});
+    await sendPushToMember(member.id, {
+      title: "Membership Blocked — Fee Overdue",
+      body: "Your check-in and dashboard access is on hold until your fee is paid. Please pay at the front desk to reactivate.",
+      url: "/dashboard/fees",
     }).catch(() => {});
   }
 

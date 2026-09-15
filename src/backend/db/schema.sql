@@ -209,6 +209,24 @@ create table if not exists member_notifications (
 create index if not exists member_notifications_member_id_created_at_idx
   on member_notifications (member_id, created_at desc);
 
+-- Real OS-level push notifications (Web Push API) — a member can have
+-- multiple rows (one per device/browser they've enabled notifications on).
+-- `endpoint` is unique because re-subscribing the same device/browser
+-- produces the same endpoint URL; upserting on it avoids duplicate rows
+-- instead of erroring. Dead subscriptions (member uninstalled, revoked
+-- permission, cleared site data) are pruned automatically the next time a
+-- send to them 404s/410s — see pushNotifications.ts.
+create table if not exists push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists push_subscriptions_member_id_idx on push_subscriptions (member_id);
+
 -- ── WhatsApp ────────────────────────────────────────────────────────────
 
 create table if not exists whatsapp_messages (

@@ -12,6 +12,7 @@ import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceC
 import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBanner";
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
+import PushNotificationPrompt from "@/frontend/components/dashboard/PushNotificationPrompt";
 
 const GREETING_SUBLINES: Record<string, string> = {
   "Good Morning": "Early floor time — get the first set in.",
@@ -75,6 +76,8 @@ export default async function DashboardPage() {
         <p className="font-label text-xs uppercase tracking-widest text-primary-container mb-0.5">{greeting}</p>
         <p className="font-body text-sm text-tertiary">{greetingLine}</p>
       </div>
+
+      <PushNotificationPrompt />
 
       <PersonalNoteArea />
 
