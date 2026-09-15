@@ -28,6 +28,13 @@ create extension if not exists pgcrypto;
 --
 --   alter table members add column if not exists frozen_reason text;
 --   alter table members add column if not exists frozen_at timestamptz;
+--
+-- Also run this one — an index on the column every fee-reminder/alerts/
+-- access-control query filters on (create index if not exists is safe to
+-- run standalone, no need to re-run the whole file):
+--
+--   create index if not exists members_active_fee_due_date_idx
+--     on members (fee_due_date) where is_active = true;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -57,6 +64,17 @@ create table if not exists members (
   last_checked_in_at timestamptz,
   created_at timestamptz not null default now()
 );
+
+-- Matches the exact filter every fee-related query already uses
+-- (`is_active = true` plus a `fee_due_date` range or comparison) —
+-- notifications.ts::runFeeReminderCheck, admin/alerts.ts, and
+-- admin/feeAbuse.ts's overdue/auto-block checks all hit this. Partial (only
+-- active members) since blocked/inactive members are excluded from all of
+-- those queries anyway. At this gym's current scale (low hundreds of rows)
+-- a sequential scan would already be fast — this is headroom for when that
+-- stops being true, not a fix for a measured slowdown.
+create index if not exists members_active_fee_due_date_idx
+  on members (fee_due_date) where is_active = true;
 
 create table if not exists attendance (
   id uuid primary key default gen_random_uuid(),

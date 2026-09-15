@@ -248,7 +248,7 @@ export default function MobileAbout() {
         <div className="flex flex-col gap-space-md">
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
+              <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -275,7 +275,7 @@ export default function MobileAbout() {
 
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
+              <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

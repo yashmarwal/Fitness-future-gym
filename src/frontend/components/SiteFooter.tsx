@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SiteFooter() {
   return (
@@ -7,9 +8,11 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl">
           <div className="flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <img
+              <Image
                 src="/logo.jpeg"
                 alt="Fitness Future Gym Logo"
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-full object-cover border border-primary-container/40"
               />
               <span className="font-headline-md text-headline-md uppercase tracking-wider text-on-surface">

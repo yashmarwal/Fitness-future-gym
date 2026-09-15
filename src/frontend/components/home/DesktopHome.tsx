@@ -503,7 +503,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
+                  <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -545,7 +545,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
+                  <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

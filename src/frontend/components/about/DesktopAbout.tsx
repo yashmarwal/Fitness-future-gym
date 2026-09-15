@@ -386,7 +386,7 @@ export default function DesktopAbout() {
           <div className="grid grid-cols-2 gap-space-lg">
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <CoachAvatar src="/images/coach-vaibhav.png" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
+                <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -425,7 +425,7 @@ export default function DesktopAbout() {
 
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <CoachAvatar src="/images/coach-hritik.png" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
+                <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

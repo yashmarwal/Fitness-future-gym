@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
@@ -181,9 +182,12 @@ export default function SiteHeader() {
           {/* Logo & Brand Name */}
           <div className="flex items-center gap-space-md shrink-0">
             <Link href="/" className="flex items-center gap-space-sm">
-              <img
+              <Image
                 src="/logo.jpeg"
                 alt="Fitness Future Gym Logo"
+                width={40}
+                height={40}
+                priority
                 className="w-10 h-10 rounded-full object-cover border border-primary-container/40"
               />
               <span className="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">
