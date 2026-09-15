@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
+import { isMissingColumnError } from "@/backend/db/errors";
 import type { AdminMember } from "@/types/admin";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
@@ -91,19 +92,6 @@ export async function listBlockedMembers(): Promise<AdminMember[]> {
     .eq("is_frozen", true);
   if (fallbackError) throw new Error(`Failed to load blocked members: ${fallbackError.message}`);
   return (fallbackData ?? []).map(mapRow);
-}
-
-// Confirmed live that a missing column surfaces two genuinely different
-// ways depending on the operation: a write (.update()/.insert()) is
-// validated against PostgREST's schema cache first, giving code PGRST204
-// ("Could not find the 'x' column of 'members' in the schema cache"); a
-// read (.select()) passes the column straight into the actual SQL query,
-// so it fails at the real Postgres layer instead with the raw "column
-// members.x does not exist" (SQLSTATE 42703) wording. Catch both.
-function isMissingColumnError(error: { code?: string; message?: string } | null | undefined): boolean {
-  if (error?.code === "PGRST204" || error?.code === "42703") return true;
-  const msg = error?.message?.toLowerCase() ?? "";
-  return msg.includes("column") && (msg.includes("schema cache") || msg.includes("does not exist"));
 }
 
 // Writes frozen_reason/frozen_at too when those columns exist (see the

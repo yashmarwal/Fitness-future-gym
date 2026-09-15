@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
 
 type Status = { checkedIn: boolean; retryAfterMinutes: number | null };
 
@@ -24,6 +25,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       const data = await res.json();
       if (data.status === "success") {
         setStatus({ checkedIn: true, retryAfterMinutes: 180 });
+        window.dispatchEvent(new Event(CHECKIN_SUCCESS_EVENT));
         router.refresh();
       } else if (data.status === "cooldown") {
         setStatus({ checkedIn: true, retryAfterMinutes: data.retryAfterMinutes });

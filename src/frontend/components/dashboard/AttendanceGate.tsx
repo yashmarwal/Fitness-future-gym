@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
 
 export default function AttendanceGate({
   checkedIn: initialCheckedIn,
@@ -48,6 +49,7 @@ export default function AttendanceGate({
       const data = await res.json();
       if (data.status === "success" || data.status === "cooldown") {
         setLocallyMarked(true);
+        if (data.status === "success") window.dispatchEvent(new Event(CHECKIN_SUCCESS_EVENT));
         router.refresh();
       } else if (data.status === "inactive") {
         setError("Your membership isn't active — see the front desk.");

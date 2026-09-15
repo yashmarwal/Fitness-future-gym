@@ -35,6 +35,13 @@ create extension if not exists pgcrypto;
 --
 --   create index if not exists members_active_fee_due_date_idx
 --     on members (fee_due_date) where is_active = true;
+--
+-- Also run these three, for the opt-in water/meal-log/streak reminder
+-- toggles on the dashboard (see reminders.ts):
+--
+--   alter table members add column if not exists notify_water boolean not null default false;
+--   alter table members add column if not exists notify_meal_log boolean not null default false;
+--   alter table members add column if not exists notify_streak boolean not null default false;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -62,6 +69,14 @@ create table if not exists members (
   -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
   -- still be detected after the underlying check-in rows have been purged.
   last_checked_in_at timestamptz,
+  -- Opt-in personal reminder toggles, shown on the dashboard (not a
+  -- separate settings page) — each independently controls whether that
+  -- member gets pinged by the matching cron (reminders.ts). All default
+  -- false: these are never sent to anyone who hasn't explicitly turned
+  -- them on, unlike fee/birthday/broadcast pushes which don't need opt-in.
+  notify_water boolean not null default false,
+  notify_meal_log boolean not null default false,
+  notify_streak boolean not null default false,
   created_at timestamptz not null default now()
 );
 

@@ -27,3 +27,29 @@ export function greetingForHour(hour: number): string {
   if (hour < 21) return "Good Evening";
   return "Good Night";
 }
+
+// "Today" in IST as a YYYY-MM-DD string — same IST-explicit reasoning as
+// getIstHour above. Used by the opt-in reminder crons (reminders.ts) to
+// check "has this member already logged food / checked in today" before
+// nagging them, since a plain server-local "today" would be wrong by
+// several hours relative to what a member in India actually considers
+// "today."
+export function getIstDateString(): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const year = parts.find((p) => p.type === "year")?.value;
+  const month = parts.find((p) => p.type === "month")?.value;
+  const day = parts.find((p) => p.type === "day")?.value;
+  return `${year}-${month}-${day}`;
+}
+
+// The UTC instant corresponding to 00:00:00 IST today — the correct lower
+// bound for "did this happen today" range queries against timestamptz
+// columns (logged_at, checked_in_at), which are stored in UTC.
+export function getIstStartOfTodayIso(): string {
+  return new Date(`${getIstDateString()}T00:00:00+05:30`).toISOString();
+}

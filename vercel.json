@@ -4,6 +4,11 @@
     { "path": "/api/cron/fee-reminders", "schedule": "0 3 * * *" },
     { "path": "/api/cron/attendance-cleanup", "schedule": "0 4 * * *" },
     { "path": "/api/cron/trial-reminder", "schedule": "0 3 * * *" },
-    { "path": "/api/cron/logs-cleanup", "schedule": "0 4 * * *" }
+    { "path": "/api/cron/logs-cleanup", "schedule": "0 4 * * *" },
+    { "path": "/api/cron/water-reminder", "schedule": "30 5 * * *" },
+    { "path": "/api/cron/water-reminder", "schedule": "30 9 * * *" },
+    { "path": "/api/cron/water-reminder", "schedule": "30 12 * * *" },
+    { "path": "/api/cron/meal-log-reminder", "schedule": "30 14 * * *" },
+    { "path": "/api/cron/streak-reminder", "schedule": "0 15 * * *" }
   ]
 }
