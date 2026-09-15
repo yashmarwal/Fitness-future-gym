@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginForm() {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +20,11 @@ export default function AdminLoginForm() {
       });
       const data = await res.json();
       if (data.status === "success") {
-        router.push("/admin");
-        router.refresh();
+        // A genuine hard navigation, not router.push() — see LoginForm.tsx
+        // for why this is deliberately the one place that bypasses
+        // Next.js's client-side router, as the most reliable way to
+        // confirm the new session cookie actually landed.
+        window.location.href = "/admin";
       } else {
         setError("Invalid username or password.");
       }

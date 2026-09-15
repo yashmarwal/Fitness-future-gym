@@ -20,8 +20,10 @@ export default function AdminNav({ username }: { username: string }) {
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
+    // Not also calling router.refresh() — see LoginForm.tsx for why that
+    // combination races with the pending push transition. push() alone
+    // still re-runs middleware with the now-cleared cookie.
     router.push("/admin/login");
-    router.refresh();
   }
 
   return (

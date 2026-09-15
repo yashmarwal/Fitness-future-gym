@@ -1,11 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function SignupForm() {
-  const router = useRouter();
   const [step, setStep] = useState<"details" | "code">("details");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -117,8 +115,11 @@ export default function SignupForm() {
       });
       const data = await res.json();
       if (data.status === "success") {
-        router.push("/dashboard");
-        router.refresh();
+        // A genuine hard navigation, not router.push() — see LoginForm.tsx
+        // for why this is deliberately the one place that bypasses
+        // Next.js's client-side router, as the most reliable way to
+        // confirm the new session cookie actually landed.
+        window.location.href = "/dashboard";
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
       } else if (data.status === "email_already_registered") {

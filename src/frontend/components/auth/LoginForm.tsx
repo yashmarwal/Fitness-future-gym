@@ -1,11 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginForm() {
-  const router = useRouter();
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [identifier, setIdentifier] = useState("");
   const [resolvedPhone, setResolvedPhone] = useState("");
@@ -107,8 +105,15 @@ export default function LoginForm() {
       });
       const data = await res.json();
       if (data.status === "success") {
-        router.push("/dashboard");
-        router.refresh();
+        // A genuine hard navigation, not router.push() — after a real
+        // login/signup this is deliberately the one place that bypasses
+        // Next.js's client-side router entirely. A fresh top-level
+        // document request is the most reliable way to confirm the new
+        // session cookie is actually there (removing any client-side
+        // transition timing as a variable at all, on any browser/webview),
+        // and it's the standard pattern for "you just authenticated, take
+        // me to the real app" for exactly that reliability reason.
+        window.location.href = "/dashboard";
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
       } else {
