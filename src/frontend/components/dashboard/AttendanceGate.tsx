@@ -31,7 +31,7 @@ export default function AttendanceGate({
 
   // The overview is always reachable (that's where the check-in button
   // itself lives), and so is nutrition logging — deliberately exempt, since
-  // attendance can now only be marked 5–11 AM / 4–10:30 PM (see
+  // attendance can now only be marked 6–11 AM / 4–10:30 PM (see
   // isWithinAttendanceHours in attendance.ts). Without this exemption, a
   // member logging dinner at 9pm and then a late snack at midnight would
   // find the gate impossible to satisfy at all outside those windows —
@@ -51,8 +51,11 @@ export default function AttendanceGate({
         router.refresh();
       } else if (data.status === "inactive") {
         setError("Your membership isn't active — see the front desk.");
+      } else if (data.status === "blocked") {
+        setError("Your membership is on hold — see the front desk about your fee.");
+        router.refresh();
       } else if (data.status === "outside_hours") {
-        setError("The floor's closed right now — attendance opens 5–11 AM and 4–10:30 PM.");
+        setError("The floor's closed right now — attendance opens 6–11 AM and 4–10:30 PM.");
       } else {
         setError(data.message ?? "Couldn't check you in. Ask the front desk for help.");
       }

@@ -6,7 +6,8 @@ import { getDb } from "@/backend/db/client";
 // instead of it). Resend has no pre-approved-template system like WhatsApp,
 // so content is composed directly here instead of referencing a template name.
 // trial_pass/trial_reminder are for the marketing site's free-trial leads,
-// who aren't members yet.
+// who aren't members yet. account_blocked is the fee-abuse tool
+// (admin/feeAbuse.ts) telling a member why their access is on hold.
 export type EmailTemplate =
   | "otp"
   | "welcome_card"
@@ -14,7 +15,8 @@ export type EmailTemplate =
   | "birthday"
   | "announcement"
   | "trial_pass"
-  | "trial_reminder";
+  | "trial_reminder"
+  | "account_blocked";
 
 function isConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -157,6 +159,19 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
             heading("Fee due reminder") +
             paragraph(`Hi ${escapeHtml(name)}, this is a reminder that your membership fee is due on <strong>${escapeHtml(dueDate)}</strong>.`) +
             paragraph("Please pay at the front desk — cash or UPI, whichever's easiest."),
+        }),
+      };
+    }
+    case "account_blocked": {
+      const [name] = params;
+      return {
+        subject: "Fitness Future Gym — Membership On Hold",
+        html: wrapEmail({
+          preheader: "Your check-in and dashboard access is on hold until your fee is paid.",
+          bodyHtml:
+            heading("Membership On Hold") +
+            paragraph(`Hi ${escapeHtml(name)}, your membership fee has been overdue for a while, so check-in and dashboard access are on hold for now.`) +
+            paragraph("Please pay at the front desk — cash or UPI, whichever's easiest. Everything reopens the moment it's recorded."),
         }),
       };
     }

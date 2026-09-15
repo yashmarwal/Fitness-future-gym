@@ -10,6 +10,8 @@ export type AdminMember = {
   feeDueDate: string | null;
   joinedAt: string;
   isActive: boolean;
+  isBlocked: boolean;
+  blockedReason: string | null;
 };
 
 export type MemberInput = {

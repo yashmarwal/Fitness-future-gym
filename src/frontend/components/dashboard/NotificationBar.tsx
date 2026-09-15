@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type Notification = {
   id: string;
-  type: "broadcast" | "fee_reminder";
+  type: "broadcast" | "fee_reminder" | "account_blocked";
   title: string;
   body: string;
   isRead: boolean;
@@ -14,6 +14,7 @@ type Notification = {
 const TYPE_ICON: Record<Notification["type"], string> = {
   broadcast: "campaign",
   fee_reminder: "payments",
+  account_blocked: "lock",
 };
 
 // initialNotifications comes from the server render (dashboard/page.tsx

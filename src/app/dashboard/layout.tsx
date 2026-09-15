@@ -17,6 +17,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ]);
   if (!member) redirect("/login");
 
+  // Blocked (fee-abuse tool, admin/feeAbuse.ts) redirects to a dedicated
+  // route rather than the layout just returning different JSX — Next.js
+  // resolves `children` (running whatever dashboard/page.tsx the member
+  // was headed to, queries and all) as part of building that prop before
+  // the layout's own body runs, regardless of whether the layout's
+  // returned tree ends up using it. Only actually leaving the /dashboard
+  // route tree via redirect() stops that work from happening at all.
+  if (member.isBlocked) redirect("/account-blocked");
+
   return (
     <div className="flex flex-col min-h-screen">
       <DashboardHeader fullName={member.fullName} />

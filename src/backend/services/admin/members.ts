@@ -18,11 +18,18 @@ function mapRow(row: Record<string, unknown>): AdminMember {
     feeDueDate: row.fee_due_date as string | null,
     joinedAt: row.joined_at as string,
     isActive: row.is_active as boolean,
+    isBlocked: row.is_frozen as boolean,
+    // Not selected here — frozen_reason needs a migration (see schema.sql)
+    // that may not have run yet, and this general member list/CRUD only
+    // needs to know IF someone's blocked, not why. The dedicated blocked-
+    // members list in feeAbuse.ts selects it separately and degrades
+    // gracefully if the column isn't there yet.
+    blockedReason: null,
   };
 }
 
 const SELECT_COLUMNS =
-  "id, membership_number, full_name, phone, email, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active";
+  "id, membership_number, full_name, phone, email, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen";
 
 export async function listMembers(): Promise<AdminMember[]> {
   const db = getDb();

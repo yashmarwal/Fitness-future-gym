@@ -20,6 +20,14 @@ create extension if not exists pgcrypto;
 -- Also run this one, for OTP brute-force lockout (see checkOtp in otp.ts):
 --
 --   alter table login_otps add column if not exists attempt_count integer not null default 0;
+--
+-- Also run these two, for the fee-abuse block/unblock feature (see
+-- admin/feeAbuse.ts) — `is_frozen` already existed unused in this table
+-- from the original schema, now wired up as the actual block flag; these
+-- two are genuinely new:
+--
+--   alter table members add column if not exists frozen_reason text;
+--   alter table members add column if not exists frozen_at timestamptz;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -35,7 +43,13 @@ create table if not exists members (
   joined_at date not null default current_date,
   fee_due_date date,
   is_active boolean not null default true,
+  -- Blocks self-service check-in and all dashboard access (both front-desk
+  -- QR and the dashboard's own one-tap check-in). Set manually from Admin
+  -- -> Access Control, or automatically by the fee-abuse cron once a fee
+  -- has been overdue 5+ days — see admin/feeAbuse.ts.
   is_frozen boolean not null default false,
+  frozen_reason text,
+  frozen_at timestamptz,
   notes text,
   -- Persists independently of the attendance log's 1-month retention policy
   -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
@@ -120,6 +134,22 @@ create table if not exists workout_logs (
 
 create index if not exists workout_logs_member_id_logged_at_idx
   on workout_logs (member_id, logged_at desc);
+
+-- Permanent XP totals per member per muscle group, powering the Muscle
+-- Progress dashboard feature. Deliberately NOT derived from workout_logs on
+-- read (that table is purged after 30 days — see WORKOUT_LOG_RETENTION_DAYS
+-- in workouts.ts), which would silently regress a member's rank every month
+-- as old logs age out. Instead this accumulates permanently, incremented
+-- once per logged set at insert time (see awardWorkoutXp in
+-- muscleProgress.ts) and never decremented or purged.
+create table if not exists member_muscle_xp (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  category text not null,
+  xp integer not null default 0,
+  updated_at timestamptz not null default now(),
+  unique (member_id, category)
+);
 
 create table if not exists workout_plans (
   id uuid primary key default gen_random_uuid(),

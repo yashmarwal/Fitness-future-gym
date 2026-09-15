@@ -1,9 +1,10 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 
-// Deliberately narrow: WhatsApp only fires for signup, fee reminders, and
-// admin-sent offers/gym updates (the "announcement" broadcast) — not for
-// every profile edit or payment, which was over-broad in an earlier pass.
+// Deliberately narrow: WhatsApp only fires for signup, fee reminders,
+// account_blocked (fee-abuse tool, admin/feeAbuse.ts), and admin-sent
+// offers/gym updates (the "announcement" broadcast) — not for every
+// profile edit or payment, which was over-broad in an earlier pass.
 // trial_pass/trial_reminder are the one exception, for leads who aren't
 // members yet (the marketing site's 2-day free trial claim).
 export type WhatsAppTemplate =
@@ -13,7 +14,8 @@ export type WhatsAppTemplate =
   | "announcement"
   | "welcome_card"
   | "trial_pass"
-  | "trial_reminder";
+  | "trial_reminder"
+  | "account_blocked";
 
 const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   otp: "WHATSAPP_TEMPLATE_OTP",
@@ -23,6 +25,7 @@ const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   welcome_card: "WHATSAPP_TEMPLATE_WELCOME_CARD",
   trial_pass: "WHATSAPP_TEMPLATE_TRIAL_PASS",
   trial_reminder: "WHATSAPP_TEMPLATE_TRIAL_REMINDER",
+  account_blocked: "WHATSAPP_TEMPLATE_ACCOUNT_BLOCKED",
 };
 
 const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
@@ -33,6 +36,7 @@ const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
   welcome_card: "ff_welcome_card",
   trial_pass: "ff_trial_pass",
   trial_reminder: "ff_trial_reminder",
+  account_blocked: "ff_account_blocked",
 };
 
 function isConfigured() {

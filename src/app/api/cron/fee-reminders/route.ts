@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runFeeReminderCheck } from "@/backend/services/notifications";
+import { autoBlockOverdueMembers } from "@/backend/services/admin/feeAbuse";
 
 export async function GET(request: Request) {
   const auth = request.headers.get("authorization");
@@ -8,8 +9,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await runFeeReminderCheck();
-    return NextResponse.json({ status: "ok", ...result });
+    const [reminders, autoBlock] = await Promise.all([runFeeReminderCheck(), autoBlockOverdueMembers()]);
+    return NextResponse.json({ status: "ok", ...reminders, ...autoBlock });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ status: "error" }, { status: 500 });

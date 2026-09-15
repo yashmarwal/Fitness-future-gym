@@ -12,6 +12,7 @@ export type MemberProfile = {
   feeDueDate: string | null;
   joinedAt: string;
   isActive: boolean;
+  isBlocked: boolean;
 };
 
 // Wrapped in React's cache() so the layout and a page rendering under it
@@ -23,7 +24,7 @@ export const getMemberById = cache(async function getMemberById(memberId: string
   const db = getDb();
   const { data, error } = await db
     .from("members")
-    .select("id, membership_number, full_name, phone, plan, fee_amount, fee_due_date, joined_at, is_active")
+    .select("id, membership_number, full_name, phone, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen")
     .eq("id", memberId)
     .maybeSingle();
 
@@ -40,5 +41,6 @@ export const getMemberById = cache(async function getMemberById(memberId: string
     feeDueDate: data.fee_due_date,
     joinedAt: data.joined_at,
     isActive: data.is_active,
+    isBlocked: data.is_frozen,
   };
 });

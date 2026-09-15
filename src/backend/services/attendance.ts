@@ -11,7 +11,7 @@ const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 // the server's own clock would silently gate attendance by the wrong hours
 // in production even though it happened to look right in local dev on an
 // IST machine.
-const MORNING_START_MIN = 5 * 60; // 5:00 AM
+const MORNING_START_MIN = 6 * 60; // 6:00 AM
 const MORNING_END_MIN = 11 * 60; // 11:00 AM
 const EVENING_START_MIN = 16 * 60; // 4:00 PM
 const EVENING_END_MIN = 22 * 60 + 30; // 10:30 PM
@@ -33,7 +33,13 @@ function isWithinAttendanceHours(): boolean {
   );
 }
 
-type MemberRow = { id: string; full_name: string; membership_number: string; is_active: boolean };
+type MemberRow = {
+  id: string;
+  full_name: string;
+  membership_number: string;
+  is_active: boolean;
+  is_frozen: boolean;
+};
 
 // Shared by both check-in paths: the front-desk QR poster (looked up by
 // membership number, no login needed) and the dashboard's own one-tap
@@ -44,6 +50,13 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
 
   if (!member.is_active) {
     return { status: "inactive" };
+  }
+
+  // Blocked (fee-abuse tool, admin/feeAbuse.ts) takes priority over the
+  // opening-hours check — a blocked member shouldn't see "come back at 5
+  // AM," they should see the actual reason.
+  if (member.is_frozen) {
+    return { status: "blocked" };
   }
 
   if (!isWithinAttendanceHours()) {
@@ -98,7 +111,7 @@ export async function checkInMember(membershipNumber: string): Promise<CheckInRe
   const db = getDb();
   const { data: member, error: memberError } = await db
     .from("members")
-    .select("id, full_name, membership_number, is_active")
+    .select("id, full_name, membership_number, is_active, is_frozen")
     .eq("membership_number", membershipNumber)
     .maybeSingle();
 
@@ -119,7 +132,7 @@ export async function checkInMemberById(memberId: string): Promise<CheckInResult
   const db = getDb();
   const { data: member, error: memberError } = await db
     .from("members")
-    .select("id, full_name, membership_number, is_active")
+    .select("id, full_name, membership_number, is_active, is_frozen")
     .eq("id", memberId)
     .maybeSingle();
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
 import { sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
 import { listMembers } from "@/backend/services/admin/members";
+import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/admin/feeAbuse";
 import {
   listOverdueFeeMembers,
   listUpcomingDueMembers,
@@ -23,6 +24,8 @@ export default async function AdminOverviewPage() {
     inactive,
     trialOver,
     birthdays,
+    unpaidActive,
+    blocked,
   ] = await Promise.all([
     countTodaysCheckIns(),
     sumPaidThisMonth(),
@@ -34,6 +37,8 @@ export default async function AdminOverviewPage() {
     listInactiveMembers(),
     listTrialOverMembers(),
     listUpcomingBirthdays(),
+    listUnpaidActiveMembers(),
+    listBlockedMembers(),
   ]);
 
   const activeCount = members.filter((m) => m.isActive).length;
@@ -52,12 +57,14 @@ export default async function AdminOverviewPage() {
   ];
 
   const alertCounts = [
-    { label: "Fee Overdue", count: overdue.length, tone: "text-error", icon: "error" },
-    { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container", icon: "schedule" },
-    { label: "No Check-In 3+ Days", count: recentlyMissed.length, tone: "text-primary-container", icon: "event_busy" },
-    { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container", icon: "person_off" },
-    { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container", icon: "person_add" },
-    { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface", icon: "cake" },
+    { label: "Fee Overdue", count: overdue.length, tone: "text-error", icon: "error", href: "/admin/alerts" },
+    { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container", icon: "schedule", href: "/admin/alerts" },
+    { label: "No Check-In 3+ Days", count: recentlyMissed.length, tone: "text-primary-container", icon: "event_busy", href: "/admin/alerts" },
+    { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container", icon: "person_off", href: "/admin/alerts" },
+    { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container", icon: "person_add", href: "/admin/alerts" },
+    { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface", icon: "cake", href: "/admin/alerts" },
+    { label: "Using Gym, Unpaid", count: unpaidActive.length, tone: "text-error", icon: "warning", href: "/admin/access-control" },
+    { label: "Currently Blocked", count: blocked.length, tone: "text-error", icon: "block", href: "/admin/access-control" },
   ];
 
   return (
@@ -92,11 +99,11 @@ export default async function AdminOverviewPage() {
             View All →
           </Link>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {alertCounts.map((a) => (
             <Link
               key={a.label}
-              href="/admin/alerts"
+              href={a.href}
               className="bg-surface-container-low p-4 shadow-hard hover:shadow-hard-lg hover:border-primary-container border border-transparent transition-all flex flex-col gap-2"
             >
               <span className={`material-symbols-outlined text-lg leading-none ${a.tone}`}>{a.icon}</span>
