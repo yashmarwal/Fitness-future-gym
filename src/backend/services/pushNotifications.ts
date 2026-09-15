@@ -70,7 +70,16 @@ export async function sendPushToMember(
 
   for (const sub of subs) {
     try {
-      await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, body);
+      // "high" urgency tells the push service (FCM on Android, APNs on iOS)
+      // to try to wake the device and deliver immediately rather than
+      // batching for later — matters for time-sensitive stuff like a fee
+      // due tomorrow, not just best-effort. Default urgency ("normal")
+      // is more subject to battery-saving delays on the receiving device.
+      await webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        body,
+        { urgency: "high" }
+      );
     } catch (err) {
       const statusCode = (err as { statusCode?: number })?.statusCode;
       // 404/410 = the subscription is dead (uninstalled, permission
