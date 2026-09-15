@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { FeePaymentRow } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
+import { unblockMember } from "@/backend/services/admin/feeAbuse";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   const db = getDb();
@@ -28,7 +29,17 @@ export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
   });
 }
 
-export async function recordManualPayment(memberId: string, amount: number, method: "upi" | "cash" | "manual"): Promise<void> {
+// The only durations the Record Payment form offers — keep the type and
+// the UI's <select> options in lock-step (FeesManager.tsx).
+export const PAYMENT_DURATION_MONTHS_OPTIONS = [1, 3, 6, 12] as const;
+export type PaymentDurationMonths = (typeof PAYMENT_DURATION_MONTHS_OPTIONS)[number];
+
+export async function recordManualPayment(
+  memberId: string,
+  amount: number,
+  method: "upi" | "cash" | "manual",
+  durationMonths: PaymentDurationMonths
+): Promise<void> {
   const db = getDb();
 
   const { data: member, error: memberError } = await db
@@ -51,12 +62,23 @@ export async function recordManualPayment(memberId: string, amount: number, meth
   // Anchor the next due date to the CURRENT due date (the billing cycle),
   // not to today — paying late (e.g. 10 days after the due date) must not
   // push the whole cycle forward, and joined_at is never touched here.
+  // Extend by whatever the admin actually collected (1/3/6/12 months) —
+  // previously this was hardcoded to +1 month regardless of plan, so a
+  // quarterly/annual payment would silently mark the member "due again" and
+  // eventually auto-block them after just one month.
   const anchor = member.fee_due_date ? new Date(member.fee_due_date) : new Date();
   const nextDueDate = new Date(anchor);
-  nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+  nextDueDate.setMonth(nextDueDate.getMonth() + durationMonths);
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
   await db.from("members").update({ fee_due_date: nextDueDateStr }).eq("id", memberId);
+
+  // Recording a payment is the "fees updated" signal that lifts a
+  // fee-abuse block (admin/feeAbuse.ts) — unconditional, not just for
+  // members the auto-block cron caught, since admin might also have
+  // blocked someone manually for the same underlying reason. A harmless
+  // no-op for a member who was never blocked in the first place.
+  await unblockMember(memberId).catch(() => {});
 
   // Recording a payment is one of the two explicit triggers for re-sending
   // the membership card (the other is a plan change, in admin/members.ts) —

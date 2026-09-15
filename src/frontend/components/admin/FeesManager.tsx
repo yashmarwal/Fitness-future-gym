@@ -12,6 +12,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
   const [memberId, setMemberId] = useState("");
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<"upi" | "cash" | "manual">("upi");
+  const [durationMonths, setDurationMonths] = useState<1 | 3 | 6 | 12>(1);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -42,10 +43,11 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
       await fetch("/api/admin/fees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberId, amount: Number(amount), method }),
+        body: JSON.stringify({ memberId, amount: Number(amount), method, durationMonths }),
       });
       setMemberId("");
       setAmount("");
+      setDurationMonths(1);
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -87,6 +89,17 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
           <option value="upi">UPI</option>
           <option value="cash">Cash</option>
           <option value="manual">Other</option>
+        </select>
+        <select
+          value={durationMonths}
+          onChange={(e) => setDurationMonths(Number(e.target.value) as 1 | 3 | 6 | 12)}
+          title="How many months of fees this payment covers — pushes the member's next due date out by this much."
+          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+        >
+          <option value={1}>1 Month</option>
+          <option value={3}>3 Months (Quarterly)</option>
+          <option value={6}>6 Months</option>
+          <option value={12}>1 Year</option>
         </select>
         <button
           type="submit"
