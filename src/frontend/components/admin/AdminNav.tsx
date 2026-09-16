@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/admin/fees", label: "Fees", icon: "payments" },
   { href: "/admin/access-control", label: "Access Control", icon: "block" },
   { href: "/admin/broadcast", label: "Broadcast", icon: "campaign" },
+  { href: "/admin/ai-assistant", label: "Ask AI", icon: "smart_toy" },
 ];
 
 export default function AdminNav({ username }: { username: string }) {
