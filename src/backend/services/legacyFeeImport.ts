@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
+import { isMissingColumnError } from "@/backend/db/errors";
 
 // The old gym software's due dates don't follow this app's "due date = when
 // admin recorded payment" convention, so a straight cutover would show every
@@ -41,18 +42,37 @@ function derivePlanLabel(startDate: string, dueDate: string): string {
 export async function applyLegacyFeeImport(memberId: string, phone: string): Promise<void> {
   try {
     const db = getDb();
-    const { data: legacyRow, error: lookupError } = await db
+
+    // fee_amount is a newer column (see schema.sql) that may not have its
+    // migration run yet — cascade to the base select rather than let a
+    // missing-column error on this one extra field silently break the
+    // plan/due-date match that already worked before fee_amount existed.
+    const full = await db
       .from("legacy_fee_imports")
-      .select("id, start_date, fee_due_date")
+      .select("id, start_date, fee_due_date, fee_amount")
       .eq("phone", phone)
       .maybeSingle();
-    if (lookupError || !legacyRow) return;
+    let legacyRow: { id: string; start_date: string; fee_due_date: string; fee_amount?: number | null } | null;
+    if (!full.error) {
+      legacyRow = full.data;
+    } else if (isMissingColumnError(full.error)) {
+      const base = await db
+        .from("legacy_fee_imports")
+        .select("id, start_date, fee_due_date")
+        .eq("phone", phone)
+        .maybeSingle();
+      if (base.error || !base.data) return;
+      legacyRow = base.data;
+    } else {
+      return;
+    }
+    if (!legacyRow) return;
 
     const plan = derivePlanLabel(legacyRow.start_date, legacyRow.fee_due_date);
-    const { error: updateError } = await db
-      .from("members")
-      .update({ plan, fee_due_date: legacyRow.fee_due_date })
-      .eq("id", memberId);
+    const patch: Record<string, unknown> = { plan, fee_due_date: legacyRow.fee_due_date };
+    if (legacyRow.fee_amount != null) patch.fee_amount = legacyRow.fee_amount;
+
+    const { error: updateError } = await db.from("members").update(patch).eq("id", memberId);
     if (updateError) return;
 
     await db.from("legacy_fee_imports").delete().eq("id", legacyRow.id);

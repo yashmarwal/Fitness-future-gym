@@ -129,6 +129,19 @@ function findColumn(headers, explicit, candidates) {
   return null;
 }
 
+// Handles both a plain numeric cell (2800) and a formatted-text one
+// ("₹ 1,500") — this file's own Fees column has a mix of both. Strips the
+// rupee symbol/commas/whitespace, not a full currency parser — this is
+// deliberately narrow (this migration is India-only, see phone.ts), not a
+// general-purpose money parser.
+function parseFeeAmount(value) {
+  if (value == null || value === "") return null;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  const cleaned = String(value).replace(/[₹,\s]/g, "");
+  const num = Number(cleaned);
+  return Number.isFinite(num) && num > 0 ? num : null;
+}
+
 // A minimal RFC4180-ish CSV parser (quoted fields, escaped "" quotes,
 // commas/newlines inside quotes) used instead of SheetJS for .csv files.
 // This is deliberate, not a shortcut: SheetJS's CSV reader silently
@@ -209,8 +222,13 @@ console.log(`Sheet: "${sheetName}" — ${rows.length} rows, headers:`, headers);
 const phoneCol = findColumn(headers, phoneColArg, ["phone", "mobile", "contact"]);
 const startCol = findColumn(headers, startColArg, ["start", "join", "from"]);
 const dueCol = findColumn(headers, dueColArg, ["due", "end", "expiry", "expire", "renewal", "to"]);
+// Optional — a sheet without a recognizable fee column still imports fine,
+// just without fee_amount (applyLegacyFeeImport already handles that gap).
+const feeCol = findColumn(headers, null, ["fee", "amount", "price"]);
 
-console.log(`\nDetected columns — phone: ${phoneCol ?? "NOT FOUND"}, start date: ${startCol ?? "NOT FOUND"}, due date: ${dueCol ?? "NOT FOUND"}`);
+console.log(
+  `\nDetected columns — phone: ${phoneCol ?? "NOT FOUND"}, start date: ${startCol ?? "NOT FOUND"}, due date: ${dueCol ?? "NOT FOUND"}, fee amount: ${feeCol ?? "none (optional)"}`
+);
 if (!phoneCol || !startCol || !dueCol) {
   console.error("\nCouldn't confidently detect all 3 columns. Re-run passing them explicitly:");
   console.error("  node scripts/import-legacy-fees.mjs <file> \"<phone header>\" \"<start header>\" \"<due header>\"");
@@ -225,12 +243,15 @@ for (const row of rows) {
   const phone = normalizePhone(row[phoneCol]);
   const startDate = toIsoDate(row[startCol]);
   const dueDate = toIsoDate(row[dueCol]);
+  const feeAmount = feeCol ? parseFeeAmount(row[feeCol]) : null;
 
   if (!/^\+\d{10,15}$/.test(phone) || !startDate || !dueDate) {
     skipped.push({ row, phone, startDate, dueDate });
     continue;
   }
-  seenPhones.set(phone, { phone, start_date: startDate, fee_due_date: dueDate });
+  const record = { phone, start_date: startDate, fee_due_date: dueDate };
+  if (feeAmount != null) record.fee_amount = feeAmount;
+  seenPhones.set(phone, record);
 }
 parsed.push(...seenPhones.values());
 

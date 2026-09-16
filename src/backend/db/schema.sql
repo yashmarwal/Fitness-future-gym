@@ -75,6 +75,13 @@ create extension if not exists pgcrypto;
 --     matched_count integer not null default 0,
 --     imported_at timestamptz not null default now()
 --   );
+--
+-- Also run this — carries the old system's actual fee amount over too
+-- (not just plan/due date), so a legacy-matched member's profile and
+-- membership card are fully correct from day one instead of missing the
+-- one field deliverMembershipCard actually requires to send the card:
+--
+--   alter table legacy_fee_imports add column if not exists fee_amount numeric(10, 2);
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -186,6 +193,7 @@ create table if not exists legacy_fee_imports (
   phone text not null unique,
   start_date date not null,
   fee_due_date date not null,
+  fee_amount numeric(10, 2),
   imported_at timestamptz not null default now()
 );
 
