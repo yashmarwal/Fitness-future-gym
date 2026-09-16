@@ -2,10 +2,12 @@ import "server-only";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 
-const INK = rgb(0.07, 0.07, 0.07);
-const ACCENT = rgb(1, 0.353, 0.122); // #ff5a1f
+const INK = rgb(0.078, 0.071, 0.067); // #141311, the real site's background
+const PANEL = rgb(0.129, 0.122, 0.114); // #211f1d, surface-container
+const ACCENT = rgb(1, 0.353, 0.122); // #ff5a1f, primary-container
 const WHITE = rgb(1, 1, 1);
-const MUTED = rgb(0.6, 0.6, 0.6);
+const MUTED = rgb(0.671, 0.537, 0.498); // #ab897f, outline
+const DIVIDER = rgb(0.212, 0.204, 0.196); // #363432, surface-variant
 
 // Landscape wallet-card layout, scaled up ~2x a physical credit card for
 // print/screen legibility rather than exact-to-scale printing.
@@ -23,15 +25,17 @@ export async function generateMembershipCardPdf(member: {
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
 
-  page.drawRectangle({ x: 0, y: 0, width: WIDTH, height: HEIGHT, color: INK });
-  page.drawRectangle({ x: 0, y: HEIGHT - 8, width: WIDTH, height: 8, color: ACCENT });
+  // Full card border + top accent stripe — the same "sharp-edged, one
+  // accent rule" language as the coach cards' top border on the real site.
+  page.drawRectangle({ x: 0, y: 0, width: WIDTH, height: HEIGHT, color: INK, borderColor: DIVIDER, borderWidth: 1 });
+  page.drawRectangle({ x: 0, y: HEIGHT - 6, width: WIDTH, height: 6, color: ACCENT });
 
   // "FITNESS" (white) + "FUTURE" (orange) + " GYM" (white) as separate draws
   // since a single drawText call can't mix colors mid-string.
-  const brandY = HEIGHT - 46;
+  const brandY = HEIGHT - 44;
   const brandSize = 20;
   let x = 32;
-  const fitness = "FITNESS";
+  const fitness = "FITNESS ";
   const future = "FUTURE";
   const gym = " GYM";
   page.drawText(fitness, { x, y: brandY, size: brandSize, font: bold, color: WHITE });
@@ -39,57 +43,81 @@ export async function generateMembershipCardPdf(member: {
   page.drawText(future, { x, y: brandY, size: brandSize, font: bold, color: ACCENT });
   x += bold.widthOfTextAtSize(future, brandSize);
   page.drawText(gym, { x, y: brandY, size: brandSize, font: bold, color: WHITE });
+  page.drawText("RAW IRON CULTURE  •  EST. 2016", {
+    x: 32,
+    y: brandY - 15,
+    size: 7.5,
+    font: regular,
+    color: MUTED,
+  });
 
-  page.drawText("MEMBER", { x: 32, y: HEIGHT - 78, size: 9, font: regular, color: MUTED });
+  page.drawText("MEMBER", { x: 32, y: HEIGHT - 90, size: 9, font: regular, color: MUTED });
   page.drawText(member.fullName.toUpperCase(), {
     x: 32,
-    y: HEIGHT - 100,
+    y: HEIGHT - 112,
     size: 22,
     font: bold,
     color: WHITE,
     maxWidth: 300,
   });
 
-  page.drawText("MEMBERSHIP NO.", { x: 32, y: HEIGHT - 150, size: 9, font: regular, color: MUTED });
+  page.drawText("MEMBERSHIP NO.", { x: 32, y: HEIGHT - 152, size: 9, font: regular, color: MUTED });
   page.drawText(member.membershipNumber, {
     x: 32,
-    y: HEIGHT - 172,
-    size: 24,
+    y: HEIGHT - 176,
+    size: 26,
     font: bold,
     color: ACCENT,
   });
 
-  page.drawText("PLAN", { x: 32, y: HEIGHT - 210, size: 9, font: regular, color: MUTED });
-  page.drawText((member.plan ?? "—").toUpperCase(), { x: 32, y: HEIGHT - 226, size: 12, font: bold, color: WHITE });
+  // A bordered "stat panel" for Plan/Joined — mirrors the real site's stat
+  // grid pattern (e.g. the coach cards' Best Squat/Best Deadlift/Specialty
+  // row: a filled panel, an accent rule on the leading edge, a divider
+  // between cells) instead of two loose, uncontained lines of text.
+  const panelX = 32;
+  const panelY = 36;
+  const panelW = 260;
+  const panelH = 52;
+  page.drawRectangle({ x: panelX, y: panelY, width: panelW, height: panelH, color: PANEL });
+  page.drawRectangle({ x: panelX, y: panelY, width: 3, height: panelH, color: ACCENT });
+  page.drawRectangle({ x: panelX + panelW / 2, y: panelY, width: 1, height: panelH, color: DIVIDER });
 
-  page.drawText("JOINED", { x: 190, y: HEIGHT - 210, size: 9, font: regular, color: MUTED });
-  page.drawText(member.joinedAt, { x: 190, y: HEIGHT - 226, size: 12, font: bold, color: WHITE });
+  const cellPad = 18;
+  page.drawText("PLAN", { x: panelX + cellPad, y: panelY + panelH - 18, size: 8, font: regular, color: MUTED });
+  page.drawText((member.plan ?? "—").toUpperCase(), {
+    x: panelX + cellPad,
+    y: panelY + 14,
+    size: 13,
+    font: bold,
+    color: WHITE,
+    maxWidth: panelW / 2 - cellPad - 8,
+  });
+
+  const col2X = panelX + panelW / 2 + cellPad;
+  page.drawText("JOINED", { x: col2X, y: panelY + panelH - 18, size: 8, font: regular, color: MUTED });
+  page.drawText(member.joinedAt, { x: col2X, y: panelY + 14, size: 13, font: bold, color: WHITE });
 
   page.drawText("Show this card or state your membership number at the front desk for check-in.", {
     x: 32,
-    y: 20,
-    size: 8,
+    y: 16,
+    size: 7,
     font: regular,
     color: MUTED,
   });
 
+  // QR block: a hard, offset accent rectangle behind the white QR panel —
+  // the same brutalist "shadow-hard: 4px 4px 0 #000" language used all
+  // over the site's cards, just in the accent color so it actually reads
+  // against this card's dark background instead of disappearing into it.
   const qrPngDataUrl = await QRCode.toDataURL(member.membershipNumber, { width: 400, margin: 1 });
   const qrPngBytes = Buffer.from(qrPngDataUrl.split(",")[1], "base64");
   const qrImage = await doc.embedPng(qrPngBytes);
   const qrSize = 110;
-  page.drawRectangle({
-    x: WIDTH - qrSize - 30,
-    y: HEIGHT / 2 - qrSize / 2,
-    width: qrSize,
-    height: qrSize,
-    color: WHITE,
-  });
-  page.drawImage(qrImage, {
-    x: WIDTH - qrSize - 30,
-    y: HEIGHT / 2 - qrSize / 2,
-    width: qrSize,
-    height: qrSize,
-  });
+  const qrX = WIDTH - qrSize - 34;
+  const qrY = HEIGHT / 2 - qrSize / 2 - 6;
+  page.drawRectangle({ x: qrX + 6, y: qrY - 6, width: qrSize, height: qrSize, color: ACCENT });
+  page.drawRectangle({ x: qrX, y: qrY, width: qrSize, height: qrSize, color: WHITE });
+  page.drawImage(qrImage, { x: qrX, y: qrY, width: qrSize, height: qrSize });
 
   return doc.save();
 }

@@ -31,19 +31,29 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// Matches the actual site's palette (src/app/globals.css's @theme block) —
+// dark, near-black surfaces with one orange accent, hard uppercase type,
+// sharp edges (no border-radius anywhere on the real site). Web fonts
+// (Bebas Neue/Oswald) aren't used here since most email clients (Outlook
+// especially) strip @font-face — bold-weight Arial/Helvetica in all-caps
+// with tight letter-spacing approximates the same condensed, heavy feel.
 const BRAND = {
-  bg: "#f2f2f0",
-  card: "#ffffff",
-  ink: "#121212",
-  muted: "#6b6b6b",
-  accent: "#ff5a1f",
-  accentInk: "#ffffff",
-  border: "#e6e6e3",
+  bgOutside: "#0f0e0c", // surface-container-lowest
+  card: "#1d1b19", // surface-container-low
+  panel: "#211f1d", // surface-container
+  ink: "#e7e2dd", // on-surface
+  muted: "#ab897f", // outline
+  accent: "#ff5a1f", // primary-container
+  accentInk: "#000000", // on-primary-container
+  border: "#363432", // surface-variant
 };
 
 // Table-based layout with everything inlined — Outlook/older clients strip
 // <style> blocks and flexbox/grid, so this is the one layout approach that
-// renders consistently everywhere.
+// renders consistently everywhere. box-shadow doesn't render reliably in
+// email clients either, so the site's "shadow-hard" offset-black-shadow
+// look is approximated with a solid border instead — same hard-edged,
+// high-contrast read, without relying on unsupported CSS.
 function wrapEmail(opts: { preheader: string; bodyHtml: string }): string {
   const { preheader, bodyHtml } = opts;
   return `<!doctype html>
@@ -53,16 +63,19 @@ function wrapEmail(opts: { preheader: string; bodyHtml: string }): string {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Fitness Future Gym</title>
   </head>
-  <body style="margin:0;padding:0;background-color:${BRAND.bg};font-family:Arial,Helvetica,sans-serif;">
+  <body style="margin:0;padding:0;background-color:${BRAND.bgOutside};font-family:Arial,Helvetica,sans-serif;">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bg};padding:32px 16px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bgOutside};padding:32px 16px;">
       <tr>
         <td align="center">
           <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="width:480px;max-width:100%;background-color:${BRAND.card};border:1px solid ${BRAND.border};">
             <tr>
-              <td style="background-color:${BRAND.ink};padding:20px 28px;">
-                <span style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:${BRAND.accentInk};">
-                  FitnessFuture <span style="color:${BRAND.accent};">Gym</span>
+              <td style="background-color:${BRAND.accent};height:4px;line-height:4px;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:20px 28px;border-bottom:1px solid ${BRAND.border};">
+                <span style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:${BRAND.ink};">
+                  Fitness Future <span style="color:${BRAND.accent};">Gym</span>
                 </span>
               </td>
             </tr>
@@ -74,7 +87,7 @@ function wrapEmail(opts: { preheader: string; bodyHtml: string }): string {
             <tr>
               <td style="padding:20px 28px;border-top:1px solid ${BRAND.border};">
                 <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:${BRAND.muted};">
-                  Fitness Future Gym · Nangloi, Delhi<br />
+                  FITNESS FUTURE GYM &middot; NANGLOI, DELHI<br />
                   You're receiving this because you have an account with us.
                 </p>
               </td>
@@ -88,7 +101,7 @@ function wrapEmail(opts: { preheader: string; bodyHtml: string }): string {
 }
 
 function heading(text: string): string {
-  return `<h1 style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:22px;line-height:28px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:${BRAND.ink};">${escapeHtml(text)}</h1>`;
+  return `<h1 style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:30px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:${BRAND.ink};">${escapeHtml(text)}</h1>`;
 }
 
 function paragraph(html: string): string {
@@ -99,7 +112,21 @@ function button(label: string, href: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 4px;">
     <tr>
       <td style="background-color:${BRAND.accent};">
-        <a href="${href}" style="display:inline-block;padding:12px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:${BRAND.accentInk};text-decoration:none;">${escapeHtml(label)}</a>
+        <a href="${href}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:${BRAND.accentInk};text-decoration:none;">${escapeHtml(label)}</a>
+      </td>
+    </tr>
+  </table>`;
+}
+
+// A bordered callout block — matches the "stat card" pattern used all over
+// the real site (e.g. the footer's Operational Hours box): a solid accent
+// rule on the left edge, an uppercase muted label, and a big bold value.
+function calloutBlock(label: string, value: string): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;width:100%;">
+    <tr>
+      <td style="background-color:${BRAND.panel};border-left:4px solid ${BRAND.accent};padding:18px 24px;">
+        <span style="display:block;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${BRAND.muted};">${escapeHtml(label)}</span>
+        <span style="display:block;margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:900;letter-spacing:3px;color:${BRAND.accent};">${escapeHtml(value)}</span>
       </td>
     </tr>
   </table>`;
@@ -109,13 +136,6 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
   switch (template) {
     case "otp": {
       const [code] = params;
-      const codeBlock = `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;">
-        <tr>
-          <td style="background-color:${BRAND.bg};border:1px solid ${BRAND.border};padding:16px 24px;">
-            <span style="font-family:Arial,Helvetica,sans-serif;font-size:32px;font-weight:900;letter-spacing:8px;color:${BRAND.ink};">${escapeHtml(code)}</span>
-          </td>
-        </tr>
-      </table>`;
       return {
         subject: "Your Fitness Future Gym login code",
         html: wrapEmail({
@@ -123,7 +143,7 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
           bodyHtml:
             heading("Your login code") +
             paragraph("Enter this code to finish signing in:") +
-            codeBlock +
+            calloutBlock("Login Code", code) +
             paragraph(`<span style="color:${BRAND.muted};">This code expires shortly. Do not share it with anyone — Fitness Future Gym staff will never ask for it.</span>`),
         }),
       };
@@ -137,14 +157,7 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
           bodyHtml:
             heading(`Welcome, ${name}`) +
             paragraph("Your account is active and your membership card is ready.") +
-            `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;width:100%;">
-              <tr>
-                <td style="background-color:${BRAND.bg};border:1px solid ${BRAND.border};padding:20px 24px;">
-                  <span style="display:block;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${BRAND.muted};">Membership Number</span>
-                  <span style="display:block;margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:900;letter-spacing:2px;color:${BRAND.accent};">${escapeHtml(membershipNumber)}</span>
-                </td>
-              </tr>
-            </table>` +
+            calloutBlock("Membership Number", membershipNumber) +
             paragraph("Your digital membership card is attached to this email as a PDF — keep it handy for front-desk check-in. See you on the floor!"),
         }),
       };
@@ -199,14 +212,6 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
     }
     case "trial_pass": {
       const [name, trialCode, shiftLabel, endsAt] = params;
-      const codeBlock = `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;width:100%;">
-        <tr>
-          <td style="background-color:${BRAND.bg};border:1px solid ${BRAND.border};padding:20px 24px;">
-            <span style="display:block;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${BRAND.muted};">Trial Pass Code</span>
-            <span style="display:block;margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:900;letter-spacing:2px;color:${BRAND.accent};">${escapeHtml(trialCode)}</span>
-          </td>
-        </tr>
-      </table>`;
       return {
         subject: "Your Fitness Future Gym trial pass",
         html: wrapEmail({
@@ -214,7 +219,7 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
           bodyHtml:
             heading(`Your Trial Is Booked, ${name}`) +
             paragraph(`You're set for a 2-day free trial — <strong>${escapeHtml(shiftLabel)} shift</strong>, valid through <strong>${escapeHtml(endsAt)}</strong>.`) +
-            codeBlock +
+            calloutBlock("Trial Pass Code", trialCode) +
             paragraph("Show this code (or your registered phone number) at the front desk to start. See you on the floor!"),
         }),
       };
