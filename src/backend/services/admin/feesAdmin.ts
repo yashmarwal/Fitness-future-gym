@@ -34,6 +34,25 @@ export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
 export const PAYMENT_DURATION_MONTHS_OPTIONS = [1, 3, 6, 12] as const;
 export type PaymentDurationMonths = (typeof PAYMENT_DURATION_MONTHS_OPTIONS)[number];
 
+// Real bug this fixes: a member who signs up themselves never has `plan`/
+// `fee_amount` set (nothing in the signup flow touches those columns —
+// they're admin-only fields), and recordManualPayment previously only ever
+// touched `fee_due_date`. That left plan/fee_amount permanently null for
+// anyone whose payment was recorded before anyone happened to also visit
+// Admin -> Members and type them in by hand — which in turn meant (a) they
+// stayed stuck in the "Needs Review — No Paid-Up Fees" list forever
+// despite genuinely being paid up, since that list's flag logic keyed off
+// plan/fee_amount instead of the real signal, fee_due_date; and (b) their
+// membership card silently never sent, since deliverMembershipCard
+// requires both to be set. Backfilling them here — only when missing,
+// never overwriting a real custom plan name — fixes both for good.
+const DURATION_PLAN_LABELS: Record<PaymentDurationMonths, string> = {
+  1: "Monthly",
+  3: "Quarterly",
+  6: "Half-Yearly",
+  12: "Annual",
+};
+
 export async function recordManualPayment(
   memberId: string,
   amount: number,
@@ -71,7 +90,16 @@ export async function recordManualPayment(
   nextDueDate.setMonth(nextDueDate.getMonth() + durationMonths);
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
-  await db.from("members").update({ fee_due_date: nextDueDateStr }).eq("id", memberId);
+  // Backfill plan/fee_amount from this actual payment if they were never
+  // set — see the comment on DURATION_PLAN_LABELS above. Only fills gaps,
+  // never overwrites a plan/amount admin already entered.
+  const effectivePlan = member.plan ?? DURATION_PLAN_LABELS[durationMonths];
+  const effectiveFeeAmount = member.fee_amount ?? amount;
+  const patch: Record<string, unknown> = { fee_due_date: nextDueDateStr };
+  if (!member.plan) patch.plan = effectivePlan;
+  if (member.fee_amount == null) patch.fee_amount = effectiveFeeAmount;
+
+  await db.from("members").update(patch).eq("id", memberId);
 
   // Recording a payment is the "fees updated" signal that lifts a
   // fee-abuse block (admin/feeAbuse.ts) — unconditional, not just for
@@ -82,17 +110,21 @@ export async function recordManualPayment(
 
   // Recording a payment is one of the two explicit triggers for re-sending
   // the membership card (the other is a plan change, in admin/members.ts) —
-  // best-effort, a delivery failure shouldn't fail the payment record.
-  // deliverMembershipCard itself still won't send anything until the member
-  // also has a plan assigned.
+  // best-effort, a delivery failure shouldn't fail the payment record. Uses
+  // the effective (just-backfilled-if-needed) plan/amount, not the stale
+  // pre-payment `member.plan`/`member.fee_amount` — using the stale values
+  // here was the actual bug: for a member whose plan/fee_amount had never
+  // been set, deliverMembershipCard's own guard silently no-opped on every
+  // single payment, forever, since the values it saw were always null
+  // regardless of how many payments got recorded.
   await deliverMembershipCard({
     id: memberId,
     fullName: member.full_name,
     membershipNumber: member.membership_number,
     phone: member.phone,
     email: member.email,
-    plan: member.plan,
-    feeAmount: member.fee_amount,
+    plan: effectivePlan,
+    feeAmount: effectiveFeeAmount,
     joinedAt: member.joined_at,
   }).catch(() => {});
 }

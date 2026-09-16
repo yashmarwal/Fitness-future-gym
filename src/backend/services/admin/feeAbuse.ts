@@ -33,23 +33,31 @@ const SELECT_COLUMNS =
 
 // "Actively using the floor without paying for it": checking in recently
 // (last 7 days — genuinely still coming in, not just a stale account) but
-// either never had a plan/fee assigned at all, or their fee is overdue —
-// and not already blocked (a blocked member can't check in anymore, so
-// they'd drop out of "actively using" on their own once the block takes
-// effect). This is the admin-visibility list — distinct from the 5-day
-// auto-block below, which only fires once a fee was actually assigned and
-// is now overdue; a member who was NEVER billed has no due date for the
-// auto-block to measure against at all, so this list is the only way
-// admin ever finds out about them.
+// never billed at all, or genuinely overdue — and not already blocked (a
+// blocked member can't check in anymore, so they'd drop out of "actively
+// using" on their own once the block takes effect). This is the
+// admin-visibility list — distinct from the 5-day auto-block below, which
+// only fires once a fee was actually assigned and is now overdue; a member
+// who was NEVER billed has no due date for the auto-block to measure
+// against at all, so this list is the only way admin ever finds out about
+// them.
+//
+// Deliberately keyed ONLY on fee_due_date, not plan/fee_amount — those two
+// used to also trigger this flag, which was a real bug: recordManualPayment
+// only ever touched fee_due_date, so a member who paid but whose
+// plan/fee_amount happened to never get typed in via Admin -> Members
+// stayed stuck in this list forever, genuinely paid up or not. A real due
+// date in the future IS "paid up," full stop, regardless of whether those
+// two text fields happen to be filled in — that's a separate, unrelated
+// data-completeness concern, not a payment-status one.
 const RECENTLY_ACTIVE_DAYS = 7;
 
 export type UnpaidActiveMember = AdminMember & { lastCheckedInAt: string | null; flagReason: string };
 
 function computeFlagReason(row: Record<string, unknown>): string {
-  if (!row.plan) return "No plan assigned";
-  if (row.fee_amount == null) return "No fee amount set";
   const dueDate = row.fee_due_date as string | null;
-  if (dueDate && dueDate < new Date().toISOString().slice(0, 10)) return `Fee overdue since ${dueDate}`;
+  if (!dueDate) return "Never billed — no fee due date on file";
+  if (dueDate < new Date().toISOString().slice(0, 10)) return `Fee overdue since ${dueDate}`;
   return "Fee status needs review";
 }
 
@@ -65,7 +73,7 @@ export async function listUnpaidActiveMembers(): Promise<UnpaidActiveMember[]> {
     .eq("is_active", true)
     .eq("is_frozen", false)
     .gte("last_checked_in_at", cutoff.toISOString())
-    .or(`plan.is.null,fee_amount.is.null,fee_due_date.lt.${today}`);
+    .or(`fee_due_date.is.null,fee_due_date.lt.${today}`);
 
   if (error) throw new Error(`Failed to load unpaid active members: ${error.message}`);
   return (data ?? []).map((row) => ({
