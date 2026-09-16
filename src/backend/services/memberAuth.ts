@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { issueOtp, checkOtp, consumeOtp } from "@/backend/auth/otp";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
@@ -77,11 +78,15 @@ export async function requestMemberOtp(identifier: string): Promise<RequestOtpRe
   if (code) {
     // Each channel is independent — a WhatsApp failure (bad token, rate
     // limit, API outage) must not stop the email from going out, and vice
-    // versa.
-    await sendWhatsAppTemplate({ phone: member.phone, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
-    if (member.email) {
-      await sendEmailTemplate({ to: member.email, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {});
-    }
+    // versa. Run concurrently, not one after the other: they don't depend
+    // on each other's result, so awaiting them sequentially just adds both
+    // networks' latency together instead of paying for whichever is slower.
+    await Promise.all([
+      sendWhatsAppTemplate({ phone: member.phone, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {}),
+      member.email
+        ? sendEmailTemplate({ to: member.email, template: "otp", bodyParams: [code], memberId: member.id }).catch(() => {})
+        : Promise.resolve(),
+    ]);
   }
 
   // Gated purely on NODE_ENV, not on whether WhatsApp is configured — email
@@ -198,9 +203,15 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
   await db.from("pending_signups").delete().eq("phone", phone);
 
   // Silent, best-effort: if this phone matches a leftover record from the
-  // old gym software, carry their real plan/due date over now — see
-  // legacyFeeImport.ts. Never blocks or fails signup either way.
-  await applyLegacyFeeImport(member.id, phone);
+  // old gym software, carry their real plan/due date over — see
+  // legacyFeeImport.ts. Deferred via after() rather than awaited: it can
+  // never fail or affect this response either way (it swallows its own
+  // errors internally), so there's no reason to make the person waiting to
+  // reach their dashboard sit through it. after() (not a bare fire-and-
+  // forget call) is what guarantees Vercel actually lets it finish running
+  // after the response is sent, instead of possibly freezing the function
+  // mid-lookup.
+  after(() => applyLegacyFeeImport(member.id, phone));
 
   await createMemberSession(member.id, member.membership_number);
   await consumeOtp(check.otpId);
@@ -243,13 +254,18 @@ export async function registerMember(input: {
   // otherwise see "sent" and only the email (if valid) would ever arrive.
   if (!isPlausiblePhone(phone)) return { status: "invalid_phone" };
 
-  const { data: existing, error: existingError } = await db
-    .from("members")
-    .select("id")
-    .eq("phone", phone)
-    .maybeSingle();
-  if (existingError) throw new Error(`Failed to check existing member: ${existingError.message}`);
-  if (existing) return { status: "already_registered" };
+  // Phone and email are two unrelated lookups — run them concurrently
+  // rather than one after the other. Errors/results are still checked in
+  // the same order as before (phone first), so a phone AND email collision
+  // still reports "already_registered", exactly like the sequential
+  // version did — this only changes when the two queries fire, not the
+  // outcome.
+  const [existingResult, existingEmailResult] = await Promise.all([
+    db.from("members").select("id").eq("phone", phone).maybeSingle(),
+    db.from("members").select("id").eq("email", email).maybeSingle(),
+  ]);
+  if (existingResult.error) throw new Error(`Failed to check existing member: ${existingResult.error.message}`);
+  if (existingResult.data) return { status: "already_registered" };
 
   // Email has no DB-level unique constraint prior to this fix (see the
   // migration in schema.sql), and without this check two different phone
@@ -258,13 +274,8 @@ export async function registerMember(input: {
   // ...).maybeSingle() throws once more than one row matches). This is a
   // best-effort app-level check; verifySignupOtpAndLogin's insert is the
   // real, race-safe backstop once the DB constraint is in place.
-  const { data: existingEmail, error: existingEmailError } = await db
-    .from("members")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-  if (existingEmailError) throw new Error(`Failed to check existing email: ${existingEmailError.message}`);
-  if (existingEmail) return { status: "email_already_registered" };
+  if (existingEmailResult.error) throw new Error(`Failed to check existing email: ${existingEmailResult.error.message}`);
+  if (existingEmailResult.data) return { status: "email_already_registered" };
 
   const { error: upsertError } = await db.from("pending_signups").upsert(
     {
@@ -284,13 +295,12 @@ export async function registerMember(input: {
   // double-tap or an immediate resend; the original message is still good.
   if (code) {
     // Each channel is independent — a WhatsApp failure must not stop the
-    // email from going out, and vice versa.
-    await sendWhatsAppTemplate({
-      phone,
-      template: "otp",
-      bodyParams: [code],
-    }).catch(() => {});
-    await sendEmailTemplate({ to: email, template: "otp", bodyParams: [code] }).catch(() => {});
+    // email from going out, and vice versa. Concurrent, not sequential —
+    // see the same note in requestMemberOtp above.
+    await Promise.all([
+      sendWhatsAppTemplate({ phone, template: "otp", bodyParams: [code] }).catch(() => {}),
+      sendEmailTemplate({ to: email, template: "otp", bodyParams: [code] }).catch(() => {}),
+    ]);
   }
 
   // Gated purely on NODE_ENV, not on whether WhatsApp is configured — email
