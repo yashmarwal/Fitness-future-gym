@@ -152,50 +152,74 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         </span>
       </div>
 
-      <div className="bg-surface-container-low shadow-hard overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b-2 border-surface-variant/60">
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Membership No.</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Amount</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Method</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-surface-variant/30">
-            {filteredPayments.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-8 px-4 text-center font-body text-sm text-tertiary">
-                  {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
-                </td>
-              </tr>
-            ) : (
-              filteredPayments.map((p) => (
-                <tr key={p.id} className="hover:bg-surface-container transition-colors">
-                  <td className="py-3 px-4 font-body text-sm text-on-surface">{p.memberName}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{p.membershipNumber}</td>
-                  <td className="py-3 px-4 font-body text-sm text-primary-container">₹{p.amount}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{p.method}</td>
-                  <td className="py-3 px-4 font-body text-sm">
-                    <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">
-                    {new Date(p.createdAt).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
+      {filteredPayments.length === 0 ? (
+        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+          {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
+        </div>
+      ) : (
+        <>
+          <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b-2 border-surface-variant/60">
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Membership No.</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Amount</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Method</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Date</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="divide-y divide-surface-variant/30">
+                {filteredPayments.map((p) => (
+                  <tr key={p.id} className="hover:bg-surface-container transition-colors">
+                    <td className="py-3 px-4 font-body text-sm text-on-surface">{p.memberName}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{p.membershipNumber}</td>
+                    <td className="py-3 px-4 font-body text-sm text-primary-container">₹{p.amount}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{p.method}</td>
+                    <td className="py-3 px-4 font-body text-sm">
+                      <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">
+                      {new Date(p.createdAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="md:hidden flex flex-col gap-3">
+            {filteredPayments.map((p) => (
+              <div key={p.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-body text-sm font-semibold text-on-surface truncate">{p.memberName}</p>
+                    <span className="font-label text-[10px] uppercase tracking-widest text-tertiary">
+                      {p.membershipNumber}
+                    </span>
+                  </div>
+                  <span className="shrink-0 font-body text-base font-bold text-primary-container">₹{p.amount}</span>
+                </div>
+                <div className="flex items-center justify-between font-label text-[10px] uppercase tracking-wide">
+                  <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
+                    {p.status} &middot; {p.method}
+                  </span>
+                  <span className="text-outline">
+                    {new Date(p.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

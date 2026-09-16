@@ -209,76 +209,127 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
         </form>
       )}
 
-      <div className="bg-surface-container-low shadow-hard overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b-2 border-surface-variant/60">
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Name</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Phone</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Email</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Plan</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Joined</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Fee Due</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-surface-variant/30">
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="py-8 px-4 text-center font-body text-sm text-tertiary">
-                  {members.length === 0 ? "No members yet — add one above." : "No members match your search."}
-                </td>
-              </tr>
-            ) : (
-              filtered.map((m) => (
-                <tr key={m.id} className="hover:bg-surface-container transition-colors">
-                  <td className="py-3 px-4 font-body text-sm text-primary-container">{m.membershipNumber}</td>
-                  <td className="py-3 px-4 font-body text-sm text-on-surface">{m.fullName}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{m.phone ?? "—"}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{m.email ?? "—"}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{m.plan ?? "—"}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{m.joinedAt}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">{m.feeDueDate ?? "—"}</td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => toggleActive(m)}
-                      className={`font-label text-[10px] uppercase px-2 py-1 transition-colors ${
-                        m.isActive
-                          ? "bg-primary-container/20 text-primary-container hover:bg-primary-container/30"
-                          : "bg-surface-container-high text-error hover:bg-surface-container-highest"
-                      }`}
-                    >
-                      {m.isActive ? "Active" : "Inactive"}
-                    </button>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => startEdit(m)}
-                        aria-label="Edit member"
-                        className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-sm leading-none">edit</span>
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(m.id)}
-                        aria-label="Delete member"
-                        className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-sm leading-none">delete</span>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+      {filtered.length === 0 ? (
+        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+          {members.length === 0 ? "No members yet — add one above." : "No members match your search."}
+        </div>
+      ) : (
+        <>
+          {/* Table — desktop/tablet. A 9-column table has no good way to
+              read on a phone even with horizontal scroll, so below md it's
+              replaced entirely by the card list, not just scroll-wrapped. */}
+          <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b-2 border-surface-variant/60">
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Name</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Phone</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Email</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Plan</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Joined</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Fee Due</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="divide-y divide-surface-variant/30">
+                {filtered.map((m) => (
+                  <tr key={m.id} className="hover:bg-surface-container transition-colors">
+                    <td className="py-3 px-4 font-body text-sm text-primary-container">{m.membershipNumber}</td>
+                    <td className="py-3 px-4 font-body text-sm text-on-surface">{m.fullName}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{m.phone ?? "—"}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{m.email ?? "—"}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{m.plan ?? "—"}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{m.joinedAt}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">{m.feeDueDate ?? "—"}</td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => toggleActive(m)}
+                        className={`font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                          m.isActive
+                            ? "bg-primary-container/20 text-primary-container hover:bg-primary-container/30"
+                            : "bg-surface-container-high text-error hover:bg-surface-container-highest"
+                        }`}
+                      >
+                        {m.isActive ? "Active" : "Inactive"}
+                      </button>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => startEdit(m)}
+                          aria-label="Edit member"
+                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm leading-none">edit</span>
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(m.id)}
+                          aria-label="Delete member"
+                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm leading-none">delete</span>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card list — mobile only. */}
+          <div className="md:hidden flex flex-col gap-3">
+            {filtered.map((m) => (
+              <div key={m.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
+                      {m.membershipNumber}
+                    </span>
+                    <p className="font-body text-sm font-semibold text-on-surface truncate">{m.fullName}</p>
+                  </div>
+                  <button
+                    onClick={() => toggleActive(m)}
+                    className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                      m.isActive
+                        ? "bg-primary-container/20 text-primary-container"
+                        : "bg-surface-container-high text-error"
+                    }`}
+                  >
+                    {m.isActive ? "Active" : "Inactive"}
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 font-body text-xs text-tertiary">
+                  <span className="truncate">{m.phone ?? "—"}</span>
+                  <span className="truncate">{m.plan ?? "No plan"}</span>
+                  <span>Due: {m.feeDueDate ?? "—"}</span>
+                  <span>Joined: {m.joinedAt}</span>
+                </div>
+                <div className="flex gap-2 pt-1 border-t border-surface-variant/30">
+                  <button
+                    onClick={() => startEdit(m)}
+                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm leading-none">edit</span>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(m.id)}
+                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm leading-none">delete</span>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -7,9 +7,14 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   if (!session) redirect("/admin/login");
 
   return (
-    <div className="flex flex-col min-h-screen">
+    // dvh, not vh/min-h-screen: vh is the STATIC viewport height (the area
+    // a mobile keyboard would cover is still counted as "visible"), so
+    // anything sized off it doesn't shrink when the keyboard opens — which
+    // is exactly why the AI assistant's input could end up stuck behind
+    // the keyboard. dvh tracks the real, current visible viewport.
+    <div className="flex flex-col min-h-dvh">
       <AdminNav username={session.username} />
-      <main className="flex-1 px-gutter-mobile lg:px-gutter-desktop py-8 max-w-(--container-max) mx-auto w-full">
+      <main className="flex-1 flex flex-col min-h-0 px-gutter-mobile lg:px-gutter-desktop py-8 max-w-(--container-max) mx-auto w-full">
         {children}
       </main>
     </div>

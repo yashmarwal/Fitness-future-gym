@@ -62,112 +62,151 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
     return <p className="font-body text-sm text-tertiary">No trial claims yet.</p>;
   }
 
+  // The convert form is the same markup either way — reused for both the
+  // table's expanded row (desktop) and the mobile card's expanded panel.
+  function ConvertForm({ id }: { id: string }) {
+    return (
+      <div className="bg-surface-container-high p-4 shadow-hard border-l-4 border-primary-container flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="font-label text-[10px] uppercase tracking-widest text-outline">Program / Plan</label>
+          <input
+            value={plan}
+            onChange={(e) => setPlan(e.target.value)}
+            placeholder="e.g. Group Training"
+            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-auto"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="font-label text-[10px] uppercase tracking-widest text-outline">Fee Amount (₹)</label>
+          <input
+            type="number"
+            value={feeAmount}
+            onChange={(e) => setFeeAmount(e.target.value)}
+            placeholder="3000"
+            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-32"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="font-label text-[10px] uppercase tracking-widest text-outline">Payment Method</label>
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value as "upi" | "cash" | "manual")}
+            disabled={!feeAmount}
+            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container disabled:opacity-50 w-full sm:w-auto"
+          >
+            <option value="upi">UPI</option>
+            <option value="cash">Cash</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+        <button
+          onClick={() => submitConvert(id, false)}
+          disabled={submitting}
+          className="w-full sm:w-auto bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2.5 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        >
+          Convert
+        </button>
+        <button
+          onClick={() => submitConvert(id, true)}
+          disabled={submitting}
+          className="w-full sm:w-auto bg-surface-container-highest hover:bg-surface-variant text-on-surface font-label text-xs uppercase px-4 py-2.5 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        >
+          Skip (Convert Without Program)
+        </button>
+        {error && <p className="font-body text-xs text-error w-full">{error}</p>}
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-surface-container-low shadow-hard overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="border-b-2 border-surface-variant/60">
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Name</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Phone</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Email</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Shift</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Code</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Window</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
-            <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-surface-variant/30">
-          {trials.map((t) => (
-            <Fragment key={t.id}>
-              <tr className={openId === t.id ? "bg-surface-container" : "hover:bg-surface-container transition-colors"}>
-                <td className="py-3 px-4 font-body text-sm text-on-surface">{t.fullName}</td>
-                <td className="py-3 px-4 font-body text-sm text-tertiary">{t.phone}</td>
-                <td className="py-3 px-4 font-body text-sm text-tertiary">{t.email}</td>
-                <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{t.shift}</td>
-                <td className="py-3 px-4 font-body text-sm text-primary-container">{t.trialCode}</td>
-                <td className="py-3 px-4 font-body text-sm text-tertiary">
-                  {t.startsAt} → {t.endsAt}
-                </td>
-                <td className={`py-3 px-4 font-body text-sm uppercase ${STATUS_STYLES[t.status] ?? ""}`}>
-                  {t.status}
-                </td>
-                <td className="py-3 px-4">
-                  {t.status === "active" && (
-                    <button
-                      onClick={() => (openId === t.id ? setOpenId(null) : openConvert(t.id))}
-                      className="font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
-                    >
-                      {openId === t.id ? "Cancel" : "Convert"}
-                    </button>
-                  )}
-                </td>
-              </tr>
-              {openId === t.id && (
-                <tr className="bg-surface-container">
-                  <td colSpan={8} className="py-3 px-4">
-                    <div className="bg-surface-container-high p-4 shadow-hard border-l-4 border-primary-container flex flex-wrap items-end gap-3">
-                      <div className="flex flex-col gap-1">
-                        <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-                          Program / Plan
-                        </label>
-                        <input
-                          value={plan}
-                          onChange={(e) => setPlan(e.target.value)}
-                          placeholder="e.g. Group Training"
-                          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-                          Fee Amount (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={feeAmount}
-                          onChange={(e) => setFeeAmount(e.target.value)}
-                          placeholder="3000"
-                          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-32"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-                          Payment Method
-                        </label>
-                        <select
-                          value={paymentMethod}
-                          onChange={(e) => setPaymentMethod(e.target.value as "upi" | "cash" | "manual")}
-                          disabled={!feeAmount}
-                          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container disabled:opacity-50"
-                        >
-                          <option value="upi">UPI</option>
-                          <option value="cash">Cash</option>
-                          <option value="manual">Manual</option>
-                        </select>
-                      </div>
+    <>
+      <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b-2 border-surface-variant/60">
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Name</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Phone</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Email</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Shift</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Code</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Window</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Status</th>
+              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-surface-variant/30">
+            {trials.map((t) => (
+              <Fragment key={t.id}>
+                <tr className={openId === t.id ? "bg-surface-container" : "hover:bg-surface-container transition-colors"}>
+                  <td className="py-3 px-4 font-body text-sm text-on-surface">{t.fullName}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">{t.phone}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">{t.email}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary uppercase">{t.shift}</td>
+                  <td className="py-3 px-4 font-body text-sm text-primary-container">{t.trialCode}</td>
+                  <td className="py-3 px-4 font-body text-sm text-tertiary">
+                    {t.startsAt} → {t.endsAt}
+                  </td>
+                  <td className={`py-3 px-4 font-body text-sm uppercase ${STATUS_STYLES[t.status] ?? ""}`}>
+                    {t.status}
+                  </td>
+                  <td className="py-3 px-4">
+                    {t.status === "active" && (
                       <button
-                        onClick={() => submitConvert(t.id, false)}
-                        disabled={submitting}
-                        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => (openId === t.id ? setOpenId(null) : openConvert(t.id))}
+                        className="font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
                       >
-                        Convert
+                        {openId === t.id ? "Cancel" : "Convert"}
                       </button>
-                      <button
-                        onClick={() => submitConvert(t.id, true)}
-                        disabled={submitting}
-                        className="bg-surface-container-highest hover:bg-surface-variant text-on-surface font-label text-xs uppercase px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                      >
-                        Skip (Convert Without Program)
-                      </button>
-                      {error && <p className="font-body text-xs text-error w-full">{error}</p>}
-                    </div>
+                    )}
                   </td>
                 </tr>
-              )}
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                {openId === t.id && (
+                  <tr className="bg-surface-container">
+                    <td colSpan={8} className="py-3 px-4">
+                      <ConvertForm id={t.id} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="md:hidden flex flex-col gap-3">
+        {trials.map((t) => (
+          <div key={t.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-body text-sm font-semibold text-on-surface truncate">{t.fullName}</p>
+                <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
+                  {t.trialCode}
+                </span>
+              </div>
+              <span className={`shrink-0 font-label text-[10px] uppercase ${STATUS_STYLES[t.status] ?? ""}`}>
+                {t.status}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 font-body text-xs text-tertiary">
+              <span className="truncate">{t.phone}</span>
+              <span className="truncate">{t.email}</span>
+              <span className="uppercase">{t.shift} shift</span>
+              <span>
+                {t.startsAt} → {t.endsAt}
+              </span>
+            </div>
+            {t.status === "active" && (
+              <button
+                onClick={() => (openId === t.id ? setOpenId(null) : openConvert(t.id))}
+                className="w-full font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors border-t border-surface-variant/30 pt-3"
+              >
+                {openId === t.id ? "Cancel" : "Convert To Member"}
+              </button>
+            )}
+            {openId === t.id && <ConvertForm id={t.id} />}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

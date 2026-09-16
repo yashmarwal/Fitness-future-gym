@@ -75,53 +75,81 @@ export default function AttendanceManager({
         />
       </div>
 
-      <div className="bg-surface-container-low shadow-hard overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b-2 border-surface-variant/60">
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Time</th>
-              <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-surface-variant/30">
-            {filteredRecords.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="py-8 px-4 text-center font-body text-sm text-tertiary">
-                  {records.length === 0 ? "No check-ins recorded yet." : "No check-ins match your search."}
-                </td>
-              </tr>
-            ) : (
-              filteredRecords.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-container transition-colors">
-                  <td className="py-3 px-4 font-body text-sm text-on-surface">{r.memberName}</td>
-                  <td className="py-3 px-4 font-body text-sm text-primary-container">{r.membershipNumber}</td>
-                  <td className="py-3 px-4 font-body text-sm text-tertiary">
+      {filteredRecords.length === 0 ? (
+        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+          {records.length === 0 ? "No check-ins recorded yet." : "No check-ins match your search."}
+        </div>
+      ) : (
+        <>
+          <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b-2 border-surface-variant/60">
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Member</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Time</th>
+                  <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface-variant/30">
+                {filteredRecords.map((r) => (
+                  <tr key={r.id} className="hover:bg-surface-container transition-colors">
+                    <td className="py-3 px-4 font-body text-sm text-on-surface">{r.memberName}</td>
+                    <td className="py-3 px-4 font-body text-sm text-primary-container">{r.membershipNumber}</td>
+                    <td className="py-3 px-4 font-body text-sm text-tertiary">
+                      {new Date(r.checkedInAt).toLocaleString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleDelete(r.id)}
+                        aria-label="Delete check-in"
+                        className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-sm leading-none">delete</span>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="md:hidden flex flex-col gap-3">
+            {filteredRecords.map((r) => (
+              <div key={r.id} className="bg-surface-container-low shadow-hard p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-body text-sm font-semibold text-on-surface truncate">{r.memberName}</p>
+                  <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
+                    {r.membershipNumber}
+                  </span>
+                  <p className="font-body text-xs text-tertiary mt-1">
                     {new Date(r.checkedInAt).toLocaleString("en-IN", {
                       day: "numeric",
                       month: "short",
-                      year: "numeric",
                       hour: "numeric",
                       minute: "2-digit",
                     })}
-                  </td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => handleDelete(r.id)}
-                      aria-label="Delete check-in"
-                      className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-sm leading-none">delete</span>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleDelete(r.id)}
+                  aria-label="Delete check-in"
+                  className="shrink-0 flex items-center justify-center p-2.5 bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg leading-none">delete</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
