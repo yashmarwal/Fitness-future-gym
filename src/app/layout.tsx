@@ -10,6 +10,7 @@ import {
   BUSINESS_EMAIL,
   OPENING_HOURS,
   FOUNDING_YEAR,
+  INSTAGRAM_GYM,
 } from "@/frontend/lib/siteConfig";
 import "./globals.css";
 
@@ -103,6 +104,7 @@ const jsonLd = {
         opens: h.opens,
         closes: h.closes,
       })),
+      sameAs: [INSTAGRAM_GYM],
     },
     {
       "@type": "WebSite",

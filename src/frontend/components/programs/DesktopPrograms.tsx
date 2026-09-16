@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -168,7 +169,7 @@ export default function DesktopPrograms() {
                     rel="noreferrer"
                     className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
                   >
-                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
                   </a>
                 </div>
@@ -257,7 +258,7 @@ export default function DesktopPrograms() {
                     rel="noreferrer"
                     className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
                   >
-                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
                   </a>
                 </div>
@@ -355,7 +356,7 @@ export default function DesktopPrograms() {
                     rel="noreferrer"
                     className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
                   >
-                    <span className="material-symbols-outlined text-title-md">chat</span>
+                    <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
                   </a>
                 </div>

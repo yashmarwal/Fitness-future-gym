@@ -23,6 +23,14 @@ export const BUSINESS_PHONE_SECONDARY = "+918700978341"; // Coach Hritik
 export const BUSINESS_EMAIL = "contact.fitnessfuture@gmail.com";
 export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/za8QGX3eCtruW7FK7";
 
+// Canonical profile URLs — the links the client shared carried a personal
+// `?stkn=` share-token query param (Instagram's per-share tracking id, not
+// meant for permanent public embedding), stripped here since the plain
+// profile URL is identical in destination and won't expire/rotate.
+export const INSTAGRAM_GYM = "https://www.instagram.com/fitness_future_gym_/";
+export const INSTAGRAM_VAIBHAV = "https://www.instagram.com/vaibhav_ronjhwal/";
+export const INSTAGRAM_HRITIK = "https://www.instagram.com/hritikronjhwal/";
+
 // Confirmed as the accurate, currently-in-effect hours (location page,
 // not the footer's older "continuous 6am-11pm" copy — see
 // SiteFooter.tsx, now corrected to match this).

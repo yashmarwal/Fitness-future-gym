@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { submitToWeb3Forms } from "@/frontend/lib/web3forms";
+import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -195,7 +196,7 @@ export default function LocationPageContent() {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <span className="material-symbols-outlined text-label-lg">chat</span> CHAT
+                        <WhatsAppIcon className="w-3.5 h-3.5" /> CHAT
                       </a>
                     </div>
                   </div>
@@ -219,7 +220,7 @@ export default function LocationPageContent() {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <span className="material-symbols-outlined text-label-lg">chat</span> CHAT
+                        <WhatsAppIcon className="w-3.5 h-3.5" /> CHAT
                       </a>
                     </div>
                   </div>

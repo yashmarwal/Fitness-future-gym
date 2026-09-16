@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -151,7 +152,7 @@ export default function MobilePrograms() {
               rel="noreferrer"
               className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
             >
-              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
             </a>
           </div>
@@ -198,7 +199,7 @@ export default function MobilePrograms() {
               rel="noreferrer"
               className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
             >
-              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
             </a>
           </div>
@@ -251,7 +252,7 @@ export default function MobilePrograms() {
               rel="noreferrer"
               className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
             >
-              <span className="material-symbols-outlined text-title-sm">chat</span>
+              <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
             </a>
           </div>

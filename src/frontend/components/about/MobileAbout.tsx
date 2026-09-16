@@ -5,6 +5,9 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CoachAvatar from "@/frontend/components/CoachAvatar";
+import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
+import InstagramIcon from "@/frontend/components/icons/InstagramIcon";
+import { INSTAGRAM_VAIBHAV, INSTAGRAM_HRITIK } from "@/frontend/lib/siteConfig";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -267,12 +270,15 @@ export default function MobileAbout() {
               <span className="text-on-surface">Best Squat: 220KG</span>
               <span className="text-primary-container font-bold">Best Deadlift: 250KG</span>
             </div>
-            <div className="flex items-center gap-space-md">
+            <div className="flex items-center flex-wrap gap-x-space-md gap-y-space-2xs">
               <a href="tel:+919643526435" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
                 <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
               </a>
               <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
-                <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
+              </a>
+              <a href={INSTAGRAM_VAIBHAV} target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <InstagramIcon className="w-3.5 h-3.5" /> Instagram
               </a>
             </div>
           </div>
@@ -294,12 +300,15 @@ export default function MobileAbout() {
               <span className="text-on-surface">Best Bench: 170KG</span>
               <span className="text-primary-container font-bold">70+ Athletes</span>
             </div>
-            <div className="flex items-center gap-space-md">
+            <div className="flex items-center flex-wrap gap-x-space-md gap-y-space-2xs">
               <a href="tel:+918700978341" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
                 <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
               </a>
               <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
-                <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
+              </a>
+              <a href={INSTAGRAM_HRITIK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-sm text-label-sm uppercase text-primary-container">
+                <InstagramIcon className="w-3.5 h-3.5" /> Instagram
               </a>
             </div>
           </div>

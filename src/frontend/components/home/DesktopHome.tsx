@@ -7,6 +7,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CoachAvatar from "@/frontend/components/CoachAvatar";
 import AthleteWall from "@/frontend/components/home/AthleteWall";
+import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
+import InstagramIcon from "@/frontend/components/icons/InstagramIcon";
+import { INSTAGRAM_VAIBHAV, INSTAGRAM_HRITIK } from "@/frontend/lib/siteConfig";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -546,7 +549,10 @@ export default function DesktopHome() {
                     <span className="material-symbols-outlined text-label-lg">call</span> +91 96435 26435
                   </a>
                   <a href="https://wa.me/919643526435" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
-                    <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                    <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
+                  </a>
+                  <a href={INSTAGRAM_VAIBHAV} target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <InstagramIcon className="w-3.5 h-3.5" /> Instagram
                   </a>
                 </div>
               </div>
@@ -588,7 +594,10 @@ export default function DesktopHome() {
                     <span className="material-symbols-outlined text-label-lg">call</span> +91 87009 78341
                   </a>
                   <a href="https://wa.me/918700978341" target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
-                    <span className="material-symbols-outlined text-label-lg">chat</span> WhatsApp
+                    <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
+                  </a>
+                  <a href={INSTAGRAM_HRITIK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-space-2xs font-label-md text-label-md uppercase text-primary-container hover:text-on-surface transition-colors">
+                    <InstagramIcon className="w-3.5 h-3.5" /> Instagram
                   </a>
                 </div>
               </div>
