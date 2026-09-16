@@ -90,14 +90,23 @@ export async function recordManualPayment(
   nextDueDate.setMonth(nextDueDate.getMonth() + durationMonths);
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
-  // Backfill plan/fee_amount from this actual payment if they were never
-  // set — see the comment on DURATION_PLAN_LABELS above. Only fills gaps,
-  // never overwrites a plan/amount admin already entered.
-  const effectivePlan = member.plan ?? DURATION_PLAN_LABELS[durationMonths];
-  const effectiveFeeAmount = member.fee_amount ?? amount;
-  const patch: Record<string, unknown> = { fee_due_date: nextDueDateStr };
-  if (!member.plan) patch.plan = effectivePlan;
-  if (member.fee_amount == null) patch.fee_amount = effectiveFeeAmount;
+  // Member profile's plan/fee_amount always reflect this payment — not
+  // just backfilled when empty. Admin -> Members shows these fields, and
+  // the flagging logic reads the member row, so a payment recorded here
+  // that DOESN'T update them there is exactly the class of bug this
+  // already broke once (see the "Needs Review" fix). Amount is
+  // unambiguous — whatever was actually just collected. Plan is derived
+  // from the selected duration (matching the Record Payment form's own
+  // options), overwriting whatever was there before — if a custom plan
+  // name (e.g. "Quarterly + PT") needs to survive routine renewal
+  // payments, that needs its own field, not this one.
+  const effectivePlan = DURATION_PLAN_LABELS[durationMonths];
+  const effectiveFeeAmount = amount;
+  const patch: Record<string, unknown> = {
+    fee_due_date: nextDueDateStr,
+    plan: effectivePlan,
+    fee_amount: effectiveFeeAmount,
+  };
 
   await db.from("members").update(patch).eq("id", memberId);
 
@@ -111,10 +120,10 @@ export async function recordManualPayment(
   // Recording a payment is one of the two explicit triggers for re-sending
   // the membership card (the other is a plan change, in admin/members.ts) —
   // best-effort, a delivery failure shouldn't fail the payment record. Uses
-  // the effective (just-backfilled-if-needed) plan/amount, not the stale
-  // pre-payment `member.plan`/`member.fee_amount` — using the stale values
-  // here was the actual bug: for a member whose plan/fee_amount had never
-  // been set, deliverMembershipCard's own guard silently no-opped on every
+  // the just-written effective plan/amount, not the stale pre-payment
+  // `member.plan`/`member.fee_amount` — using the stale values here was
+  // the original bug: for a member whose plan/fee_amount had never been
+  // set, deliverMembershipCard's own guard silently no-opped on every
   // single payment, forever, since the values it saw were always null
   // regardless of how many payments got recorded.
   await deliverMembershipCard({
