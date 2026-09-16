@@ -11,7 +11,13 @@ export default function CalculatorForm() {
   const [gender, setGender] = useState<"male" | "female">("male");
   const [activity, setActivity] = useState(1.65);
   const [goal, setGoal] = useState(0);
+
+  // Calculation Processing State
+  const [isCalculating, setIsCalculating] = useState(false);
+
   const formRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (formRef.current) {
@@ -23,13 +29,41 @@ export default function CalculatorForm() {
     }
   }, []);
 
+  const runCalculation = () => {
+    setIsCalculating(true);
+
+    const timer = setTimeout(() => {
+      setIsCalculating(false);
+
+      if (resultsRef.current) {
+        gsap.fromTo(
+          resultsRef.current.querySelectorAll(".metric-value"),
+          { scale: 0.95, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.35, stagger: 0.06, ease: "power2.out" }
+        );
+      }
+    }, 700);
+
+    return () => clearTimeout(timer);
+  };
+
+  // Trigger calculation whenever parameters change
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const cleanup = runCalculation();
+    return cleanup;
+  }, [weight, heightFt, heightIn, age, gender, activity, goal]);
+
   const results = useMemo(() => {
     const w = weight === "" ? 74 : weight;
     const ft = heightFt === "" ? 5 : heightFt;
     const inches = heightIn === "" ? 9 : heightIn;
     const a = age === "" ? 26 : age;
 
-    const height = ft * 30.48 + inches * 2.54; // ft/in -> cm, for the formulas below
+    const height = ft * 30.48 + inches * 2.54; // ft/in -> cm
     const heightInMeters = height / 100;
     const bmi = w / (heightInMeters * heightInMeters);
 
@@ -381,29 +415,56 @@ export default function CalculatorForm() {
               </label>
             </div>
           </div>
+
+          {/* Calculate Trigger Button */}
+          <div className="pt-space-sm">
+            <button
+              type="button"
+              onClick={runCalculation}
+              disabled={isCalculating}
+              className="w-full py-space-md px-space-lg bg-primary-container text-on-primary-container font-label-md text-label-md uppercase tracking-widest font-bold shadow-md hover:brightness-110 active:scale-[0.99] transition-all text-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+            >
+              <span>{isCalculating ? "CALCULATING..." : "CALCULATE"}</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Calculated Results Display */}
-      <div className="lg:col-span-7 flex flex-col gap-space-lg">
+      {/* Calculated Results Display Panel */}
+      <div ref={resultsRef} className="lg:col-span-7 flex flex-col gap-space-lg relative">
         {/* Top Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-          {/* BMI */}
-          <div className="bg-surface-container-low p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40">
+          {/* BMI Card */}
+          <div className="bg-surface-container-low p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40 relative overflow-hidden">
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 01 // Body Index</span>
-                <span className="px-space-xs py-space-2xs bg-surface-container-highest text-primary-container font-label-sm text-label-sm uppercase font-bold tracking-widest">
-                  {results.bmiTag}
-                </span>
+                {isCalculating ? (
+                  <div className="h-5 w-24 bg-surface-container-highest animate-pulse rounded"></div>
+                ) : (
+                  <span className="px-space-xs py-space-2xs bg-surface-container-highest text-primary-container font-label-sm text-label-sm uppercase font-bold tracking-widest">
+                    {results.bmiTag}
+                  </span>
+                )}
               </div>
-              <div className="mt-space-md flex items-baseline gap-space-xs">
-                <span className="font-display-xl text-display-xl text-primary-container leading-none">
-                  {results.bmi}
-                </span>
-                <span className="font-headline-sm text-headline-sm text-tertiary">BMI</span>
+
+              <div className="mt-space-md flex items-baseline gap-space-xs min-h-[56px]">
+                {isCalculating ? (
+                  /* Shimmering Skeleton Loader for BMI metric */
+                  <div className="relative w-36 h-12 overflow-hidden bg-surface-container-highest rounded my-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent animate-[toast-slide-in_1.2s_ease-in-out_infinite]"></div>
+                  </div>
+                ) : (
+                  <div className="metric-value flex items-baseline gap-space-xs">
+                    <span className="font-display-xl text-display-xl text-primary-container leading-none">
+                      {results.bmi}
+                    </span>
+                    <span className="font-headline-sm text-headline-sm text-tertiary">BMI</span>
+                  </div>
+                )}
               </div>
             </div>
+
             <div className="mt-space-lg pt-space-md">
               <div className="grid grid-cols-[25%_40%_35%] text-label-sm font-label-sm uppercase text-outline mb-space-2xs">
                 <span className="text-left">Under (18.5)</span>
@@ -418,8 +479,8 @@ export default function CalculatorForm() {
             </div>
           </div>
 
-          {/* Calories */}
-          <div className="bg-surface-container p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40">
+          {/* Calories Card */}
+          <div className="bg-surface-container p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40 relative overflow-hidden">
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 02 // Energy Budget</span>
@@ -428,20 +489,35 @@ export default function CalculatorForm() {
                   ACTIVE RECOVERY
                 </span>
               </div>
-              <div className="mt-space-md">
-                <div className="flex items-baseline gap-space-xs">
-                  <span className="font-display-xl text-display-xl text-on-surface font-bold leading-none">
-                    {results.tdee}
-                  </span>
-                  <span className="font-headline-sm text-headline-sm text-primary-container">KCAL</span>
-                </div>
-                <p className="font-label-sm text-label-sm uppercase tracking-wider text-outline mt-space-2xs">
-                  DAILY TARGET ALLOCATION
-                </p>
+
+              <div className="mt-space-md min-h-[56px]">
+                {isCalculating ? (
+                  /* Shimmering Skeleton Loader for Calories metric */
+                  <div className="relative w-44 h-12 overflow-hidden bg-surface-container-highest rounded my-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent animate-[toast-slide-in_1.2s_ease-in-out_infinite]"></div>
+                  </div>
+                ) : (
+                  <div className="metric-value">
+                    <div className="flex items-baseline gap-space-xs">
+                      <span className="font-display-xl text-display-xl text-on-surface font-bold leading-none">
+                        {results.tdee}
+                      </span>
+                      <span className="font-headline-sm text-headline-sm text-primary-container">KCAL</span>
+                    </div>
+                    <p className="font-label-sm text-label-sm uppercase tracking-wider text-outline mt-space-2xs">
+                      DAILY TARGET ALLOCATION
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
+
             <div className="mt-space-lg pt-space-md flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm border-t border-surface-variant/30">
-              <span>Rest Day Budget: <strong className="text-on-surface">{results.restCalories} kcal</strong></span>
+              {isCalculating ? (
+                <div className="h-4 w-40 bg-surface-container-highest animate-pulse rounded"></div>
+              ) : (
+                <span>Rest Day Budget: <strong className="text-on-surface">{results.restCalories} kcal</strong></span>
+              )}
               <span className="material-symbols-outlined text-title-sm text-outline">info</span>
             </div>
           </div>
@@ -459,7 +535,8 @@ export default function CalculatorForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
+            {/* Protein Card */}
+            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-primary-container font-bold">
@@ -467,15 +544,25 @@ export default function CalculatorForm() {
                   </span>
                   <span className="font-label-sm text-label-sm uppercase text-outline">4 kcal/g</span>
                 </div>
-                <div className="flex items-baseline gap-space-2xs">
-                  <span className="font-display-lg text-display-lg text-on-surface leading-none">
-                    {results.proteinGrams}
-                  </span>
-                  <span className="font-headline-sm text-headline-sm text-primary-container">G</span>
-                </div>
-                <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
-                  ~2.15g / kg Body Weight
-                </p>
+
+                {isCalculating ? (
+                  /* Shimmering Skeleton Loader for Protein metric */
+                  <div className="relative w-28 h-10 overflow-hidden bg-surface-container-highest rounded my-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent animate-[toast-slide-in_1.2s_ease-in-out_infinite]"></div>
+                  </div>
+                ) : (
+                  <div className="metric-value">
+                    <div className="flex items-baseline gap-space-2xs">
+                      <span className="font-display-lg text-display-lg text-on-surface leading-none">
+                        {results.proteinGrams}
+                      </span>
+                      <span className="font-headline-sm text-headline-sm text-primary-container">G</span>
+                    </div>
+                    <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
+                      ~2.15g / kg Body Weight
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
@@ -483,7 +570,8 @@ export default function CalculatorForm() {
               </div>
             </div>
 
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
+            {/* Carbs Card */}
+            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-on-surface font-bold">
@@ -491,15 +579,25 @@ export default function CalculatorForm() {
                   </span>
                   <span className="font-label-sm text-label-sm uppercase text-outline">4 kcal/g</span>
                 </div>
-                <div className="flex items-baseline gap-space-2xs">
-                  <span className="font-display-lg text-display-lg text-on-surface leading-none">
-                    {results.carbsGrams}
-                  </span>
-                  <span className="font-headline-sm text-headline-sm text-outline">G</span>
-                </div>
-                <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
-                  Glycogen Re-load
-                </p>
+
+                {isCalculating ? (
+                  /* Shimmering Skeleton Loader for Carbs metric */
+                  <div className="relative w-28 h-10 overflow-hidden bg-surface-container-highest rounded my-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent animate-[toast-slide-in_1.2s_ease-in-out_infinite]"></div>
+                  </div>
+                ) : (
+                  <div className="metric-value">
+                    <div className="flex items-baseline gap-space-2xs">
+                      <span className="font-display-lg text-display-lg text-on-surface leading-none">
+                        {results.carbsGrams}
+                      </span>
+                      <span className="font-headline-sm text-headline-sm text-outline">G</span>
+                    </div>
+                    <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
+                      Glycogen Re-load
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
@@ -507,7 +605,8 @@ export default function CalculatorForm() {
               </div>
             </div>
 
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
+            {/* Fats Card */}
+            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-tertiary font-bold">
@@ -515,15 +614,25 @@ export default function CalculatorForm() {
                   </span>
                   <span className="font-label-sm text-label-sm uppercase text-outline">9 kcal/g</span>
                 </div>
-                <div className="flex items-baseline gap-space-2xs">
-                  <span className="font-display-lg text-display-lg text-on-surface leading-none">
-                    {results.fatsGrams}
-                  </span>
-                  <span className="font-headline-sm text-headline-sm text-outline">G</span>
-                </div>
-                <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
-                  Hormonal Function
-                </p>
+
+                {isCalculating ? (
+                  /* Shimmering Skeleton Loader for Fats metric */
+                  <div className="relative w-28 h-10 overflow-hidden bg-surface-container-highest rounded my-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent animate-[toast-slide-in_1.2s_ease-in-out_infinite]"></div>
+                  </div>
+                ) : (
+                  <div className="metric-value">
+                    <div className="flex items-baseline gap-space-2xs">
+                      <span className="font-display-lg text-display-lg text-on-surface leading-none">
+                        {results.fatsGrams}
+                      </span>
+                      <span className="font-headline-sm text-headline-sm text-outline">G</span>
+                    </div>
+                    <p className="font-label-sm text-label-sm text-tertiary uppercase mt-space-xs">
+                      Hormonal Function
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
