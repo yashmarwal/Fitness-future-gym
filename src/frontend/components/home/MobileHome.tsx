@@ -5,6 +5,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CoachAvatar from "@/frontend/components/CoachAvatar";
+import AthleteWall from "@/frontend/components/home/AthleteWall";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -142,6 +143,8 @@ export default function MobileHome() {
         </div>
       </div>
 
+      <AthleteWall />
+
       {/* 2. TRUST METRICS GRID */}
       <section className="mobile-anim-sec px-space-md pt-space-lg flex flex-col gap-space-sm">
         <div className="flex items-center justify-between">
@@ -272,7 +275,7 @@ export default function MobileHome() {
 
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
-            <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
+            <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                 BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -283,6 +286,10 @@ export default function MobileHome() {
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
           </p>
+          <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold">
+            <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
+            IBBFF (FFBA Delhi Judge)
+          </span>
           <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
             <span className="text-on-surface">Best Squat: 220KG</span>
             <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 250KG</span>
@@ -299,7 +306,7 @@ export default function MobileHome() {
 
         <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
-            <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
+            <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                 BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

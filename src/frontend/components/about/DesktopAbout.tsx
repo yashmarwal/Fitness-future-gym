@@ -386,7 +386,7 @@ export default function DesktopAbout() {
           <div className="grid grid-cols-2 gap-space-lg">
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
+                <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -399,6 +399,10 @@ export default function DesktopAbout() {
               <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                 8+ years strength &amp; biomechanics specialist. Maximal compound loading, lumbar safety protocols, and competition deadlift/squat setup — trained over 1,500+ lifters from raw beginners to 250kg+ pullers.
               </p>
+              <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold mt-space-sm">
+                <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
+                IBBFF (FFBA Delhi Judge)
+              </span>
               <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Squat</span>
@@ -425,7 +429,7 @@ export default function DesktopAbout() {
 
             <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
-                <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
+                <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-16 h-16" />
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                     BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

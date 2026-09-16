@@ -6,6 +6,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CoachAvatar from "@/frontend/components/CoachAvatar";
+import AthleteWall from "@/frontend/components/home/AthleteWall";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -217,10 +218,9 @@ export default function DesktopHome() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-30 mix-blend-luminosity filter contrast-125 brightness-75"
+            className="object-cover object-center opacity-70 brightness-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50"></div>
-          <div className="absolute inset-0 bg-surface-container-lowest/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-transparent"></div>
         </div>
 
         {/* Hero Content Container */}
@@ -235,8 +235,14 @@ export default function DesktopHome() {
                 </span>
               </div>
 
-              {/* Oversized Condensed Stacking */}
-              <div ref={heroTitleRef} className="flex flex-col select-none leading-none tracking-tight overflow-hidden">
+              {/* Oversized Condensed Stacking — an <h1>, not a <div>: this is
+                  the page's actual main heading (MobileHome.tsx's equivalent
+                  headline already uses <h1>; this desktop variant previously
+                  didn't, so the page had no semantic h1 at all on wide
+                  viewports). Same className/children, GSAP still only
+                  targets the child .hero-text-line spans, so this is a pure
+                  tag swap with no visual/animation change. */}
+              <h1 ref={heroTitleRef} className="flex flex-col select-none leading-none tracking-tight overflow-hidden m-0 font-normal">
                 <span className="hero-text-line font-display-xl text-[105px] leading-[96px] uppercase text-on-surface m-0 p-0 font-normal block">
                   SWEAT
                 </span>
@@ -246,7 +252,7 @@ export default function DesktopHome() {
                 <span className="hero-text-line font-display-xl text-[105px] leading-[96px] uppercase text-on-surface m-0 p-0 font-normal block">
                   REPEAT
                 </span>
-              </div>
+              </h1>
 
               {/* Subheadline */}
               <p className="font-body-lg text-body-lg text-tertiary-fixed max-w-xl mt-space-lg mb-space-xl uppercase tracking-wide">
@@ -315,6 +321,8 @@ export default function DesktopHome() {
           </div>
         </div>
       </section>
+
+      <AthleteWall />
 
       {/* 2. QUIET TRUST STRIP */}
       <section ref={trustBarRef} className="w-full bg-surface-container-lowest border-y border-surface-variant/40">
@@ -503,7 +511,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
+                  <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -515,6 +523,10 @@ export default function DesktopHome() {
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-md">
                   Specializes in maximal compound loading, lumbar safety protocols, and competition deadlift/squat setup. Vaibhav has trained over 1,500+ lifters in Nangloi from raw beginners to 250kg+ pullers.
                 </p>
+                <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold mb-space-md">
+                  <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
+                  IBBFF (FFBA Delhi Judge)
+                </span>
                 <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST SQUAT</span>
@@ -545,7 +557,7 @@ export default function DesktopHome() {
               <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
-                  <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-16 h-16" />
+                  <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-16 h-16" />
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                       BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

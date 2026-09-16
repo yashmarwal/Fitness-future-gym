@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function SiteFooter() {
   return (
-    <footer className="w-full bg-surface-container-lowest border-t border-surface-variant/60 mt-auto">
+    <footer className="w-full bg-surface-container-lowest border-t border-surface-variant/60 mt-auto pb-20 xl:pb-0">
       <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-2xl lg:py-space-3xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl">
           <div className="flex flex-col gap-space-sm">
@@ -38,7 +38,7 @@ export default function SiteFooter() {
             </p>
             <div className="mt-space-xs bg-surface-container p-space-sm border-l-2 border-primary-container">
               <p className="font-label-sm text-label-sm uppercase text-tertiary">Operational Hours</p>
-              <p className="font-title-sm text-title-sm text-on-surface">Mon - Sat: 6:00 AM – 11:00 PM</p>
+              <p className="font-title-sm text-title-sm text-on-surface">Mon - Sat: 5–11 AM &amp; 4–11 PM</p>
               <p className="font-body-sm text-body-sm text-tertiary-fixed-dim">Sunday: Closed for Recovery</p>
             </div>
           </div>

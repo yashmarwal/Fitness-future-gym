@@ -248,7 +248,7 @@ export default function MobileAbout() {
         <div className="flex flex-col gap-space-md">
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
+              <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL
@@ -259,6 +259,10 @@ export default function MobileAbout() {
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
               8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
             </p>
+            <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold">
+              <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
+              IBBFF (FFBA Delhi Judge)
+            </span>
             <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
               <span className="text-on-surface">Best Squat: 220KG</span>
               <span className="text-primary-container font-bold">Best Deadlift: 250KG</span>
@@ -275,7 +279,7 @@ export default function MobileAbout() {
 
           <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
-              <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
+              <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   BODYBUILDING PREP COACH &amp; FITNESS PROFESSIONAL

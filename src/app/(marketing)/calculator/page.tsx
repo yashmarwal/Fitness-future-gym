@@ -1,8 +1,19 @@
+import type { Metadata } from "next";
 import CalculatorForm from "@/frontend/components/calculator/CalculatorForm";
+import BreadcrumbJsonLd from "@/frontend/components/BreadcrumbJsonLd";
+import { SITE_URL } from "@/frontend/lib/siteConfig";
+
+export const metadata: Metadata = {
+  title: "Free BMI & Macro Calculator",
+  description:
+    "Instant BMI classification and daily protein, carb, fat, and calorie targets — built with the Mifflin-St Jeor formula. Free tool from Fitness Future Gym.",
+  alternates: { canonical: `${SITE_URL}/calculator` },
+};
 
 export default function CalculatorPage() {
   return (
     <div className="flex flex-col w-full">
+      <BreadcrumbJsonLd name="BMI & Macro Calculator" path="/calculator" />
       <section className="w-full bg-surface-container-lowest px-gutter-mobile lg:px-gutter-desktop py-12 lg:py-20">
         <div className="max-w-(--container-max) mx-auto">
           <span className="font-label text-xs uppercase tracking-widest text-primary-container">
