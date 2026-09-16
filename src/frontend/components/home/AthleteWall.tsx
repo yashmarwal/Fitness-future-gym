@@ -172,7 +172,16 @@ function AthleteCard({
     <div data-athlete-index={index} className="shrink-0 w-36 sm:w-44 lg:w-52 mx-space-2xs lg:mx-space-xs">
       <div className="pointer-events-none rounded-2xl border border-primary-container/40 bg-surface-container-high p-1 shadow-hard">
         <div className="relative w-full aspect-[3/4] overflow-hidden rounded-xl">
-          <Image src={athlete.src} alt={alt ?? athlete.alt} fill sizes="208px" className="object-cover" draggable={false} />
+          {/* unoptimized: these are already pre-compressed to a proper web
+              size (~30-55KB each, capped at 640px — see the compression
+              step these were built from), so routing them through Next's
+              on-the-fly optimizer just adds a redundant resize AND, worse,
+              serves the thumbnail from a different URL (/_next/image?...)
+              than the lightbox's full-size <img> uses. That meant tapping
+              to enlarge was always a fresh, uncached download. Same raw
+              URL both places now, so by the time someone taps a photo
+              they've scrolled past, the browser already has it cached. */}
+          <Image src={athlete.src} alt={alt ?? athlete.alt} fill unoptimized className="object-cover" draggable={false} />
         </div>
       </div>
     </div>
