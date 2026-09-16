@@ -10,6 +10,7 @@ const EMPTY_FORM = {
   phone: "",
   email: "",
   dateOfBirth: "",
+  address: "",
   plan: "",
   feeAmount: "",
   feeDueDate: "",
@@ -38,6 +39,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
       phone: member.phone ?? "",
       email: member.email ?? "",
       dateOfBirth: member.dateOfBirth ?? "",
+      address: member.address ?? "",
       plan: member.plan ?? "",
       feeAmount: member.feeAmount != null ? String(member.feeAmount) : "",
       feeDueDate: member.feeDueDate ?? "",
@@ -154,6 +156,16 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               value={form.dateOfBirth}
               onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
               className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">Address</label>
+            <textarea
+              placeholder="House no., street, area, city"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              rows={2}
+              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container resize-none"
             />
           </div>
           <input

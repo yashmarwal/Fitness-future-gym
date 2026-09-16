@@ -6,11 +6,12 @@ export async function POST(request: Request) {
   const fullName = body?.fullName?.trim();
   const phone = body?.phone?.trim();
   const email = body?.email?.trim();
+  const address = body?.address?.trim();
   const dateOfBirth = body?.dateOfBirth?.trim();
 
-  if (!fullName || !phone || !email) {
+  if (!fullName || !phone || !email || !address) {
     return NextResponse.json(
-      { status: "error", message: "Name, phone number, and email are required." },
+      { status: "error", message: "Name, phone number, email, and address are required." },
       { status: 400 }
     );
   }
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await registerMember({ fullName, phone, email, dateOfBirth });
+    const result = await registerMember({ fullName, phone, email, address, dateOfBirth });
     return NextResponse.json(result);
   } catch (err) {
     console.error(err);

@@ -49,6 +49,32 @@ create extension if not exists pgcrypto;
 --
 --   alter table members add column if not exists current_streak_days integer not null default 0;
 --   alter table members add column if not exists longest_streak_days integer not null default 0;
+--
+-- Also run these two — adds the member's home address, collected at signup
+-- and editable from Admin -> Members (see memberAuth.ts, admin/members.ts):
+--
+--   alter table members add column if not exists address text;
+--   alter table pending_signups add column if not exists address text;
+--
+-- Also run this — creates the two tables behind the one-time old-software
+-- migration (see legacyFeeImport.ts): matches a new signup's phone number
+-- against imported legacy records and silently carries over their plan/due
+-- date from the old system, so members who paid under the old software
+-- don't show up as unpaid the moment they join the new app.
+--
+--   create table if not exists legacy_fee_imports (
+--     id uuid primary key default gen_random_uuid(),
+--     phone text not null unique,
+--     start_date date not null,
+--     fee_due_date date not null,
+--     imported_at timestamptz not null default now()
+--   );
+--   create table if not exists legacy_fee_import_batches (
+--     id uuid primary key default gen_random_uuid(),
+--     total_rows integer not null,
+--     matched_count integer not null default 0,
+--     imported_at timestamptz not null default now()
+--   );
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -59,6 +85,7 @@ create table if not exists members (
   phone text unique,
   email text unique,
   date_of_birth date,
+  address text,
   plan text,
   fee_amount numeric(10, 2),
   joined_at date not null default current_date,
@@ -145,7 +172,30 @@ create table if not exists pending_signups (
   full_name text not null,
   email text,
   date_of_birth date,
+  address text,
   created_at timestamptz not null default now()
+);
+
+-- One-time migration aid from the old gym software (see
+-- legacyFeeImport.ts) — populated by scripts/import-legacy-fees.mjs, drained
+-- as new signups match by phone (each matched row is deleted immediately;
+-- see the 6-month deleteExpiredLegacyFeeImports cleanup in logs-cleanup for
+-- whatever's left unmatched after that window).
+create table if not exists legacy_fee_imports (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null unique,
+  start_date date not null,
+  fee_due_date date not null,
+  imported_at timestamptz not null default now()
+);
+
+-- One row per import run — total_rows/matched_count power the admin status
+-- card; imported_at is what the 6-month cleanup measures against.
+create table if not exists legacy_fee_import_batches (
+  id uuid primary key default gen_random_uuid(),
+  total_rows integer not null,
+  matched_count integer not null default 0,
+  imported_at timestamptz not null default now()
 );
 
 create table if not exists admin_users (

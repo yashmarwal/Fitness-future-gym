@@ -4,6 +4,7 @@ import { issueOtp, checkOtp, consumeOtp } from "@/backend/auth/otp";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
 import { insertMemberWithFreshNumber } from "@/backend/services/membershipNumber";
+import { applyLegacyFeeImport } from "@/backend/services/legacyFeeImport";
 import { createMemberSession } from "@/backend/auth/session";
 import { normalizePhone, looksLikePhone, isPlausiblePhone } from "@/backend/lib/phone";
 import { normalizeEmail } from "@/backend/lib/email";
@@ -158,7 +159,7 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
 
   const { data: pending, error: pendingError } = await db
     .from("pending_signups")
-    .select("full_name, email, date_of_birth")
+    .select("full_name, email, date_of_birth, address")
     .eq("phone", phone)
     .maybeSingle();
   if (pendingError) throw new Error(`Failed to look up pending signup: ${pendingError.message}`);
@@ -179,6 +180,7 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
         phone,
         email: pending.email,
         date_of_birth: pending.date_of_birth,
+        address: pending.address,
         is_active: true,
       }),
       "id, membership_number, full_name, email, joined_at, plan"
@@ -194,6 +196,11 @@ export async function verifySignupOtpAndLogin(phone: string, code: string): Prom
   }
 
   await db.from("pending_signups").delete().eq("phone", phone);
+
+  // Silent, best-effort: if this phone matches a leftover record from the
+  // old gym software, carry their real plan/due date over now — see
+  // legacyFeeImport.ts. Never blocks or fails signup either way.
+  await applyLegacyFeeImport(member.id, phone);
 
   await createMemberSession(member.id, member.membership_number);
   await consumeOtp(check.otpId);
@@ -224,6 +231,7 @@ export async function registerMember(input: {
   fullName: string;
   phone: string;
   email: string;
+  address: string;
   dateOfBirth?: string;
 }): Promise<RegisterResult> {
   const db = getDb();
@@ -263,6 +271,7 @@ export async function registerMember(input: {
       phone,
       full_name: input.fullName,
       email,
+      address: input.address,
       date_of_birth: input.dateOfBirth || null,
     },
     { onConflict: "phone" }

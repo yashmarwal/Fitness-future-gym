@@ -15,6 +15,9 @@ function mapRow(row: Record<string, unknown>): AdminMember {
     phone: row.phone as string | null,
     email: row.email as string | null,
     dateOfBirth: row.date_of_birth as string | null,
+    // Not selected here (see SELECT_COLUMNS) — this fee-abuse list never
+    // displays it.
+    address: null,
     plan: row.plan as string | null,
     feeAmount: row.fee_amount as number | null,
     feeDueDate: row.fee_due_date as string | null,

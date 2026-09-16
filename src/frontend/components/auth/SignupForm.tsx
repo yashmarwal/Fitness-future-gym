@@ -12,6 +12,7 @@ export default function SignupForm() {
   // necessarily the exact string the user typed.
   const [resolvedPhone, setResolvedPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export default function SignupForm() {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, phone, email, dateOfBirth: dateOfBirth || undefined }),
+      body: JSON.stringify({ fullName, phone, email, address, dateOfBirth: dateOfBirth || undefined }),
     });
     const data = await res.json();
     if (data.status === "sent") {
@@ -183,6 +184,19 @@ export default function SignupForm() {
               required
               placeholder="you@example.com"
               className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
+              Address
+            </label>
+            <textarea
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              rows={2}
+              placeholder="House no., street, area, city"
+              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container resize-none"
             />
           </div>
           <div className="flex flex-col gap-1">
