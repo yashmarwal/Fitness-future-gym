@@ -10,11 +10,15 @@ import { isPushSupported, subscribeToPush } from "@/frontend/lib/pushNotificatio
 export const CHECKIN_SUCCESS_EVENT = "ff-checkin-success";
 
 type Prefs = { water: boolean; mealLog: boolean; streak: boolean };
-
-function computeInitialPermission(): NotificationPermission | "unsupported" {
-  if (typeof window === "undefined" || !isPushSupported()) return "unsupported";
-  return Notification.permission;
-}
+// "checking" is the only state possible during SSR (and on the client's
+// first paint, before hydration) — Notification.permission genuinely can't
+// be known on the server, so branching a lazy useState initializer on
+// `typeof window` (the previous approach) made the server always render
+// null while the client's first render immediately read the real browser
+// value, a guaranteed hydration mismatch. Starting both at this one fixed,
+// environment-independent value keeps first paint identical, and a mount
+// effect below swaps in the real value once the client actually knows it.
+type PermissionState = NotificationPermission | "unsupported" | "checking";
 
 function ToggleSwitch({
   checked,
@@ -55,10 +59,23 @@ const REMINDER_OPTIONS: { key: keyof Prefs; icon: string; label: string; hint: s
 ];
 
 export default function NotificationsCard({ initialPrefs }: { initialPrefs: Prefs }) {
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(computeInitialPermission);
+  const [permission, setPermission] = useState<PermissionState>("checking");
   const [requesting, setRequesting] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(initialPrefs);
   const [highlighted, setHighlighted] = useState(false);
+
+  // Reads the real, browser-only permission once mounted on the client —
+  // this can only run post-hydration, so it can never disagree with what
+  // the server rendered (see the PermissionState comment above). A genuine,
+  // deliberate exception to the set-state-in-effect rule: unlike the
+  // "derive this from already-known data" cases that rule exists to catch,
+  // Notification.permission is fundamentally unreadable during SSR/first
+  // paint — there's no lazy-initializer alternative that wouldn't
+  // reintroduce the hydration mismatch this effect exists to avoid.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPermission(!isPushSupported() ? "unsupported" : Notification.permission);
+  }, []);
 
   // Keep the subscription fresh in the background for a member who already
   // granted permission on a prior visit — a genuine effect (syncing an
@@ -106,7 +123,7 @@ export default function NotificationsCard({ initialPrefs }: { initialPrefs: Pref
     }
   }
 
-  if (permission === "unsupported") return null;
+  if (permission === "unsupported" || permission === "checking") return null;
 
   const togglesEnabled = permission === "granted";
 
