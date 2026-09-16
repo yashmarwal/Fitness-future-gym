@@ -1,15 +1,15 @@
-import { listRecentAttendance } from "@/backend/services/admin/attendanceAdmin";
+import { listTodaysAttendance } from "@/backend/services/admin/attendanceAdmin";
 import { listMembers } from "@/backend/services/admin/members";
 import AttendanceManager from "@/frontend/components/admin/AttendanceManager";
 import MemberAttendanceCalendar from "@/frontend/components/admin/MemberAttendanceCalendar";
 
 export default async function AdminAttendancePage() {
-  const [records, members] = await Promise.all([listRecentAttendance(100), listMembers()]);
+  const [records, members] = await Promise.all([listTodaysAttendance(), listMembers()]);
 
   return (
     <div className="flex flex-col gap-10">
       <div>
-        <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-6">Attendance Log</h1>
+        <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-6">Today&apos;s Attendance</h1>
         <AttendanceManager records={records} members={members} />
       </div>
 
