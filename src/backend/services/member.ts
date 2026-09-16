@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
+import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
 
 export type MemberProfile = {
   id: string;
@@ -17,12 +18,36 @@ export type MemberProfile = {
   notifyWater: boolean;
   notifyMealLog: boolean;
   notifyStreak: boolean;
+  currentStreakDays: number;
+  longestStreakDays: number;
 };
 
-const BASE_COLUMNS = "id, membership_number, full_name, phone, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen";
+const BASE_COLUMNS =
+  "id, membership_number, full_name, phone, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen, last_checked_in_at";
 const NOTIFY_COLUMNS = "notify_water, notify_meal_log, notify_streak";
+const STREAK_COLUMNS = "current_streak_days, longest_streak_days";
+
+// The stored current_streak_days is only ever WRITTEN at check-in time
+// (attendance.ts), so a member who simply stops coming — without checking
+// in again — would otherwise keep showing their old, stale streak number
+// forever, only correcting itself the next time they happen to check in.
+// This computes the truthful value on every READ instead: if more than a
+// day has passed since their last real check-in with no new one, the
+// streak reads as broken (0) immediately, without needing a write.
+function effectiveCurrentStreak(storedStreak: number, lastCheckedInAt: string | null): number {
+  if (!lastCheckedInAt || storedStreak === 0) return storedStreak;
+  const today = getIstDateString();
+  const lastDay = getIstDateString(new Date(lastCheckedInAt));
+  const gap = daysBetweenIstDates(lastDay, today);
+  // gap 0 = checked in today, gap 1 = checked in yesterday (streak still
+  // "alive," today just hasn't happened yet) — anything more is a missed day.
+  return gap >= 2 ? 0 : storedStreak;
+}
 
 function mapMemberRow(data: Record<string, unknown>): MemberProfile {
+  const lastCheckedInAt = (data.last_checked_in_at as string | null | undefined) ?? null;
+  const storedStreak = (data.current_streak_days as number | undefined) ?? 0;
+
   return {
     id: data.id as string,
     membershipNumber: data.membership_number as string,
@@ -37,6 +62,8 @@ function mapMemberRow(data: Record<string, unknown>): MemberProfile {
     notifyWater: (data.notify_water as boolean | undefined) ?? false,
     notifyMealLog: (data.notify_meal_log as boolean | undefined) ?? false,
     notifyStreak: (data.notify_streak as boolean | undefined) ?? false,
+    currentStreakDays: effectiveCurrentStreak(storedStreak, lastCheckedInAt),
+    longestStreakDays: (data.longest_streak_days as number | undefined) ?? 0,
   };
 }
 
@@ -48,28 +75,30 @@ function mapMemberRow(data: Record<string, unknown>): MemberProfile {
 //
 // getMemberById is core infrastructure — nearly every dashboard route calls
 // it, directly or via the layout — so unlike other migration-gated
-// features this session, a missing notify_* column here can't just log and
-// move on: it has to fall back to a query without those columns (defaults
-// to false) rather than throw, or the entire dashboard 500s for every
-// member until the migration is run.
+// features this session, a missing notify_*/streak column here can't just
+// log and move on: it has to fall back to a query without those columns
+// (defaulting them) rather than throw, or the entire dashboard 500s for
+// every member until the migration is run. Tries progressively fewer
+// columns (full → base+notify → base only) so it degrades correctly
+// regardless of which of the two migrations have or haven't landed yet.
 export const getMemberById = cache(async function getMemberById(memberId: string): Promise<MemberProfile | null> {
   const db = getDb();
-  const { data, error } = await db
+
+  const full = await db
     .from("members")
-    .select(`${BASE_COLUMNS}, ${NOTIFY_COLUMNS}`)
+    .select(`${BASE_COLUMNS}, ${NOTIFY_COLUMNS}, ${STREAK_COLUMNS}`)
     .eq("id", memberId)
     .maybeSingle();
+  if (!full.error) return full.data ? mapMemberRow(full.data) : null;
+  if (!isMissingColumnError(full.error)) throw new Error(`Failed to load member: ${full.error.message}`);
 
-  if (!error) return data ? mapMemberRow(data) : null;
-  if (!isMissingColumnError(error)) throw new Error(`Failed to load member: ${error.message}`);
+  const withNotify = await db.from("members").select(`${BASE_COLUMNS}, ${NOTIFY_COLUMNS}`).eq("id", memberId).maybeSingle();
+  if (!withNotify.error) return withNotify.data ? mapMemberRow(withNotify.data) : null;
+  if (!isMissingColumnError(withNotify.error)) throw new Error(`Failed to load member: ${withNotify.error.message}`);
 
-  const { data: fallbackData, error: fallbackError } = await db
-    .from("members")
-    .select(BASE_COLUMNS)
-    .eq("id", memberId)
-    .maybeSingle();
-  if (fallbackError) throw new Error(`Failed to load member: ${fallbackError.message}`);
-  return fallbackData ? mapMemberRow(fallbackData) : null;
+  const baseOnly = await db.from("members").select(BASE_COLUMNS).eq("id", memberId).maybeSingle();
+  if (baseOnly.error) throw new Error(`Failed to load member: ${baseOnly.error.message}`);
+  return baseOnly.data ? mapMemberRow(baseOnly.data) : null;
 });
 
 export async function updateNotificationPrefs(

@@ -42,6 +42,13 @@ create extension if not exists pgcrypto;
 --   alter table members add column if not exists notify_water boolean not null default false;
 --   alter table members add column if not exists notify_meal_log boolean not null default false;
 --   alter table members add column if not exists notify_streak boolean not null default false;
+--
+-- Also run these two — fixes the "Day Streak" dashboard stat silently
+-- capping at ~30 days once a member's older attendance rows get purged
+-- (see checkInMemberRow in attendance.ts):
+--
+--   alter table members add column if not exists current_streak_days integer not null default 0;
+--   alter table members add column if not exists longest_streak_days integer not null default 0;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -69,6 +76,15 @@ create table if not exists members (
   -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
   -- still be detected after the underlying check-in rows have been purged.
   last_checked_in_at timestamptz,
+  -- The real, attendance-based "Day Streak" dashboard stat — a permanent
+  -- running count updated on every check-in (see checkInMemberRow), NOT
+  -- recomputed by walking the attendance log on read. That log is purged
+  -- after 30 days (deleteOldAttendance), so a member with a genuine 45-day
+  -- streak would otherwise see it silently cut down to ~30 once their
+  -- oldest rows aged out — the exact same "derived-from-a-purged-log"
+  -- bug class already avoided for Muscle Progress XP (member_muscle_xp).
+  current_streak_days integer not null default 0,
+  longest_streak_days integer not null default 0,
   -- Opt-in personal reminder toggles, shown on the dashboard (not a
   -- separate settings page) — each independently controls whether that
   -- member gets pinged by the matching cron (reminders.ts). All default

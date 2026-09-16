@@ -1,6 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { getDb } from "@/backend/db/client";
+import { isMissingColumnError } from "@/backend/db/errors";
+import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
 import type { CheckInResult } from "@/types/member";
 
 const COOLDOWN_HOURS = 3;
@@ -39,6 +41,9 @@ type MemberRow = {
   membership_number: string;
   is_active: boolean;
   is_frozen: boolean;
+  last_checked_in_at: string | null;
+  current_streak_days: number;
+  longest_streak_days: number;
 };
 
 // Shared by both check-in paths: the front-desk QR poster (looked up by
@@ -93,10 +98,43 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
     throw new Error(`Failed to log attendance: ${insertError.message}`);
   }
 
+  // Permanent streak counter — computed here from the gap since the
+  // member's LAST real check-in (member.last_checked_in_at, which — like
+  // the counters themselves — lives on the member row and survives the
+  // attendance log's 30-day purge), never by re-scanning the log itself.
+  const today = getIstDateString();
+  let newStreak = 1;
+  if (member.last_checked_in_at) {
+    const lastCheckInDay = getIstDateString(new Date(member.last_checked_in_at));
+    const gap = daysBetweenIstDates(lastCheckInDay, today);
+    if (gap === 1) newStreak = member.current_streak_days + 1;
+    else if (gap === 0) newStreak = member.current_streak_days || 1;
+    // gap >= 2: a real missed day — streak restarts at 1 (the default above).
+  }
+  const newLongest = Math.max(member.longest_streak_days, newStreak);
+
   // Kept on the member row (not just the attendance log) since attendance
-  // rows are purged after 30 days but long-term inactivity still needs to
-  // be detectable — see deleteOldAttendance and listInactiveMembers.
-  await db.from("members").update({ last_checked_in_at: checkedInAt }).eq("id", member.id);
+  // rows are purged after 30 days but long-term inactivity — and now the
+  // streak counters too — still need to be readable after that purge.
+  const { error: updateError } = await db
+    .from("members")
+    .update({
+      last_checked_in_at: checkedInAt,
+      current_streak_days: newStreak,
+      longest_streak_days: newLongest,
+    })
+    .eq("id", member.id);
+
+  if (updateError) {
+    if (!isMissingColumnError(updateError)) throw new Error(`Failed to update member: ${updateError.message}`);
+    // Migration not run yet — check-in itself still has to succeed; the
+    // streak just won't persist correctly until it does.
+    const { error: fallbackError } = await db
+      .from("members")
+      .update({ last_checked_in_at: checkedInAt })
+      .eq("id", member.id);
+    if (fallbackError) throw new Error(`Failed to update member: ${fallbackError.message}`);
+  }
 
   return {
     status: "success",
@@ -107,17 +145,32 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   };
 }
 
-export async function checkInMember(membershipNumber: string): Promise<CheckInResult> {
-  const db = getDb();
-  const { data: member, error: memberError } = await db
-    .from("members")
-    .select("id, full_name, membership_number, is_active, is_frozen")
-    .eq("membership_number", membershipNumber)
-    .maybeSingle();
+const CHECKIN_COLUMNS =
+  "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at, current_streak_days, longest_streak_days";
+const CHECKIN_COLUMNS_BASE = "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at";
 
-  if (memberError) {
-    throw new Error(`Failed to look up member: ${memberError.message}`);
-  }
+// Falls back to a query without the streak columns if that migration
+// hasn't landed yet — check-in is core, member-facing functionality, so it
+// can't just throw and break for everyone until the migration runs.
+async function fetchMemberForCheckIn(column: "membership_number" | "id", value: string): Promise<MemberRow | null> {
+  const db = getDb();
+  const { data, error } = await db.from("members").select(CHECKIN_COLUMNS).eq(column, value).maybeSingle();
+
+  if (!error) return data as MemberRow | null;
+  if (!isMissingColumnError(error)) throw new Error(`Failed to look up member: ${error.message}`);
+
+  const { data: fallbackData, error: fallbackError } = await db
+    .from("members")
+    .select(CHECKIN_COLUMNS_BASE)
+    .eq(column, value)
+    .maybeSingle();
+  if (fallbackError) throw new Error(`Failed to look up member: ${fallbackError.message}`);
+  if (!fallbackData) return null;
+  return { ...fallbackData, current_streak_days: 0, longest_streak_days: 0 } as MemberRow;
+}
+
+export async function checkInMember(membershipNumber: string): Promise<CheckInResult> {
+  const member = await fetchMemberForCheckIn("membership_number", membershipNumber);
   if (!member) {
     return { status: "not_found" };
   }
@@ -129,16 +182,7 @@ export async function checkInMember(membershipNumber: string): Promise<CheckInRe
 // membership-number lookup or device-binding trick is needed at all, just
 // check them in directly by their session's member id.
 export async function checkInMemberById(memberId: string): Promise<CheckInResult> {
-  const db = getDb();
-  const { data: member, error: memberError } = await db
-    .from("members")
-    .select("id, full_name, membership_number, is_active, is_frozen")
-    .eq("id", memberId)
-    .maybeSingle();
-
-  if (memberError) {
-    throw new Error(`Failed to look up member: ${memberError.message}`);
-  }
+  const member = await fetchMemberForCheckIn("id", memberId);
   if (!member) {
     return { status: "not_found" };
   }

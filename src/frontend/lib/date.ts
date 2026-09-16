@@ -28,19 +28,19 @@ export function greetingForHour(hour: number): string {
   return "Good Night";
 }
 
-// "Today" in IST as a YYYY-MM-DD string — same IST-explicit reasoning as
-// getIstHour above. Used by the opt-in reminder crons (reminders.ts) to
-// check "has this member already logged food / checked in today" before
-// nagging them, since a plain server-local "today" would be wrong by
-// several hours relative to what a member in India actually considers
-// "today."
-export function getIstDateString(): string {
+// The calendar date (IST) a given instant falls on, as a YYYY-MM-DD
+// string — defaults to now. Same IST-explicit reasoning as getIstHour
+// above. Used by the opt-in reminder crons (reminders.ts) to check "has
+// this member already logged food / checked in today," and by the
+// permanent attendance-streak counter (attendance.ts) to compare "today"
+// against a past check-in's date without server-local-time drift.
+export function getIstDateString(date: Date = new Date()): string {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Kolkata",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).formatToParts(new Date());
+  }).formatToParts(date);
   const year = parts.find((p) => p.type === "year")?.value;
   const month = parts.find((p) => p.type === "month")?.value;
   const day = parts.find((p) => p.type === "day")?.value;
@@ -52,4 +52,13 @@ export function getIstDateString(): string {
 // columns (logged_at, checked_in_at), which are stored in UTC.
 export function getIstStartOfTodayIso(): string {
   return new Date(`${getIstDateString()}T00:00:00+05:30`).toISOString();
+}
+
+// Whole-day difference between two IST calendar-date strings (both from
+// getIstDateString) — e.g. "checked in yesterday" is exactly 1, "checked
+// in today already" is 0, a missed day (or more) is 2+.
+export function daysBetweenIstDates(earlier: string, later: string): number {
+  const earlierMs = new Date(`${earlier}T00:00:00+05:30`).getTime();
+  const laterMs = new Date(`${later}T00:00:00+05:30`).getTime();
+  return Math.round((laterMs - earlierMs) / (1000 * 60 * 60 * 24));
 }

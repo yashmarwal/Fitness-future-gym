@@ -22,21 +22,6 @@ const GREETING_SUBLINES: Record<string, string> = {
   "Still Grinding": "Burning the midnight oil.",
 };
 
-function computeStreak(checkIns: string[]): number {
-  if (checkIns.length === 0) return 0;
-
-  const days = new Set(checkIns.map((iso) => new Date(iso).toDateString()));
-  let streak = 0;
-  const cursor = new Date();
-
-  while (days.has(cursor.toDateString())) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return streak;
-}
-
 const QUICK_LINKS = [
   { href: "/dashboard/card", label: "Membership Card", icon: "badge" },
   { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month" },
@@ -60,7 +45,6 @@ export default async function DashboardPage() {
     listNotifications(session!.memberId),
     getMemberMuscleProgress(session!.memberId),
   ]);
-  const streak = computeStreak(attendance);
 
   const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
   const greeting = greetingForHour(getIstHour());
@@ -99,7 +83,7 @@ export default async function DashboardPage() {
       <AttendanceCheckInButton initialStatus={attendanceStatus} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard value={streak} label="Day Streak" tone="accent" icon="local_fire_department" />
+        <StatCard value={member?.currentStreakDays ?? 0} label="Day Streak" tone="accent" icon="local_fire_department" />
         <StatCard value={attendance.length} label="Recent Check-Ins" icon="calendar_month" />
         <StatCard value={member?.plan ?? "—"} label="Current Plan" size="md" uppercase icon="badge" />
         <StatCard
