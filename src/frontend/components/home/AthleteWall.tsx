@@ -6,10 +6,10 @@ import Image from "next/image";
 
 // Real gym members/competitors, shared directly by the owner for this wall
 // (see the conversation this was built from — usage confirmed). Compressed
-// to ~30-55KB each (public/images/athletes) so 13 photos add well under
+// to ~30-55KB each (public/images/athletes) so 14 photos add well under
 // 600KB total, not a meaningful weight hit even though the strip is
 // duplicated for the seamless scroll loop below.
-const ATHLETES = Array.from({ length: 13 }, (_, i) => ({
+const ATHLETES = Array.from({ length: 14 }, (_, i) => ({
   src: `/images/athletes/athlete-${i + 1}.jpg`,
   alt: "Fitness Future Gym athlete",
 }));
