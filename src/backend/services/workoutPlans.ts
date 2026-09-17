@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
+import { getIstWeekday } from "@/frontend/lib/date";
 
 export type WorkoutPlanExercise = {
   name: string;
@@ -43,7 +44,7 @@ export type TodaysWorkout = {
 // is opportunistic, not a guarantee for every plan).
 export async function findTodaysWorkout(memberId: string): Promise<TodaysWorkout | null> {
   const plans = await listWorkoutPlans(memberId);
-  const todayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  const todayName = getIstWeekday();
 
   for (const plan of plans) {
     const match = plan.days.find((d) => d.day.trim().toLowerCase() === todayName.toLowerCase());

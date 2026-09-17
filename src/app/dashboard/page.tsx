@@ -13,6 +13,7 @@ import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBanner";
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
 import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
+import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidget";
 
 const GREETING_SUBLINES: Record<string, string> = {
   "Good Morning": "Early floor time — get the first set in.",
@@ -61,6 +62,34 @@ export default async function DashboardPage() {
         <p className="font-body text-sm text-tertiary">{greetingLine}</p>
       </div>
 
+      {/* One-tap access to the three most common actions, kept right at
+          the top so they never require scrolling past everything else —
+          distinct from the full "Quick Actions" link grid further down,
+          which covers every dashboard route rather than just the top 3. */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <Link
+          href="/dashboard/workouts"
+          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+        >
+          <span className="material-symbols-outlined text-2xl leading-none">fitness_center</span>
+          <span className="font-label text-[10px] uppercase tracking-wide">Log Workout</span>
+        </Link>
+        <Link
+          href="/dashboard/nutrition"
+          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+        >
+          <span className="material-symbols-outlined text-2xl leading-none">restaurant</span>
+          <span className="font-label text-[10px] uppercase tracking-wide">Log Food</span>
+        </Link>
+        <Link
+          href="/dashboard/timer"
+          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+        >
+          <span className="material-symbols-outlined text-2xl leading-none">timer</span>
+          <span className="font-label text-[10px] uppercase tracking-wide">Start Timer</span>
+        </Link>
+      </div>
+
       <NotificationsCard
         initialPrefs={{
           water: member?.notifyWater ?? false,
@@ -95,6 +124,8 @@ export default async function DashboardPage() {
           tone={daysUntilDue !== null && daysUntilDue <= 3 ? "alert" : "default"}
         />
       </div>
+
+      <WorkoutTimerWidget />
 
       <MuscleProgressTeaser progress={muscleProgress} />
 

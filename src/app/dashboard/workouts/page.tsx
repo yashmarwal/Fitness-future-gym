@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { getMemberSession } from "@/backend/auth/session";
 import { listWorkoutLogs } from "@/backend/services/workouts";
+import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import WorkoutLogForm from "@/frontend/components/dashboard/WorkoutLogForm";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function WorkoutsPage() {
   const session = await getMemberSession();
-  const logs = await listWorkoutLogs(session!.memberId, 30);
+  const [logs, todaysPlan] = await Promise.all([
+    listWorkoutLogs(session!.memberId, 30),
+    findTodaysWorkout(session!.memberId),
+  ]);
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-2xl mx-auto">
@@ -21,7 +25,7 @@ export default async function WorkoutsPage() {
         </Link>
       </div>
 
-      <WorkoutLogForm />
+      <WorkoutLogForm logs={logs} todaysPlan={todaysPlan} />
 
       {logs.length === 0 ? (
         <DashboardEmptyState icon="fitness_center">No workouts logged yet.</DashboardEmptyState>

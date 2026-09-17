@@ -54,6 +54,15 @@ export function getIstStartOfTodayIso(): string {
   return new Date(`${getIstDateString()}T00:00:00+05:30`).toISOString();
 }
 
+// The weekday name (IST) a given instant falls on — same IST-explicit
+// reasoning as getIstDateString. Used by findTodaysWorkout to match a plan
+// day's label against "today," which must be IST's today, not the server's
+// (Vercel runs UTC, so a plain Date().toLocaleDateString would show the
+// wrong day's plan for hours around midnight IST).
+export function getIstWeekday(date: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", weekday: "long" }).format(date);
+}
+
 // Whole-day difference between two IST calendar-date strings (both from
 // getIstDateString) — e.g. "checked in yesterday" is exactly 1, "checked
 // in today already" is 0, a missed day (or more) is 2+.

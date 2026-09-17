@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { FrequentFood } from "@/backend/services/nutrition";
 
 type NutritionResult = {
   fdcId: number;
@@ -31,8 +32,9 @@ function scalePer100g(base: number | null, quantityG: string): string {
   return String(Math.round(((base * qty) / 100) * 10) / 10);
 }
 
-export default function FoodLogForm() {
+export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: FrequentFood[] }) {
   const router = useRouter();
+  const [loggingAgain, setLoggingAgain] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
   const [proteinG, setProteinG] = useState("");
@@ -153,6 +155,26 @@ export default function FoodLogForm() {
     setter(value);
   }
 
+  async function logAgain(item: FrequentFood) {
+    setLoggingAgain(item.description);
+    try {
+      await fetch("/api/dashboard/food", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: item.description,
+          calories: item.calories,
+          proteinG: item.proteinG ?? undefined,
+          carbsG: item.carbsG ?? undefined,
+          fatG: item.fatG ?? undefined,
+        }),
+      });
+      router.refresh();
+    } finally {
+      setLoggingAgain(null);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -193,6 +215,29 @@ export default function FoodLogForm() {
         <span className="material-symbols-outlined text-base leading-none">restaurant</span>
         Log A Meal
       </span>
+
+      {frequentFoods.length > 0 && (
+        <div className="flex flex-col gap-1.5 -mt-1">
+          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Log Again</span>
+          <div className="flex flex-wrap gap-2">
+            {frequentFoods.map((item) => (
+              <button
+                type="button"
+                key={item.description}
+                onClick={() => logAgain(item)}
+                disabled={loggingAgain !== null}
+                className="flex items-center gap-1.5 font-body text-xs px-3 py-2 bg-surface-container border border-surface-variant hover:border-primary-container text-on-surface disabled:opacity-60 transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm leading-none text-primary-container">
+                  {loggingAgain === item.description ? "hourglass_top" : "add_circle"}
+                </span>
+                <span className="capitalize">{item.description.toLowerCase()}</span>
+                <span className="text-tertiary">· {item.calories} kcal</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="relative">
         <input
