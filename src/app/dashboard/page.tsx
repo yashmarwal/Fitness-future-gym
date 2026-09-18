@@ -14,6 +14,7 @@ import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBann
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
 import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
 import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidget";
+import RestTimerPill from "@/frontend/components/dashboard/RestTimerPill";
 
 const GREETING_SUBLINES: Record<string, string> = {
   "Good Morning": "Early floor time — get the first set in.",
@@ -58,9 +59,12 @@ export default async function DashboardPage() {
           {fullName}" persistently above this on every route — repeating the
           name here would just be redundant, so this stays purely
           time-contextual instead. */}
-      <div className="mb-6">
-        <p className="font-label text-xs uppercase tracking-widest text-primary-container mb-0.5">{greeting}</p>
-        <p className="font-body text-sm text-tertiary">{greetingLine}</p>
+      <div className="flex items-start justify-between gap-3 mb-6">
+        <div>
+          <p className="font-label text-xs uppercase tracking-widest text-primary-container mb-0.5">{greeting}</p>
+          <p className="font-body text-sm text-tertiary">{greetingLine}</p>
+        </div>
+        <RestTimerPill />
       </div>
 
       {/* One-tap access to the three most common actions, kept right at
