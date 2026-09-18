@@ -13,6 +13,13 @@ export type AdminSession = { role: "admin"; adminId: string; username: string };
 // session.ts which uses the Server-Component-only `cookies()` API.
 export const MEMBER_SESSION_SECONDS = 60 * 60 * 24 * 365 * 5;
 
+// Same "effectively permanent, slid forward on every visit" treatment as
+// the member session (see proxy.ts) — admin used to expire after a fixed
+// 12 hours with no renewal, which logged staff out overnight or across a
+// short break away from the panel. Also lives here rather than session.ts
+// for the same reason: proxy.ts (Middleware) can't import next/headers.
+export const ADMIN_SESSION_SECONDS = 60 * 60 * 24 * 365 * 5;
+
 function getSecretKey() {
   const secret = process.env.SESSION_SECRET;
   if (!secret) {

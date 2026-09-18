@@ -4,13 +4,13 @@ import {
   signSession,
   verifySession,
   MEMBER_SESSION_SECONDS,
+  ADMIN_SESSION_SECONDS,
   type MemberSession,
   type AdminSession,
 } from "@/backend/auth/jwt";
 
 const MEMBER_COOKIE = "ff_member_session";
 const ADMIN_COOKIE = "ff_admin_session";
-const ADMIN_SESSION_SECONDS = 60 * 60 * 12; // 12 hours — admin sessions stay short-lived
 
 export async function createMemberSession(memberId: string, membershipNumber: string) {
   const token = await signSession({ role: "member", memberId, membershipNumber }, MEMBER_SESSION_SECONDS);

@@ -69,7 +69,15 @@ export async function applyLegacyFeeImport(memberId: string, phone: string): Pro
     if (!legacyRow) return;
 
     const plan = derivePlanLabel(legacyRow.start_date, legacyRow.fee_due_date);
-    const patch: Record<string, unknown> = { plan, fee_due_date: legacyRow.fee_due_date };
+    // joined_at otherwise defaults to today (the signup date) — for someone
+    // migrating over from the old gym software, that's wrong: they actually
+    // joined back on the old system's start_date, and only the due date
+    // (already carried over above) is what genuinely resets on migration.
+    const patch: Record<string, unknown> = {
+      plan,
+      fee_due_date: legacyRow.fee_due_date,
+      joined_at: legacyRow.start_date,
+    };
     if (legacyRow.fee_amount != null) patch.fee_amount = legacyRow.fee_amount;
 
     const { error: updateError } = await db.from("members").update(patch).eq("id", memberId);

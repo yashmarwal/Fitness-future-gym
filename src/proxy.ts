@@ -3,11 +3,13 @@ import {
   verifySession,
   signSession,
   MEMBER_SESSION_SECONDS,
+  ADMIN_SESSION_SECONDS,
   type MemberSession,
   type AdminSession,
 } from "@/backend/auth/jwt";
 
 const MEMBER_COOKIE = "ff_member_session";
+const ADMIN_COOKIE = "ff_admin_session";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -54,11 +56,26 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const token = request.cookies.get("ff_admin_session")?.value;
+    const token = request.cookies.get(ADMIN_COOKIE)?.value;
     const session = token ? await verifySession<AdminSession>(token) : null;
     if (!session) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
+
+    // Sliding session, same as the member block above — previously admin
+    // tokens were never renewed and expired after a fixed 12 hours, which
+    // logged staff out overnight (most noticeable checking the panel on a
+    // phone across a day, regardless of browser).
+    const response = NextResponse.next();
+    const renewed = await signSession(session, ADMIN_SESSION_SECONDS);
+    response.cookies.set(ADMIN_COOKIE, renewed, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: ADMIN_SESSION_SECONDS,
+      path: "/",
+    });
+    return response;
   }
 
   return NextResponse.next();
