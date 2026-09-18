@@ -1,13 +1,7 @@
 import "server-only";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts } from "pdf-lib";
 import QRCode from "qrcode";
-
-const INK = rgb(0.078, 0.071, 0.067); // #141311, the real site's background
-const PANEL = rgb(0.129, 0.122, 0.114); // #211f1d, surface-container
-const ACCENT = rgb(1, 0.353, 0.122); // #ff5a1f, primary-container
-const WHITE = rgb(1, 1, 1);
-const MUTED = rgb(0.671, 0.537, 0.498); // #ab897f, outline
-const DIVIDER = rgb(0.212, 0.204, 0.196); // #363432, surface-variant
+import { PDF_INK as INK, PDF_PANEL as PANEL, PDF_ACCENT as ACCENT, PDF_WHITE as WHITE, PDF_MUTED as MUTED, PDF_DIVIDER as DIVIDER } from "@/backend/lib/pdfBrand";
 
 // Landscape wallet-card layout, scaled up ~2x a physical credit card for
 // print/screen legibility rather than exact-to-scale printing.

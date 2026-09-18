@@ -3,6 +3,7 @@ import { getDb } from "@/backend/db/client";
 import { getIstDateString } from "@/frontend/lib/date";
 import type { FeePaymentRow } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
+import { deliverPaymentInvoice } from "@/backend/services/invoiceDelivery";
 import { unblockMember } from "@/backend/services/admin/feeAbuse";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
@@ -70,13 +71,17 @@ export async function recordManualPayment(
   if (memberError) throw new Error(`Failed to load member: ${memberError.message}`);
   if (!member) throw new Error("Member not found.");
 
-  const { error } = await db.from("fee_payments").insert({
-    member_id: memberId,
-    amount,
-    method,
-    status: "paid",
-    paid_at: new Date().toISOString(),
-  });
+  const { data: payment, error } = await db
+    .from("fee_payments")
+    .insert({
+      member_id: memberId,
+      amount,
+      method,
+      status: "paid",
+      paid_at: new Date().toISOString(),
+    })
+    .select("id, paid_at")
+    .single();
   if (error) throw new Error(`Failed to record payment: ${error.message}`);
 
   // Anchor the next due date to the CURRENT due date (the billing cycle),
@@ -136,6 +141,23 @@ export async function recordManualPayment(
     plan: effectivePlan,
     feeAmount: effectiveFeeAmount,
     joinedAt: member.joined_at,
+  }).catch(() => {});
+
+  // Every recorded payment gets its own PDF receipt, separate from the
+  // membership card above (which only re-sends when plan/fee actually
+  // change, not on every routine renewal payment).
+  await deliverPaymentInvoice({
+    memberId,
+    memberName: member.full_name,
+    membershipNumber: member.membership_number,
+    email: member.email,
+    paymentId: payment.id,
+    paidAtIso: payment.paid_at,
+    plan: effectivePlan,
+    durationMonths,
+    amount,
+    method,
+    nextDueDate: nextDueDateStr,
   }).catch(() => {});
 }
 

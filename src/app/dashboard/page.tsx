@@ -5,10 +5,12 @@ import { getRecentAttendance, getAttendanceStatus } from "@/backend/services/att
 import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import { listNotifications } from "@/backend/services/memberNotifications";
 import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
+import { listPersonalRecords } from "@/backend/services/personalRecords";
 import { daysUntil, getIstHour, greetingForHour } from "@/frontend/lib/date";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
+import PersonalRecordsBar from "@/frontend/components/dashboard/PersonalRecordsBar";
 import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBanner";
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
@@ -29,7 +31,6 @@ const QUICK_LINKS = [
   { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month" },
   { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center" },
   { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech" },
-  { href: "/dashboard/records", label: "Personal Records", icon: "emoji_events" },
   { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note" },
   { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome" },
   { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant" },
@@ -40,14 +41,16 @@ const QUICK_LINKS = [
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress] = await Promise.all([
-    getMemberById(session!.memberId),
-    getRecentAttendance(session!.memberId, 60),
-    findTodaysWorkout(session!.memberId),
-    getAttendanceStatus(session!.memberId),
-    listNotifications(session!.memberId),
-    getMemberMuscleProgress(session!.memberId),
-  ]);
+  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords] =
+    await Promise.all([
+      getMemberById(session!.memberId),
+      getRecentAttendance(session!.memberId, 60),
+      findTodaysWorkout(session!.memberId),
+      getAttendanceStatus(session!.memberId),
+      listNotifications(session!.memberId),
+      getMemberMuscleProgress(session!.memberId),
+      listPersonalRecords(session!.memberId),
+    ]);
 
   const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
   const greeting = greetingForHour(getIstHour());
@@ -115,6 +118,7 @@ export default async function DashboardPage() {
       )}
 
       <AttendanceCheckInButton initialStatus={attendanceStatus} />
+      <PersonalRecordsBar records={personalRecords} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard value={member?.currentStreakDays ?? 0} label="Day Streak" tone="accent" icon="local_fire_department" />

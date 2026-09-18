@@ -69,7 +69,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         `}
       >
         <span className="material-symbols-outlined text-xl leading-none">
-          {checkedIn ? "check_circle" : "qr_code_scanner"}
+          {checkedIn ? "check_circle" : "event_available"}
         </span>
       </button>
       <div className="flex-1 min-w-0">

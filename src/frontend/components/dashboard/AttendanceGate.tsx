@@ -74,7 +74,7 @@ export default function AttendanceGate({
       {blocked && (
         <div className="fixed inset-0 z-100 bg-surface/95 backdrop-blur-sm flex items-center justify-center p-6">
           <div className="bg-surface-container-low shadow-hard-lg p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
-            <span className="material-symbols-outlined text-5xl text-primary-container">qr_code_scanner</span>
+            <span className="material-symbols-outlined text-5xl text-primary-container">event_available</span>
             <h2 className="font-display text-xl text-on-surface uppercase tracking-wide">Mark Attendance First</h2>
             <p className="font-body text-sm text-tertiary">
               Check in at the gym to unlock your dashboard tools for the next 3 hours.

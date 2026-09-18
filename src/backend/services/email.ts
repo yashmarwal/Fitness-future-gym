@@ -20,7 +20,8 @@ export type EmailTemplate =
   | "trial_pass"
   | "trial_reminder"
   | "account_blocked"
-  | "daily_summary";
+  | "daily_summary"
+  | "payment_receipt";
 
 function isConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -263,6 +264,22 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
             paragraph("Your account is active and your membership card is ready.") +
             calloutBlock("Membership Number", membershipNumber) +
             paragraph("Your digital membership card is attached to this email as a PDF — keep it handy for front-desk check-in. See you on the floor!"),
+        }),
+      };
+    }
+    case "payment_receipt": {
+      const [name, amount, nextDueDate] = params;
+      return {
+        subject: "Fitness Future Gym — Payment Receipt",
+        html: wrapEmail({
+          preheader: `Payment received — ₹${amount}`,
+          bodyHtml:
+            heading(`Thanks, ${name}`) +
+            paragraph("This confirms your payment has been recorded.") +
+            calloutBlock("Amount Paid", `₹${amount}`) +
+            paragraph(
+              `Your membership is active through <strong>${escapeHtml(nextDueDate)}</strong>. Your PDF receipt is attached to this email — keep it for your records.`
+            ),
         }),
       };
     }

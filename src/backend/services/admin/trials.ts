@@ -3,6 +3,7 @@ import { getDb } from "@/backend/db/client";
 import type { TrialRegistration } from "@/types/admin";
 import { insertMemberWithFreshNumber } from "@/backend/services/membershipNumber";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
+import { deliverPaymentInvoice } from "@/backend/services/invoiceDelivery";
 
 export async function listTrialRegistrations(): Promise<TrialRegistration[]> {
   const db = getDb();
@@ -91,13 +92,37 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
   );
 
   if (hasPayment) {
-    await db.from("fee_payments").insert({
-      member_id: member.id,
-      amount: input.feeAmount,
-      method: input.paymentMethod,
-      status: "paid",
-      paid_at: new Date().toISOString(),
-    });
+    const { data: payment, error: paymentError } = await db
+      .from("fee_payments")
+      .insert({
+        member_id: member.id,
+        amount: input.feeAmount,
+        method: input.paymentMethod,
+        status: "paid",
+        paid_at: new Date().toISOString(),
+      })
+      .select("id, paid_at")
+      .single();
+
+    if (!paymentError && payment) {
+      // feeDueDate above is always exactly one month out for a conversion
+      // payment (oneMonthFromToday()) — this app has no per-duration
+      // selector at conversion time the way the main Record Payment form
+      // does, so the receipt's "duration" reflects that same fixed month.
+      await deliverPaymentInvoice({
+        memberId: member.id,
+        memberName: member.full_name,
+        membershipNumber: member.membership_number,
+        email: member.email,
+        paymentId: payment.id,
+        paidAtIso: payment.paid_at,
+        plan: member.plan ?? "Monthly",
+        durationMonths: 1,
+        amount: input.feeAmount as number,
+        method: input.paymentMethod as "upi" | "cash" | "manual",
+        nextDueDate: feeDueDate as string,
+      }).catch(() => {});
+    }
   }
 
   await db.from("trial_registrations").update({ status: "converted" }).eq("id", trialId);
