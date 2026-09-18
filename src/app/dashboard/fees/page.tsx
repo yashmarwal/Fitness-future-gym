@@ -26,7 +26,7 @@ export default async function FeesPage() {
           <span className="font-label text-[10px] uppercase tracking-widest text-outline">Due Date</span>
           <span className="flex items-center gap-2">
             <span className={`font-label text-sm uppercase ${isOverdue ? "text-error" : "text-on-surface"}`}>
-              {dueDate ? dueDate.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—"}
+              {dueDate ? dueDate.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" }) : "—"}
             </span>
             {isOverdue && (
               <span className="font-label text-[10px] uppercase tracking-wide px-2 py-0.5 bg-error-container/40 text-error">

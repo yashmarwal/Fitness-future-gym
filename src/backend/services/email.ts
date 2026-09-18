@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
+import type { DailySummary } from "@/backend/services/admin/dailySummary";
 
 // Mirrors the WhatsApp service's scope, plus OTP — a member with an email on
 // file gets the login/signup code by email too, alongside WhatsApp (not
@@ -8,6 +9,8 @@ import { getDb } from "@/backend/db/client";
 // trial_pass/trial_reminder are for the marketing site's free-trial leads,
 // who aren't members yet. account_blocked is the fee-abuse tool
 // (admin/feeAbuse.ts) telling a member why their access is on hold.
+// daily_summary is the owners' 11pm digest (admin/dailySummary.ts) — not
+// member-facing at all.
 export type EmailTemplate =
   | "otp"
   | "welcome_card"
@@ -16,7 +19,8 @@ export type EmailTemplate =
   | "announcement"
   | "trial_pass"
   | "trial_reminder"
-  | "account_blocked";
+  | "account_blocked"
+  | "daily_summary";
 
 function isConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -132,6 +136,106 @@ function calloutBlock(label: string, value: string): string {
   </table>`;
 }
 
+// A sub-heading for grouping stat/list sections within the daily summary —
+// smaller and muted compared to heading(), which is reserved for the one
+// big page title.
+function sectionLabel(text: string): string {
+  return `<p style="margin:24px 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:${BRAND.accent};">${escapeHtml(text)}</p>`;
+}
+
+// A bordered box of stacked "label ..... value" rows — the daily summary's
+// primary building block. `alert` tints a row's value red instead of the
+// usual accent orange, for anything that genuinely needs attention (fee
+// overdue, blocked members) rather than just informational counts.
+function statSection(rows: { label: string; value: string; alert?: boolean }[]): string {
+  const body = rows
+    .map((r, i) => {
+      const border = i < rows.length - 1 ? `border-bottom:1px solid ${BRAND.border};` : "";
+      return `<tr>
+        <td style="padding:12px 18px;${border}font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${BRAND.ink};">${escapeHtml(r.label)}</td>
+        <td align="right" style="padding:12px 18px;${border}font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:900;color:${r.alert ? "#ff6b5b" : BRAND.accent};white-space:nowrap;">${escapeHtml(r.value)}</td>
+      </tr>`;
+    })
+    .join("");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 4px;background-color:${BRAND.panel};border:1px solid ${BRAND.border};">${body}</table>`;
+}
+
+// A bordered box of stacked single-line entries — for named "here's what
+// happened today" lists (payments, new members, new trials) where a
+// label/value stat row doesn't fit. Returns "" for an empty list so
+// callers can skip the section label entirely when there's nothing to show.
+function listSection(items: string[]): string {
+  if (items.length === 0) return "";
+  const body = items
+    .map((item, i) => {
+      const border = i < items.length - 1 ? `border-bottom:1px solid ${BRAND.border};` : "";
+      return `<tr><td style="padding:10px 18px;${border}font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${BRAND.ink};">${item}</td></tr>`;
+    })
+    .join("");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 4px;background-color:${BRAND.panel};border:1px solid ${BRAND.border};">${body}</table>`;
+}
+
+function inr(amount: number): string {
+  return `₹${amount.toLocaleString("en-IN")}`;
+}
+
+function buildDailySummaryEmail(summary: DailySummary): { subject: string; html: string } {
+  const a = summary.alerts;
+  const attentionRows = [
+    { label: "Fee Overdue", value: String(a.feeOverdue), alert: a.feeOverdue > 0 },
+    { label: "Due Within 3 Days", value: String(a.dueWithin3Days) },
+    { label: "No Check-In 3+ Days", value: String(a.noCheckIn3Days) },
+    { label: "Inactive 4+ Months", value: String(a.inactive4Months) },
+    { label: "Trial Not Converted", value: String(a.trialNotConverted) },
+    { label: "Birthdays This Week", value: String(a.birthdaysThisWeek) },
+    { label: "Using Gym, Unpaid", value: String(a.usingGymUnpaid), alert: a.usingGymUnpaid > 0 },
+    { label: "Currently Blocked", value: String(a.currentlyBlocked), alert: a.currentlyBlocked > 0 },
+  ];
+
+  const paymentItems = summary.paymentsToday.map(
+    (p) =>
+      `${escapeHtml(p.memberName)} <span style="color:${BRAND.muted};">— ${escapeHtml(p.method.toUpperCase())}</span> <span style="float:right;color:${BRAND.accent};font-weight:700;">${inr(p.amount)}</span>`
+  );
+  const newMemberItems = summary.newMembersToday.map(
+    (m) => `${escapeHtml(m.fullName)} <span style="color:${BRAND.muted};">(${escapeHtml(m.membershipNumber)})</span>`
+  );
+  const newTrialItems = summary.newTrialsToday.map(
+    (t) => `${escapeHtml(t.fullName)} <span style="color:${BRAND.muted};">— ${escapeHtml(t.shift)} shift</span>`
+  );
+
+  return {
+    subject: `Fitness Future Gym — Daily Summary, ${summary.dateLabel}`,
+    html: wrapEmail({
+      preheader: `${summary.checkInsToday} check-ins, ${inr(summary.revenueToday)} collected today`,
+      bodyHtml:
+        heading("Daily Summary") +
+        paragraph(`<span style="color:${BRAND.muted};">${escapeHtml(summary.dateLabel)}</span>`) +
+        sectionLabel("Today") +
+        statSection([
+          { label: "Check-Ins", value: String(summary.checkInsToday) },
+          { label: "Revenue Collected", value: inr(summary.revenueToday) },
+          { label: "New Members", value: String(summary.newMembersToday.length) },
+          { label: "New Trial Signups", value: String(summary.newTrialsToday.length) },
+          { label: "Trials Converted", value: String(summary.trialsConvertedToday) },
+        ]) +
+        (paymentItems.length > 0 ? sectionLabel("Payments Collected Today") + listSection(paymentItems) : "") +
+        (newMemberItems.length > 0 ? sectionLabel("New Members Today") + listSection(newMemberItems) : "") +
+        (newTrialItems.length > 0 ? sectionLabel("New Trial Signups Today") + listSection(newTrialItems) : "") +
+        sectionLabel("Current Status") +
+        statSection([
+          { label: "Active Members", value: String(summary.activeMembersCount) },
+          { label: "Overdue Fees", value: String(summary.overdueFeesCount), alert: summary.overdueFeesCount > 0 },
+          { label: "Revenue This Month", value: inr(summary.revenueThisMonth) },
+        ]) +
+        sectionLabel("Needs Attention") +
+        statSection(attentionRows) +
+        paragraph(
+          `<span style="color:${BRAND.muted};">Full detail on any of these is in Admin → Alerts and Admin → Fees.</span>`
+        ),
+    }),
+  };
+}
+
 function buildEmail(template: EmailTemplate, params: string[]): { subject: string; html: string } {
   switch (template) {
     case "otp": {
@@ -236,6 +340,17 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
             button("Message Us On WhatsApp", "https://wa.me/918700978341?text=Hi%2C%20I%20did%20the%202-day%20trial%20and%20want%20to%20join%20as%20a%20full%20member."),
         }),
       };
+    }
+    // The only template whose "params" isn't a few positional strings —
+    // the daily summary's payload is a full structured object, so it
+    // travels as a single JSON-encoded string instead of stretching the
+    // bodyParams:string[] convention to fit something it wasn't designed
+    // for. Keeps sendEmailTemplate's send/log/error-handling contract
+    // (and the email_messages audit trail) shared with every other
+    // template rather than duplicating it for just this one.
+    case "daily_summary": {
+      const [json] = params;
+      return buildDailySummaryEmail(JSON.parse(json) as DailySummary);
     }
   }
 }

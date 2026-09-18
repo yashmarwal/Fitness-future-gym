@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WorkoutLog } from "@/backend/services/workouts";
 import type { TodaysWorkout, WorkoutPlanExercise } from "@/backend/services/workoutPlans";
+import type { PrCheckResult } from "@/backend/services/personalRecords";
 import RestTimerBar from "@/frontend/components/dashboard/RestTimerBar";
+import PrCelebration from "@/frontend/components/dashboard/PrCelebration";
 
 function firstNumber(text: string): number | null {
   const match = text.match(/\d+/);
@@ -31,6 +33,7 @@ export default function WorkoutLogForm({
   const [weightKg, setWeightKg] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [suggestion, setSuggestion] = useState<LastEntry | null>(null);
+  const [prCelebration, setPrCelebration] = useState<PrCheckResult | null>(null);
 
   // Logs already arrive most-recent-first (listWorkoutLogs), so the last
   // logged set overall is simply the first row, and the first occurrence
@@ -82,11 +85,19 @@ export default function WorkoutLogForm({
     e.preventDefault();
     setSubmitting(true);
     try {
-      await fetch("/api/dashboard/workouts", {
+      const res = await fetch("/api/dashboard/workouts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ exerciseName, sets, reps, weightKg: weightKg || undefined }),
       });
+      const data = await res.json().catch(() => null);
+      // Only a genuine improvement over a past attempt gets the big
+      // celebration — a first-ever log of an exercise has nothing to
+      // compare against yet, so checkAndRecordPr still records it as a
+      // baseline silently, without interrupting the flow.
+      if (data?.pr?.isPr && !data.pr.isFirstTime) {
+        setPrCelebration(data.pr as PrCheckResult);
+      }
       setExerciseName("");
       setWeightKg("");
       setSuggestion(null);
@@ -98,6 +109,8 @@ export default function WorkoutLogForm({
 
   return (
     <div className="flex flex-col gap-3 mb-6">
+      {prCelebration && <PrCelebration pr={prCelebration} onDismiss={() => setPrCelebration(null)} />}
+
       <RestTimerBar />
 
       {todaysPlan && (

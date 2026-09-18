@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
+import { getIstDateString } from "@/frontend/lib/date";
 import type { FeePaymentRow } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 import { unblockMember } from "@/backend/services/admin/feeAbuse";
@@ -140,15 +141,16 @@ export async function recordManualPayment(
 
 export async function sumPaidThisMonth(): Promise<number> {
   const db = getDb();
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
+  // IST-explicit "1st of this month" start, not server-local (Vercel runs
+  // UTC) — a payment recorded in the first ~5.5 hours of an IST calendar
+  // day could otherwise fall on the wrong side of the month boundary.
+  const startOfMonthIso = `${getIstDateString().slice(0, 7)}-01T00:00:00+05:30`;
 
   const { data, error } = await db
     .from("fee_payments")
     .select("amount")
     .eq("status", "paid")
-    .gte("paid_at", startOfMonth.toISOString());
+    .gte("paid_at", new Date(startOfMonthIso).toISOString());
 
   if (error) throw new Error(`Failed to sum payments: ${error.message}`);
   return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);

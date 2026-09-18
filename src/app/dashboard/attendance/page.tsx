@@ -26,10 +26,10 @@ export default async function AttendanceHistoryPage() {
                   check_circle
                 </span>
                 <span className="font-label text-xs uppercase tracking-wide text-on-surface flex-1">
-                  {date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
+                  {date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short" })}
                 </span>
                 <span className="font-body text-sm text-tertiary">
-                  {date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                  {date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
             );

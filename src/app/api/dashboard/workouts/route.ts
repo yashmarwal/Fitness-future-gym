@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
 import { logWorkout } from "@/backend/services/workouts";
 import { awardWorkoutXp } from "@/backend/services/muscleProgress";
+import { checkAndRecordPr } from "@/backend/services/personalRecords";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();
@@ -22,7 +23,11 @@ export async function POST(request: Request) {
   try {
     await logWorkout(session.memberId, { exerciseName, sets, reps, weightKg });
     await awardWorkoutXp(session.memberId, exerciseName, sets).catch(() => {});
-    return NextResponse.json({ status: "ok" });
+    // Checked against the per-set weight/reps just logged, not sets*reps —
+    // a PR is "heaviest weight for that many reps," never blocks or fails
+    // the log itself (checkAndRecordPr swallows its own errors).
+    const pr = await checkAndRecordPr(session.memberId, exerciseName, weightKg, reps).catch(() => null);
+    return NextResponse.json({ status: "ok", pr });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ status: "error", message: "Something went wrong." }, { status: 500 });

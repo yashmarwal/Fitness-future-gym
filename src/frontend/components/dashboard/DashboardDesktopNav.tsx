@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/dashboard/card", label: "Membership Card", icon: "badge" },
   { href: "/dashboard/attendance", label: "Attendance", icon: "calendar_month" },
   { href: "/dashboard/workouts", label: "Workouts", icon: "fitness_center" },
+  { href: "/dashboard/records", label: "Records", icon: "emoji_events" },
   { href: "/dashboard/nutrition", label: "Nutrition", icon: "restaurant" },
   { href: "/dashboard/timer", label: "Timer", icon: "timer" },
   { href: "/dashboard/fees", label: "Fees", icon: "payments" },

@@ -258,6 +258,31 @@ create table if not exists member_muscle_xp (
   unique (member_id, category)
 );
 
+-- Permanent per-exercise personal bests, powering the "New PR!" celebration
+-- and the Personal Records page. Same reasoning as member_muscle_xp above:
+-- deliberately NOT derived from workout_logs on read (purged after 30 days),
+-- which would silently forget a real PR the moment its original log aged
+-- out. Updated once per logged set, only when that set actually beats the
+-- stored best (see checkAndRecordPr in personalRecords.ts) — never purged,
+-- never decremented.
+create table if not exists member_exercise_prs (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  -- Trimmed + lowercased match key ("bench press") so casing differences
+  -- across logs ("Bench Press" vs "bench press") don't fragment one
+  -- exercise into two separate PR rows. exercise_name keeps the most
+  -- recently-logged casing, for display.
+  exercise_key text not null,
+  exercise_name text not null,
+  best_weight_kg numeric(6, 2),
+  best_reps integer not null,
+  achieved_at timestamptz not null default now(),
+  unique (member_id, exercise_key)
+);
+
+create index if not exists member_exercise_prs_member_id_idx
+  on member_exercise_prs (member_id);
+
 create table if not exists workout_plans (
   id uuid primary key default gen_random_uuid(),
   member_id uuid not null references members(id) on delete cascade,

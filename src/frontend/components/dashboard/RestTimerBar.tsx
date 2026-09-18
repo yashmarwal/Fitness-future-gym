@@ -1,20 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { playTick, playFinish, vibrateTick, vibrateFinish } from "@/frontend/lib/beep";
+import { useEffect, useState } from "react";
 import {
   useRestTimerState,
   selectRestTimerPreset,
   startRestTimer,
   pauseRestTimer,
   resetRestTimer,
-  tickRestTimer,
   setRestTimerSound,
   getRemainingSeconds,
 } from "@/frontend/lib/restTimer";
 
 const PRESETS = [30, 60, 90, 120, 180];
-const ALARM_REPEAT_MS = 1400;
 
 // A compact, always-visible sibling to the full-page Rest Timer
 // (RestTimer.tsx, /dashboard/timer — untouched, same countdown/alarm
@@ -25,6 +22,14 @@ const ALARM_REPEAT_MS = 1400;
 // localStorage (restTimer.ts) rather than plain component state, so
 // navigating to another dashboard page and back (or a reload) resumes the
 // same countdown instead of silently resetting it.
+//
+// This component is purely presentational — it shows the live countdown
+// and the controls, but doesn't tick the underlying state, play sound, or
+// detect when the timer finishes. That all lives in
+// RestTimerAlarmWatcher.tsx, mounted once at the dashboard layout level so
+// the alarm still fires (and the finish popup still shows) no matter which
+// dashboard page the member is on when the countdown completes, not just
+// this one.
 export default function RestTimerBar() {
   const state = useRestTimerState();
   // Starts at a pure literal so the first render stays pure/SSR-safe (see
@@ -32,54 +37,14 @@ export default function RestTimerBar() {
   // inside the interval callback below, never read via a fresh Date.now()
   // call during render.
   const [now, setNow] = useState(0);
-  const alarmIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const soundOnRef = useRef(state.soundOn);
 
+  // Purely a live display tick — the countdown's actual truth (and when it
+  // flips to alarming) is owned by RestTimerAlarmWatcher.
   useEffect(() => {
-    soundOnRef.current = state.soundOn;
-  }, [state.soundOn]);
-
-  // Countdown tick + the "last 4 seconds" cue sound — recreated whenever
-  // running starts/stops or the target end time changes, so each interval
-  // always closes over the current endsAt. On the very first tick after a
-  // remount, this also catches up a countdown that already finished while
-  // this bar was unmounted (member was on a different page).
-  useEffect(() => {
-    if (!state.running || state.endsAt == null) return;
-    const endsAt = state.endsAt;
-    const id = setInterval(() => {
-      const nowMs = Date.now();
-      setNow(nowMs);
-      const remaining = Math.max(0, Math.ceil((endsAt - nowMs) / 1000));
-      if (remaining > 0 && remaining <= 4) {
-        if (soundOnRef.current) playTick();
-        vibrateTick();
-      }
-      if (remaining <= 0) {
-        tickRestTimer(nowMs);
-      }
-    }, 1000);
+    if (!state.running) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [state.running, state.endsAt]);
-
-  // Keeps chiming until dismissed — same repeating-alarm behavior as
-  // RestTimer.tsx, just reacting to the externally-stored `alarming` flag
-  // instead of local state.
-  useEffect(() => {
-    if (state.alarming) {
-      if (soundOnRef.current) playFinish();
-      vibrateFinish();
-      alarmIntervalRef.current = setInterval(() => {
-        if (soundOnRef.current) playFinish();
-        vibrateFinish();
-      }, ALARM_REPEAT_MS);
-    } else if (alarmIntervalRef.current) {
-      clearInterval(alarmIntervalRef.current);
-    }
-    return () => {
-      if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current);
-    };
-  }, [state.alarming]);
+  }, [state.running]);
 
   // now === 0 is the pure pre-mount placeholder — computing a remaining
   // time against it would subtract from a real endsAt epoch and briefly

@@ -6,6 +6,7 @@ import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
 import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
 import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
 import AttendanceGate from "@/frontend/components/dashboard/AttendanceGate";
+import RestTimerAlarmWatcher from "@/frontend/components/dashboard/RestTimerAlarmWatcher";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getMemberSession();
@@ -28,6 +29,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Watches the rest timer and shows the finish alarm no matter which
+          dashboard page is currently open — see the component's own
+          comment for why this can't live on the workouts page alone. */}
+      <RestTimerAlarmWatcher />
       <DashboardHeader fullName={member.fullName} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">

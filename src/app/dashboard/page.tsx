@@ -28,6 +28,7 @@ const QUICK_LINKS = [
   { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month" },
   { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center" },
   { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech" },
+  { href: "/dashboard/records", label: "Personal Records", icon: "emoji_events" },
   { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note" },
   { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome" },
   { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant" },

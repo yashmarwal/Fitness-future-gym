@@ -9,6 +9,7 @@
     { "path": "/api/cron/water-reminder", "schedule": "30 9 * * *" },
     { "path": "/api/cron/water-reminder", "schedule": "30 12 * * *" },
     { "path": "/api/cron/meal-log-reminder", "schedule": "30 14 * * *" },
-    { "path": "/api/cron/streak-reminder", "schedule": "0 15 * * *" }
+    { "path": "/api/cron/streak-reminder", "schedule": "0 15 * * *" },
+    { "path": "/api/cron/daily-summary", "schedule": "30 17 * * *" }
   ]
 }

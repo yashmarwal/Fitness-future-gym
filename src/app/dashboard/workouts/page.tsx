@@ -39,7 +39,7 @@ export default async function WorkoutsPage() {
               <div className="flex-1">
                 <p className="font-label text-sm uppercase tracking-wide text-on-surface">{log.exerciseName}</p>
                 <p className="font-body text-xs text-tertiary">
-                  {new Date(log.loggedAt).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+                  {new Date(log.loggedAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short" })}
                 </p>
               </div>
               <p className="font-display text-lg text-primary-container">
