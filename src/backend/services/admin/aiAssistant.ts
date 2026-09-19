@@ -128,6 +128,15 @@ function isConfigured() {
   return Boolean(process.env.GEMINI_API_KEY);
 }
 
+function friendlyGeminiError(status: number): string {
+  if (status === 400 || status === 401 || status === 403) {
+    return "The AI service rejected the API key — it may be invalid, deleted, or its Google project suspended. Replace GEMINI_API_KEY in the environment settings with a key from an active project, then redeploy.";
+  }
+  if (status === 429) return "The AI service is rate-limited right now — try again in a minute.";
+  if (status >= 500) return "Google's AI service is having trouble — try again shortly.";
+  return `The AI service returned an error (${status}).`;
+}
+
 async function callGemini(contents: GeminiContent[]): Promise<GeminiContent> {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -151,8 +160,14 @@ async function callGemini(contents: GeminiContent[]): Promise<GeminiContent> {
   );
 
   if (!res.ok) {
+    // Never pass Google's response body on to the UI: for key/permission
+    // errors it echoes the API key itself ("Consumer 'api_key:…' has been
+    // suspended"), which then ends up on the admin screen and in
+    // screenshots. The full detail goes to the server log instead, with
+    // anything key-shaped redacted.
     const body = await res.text();
-    throw new Error(`Gemini API error (${res.status}): ${body}`);
+    console.error(`Gemini API error (${res.status}):`, body.replace(/AIza[\w-]+|AQ\.[\w-]+/g, "[redacted-key]"));
+    throw new Error(friendlyGeminiError(res.status));
   }
 
   const data = await res.json();
