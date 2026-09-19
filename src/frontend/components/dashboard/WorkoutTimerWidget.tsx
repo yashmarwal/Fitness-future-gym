@@ -7,7 +7,7 @@ import {
   stopTimer,
   tickWorkoutTimer,
   recordWorkoutActivity,
-  getWeekTotalMs,
+  getPreviousDays,
   getTodayMs,
   formatDuration,
   FLUSH_INTERVAL_MS,
@@ -19,9 +19,10 @@ const ACTIVITY_EVENTS = ["mousemove", "keydown", "click", "touchstart", "scroll"
 const ACTIVITY_WRITE_THROTTLE_MS = 5_000;
 
 // A separate stat from the rest timer (RestTimer.tsx, untouched) — this
-// tracks total time spent actually working out, running in the background
-// while the member is on this page until they stop it or go quiet for 10
-// minutes. Local-only (see workoutTimer.ts) and mounted on the dashboard
+// tracks time spent actually working out, running in the background while
+// the member is on this page until they stop it or go quiet for 10 minutes.
+// The big number is always *today's* time and starts from zero every day;
+// the last few days are shown beneath it as history (5 days kept in total). Local-only (see workoutTimer.ts) and mounted on the dashboard
 // home page, directly above the Muscle Progress teaser, so "inactivity on
 // dashboard" is tracked for exactly as long as this widget is on screen.
 export default function WorkoutTimerWidget() {
@@ -35,10 +36,22 @@ export default function WorkoutTimerWidget() {
   const [now, setNow] = useState(0);
   const lastActivityWriteRef = useRef(0);
 
-  // Live display tick — purely visual.
+  // Live display tick — purely visual. The zero-delay first tick gets the
+  // real clock in immediately instead of showing "0s" for a full second.
   useEffect(() => {
+    const first = setTimeout(() => setNow(Date.now()), 0);
     const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+    };
+  }, []);
+
+  // Settle a timer left "running" by a closed tab right away (it auto-stops
+  // once the quiet window has passed) instead of waiting for the first
+  // 15-second flush tick.
+  useEffect(() => {
+    tickWorkoutTimer();
   }, []);
 
   // Persisted flush + inactivity check, independent of the display tick.
@@ -76,8 +89,8 @@ export default function WorkoutTimerWidget() {
     else startTimer();
   }
 
-  const weekTotal = getWeekTotalMs(state, now);
   const todayTotal = getTodayMs(state, now);
+  const previousDays = getPreviousDays(state, now);
 
   return (
     <div className="bg-surface-container-low p-5 shadow-hard mb-6 flex items-center justify-between gap-4">
@@ -86,10 +99,19 @@ export default function WorkoutTimerWidget() {
           <span className="material-symbols-outlined text-base leading-none">timelapse</span>
           Workout Timer
         </span>
-        <p className="font-display text-2xl text-on-surface leading-tight mt-1">{formatDuration(weekTotal)}</p>
+        <p className="font-display text-2xl text-on-surface leading-tight mt-1">{formatDuration(todayTotal)}</p>
         <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mt-0.5">
-          This week &middot; {formatDuration(todayTotal)} today
+          Today &middot; resets at midnight
         </p>
+        {previousDays.length > 0 && (
+          <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-2" aria-label="Previous days">
+            {previousDays.map((day) => (
+              <li key={day.date} className="font-label text-[9px] uppercase tracking-wider text-outline">
+                {day.label} <span className="text-tertiary">{formatDuration(day.ms)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <button
         type="button"

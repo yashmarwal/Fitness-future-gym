@@ -16,7 +16,10 @@ import { getIstDateString } from "@/frontend/lib/date";
 // most one flush interval of time, never a whole session.
 
 const STORAGE_KEY = "ff_workout_timer_v1";
-const RETENTION_DAYS = 7;
+// Days kept in total, today included: today plus the 4 before it. Older days
+// are dropped whenever the state is read. The headline figure is always
+// *today's* time (it starts from zero each IST midnight); the rest is history.
+const RETENTION_DAYS = 5;
 export const INACTIVITY_LIMIT_MS = 10 * 60 * 1000;
 export const FLUSH_INTERVAL_MS = 15_000;
 
@@ -45,7 +48,7 @@ function emptyState(): WorkoutTimerState {
 
 function pruneDays(days: Record<string, number>): Record<string, number> {
   const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - RETENTION_DAYS);
+  cutoff.setDate(cutoff.getDate() - (RETENTION_DAYS - 1));
   const cutoffStr = getIstDateString(cutoff);
   const pruned: Record<string, number> = {};
   for (const [date, ms] of Object.entries(days)) {
@@ -139,7 +142,13 @@ export function tickWorkoutTimer(now: number = Date.now()): void {
   const state = readSnapshot();
   if (!state.running) return;
   if (state.lastActivityAt != null && now - state.lastActivityAt >= INACTIVITY_LIMIT_MS) {
-    stopTimer(now);
+    // Only credit time up to the end of the allowed quiet window, never up to
+    // `now`. If the tab was closed with the timer running, `running` stays
+    // true in localStorage, and the next visit (possibly the next day) would
+    // otherwise flush the entire hours-long gap into the old day as workout
+    // time — which is what made a fresh day look like it "continued" from the
+    // previous one.
+    stopTimer(Math.min(now, state.lastActivityAt + INACTIVITY_LIMIT_MS));
     return;
   }
   commit(flush(state, now));
@@ -151,12 +160,23 @@ export function recordWorkoutActivity(now: number = Date.now()): void {
   commit({ ...state, lastActivityAt: now });
 }
 
-// Total elapsed ms across the retained window, including the live segment
-// if currently running — this is the headline "total workout time" figure.
-export function getWeekTotalMs(state: WorkoutTimerState, now: number): number {
-  const flushedTotal = Object.values(state.days).reduce((sum, ms) => sum + ms, 0);
-  const liveSegment = state.running && state.startedAt != null ? Math.max(0, now - state.startedAt) : 0;
-  return flushedTotal + liveSegment;
+export type PreviousDay = { date: string; label: string; ms: number };
+
+// The retained days before today (newest first) that have any recorded time —
+// days with nothing logged are left out rather than shown as empty rows.
+export function getPreviousDays(state: WorkoutTimerState, now: number): PreviousDay[] {
+  const out: PreviousDay[] = [];
+  for (let back = 1; back < RETENTION_DAYS; back++) {
+    const date = getIstDateString(new Date(now - back * 86_400_000));
+    const ms = state.days[date] ?? 0;
+    if (ms <= 0) continue;
+    const label =
+      back === 1
+        ? "Yesterday"
+        : new Date(`${date}T12:00:00+05:30`).toLocaleDateString("en-IN", { weekday: "short", timeZone: "Asia/Kolkata" });
+    out.push({ date, label, ms });
+  }
+  return out;
 }
 
 export function getTodayMs(state: WorkoutTimerState, now: number): number {

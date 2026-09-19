@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WorkoutLog } from "@/backend/services/workouts";
 import type { TodaysWorkout, WorkoutPlanExercise } from "@/backend/services/workoutPlans";
 import type { PrCheckResult } from "@/backend/services/personalRecords";
 import RestTimerBar from "@/frontend/components/dashboard/RestTimerBar";
 import PrCelebration from "@/frontend/components/dashboard/PrCelebration";
+import { matchExerciseCategory, searchExercises } from "@/frontend/lib/exerciseLibrary";
 
 function firstNumber(text: string): number | null {
   const match = text.match(/\d+/);
@@ -34,6 +35,26 @@ export default function WorkoutLogForm({
   const [submitting, setSubmitting] = useState(false);
   const [suggestion, setSuggestion] = useState<LastEntry | null>(null);
   const [prCelebration, setPrCelebration] = useState<PrCheckResult | null>(null);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+
+  // The fuzzy search (Fuse.js) is deferred so a slow phone keeps typing
+  // smoothly — the dropdown just trails the input by a beat if it has to.
+  const deferredName = useDeferredValue(exerciseName);
+  const trimmedName = deferredName.trim();
+  const exerciseMatches = useMemo(
+    () => (suggestionsOpen && trimmedName.length >= 2 ? searchExercises(trimmedName, 6) : []),
+    [suggestionsOpen, trimmedName]
+  );
+  // A dropdown that only echoes back exactly what was typed is just noise.
+  const showDropdown =
+    exerciseMatches.length > 0 &&
+    !(exerciseMatches.length === 1 && exerciseMatches[0].name.toLowerCase() === trimmedName.toLowerCase());
+  // Whether this exercise will earn Muscle Progress XP — the same matcher the
+  // server uses when the set is saved (awardWorkoutXp), so the hint can't lie.
+  const countedCategory = useMemo(
+    () => (trimmedName.length >= 3 ? matchExerciseCategory(trimmedName) : null),
+    [trimmedName]
+  );
 
   // Logs already arrive most-recent-first (listWorkoutLogs), so the last
   // logged set overall is simply the first row, and the first occurrence
@@ -69,8 +90,15 @@ export default function WorkoutLogForm({
   }
 
   function handleExerciseNameBlur() {
+    setSuggestionsOpen(false);
     const key = normalizeExerciseName(exerciseName);
     setSuggestion(key ? (lastByExercise.get(key) ?? null) : null);
+  }
+
+  function handlePickExerciseMatch(name: string) {
+    setExerciseName(name);
+    setSuggestionsOpen(false);
+    setSuggestion(lastByExercise.get(normalizeExerciseName(name)) ?? null);
   }
 
   function handleUseSuggestion() {
@@ -154,20 +182,60 @@ export default function WorkoutLogForm({
           Log A Set
         </span>
 
-        <label className="flex flex-col gap-1">
-          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Exercise</span>
+        <div className="relative flex flex-col gap-1">
+          <label htmlFor="log-exercise" className="font-label text-[9px] uppercase tracking-wider text-outline">
+            Exercise
+          </label>
           <input
+            id="log-exercise"
             value={exerciseName}
             onChange={(e) => {
               setExerciseName(e.target.value);
               setSuggestion(null);
+              setSuggestionsOpen(true);
             }}
+            onFocus={() => setSuggestionsOpen(true)}
             onBlur={handleExerciseNameBlur}
             required
+            autoComplete="off"
             placeholder="e.g. Bench Press"
             className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
           />
-        </label>
+
+          {showDropdown && (
+            <ul
+              role="listbox"
+              aria-label="Matching exercises"
+              className="absolute left-0 right-0 top-full z-20 mt-1 bg-surface-container-high border border-primary-container/50 shadow-hard max-h-64 overflow-y-auto"
+            >
+              {exerciseMatches.map((match) => (
+                <li key={match.name} role="option" aria-selected={false}>
+                  {/* preventDefault on mousedown keeps the input focused, so the
+                      blur handler doesn't close the list before the click lands. */}
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => handlePickExerciseMatch(match.name)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-container-highest active:bg-surface-container-highest transition-colors"
+                  >
+                    <span className="font-body text-sm text-on-surface">{match.name}</span>
+                    <span className="font-label text-[9px] uppercase tracking-wider text-primary-container shrink-0">
+                      {match.category}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {trimmedName.length >= 3 && (
+            <p className={`font-body text-[11px] ${countedCategory ? "text-tertiary" : "text-outline"}`}>
+              {countedCategory
+                ? `Counts toward your ${countedCategory} progress.`
+                : "Not in our exercise list yet — it will still be logged, but won't earn Muscle Progress XP."}
+            </p>
+          )}
+        </div>
 
         {suggestion && (
           <button
