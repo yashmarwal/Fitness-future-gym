@@ -1,8 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
+
+// Same rule as the Overview "Overdue Fees" count and the Alerts page's "Fee
+// Overdue" list (active member, fee_due_date before today) — deliberately
+// not a looser check, so the tag here can never disagree with those.
+function isFeeOverdue(member: AdminMember): boolean {
+  return member.isActive && member.feeDueDate != null && member.feeDueDate < new Date().toISOString().slice(0, 10);
+}
+
+function FeePendingTag({ member }: { member: AdminMember }) {
+  if (!isFeeOverdue(member)) return null;
+  return (
+    <span
+      title={`Fee due since ${member.feeDueDate}`}
+      className="shrink-0 font-label text-[10px] uppercase px-2 py-1 bg-error-container/40 text-error"
+    >
+      Fee Pending
+    </span>
+  );
+}
 
 const EMPTY_FORM = {
   membershipNumber: "",
@@ -24,6 +43,15 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [query, setQuery] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // The form renders above the list, so editing a member near the bottom
+  // used to open it off-screen and look like the Edit button did nothing.
+  // Depends on editingId too so switching from one member's Edit to
+  // another's (form already open) scrolls back up as well.
+  useEffect(() => {
+    if (showForm) formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [showForm, editingId]);
 
   function startCreate() {
     setEditingId(null);
@@ -118,7 +146,12 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard grid grid-cols-1 sm:grid-cols-2 gap-3">
+        // scroll-mt-32 clears the sticky admin header (top bar + nav row).
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="scroll-mt-32 bg-surface-container-low p-5 shadow-hard grid grid-cols-1 sm:grid-cols-2 gap-3"
+        >
           <span className="sm:col-span-2 font-label text-xs uppercase tracking-widest text-primary-container">
             {editingId ? "Edit Member" : "New Member"}
           </span>
@@ -244,16 +277,19 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     <td className="py-3 px-4 font-body text-sm text-tertiary">{m.joinedAt}</td>
                     <td className="py-3 px-4 font-body text-sm text-tertiary">{m.feeDueDate ?? "—"}</td>
                     <td className="py-3 px-4">
-                      <button
-                        onClick={() => toggleActive(m)}
-                        className={`font-label text-[10px] uppercase px-2 py-1 transition-colors ${
-                          m.isActive
-                            ? "bg-primary-container/20 text-primary-container hover:bg-primary-container/30"
-                            : "bg-surface-container-high text-error hover:bg-surface-container-highest"
-                        }`}
-                      >
-                        {m.isActive ? "Active" : "Inactive"}
-                      </button>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <button
+                          onClick={() => toggleActive(m)}
+                          className={`font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                            m.isActive
+                              ? "bg-primary-container/20 text-primary-container hover:bg-primary-container/30"
+                              : "bg-surface-container-high text-error hover:bg-surface-container-highest"
+                          }`}
+                        >
+                          {m.isActive ? "Active" : "Inactive"}
+                        </button>
+                        <FeePendingTag member={m} />
+                      </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
@@ -292,16 +328,19 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     </span>
                     <p className="font-body text-sm font-semibold text-on-surface truncate">{m.fullName}</p>
                   </div>
-                  <button
-                    onClick={() => toggleActive(m)}
-                    className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 transition-colors ${
-                      m.isActive
-                        ? "bg-primary-container/20 text-primary-container"
-                        : "bg-surface-container-high text-error"
-                    }`}
-                  >
-                    {m.isActive ? "Active" : "Inactive"}
-                  </button>
+                  <div className="shrink-0 flex items-center justify-end gap-1.5 flex-wrap">
+                    <button
+                      onClick={() => toggleActive(m)}
+                      className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                        m.isActive
+                          ? "bg-primary-container/20 text-primary-container"
+                          : "bg-surface-container-high text-error"
+                      }`}
+                    >
+                      {m.isActive ? "Active" : "Inactive"}
+                    </button>
+                    <FeePendingTag member={m} />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 font-body text-xs text-tertiary">
                   <span className="truncate">{m.phone ?? "—"}</span>
