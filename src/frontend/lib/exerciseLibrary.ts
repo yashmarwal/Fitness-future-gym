@@ -383,12 +383,14 @@ type IndexedExercise = {
   entry: ExerciseEntry;
   name: string;
   terms: string[]; // normalized name + aliases
+  originals: string[]; // the same list as authored, index-aligned with `terms`
 };
 
 const INDEX: IndexedExercise[] = EXERCISE_LIBRARY.map((entry) => ({
   entry,
   name: normalize(entry.name),
   terms: [normalize(entry.name), ...(entry.aliases ?? []).map(normalize)],
+  originals: [entry.name, ...(entry.aliases ?? [])],
 }));
 
 // Fuse.js is the typo-tolerant candidate finder: it ranks every exercise by
@@ -445,15 +447,17 @@ function typoBudget(letterCount: number): number {
 // start of a longer word ("climbin" → "climbing", "pres" → "press"). The
 // first letter must match: people slip mid-word, rarely on the first letter,
 // and requiring it stops real words matching unrelated ones ("dinner" is not a
-// typo of "inner thigh machine").
-function typoVerified(item: IndexedExercise, q: string): boolean {
+// typo of "inner thigh machine"). Returns the index of the name/alias that
+// matched, or -1.
+function typoMatchedTerm(item: IndexedExercise, q: string): number {
   const qWords = q.split(" ");
   const budget = typoBudget(q.replace(/ /g, "").length);
   const qJoined = qWords.join("");
 
-  for (const term of item.terms) {
+  for (let t = 0; t < item.terms.length; t++) {
+    const term = item.terms[t];
     const termJoined = term.replace(/ /g, "");
-    if (qJoined[0] === termJoined[0] && editDistance(qJoined, termJoined) <= budget) return true;
+    if (qJoined[0] === termJoined[0] && editDistance(qJoined, termJoined) <= budget) return t;
 
     const termWords = term.split(" ");
     let total = 0;
@@ -466,12 +470,29 @@ function typoVerified(item: IndexedExercise, q: string): boolean {
       total += bestWord;
       if (total > budget) break;
     }
-    if (total <= budget) return true;
+    if (total <= budget) return t;
   }
-  return false;
+  return -1;
 }
 
-type Ranked = { entry: ExerciseEntry; rank: number; sub: number };
+// rank      best raw tier over all of the exercise's names (drives the XP matcher)
+// termIndex the name/alias chosen to represent the hit in the UI
+// order     display sort key for that term (see rankTiers)
+type Ranked = { item: IndexedExercise; rank: number; termIndex: number; order: number };
+
+// The lifts and activities people log most. Used only to break ties in the
+// suggestion order, so typing "curl" lists Dumbbell / Barbell / Hammer Curl
+// before Neck Curl or Drag Curl.
+const POPULAR = new Set([
+  "Barbell Bench Press", "Incline Barbell Bench Press", "Dumbbell Bench Press", "Incline Dumbbell Press",
+  "Dumbbell Flyes", "Cable Crossover", "Push-Ups", "Deadlift", "Barbell Row", "Pull-Ups", "Lat Pulldown",
+  "Seated Cable Row", "Face Pull", "Overhead Barbell Press", "Seated Dumbbell Shoulder Press", "Lateral Raise",
+  "Front Raise", "Rear Delt Flyes", "Shrugs", "Barbell Back Squat", "Leg Press", "Romanian Deadlift", "Leg Curl",
+  "Leg Extension", "Walking Lunges", "Hip Thrust", "Standing Calf Raise", "Barbell Curl", "Dumbbell Curl",
+  "Hammer Curl", "Preacher Curl", "Skull Crushers", "Tricep Pushdown", "Dips (Tricep Focus)", "Plank",
+  "Crunches", "Hanging Leg Raise", "Russian Twist", "Running", "Treadmill Run", "Walking", "Stationary Bike",
+  "Jump Rope", "Burpees", "Mountain Climbers", "Kettlebell Swing",
+]);
 
 // Deterministic tiers, tried before any fuzzy matching:
 //   0  exact name/alias
@@ -485,55 +506,113 @@ function rankTiers(q: string): Ranked[] {
   const padded = ` ${q} `;
   const out: Ranked[] = [];
   for (const item of INDEX) {
-    let best = -1;
-    for (const term of item.terms) {
+    let bestRaw = -1;
+    let bestOrder = Infinity;
+    let bestTerm = 0;
+    for (let t = 0; t < item.terms.length; t++) {
+      const term = item.terms[t];
       let rank = -1;
       if (term === q) rank = 0;
       else if (term.startsWith(q)) rank = 1;
       else if (` ${term} `.includes(padded)) rank = 2;
       else if (term.length >= 3 && padded.includes(` ${term} `)) rank = 3;
       else if (q.length >= 4 && ` ${term}`.includes(` ${q}`)) rank = 4;
-      if (rank !== -1 && (best === -1 || rank < best)) best = rank;
+      if (rank === -1) continue;
+      if (bestRaw === -1 || rank < bestRaw) bestRaw = rank;
+      // An exact alias wins outright; after that a hit on the exercise's own
+      // name beats a hit on an alias of the same tier (typing "press" should
+      // list Leg Press before Push-Ups' alias "press up").
+      const order = rank + (t > 0 && rank > 0 ? 1.5 : 0);
+      if (order < bestOrder) {
+        bestOrder = order;
+        bestTerm = t;
+      }
     }
-    if (best !== -1) out.push({ entry: item.entry, rank: best, sub: item.name.length });
+    if (bestRaw !== -1) out.push({ item, rank: bestRaw, termIndex: bestTerm, order: bestOrder });
   }
-  return out.sort((a, b) => a.rank - b.rank || a.sub - b.sub);
+  // Display order: by the key above, then the common lifts first, then the
+  // tighter fit between what was typed and what matched ("incline be" →
+  // "incline bench", not "incline bench row"), then shorter names.
+  return out.sort(
+    (a, b) =>
+      a.order - b.order ||
+      Number(!POPULAR.has(a.item.entry.name)) - Number(!POPULAR.has(b.item.entry.name)) ||
+      a.item.terms[a.termIndex].length - b.item.terms[b.termIndex].length ||
+      a.item.name.length - b.item.name.length
+  );
 }
 
-function fuzzy(q: string, limit: number): { entry: ExerciseEntry }[] {
+type FuzzyHit = { item: IndexedExercise; termIndex: number };
+
+function fuzzy(q: string, limit: number): FuzzyHit[] {
   // Under 5 letters the typo budget is 0, so there is nothing fuzzy to find —
   // those only ever match by the exact tiers above.
   if (q.replace(/ /g, "").length < 5) return [];
-  return fuse
-    .search(q, { limit: 12 })
-    .filter((r) => typoVerified(r.item, q))
-    .slice(0, limit)
-    .map((r) => ({ entry: r.item.entry }));
+  const out: FuzzyHit[] = [];
+  for (const r of fuse.search(q, { limit: 12 })) {
+    const termIndex = typoMatchedTerm(r.item, q);
+    if (termIndex !== -1) out.push({ item: r.item, termIndex });
+    if (out.length >= limit) break;
+  }
+  return out;
 }
 
-export function searchExercises(query: string, limit = 8): { name: string; category: ExerciseCategory }[] {
+// A varied handful for an empty search box when the member has no history yet
+// (one per muscle group, rather than the popularity list, which is chest-heavy).
+const STARTER_PICKS = [
+  "Barbell Bench Press",
+  "Barbell Back Squat",
+  "Deadlift",
+  "Overhead Barbell Press",
+  "Pull-Ups",
+  "Treadmill Run",
+];
+
+export function starterExercises(): { name: string; category: ExerciseCategory }[] {
+  return STARTER_PICKS.flatMap((name) => {
+    const entry = EXERCISE_LIBRARY.find((e) => e.name === name);
+    return entry ? [{ name: entry.name, category: entry.category }] : [];
+  });
+}
+
+export type ExerciseSuggestion = {
+  name: string;
+  category: ExerciseCategory;
+  // Set when what was typed matched one of the exercise's other names rather
+  // than its main one ("dand" → Hindu Push-Ups, "bb bench" → Barbell Bench
+  // Press), so the UI can say why it was suggested.
+  matchedAlias?: string;
+};
+
+export function searchExercises(query: string, limit = 8): ExerciseSuggestion[] {
   const raw = normalize(query);
   if (!raw) return [];
 
   const seen = new Set<string>();
-  const results: ExerciseEntry[] = [];
-  function add(entry: ExerciseEntry) {
+  const results: ExerciseSuggestion[] = [];
+  function add(hit: FuzzyHit, typed: string) {
+    const { entry, name, originals } = hit.item;
     if (seen.has(entry.name) || results.length >= limit) return;
     seen.add(entry.name);
-    results.push(entry);
+    const viaAlias = hit.termIndex > 0 && !name.includes(typed);
+    results.push({
+      name: entry.name,
+      category: entry.category,
+      ...(viaAlias ? { matchedAlias: originals[hit.termIndex] } : {}),
+    });
   }
 
   for (const attempt of new Set([raw, stripFiller(raw)])) {
     if (!attempt) continue;
-    for (const r of rankTiers(attempt)) add(r.entry);
+    for (const r of rankTiers(attempt)) add(r, attempt);
     // Fuzzy is only the typo rescue: it runs when the exact tiers found
     // nothing, so it never adds noise next to real matches ("dand" should
     // not also suggest "Sandbag Carry").
-    if (results.length === 0) for (const r of fuzzy(attempt, limit)) add(r.entry);
+    if (results.length === 0) for (const r of fuzzy(attempt, limit)) add(r, attempt);
     if (results.length > 0) break;
   }
 
-  return results.map(({ name, category }) => ({ name, category }));
+  return results;
 }
 
 // Resolves any free-text exercise name (whatever a member actually typed
@@ -552,19 +631,20 @@ export function matchExerciseCategory(query: string): ExerciseCategory | null {
 
     const ranked = rankTiers(attempt);
     if (ranked.length > 0) {
-      const bestRank = ranked[0].rank;
+      // (ranked is in display order, which is not strictly by raw tier)
+      const bestRank = Math.min(...ranked.map((r) => r.rank));
       const atBest = ranked.filter((r) => r.rank === bestRank);
       // Exact / prefix / whole-word hits are trusted as-is. Only the loose
       // plain-substring tier can be ambiguous ("press" is Chest AND Shoulders
       // AND Legs) — there, go with the category most of the hits agree on.
-      if (bestRank < 4) return atBest[0].entry.category;
+      if (bestRank < 4) return atBest[0].item.entry.category;
       const votes = new Map<ExerciseCategory, number>();
-      for (const r of atBest) votes.set(r.entry.category, (votes.get(r.entry.category) ?? 0) + 1);
+      for (const r of atBest) votes.set(r.item.entry.category, (votes.get(r.item.entry.category) ?? 0) + 1);
       return [...votes.entries()].sort((a, b) => b[1] - a[1])[0][0];
     }
 
     const fuzzyHit = fuzzy(attempt, 3)[0];
-    if (fuzzyHit) return fuzzyHit.entry.category;
+    if (fuzzyHit) return fuzzyHit.item.entry.category;
   }
   return null;
 }

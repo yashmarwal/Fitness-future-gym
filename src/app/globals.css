@@ -197,6 +197,39 @@ body {
   }
 }
 
+/* The exercise search preview drops in from just above its input. */
+@keyframes suggest-in {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Same drop-in, for when the panel opens above its input. */
+@keyframes suggest-in-up {
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-suggest-in {
+    animation: suggest-in 140ms ease-out;
+  }
+  .animate-suggest-in-up {
+    animation: suggest-in-up 140ms ease-out;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .card-highlight-cycle {
     /* 7 cards × 1.5s stagger = 10.5s, so the delays set per-card (0s, 1.5s,

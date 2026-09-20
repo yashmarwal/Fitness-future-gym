@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { searchExercises } from "@/frontend/lib/exerciseLibrary";
+import ExerciseSearchField from "@/frontend/components/dashboard/ExerciseSearchField";
 import { WORKOUT_TEMPLATES, type WorkoutTemplate } from "@/frontend/lib/workoutTemplates";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
@@ -189,22 +189,14 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
 
               {day.exercises.map((exercise, exIndex) => (
                 <div key={exIndex} className="flex flex-wrap items-end gap-2 bg-surface-container p-3">
-                  <div className="flex-1 min-w-40 relative">
-                    <span className="font-label text-[9px] uppercase tracking-wider text-outline block mb-1">
-                      Exercise
-                    </span>
-                    <input
-                      list={`exercise-options-${dayIndex}-${exIndex}`}
+                  <div className="flex-1 min-w-40">
+                    <ExerciseSearchField
+                      compact
+                      showXpHint={false}
                       value={exercise.name}
-                      onChange={(e) => updateExercise(dayIndex, exIndex, { name: e.target.value })}
-                      placeholder="e.g. Barbell Bench Press"
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-primary-container"
+                      onChange={(name) => updateExercise(dayIndex, exIndex, { name })}
+                      onPick={(name) => updateExercise(dayIndex, exIndex, { name })}
                     />
-                    <datalist id={`exercise-options-${dayIndex}-${exIndex}`}>
-                      {searchExercises(exercise.name).map((match) => (
-                        <option key={match.name} value={match.name} />
-                      ))}
-                    </datalist>
                   </div>
                   <div className="w-16">
                     <span className="font-label text-[9px] uppercase tracking-wider text-outline block mb-1">
