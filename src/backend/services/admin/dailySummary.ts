@@ -2,6 +2,8 @@ import "server-only";
 import { getDb } from "@/backend/db/client";
 import { getIstStartOfTodayIso, getIstDateString } from "@/frontend/lib/date";
 import { sendEmailTemplate } from "@/backend/services/email";
+import { countCheckInsOn } from "@/backend/services/admin/attendanceStats";
+import { writeDailyNarrative } from "@/backend/services/admin/ownerInsights";
 import { countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
 import { sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
 import { listMembers } from "@/backend/services/admin/members";
@@ -18,6 +20,12 @@ import {
 export type DailySummary = {
   dateLabel: string;
   checkInsToday: number;
+  /** Average check-ins on this same weekday over the previous 4 weeks (null if there's no history yet). */
+  checkInsUsual: number | null;
+  /** Names for the "Needs Attention" counts, top few each — feeds the AI paragraph only. */
+  names: { overdue: string[]; noCheckIn: string[]; birthdays: string[] };
+  /** AI-written paragraph; absent when the AI is off or its answer was rejected. */
+  narrative?: string | null;
   revenueToday: number;
   revenueThisMonth: number;
   paymentsToday: { memberName: string; amount: number; method: string }[];
@@ -37,6 +45,18 @@ export type DailySummary = {
     currentlyBlocked: number;
   };
 };
+
+const DAY_MS = 86_400_000;
+const NAME_LIMIT = 5;
+
+// The average number of check-ins on this weekday over the previous four
+// weeks — the "usual day" that today is compared against. Null with no history.
+async function usualCheckInsForToday(): Promise<number | null> {
+  const dates = [7, 14, 21, 28].map((back) => getIstDateString(new Date(Date.now() - back * DAY_MS)));
+  const counts = await Promise.all(dates.map(countCheckInsOn));
+  const total = counts.reduce((sum, c) => sum + c, 0);
+  return total > 0 ? Math.round(total / counts.length) : null;
+}
 
 async function sumPaidToday(): Promise<number> {
   const db = getDb();
@@ -126,6 +146,7 @@ export async function getDailySummary(): Promise<DailySummary> {
     birthdays,
     unpaidActive,
     blocked,
+    checkInsUsual,
   ] = await Promise.all([
     countTodaysCheckIns(),
     sumPaidToday(),
@@ -144,6 +165,7 @@ export async function getDailySummary(): Promise<DailySummary> {
     listUpcomingBirthdays(),
     listUnpaidActiveMembers(),
     listBlockedMembers(),
+    usualCheckInsForToday(),
   ]);
 
   return {
@@ -155,6 +177,12 @@ export async function getDailySummary(): Promise<DailySummary> {
       year: "numeric",
     }),
     checkInsToday,
+    checkInsUsual,
+    names: {
+      overdue: overdue.slice(0, NAME_LIMIT).map((m) => `${m.fullName} (${m.detail})`),
+      noCheckIn: recentlyMissed.slice(0, NAME_LIMIT).map((m) => `${m.fullName} (${m.detail})`),
+      birthdays: birthdays.slice(0, NAME_LIMIT).map((m) => m.fullName),
+    },
     revenueToday,
     revenueThisMonth,
     paymentsToday,
@@ -181,10 +209,41 @@ export async function getDailySummary(): Promise<DailySummary> {
 // emails (not one email with two "to" addresses) so a bad address for one
 // owner can't also suppress the other's copy, and so each gets its own
 // email_messages log row for that same reason.
-const OWNER_EMAILS = ["hritikronjhwal@outlook.com", "vaibhavronjhwal1@gmail.com"];
+export const OWNER_EMAILS = ["hritikronjhwal@outlook.com", "vaibhavronjhwal1@gmail.com"];
+
+function pctChange(current: number, base: number | null): number | null {
+  return base && base > 0 ? Math.round(((current - base) / base) * 100) : null;
+}
+
+// Every figure the AI paragraph may mention, worked out here (including the
+// percentage) so the model only has to put it into words.
+function dailyFacts(s: DailySummary) {
+  return {
+    date: s.dateLabel,
+    checkInsToday: s.checkInsToday,
+    usualCheckInsOnThisWeekday: s.checkInsUsual,
+    checkInsVersusUsualPercent: pctChange(s.checkInsToday, s.checkInsUsual),
+    revenueCollectedToday: s.revenueToday,
+    paymentsReceivedToday: s.paymentsToday.length,
+    revenueThisMonthSoFar: s.revenueThisMonth,
+    newMembersToday: s.newMembersToday.map((m) => m.fullName),
+    newTrialSignupsToday: s.newTrialsToday.length,
+    trialsConvertedToday: s.trialsConvertedToday,
+    activeMembers: s.activeMembersCount,
+    membersWithOverdueFees: s.alerts.feeOverdue,
+    overdueFeeExamples: s.names.overdue,
+    membersNotSeenFor3PlusDays: s.alerts.noCheckIn3Days,
+    notSeenExamples: s.names.noCheckIn,
+    feesDueWithin3Days: s.alerts.dueWithin3Days,
+    usingGymWithoutPaying: s.alerts.usingGymUnpaid,
+    currentlyBlocked: s.alerts.currentlyBlocked,
+    birthdaysThisWeek: s.names.birthdays,
+  };
+}
 
 export async function sendDailySummaryEmail(): Promise<{ sent: number; failed: number }> {
   const summary = await getDailySummary();
+  summary.narrative = await writeDailyNarrative(dailyFacts(summary));
   const json = JSON.stringify(summary);
 
   const results = await Promise.allSettled(

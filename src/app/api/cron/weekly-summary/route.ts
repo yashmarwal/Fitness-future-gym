@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { sendDailySummaryEmail } from "@/backend/services/admin/dailySummary";
+import { sendWeeklySummaryEmail } from "@/backend/services/admin/weeklySummary";
 
-// The digest now makes an AI call on top of its queries — more headroom than
-// the default limit.
+// Many queries plus one AI call — more headroom than the default limit.
 export const maxDuration = 60;
 
 export async function GET(request: Request) {
@@ -12,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await sendDailySummaryEmail();
+    const result = await sendWeeklySummaryEmail();
     return NextResponse.json({ status: "ok", ...result });
   } catch (err) {
     console.error(err);

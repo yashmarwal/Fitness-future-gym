@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import type { DailySummary } from "@/backend/services/admin/dailySummary";
+import type { WeeklySummary } from "@/backend/services/admin/weeklySummary";
 
 // Mirrors the WhatsApp service's scope, plus OTP — a member with an email on
 // file gets the login/signup code by email too, alongside WhatsApp (not
@@ -9,8 +10,9 @@ import type { DailySummary } from "@/backend/services/admin/dailySummary";
 // trial_pass/trial_reminder are for the marketing site's free-trial leads,
 // who aren't members yet. account_blocked is the fee-abuse tool
 // (admin/feeAbuse.ts) telling a member why their access is on hold.
-// daily_summary is the owners' 11pm digest (admin/dailySummary.ts) — not
-// member-facing at all.
+// daily_summary is the owners' 11pm digest (admin/dailySummary.ts) and
+// weekly_summary their Sunday-night report (admin/weeklySummary.ts) — neither
+// is member-facing at all.
 export type EmailTemplate =
   | "otp"
   | "welcome_card"
@@ -21,6 +23,7 @@ export type EmailTemplate =
   | "trial_reminder"
   | "account_blocked"
   | "daily_summary"
+  | "weekly_summary"
   | "payment_receipt";
 
 function isConfigured() {
@@ -180,9 +183,44 @@ function inr(amount: number): string {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
 
-function buildDailySummaryEmail(summary: DailySummary): { subject: string; html: string } {
-  const a = summary.alerts;
-  const attentionRows = [
+// AI-written commentary in the owner emails: an accent rule on the left like
+// calloutBlock, body text rather than a big number, and a small note saying
+// where the words came from.
+function narrativeBlock(text: string): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 4px;width:100%;">
+    <tr>
+      <td style="background-color:${BRAND.panel};border-left:4px solid ${BRAND.accent};padding:16px 20px;">
+        <span style="display:block;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:${BRAND.ink};">${escapeHtml(text)}</span>
+        <span style="display:block;margin-top:10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:${BRAND.muted};">Written by AI from the figures in this email.</span>
+      </td>
+    </tr>
+  </table>`;
+}
+
+// A bordered box of "label ▇▇▇▇ value" rows — a bar chart made of table cells,
+// since images and CSS charts don't survive email clients.
+function barSection(rows: { label: string; value: number }[]): string {
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  const body = rows
+    .map((r, i) => {
+      const border = i < rows.length - 1 ? `border-bottom:1px solid ${BRAND.border};` : "";
+      const pct = r.value > 0 ? Math.max(3, Math.round((r.value / max) * 100)) : 0;
+      const bar =
+        pct > 0
+          ? `<td width="${pct}%" style="background-color:${BRAND.accent};height:12px;font-size:0;line-height:12px;">&nbsp;</td><td style="font-size:0;line-height:12px;">&nbsp;</td>`
+          : `<td style="height:12px;font-size:0;line-height:12px;">&nbsp;</td>`;
+      return `<tr>
+        <td style="padding:9px 0 9px 18px;${border}width:44px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${BRAND.muted};">${escapeHtml(r.label)}</td>
+        <td style="padding:9px 12px;${border}"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${bar}</tr></table></td>
+        <td align="right" style="padding:9px 18px 9px 0;${border}width:36px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:900;color:${BRAND.ink};">${r.value}</td>
+      </tr>`;
+    })
+    .join("");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 4px;background-color:${BRAND.panel};border:1px solid ${BRAND.border};">${body}</table>`;
+}
+
+function buildAttentionRows(a: DailySummary["alerts"]) {
+  return [
     { label: "Fee Overdue", value: String(a.feeOverdue), alert: a.feeOverdue > 0 },
     { label: "Due Within 3 Days", value: String(a.dueWithin3Days) },
     { label: "No Check-In 3+ Days", value: String(a.noCheckIn3Days) },
@@ -192,6 +230,10 @@ function buildDailySummaryEmail(summary: DailySummary): { subject: string; html:
     { label: "Using Gym, Unpaid", value: String(a.usingGymUnpaid), alert: a.usingGymUnpaid > 0 },
     { label: "Currently Blocked", value: String(a.currentlyBlocked), alert: a.currentlyBlocked > 0 },
   ];
+}
+
+function buildDailySummaryEmail(summary: DailySummary): { subject: string; html: string } {
+  const attentionRows = buildAttentionRows(summary.alerts);
 
   const paymentItems = summary.paymentsToday.map(
     (p) =>
@@ -211,9 +253,11 @@ function buildDailySummaryEmail(summary: DailySummary): { subject: string; html:
       bodyHtml:
         heading("Daily Summary") +
         paragraph(`<span style="color:${BRAND.muted};">${escapeHtml(summary.dateLabel)}</span>`) +
+        (summary.narrative ? sectionLabel("Today In Short") + narrativeBlock(summary.narrative) : "") +
         sectionLabel("Today") +
         statSection([
           { label: "Check-Ins", value: String(summary.checkInsToday) },
+          ...(summary.checkInsUsual != null ? [{ label: "Usual For This Weekday", value: String(summary.checkInsUsual) }] : []),
           { label: "Revenue Collected", value: inr(summary.revenueToday) },
           { label: "New Members", value: String(summary.newMembersToday.length) },
           { label: "New Trial Signups", value: String(summary.newTrialsToday.length) },
@@ -233,6 +277,59 @@ function buildDailySummaryEmail(summary: DailySummary): { subject: string; html:
         paragraph(
           `<span style="color:${BRAND.muted};">Full detail on any of these is in Admin → Alerts and Admin → Fees.</span>`
         ),
+    }),
+  };
+}
+
+function signedPercent(pct: number | null): string {
+  return pct == null ? "—" : `${pct > 0 ? "+" : ""}${pct}%`;
+}
+
+function buildWeeklySummaryEmail(w: WeeklySummary): { subject: string; html: string } {
+  const atRiskItems = w.atRisk.map(
+    (m) =>
+      `${escapeHtml(m.name)} <span style="color:${BRAND.muted};">(${escapeHtml(m.membershipNumber)})</span> <span style="float:right;color:${BRAND.accent};font-weight:700;">${m.visitsThisWeek} this week &middot; ${m.visitsLastWeek} last</span>`
+  );
+  const overdueItems = w.overdueExamples.map((e) => escapeHtml(e));
+
+  return {
+    subject: `Fitness Future Gym — Weekly Report, ${w.rangeLabel}`,
+    html: wrapEmail({
+      preheader: `${w.checkIns.thisWeek} check-ins, ${inr(w.revenue.thisWeek)} collected this week`,
+      bodyHtml:
+        heading("Weekly Report") +
+        paragraph(`<span style="color:${BRAND.muted};">${escapeHtml(w.rangeLabel)}</span>`) +
+        (w.narrative
+          ? sectionLabel("The Week In Short") +
+            narrativeBlock(w.narrative.summary) +
+            (w.narrative.actions.length > 0
+              ? sectionLabel("Suggested Actions") + listSection(w.narrative.actions.map((a) => escapeHtml(a)))
+              : "")
+          : "") +
+        sectionLabel("Highlights") +
+        listSection(w.highlights.map((h) => escapeHtml(h))) +
+        sectionLabel("This Week vs Last Week") +
+        statSection([
+          { label: "Check-Ins", value: String(w.checkIns.thisWeek) },
+          { label: "Change In Check-Ins", value: signedPercent(w.checkIns.pctChange), alert: (w.checkIns.pctChange ?? 0) < 0 },
+          { label: "Revenue Collected", value: inr(w.revenue.thisWeek) },
+          { label: "Change In Revenue", value: signedPercent(w.revenue.pctChange), alert: (w.revenue.pctChange ?? 0) < 0 },
+          { label: "New Members", value: String(w.members.joinedThisWeek) },
+          { label: "Trial Signups / Converted", value: `${w.members.trialSignups} / ${w.members.trialsConverted}` },
+        ]) +
+        sectionLabel("Check-Ins By Day") +
+        barSection(w.checkIns.perDay.map((d) => ({ label: d.label, value: d.count }))) +
+        (atRiskItems.length > 0 ? sectionLabel("Regulars Who Dropped Off") + listSection(atRiskItems) : "") +
+        sectionLabel("Money") +
+        statSection([
+          { label: "Revenue This Month", value: inr(w.revenue.monthToDate) },
+          { label: "Overdue Fees", value: String(w.revenue.overdueCount), alert: w.revenue.overdueCount > 0 },
+          { label: "Total Overdue Amount", value: inr(w.revenue.overdueAmount), alert: w.revenue.overdueAmount > 0 },
+        ]) +
+        (overdueItems.length > 0 ? sectionLabel("Longest-Overdue Members") + listSection(overdueItems) : "") +
+        sectionLabel("Needs Attention") +
+        statSection(buildAttentionRows(w.alerts)) +
+        paragraph(`<span style="color:${BRAND.muted};">Full detail is in Admin → Alerts, Fees and Attendance.</span>`),
     }),
   };
 }
@@ -368,6 +465,10 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
     case "daily_summary": {
       const [json] = params;
       return buildDailySummaryEmail(JSON.parse(json) as DailySummary);
+    }
+    case "weekly_summary": {
+      const [json] = params;
+      return buildWeeklySummaryEmail(JSON.parse(json) as WeeklySummary);
     }
   }
 }
