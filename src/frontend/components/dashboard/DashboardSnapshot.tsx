@@ -210,6 +210,13 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
     setHasOpened(true);
   }
 
+  // The bottom button closes a long panel the member has scrolled down through;
+  // bring the bar back into view so the page doesn't land somewhere random.
+  function closeFromBottom() {
+    setOpen(false);
+    ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   // The story lines that add something the sections above don't already show
   // (lifting, records, rank, food and fee each have their own section).
   const standouts = insights.filter((i) => STANDOUT_ICONS.has(i.icon));
@@ -651,6 +658,14 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
               </Block>
             )}
           </div>
+          <button
+            type="button"
+            onClick={closeFromBottom}
+            className="w-full flex items-center justify-center gap-1.5 py-3 border-t border-surface-variant/40 font-label text-xs uppercase tracking-wider text-tertiary hover:text-primary-container hover:bg-surface-container transition-colors"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-lg leading-none">expand_less</span>
+            Close snapshot
+          </button>
         </div>
       </div>
     </section>

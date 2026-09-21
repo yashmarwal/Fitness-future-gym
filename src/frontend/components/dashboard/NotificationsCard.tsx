@@ -56,7 +56,7 @@ const REMINDER_OPTIONS: { key: keyof Prefs; icon: string; label: string; hint: s
   { key: "water", icon: "water_drop", label: "Water Reminders", hint: "3x a day" },
   { key: "mealLog", icon: "restaurant", label: "Meal Log Reminders", hint: "if you haven't logged today" },
   { key: "streak", icon: "local_fire_department", label: "Streak Reminders", hint: "if you haven't checked in today" },
-  { key: "workout", icon: "fitness_center", label: "Workout Prompt", hint: "when you check in at the front desk" },
+  { key: "workout", icon: "fitness_center", label: "Workout Prompt", hint: "the moment you check in" },
 ];
 
 export default function NotificationsCard({ initialPrefs }: { initialPrefs: Prefs }) {

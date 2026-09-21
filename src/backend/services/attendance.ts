@@ -51,7 +51,7 @@ type MemberRow = {
 // membership number, no login needed) and the dashboard's own one-tap
 // button (already-authenticated member, looked up by id) — same cooldown,
 // same attendance row, same last_checked_in_at update either way.
-async function checkInMemberRow(member: MemberRow, source: "qr" | "dashboard"): Promise<CheckInResult> {
+async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   const db = getDb();
 
   if (!member.is_active) {
@@ -139,7 +139,7 @@ async function checkInMemberRow(member: MemberRow, source: "qr" | "dashboard"): 
 
   // "Start logging your workout" nudge. Best-effort: a failure here must
   // never undo or fail a check-in that has already been recorded.
-  await sendCheckInPrompt(member.id, { streak: newStreak, atFrontDesk: source === "qr" }).catch((err) =>
+  await sendCheckInPrompt(member.id, { streak: newStreak }).catch((err) =>
     console.error("[check-in] workout prompt failed:", err instanceof Error ? err.message : err)
   );
 
@@ -182,7 +182,7 @@ export async function checkInMember(membershipNumber: string): Promise<CheckInRe
     return { status: "not_found" };
   }
 
-  return checkInMemberRow(member, "qr");
+  return checkInMemberRow(member);
 }
 
 // Dashboard's one-tap button — the member is already authenticated, so no
@@ -194,7 +194,7 @@ export async function checkInMemberById(memberId: string): Promise<CheckInResult
     return { status: "not_found" };
   }
 
-  return checkInMemberRow(member, "dashboard");
+  return checkInMemberRow(member);
 }
 
 export type AttendanceStatus = {

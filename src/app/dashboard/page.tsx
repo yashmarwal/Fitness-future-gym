@@ -21,7 +21,7 @@ import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgress
 import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
 import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidget";
 import DashboardSnapshot from "@/frontend/components/dashboard/DashboardSnapshot";
-import WorkoutPromptModal from "@/frontend/components/dashboard/WorkoutPromptModal";
+import WorkoutPromptBanner from "@/frontend/components/dashboard/WorkoutPromptBanner";
 import RestTimerPill from "@/frontend/components/dashboard/RestTimerPill";
 
 const GREETING_SUBLINES: Record<string, string> = {
@@ -62,13 +62,17 @@ export default async function DashboardPage() {
       getWorkoutPromptEnabled(session!.memberId),
     ]);
 
-  // A front-desk QR check-in leaves a "start logging" notification behind; the
-  // popup uses it to greet the member on their next visit here. Skipped once
-  // they've already logged something since checking in (the check-in cooldown
-  // is 3 hours, so a prompt older than that belongs to a finished session).
-  const prompt = notifications.find((n) => n.type === "workout_prompt" && isWithinMinutes(n.createdAt, 170));
+  // After a front-desk QR check-in the popup greets the member on their next
+  // visit here. Skipped once they've already logged something since checking
+  // in (the check-in cooldown is 3 hours, so an older check-in belongs to a
+  // finished session). The check-in time doubles as the popup's identity.
+  const checkedInAt = attendanceStatus.lastCheckedInAt;
   const promptId =
-    prompt && !workoutLogs.some((log) => new Date(log.loggedAt) > new Date(prompt.createdAt)) ? prompt.id : null;
+    checkedInAt &&
+    isWithinMinutes(checkedInAt, 170) &&
+    !workoutLogs.some((log) => new Date(log.loggedAt) > new Date(checkedInAt))
+      ? checkedInAt
+      : null;
 
   const snapshot = buildMemberSnapshot({
     member: {
@@ -172,7 +176,7 @@ export default async function DashboardPage() {
 
       <DashboardSnapshot snapshot={snapshot} />
 
-      <WorkoutPromptModal
+      <WorkoutPromptBanner
         promptId={promptId}
         streak={member?.currentStreakDays ?? 0}
         todaysPlan={

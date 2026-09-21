@@ -47,7 +47,7 @@ create extension if not exists pgcrypto;
 -- logging after a front-desk QR check-in — see workoutPrompt.ts). Without it
 -- everything still works; the toggle just can't be switched on:
 --
---   alter table members add column if not exists notify_workout boolean not null default false;
+--   alter table members add column if not exists notify_workout boolean not null default true;
 --
 -- Also run these two — fixes the "Day Streak" dashboard stat silently
 -- capping at ~30 days once a member's older attendance rows get purged
@@ -133,7 +133,7 @@ create table if not exists members (
   notify_water boolean not null default false,
   notify_meal_log boolean not null default false,
   notify_streak boolean not null default false,
-  notify_workout boolean not null default false,
+  notify_workout boolean not null default true,
   created_at timestamptz not null default now()
 );
 

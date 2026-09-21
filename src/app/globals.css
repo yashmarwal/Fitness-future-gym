@@ -270,7 +270,26 @@ body {
   }
 }
 
+@keyframes banner-drop {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(6%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  /* backwards fill: the keyframes only shape the entrance, so the inline
+     transform used for swipe/exit takes over once it finishes. */
+  .animate-banner-drop {
+    animation: banner-drop 480ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
   .animate-snap-in {
     animation: snap-in 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
