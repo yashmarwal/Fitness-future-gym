@@ -26,12 +26,32 @@ export function redactSecrets(text: string): string {
   return text.replace(/gsk_[\w-]+|sk-[\w-]+|AIza[\w-]+|AQ\.[\w-]+|Bearer\s+\S+/g, "[redacted]");
 }
 
-export function friendlyAiError(status: number): string {
+// Pulls the provider's own one-line reason out of an error body (OpenAI-style
+// {"error":{"message","code"}}), redacted and capped. Only used for 400/404,
+// where "what exactly was rejected" is the whole diagnosis.
+function providerReason(body: string): { code: string; message: string } {
+  try {
+    const err = JSON.parse(body)?.error;
+    return {
+      code: typeof err?.code === "string" ? err.code : "",
+      message: typeof err?.message === "string" ? redactSecrets(err.message).slice(0, 200) : "",
+    };
+  } catch {
+    return { code: "", message: "" };
+  }
+}
+
+export function friendlyAiError(status: number, body = ""): string {
   if (status === 401 || status === 403) {
     return "The AI service rejected the API key — it may be wrong, revoked, or from a suspended account. Set a valid AI_API_KEY in the environment settings, then redeploy.";
   }
   if (status === 400 || status === 404) {
-    return "The AI service rejected the request — the model set in AI_MODEL may no longer exist. Check the provider's current model list and update AI_MODEL.";
+    const { code, message } = providerReason(body);
+    const modelGone = status === 404 || /model_not_found|model_decommissioned|model_not_active/.test(code) || /model.*(not exist|decommission|deprecat|not found)/i.test(message);
+    if (modelGone) {
+      return "The AI service says the model no longer exists. Set AI_MODEL in the environment settings to a current model from the provider's list (or remove AI_MODEL to use the default), then redeploy.";
+    }
+    return `The AI service rejected the request${message ? `: ${message}` : ""}. This isn't necessarily the model — try rephrasing or asking again.`;
   }
   if (status === 413) {
     return "That question pulled more data than the AI plan allows in one go — try asking something narrower.";

@@ -187,7 +187,7 @@ async function callAi(messages: ApiMessage[]): Promise<{ content: string | null;
       `AI provider error (${status}):`,
       redactSecrets(failureBody)
     );
-    throw new Error(friendlyAiError(status));
+    throw new Error(friendlyAiError(status, failureBody));
   }
 
   const data = await res.json();
