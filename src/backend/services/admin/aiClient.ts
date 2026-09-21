@@ -5,12 +5,14 @@ import "server-only";
 // Models, OpenAI itself. Switching provider is an environment-variable change:
 //   AI_API_KEY   (required) the provider's key
 //   AI_BASE_URL  (optional) default https://api.groq.com/openai/v1
-//   AI_MODEL     (optional) default llama-3.3-70b-versatile
+//   AI_MODEL     (optional) default openai/gpt-oss-120b
 // Free plans deprecate models from time to time; if the AI starts failing
 // with "the model may no longer exist", set AI_MODEL to a current one from
 // the provider's model list.
 const DEFAULT_BASE_URL = "https://api.groq.com/openai/v1";
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+// Groq retired llama-3.3-70b-versatile on 2026-08-16; gpt-oss-120b is their
+// production replacement and supports tool calling.
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 
 export function getAiConfig() {
   return {
@@ -18,6 +20,14 @@ export function getAiConfig() {
     baseUrl: (process.env.AI_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, ""),
     model: process.env.AI_MODEL || DEFAULT_MODEL,
   };
+}
+
+// gpt-oss models "think" before answering and those tokens count against
+// max_tokens, so a short answer budget can be eaten entirely by reasoning.
+// Low effort keeps replies fast and leaves room for the text. Only sent to
+// gpt-oss models — other providers/models may reject the field.
+export function modelExtras(model: string): { reasoning_effort?: "low" } {
+  return /gpt-oss/i.test(model) ? { reasoning_effort: "low" } : {};
 }
 
 // Provider error bodies can echo credentials (Google's did), so they never go
@@ -84,7 +94,8 @@ export async function generateAiText(params: {
       body: JSON.stringify({
         model,
         temperature: 0.3,
-        max_tokens: params.maxTokens ?? 500,
+        max_tokens: (params.maxTokens ?? 500) + 800, // headroom for reasoning tokens
+        ...modelExtras(model),
         messages: [
           { role: "system", content: params.system },
           { role: "user", content: params.user },

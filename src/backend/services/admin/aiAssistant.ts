@@ -5,7 +5,7 @@ import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/
 import { listFeePayments, sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
 import { listMembers, getMember } from "@/backend/services/admin/members";
 import { listTrialRegistrations } from "@/backend/services/admin/trials";
-import { friendlyAiError, getAiConfig, redactSecrets } from "@/backend/services/admin/aiClient";
+import { friendlyAiError, getAiConfig, modelExtras, redactSecrets } from "@/backend/services/admin/aiClient";
 
 // Curated, READ-ONLY tool surface for the admin AI assistant — every tool
 // here wraps a real, already-in-production admin function, never raw SQL
@@ -160,6 +160,7 @@ async function callAi(messages: ApiMessage[]): Promise<{ content: string | null;
       function: { name, description: tool.description, parameters: tool.parameters },
     })),
     tool_choice: "auto",
+    ...modelExtras(model),
   });
 
   // Some open models occasionally emit a malformed tool call, which the
