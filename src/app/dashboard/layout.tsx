@@ -1,21 +1,16 @@
 import { redirect } from "next/navigation";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
-import { getAttendanceStatus } from "@/backend/services/attendance";
 import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
 import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
 import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
-import AttendanceGate from "@/frontend/components/dashboard/AttendanceGate";
 import RestTimerAlarmWatcher from "@/frontend/components/dashboard/RestTimerAlarmWatcher";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getMemberSession();
   if (!session) redirect("/login");
 
-  const [member, { checkedIn }] = await Promise.all([
-    getMemberById(session.memberId),
-    getAttendanceStatus(session.memberId),
-  ]);
+  const member = await getMemberById(session.memberId);
   if (!member) redirect("/login");
 
   // Blocked (fee-abuse tool, admin/feeAbuse.ts) redirects to a dedicated
@@ -36,7 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <DashboardHeader fullName={member.fullName} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">
-        <AttendanceGate checkedIn={checkedIn}>{children}</AttendanceGate>
+        {children}
       </main>
       <DashboardTabBar />
     </div>

@@ -2,19 +2,15 @@
 
 import { useState } from "react";
 
-type Notification = {
-  id: string;
-  type: "broadcast" | "fee_reminder" | "account_blocked";
-  title: string;
-  body: string;
-  isRead: boolean;
-  createdAt: string;
-};
+import type { MemberNotification } from "@/backend/services/memberNotifications";
+
+type Notification = MemberNotification;
 
 const TYPE_ICON: Record<Notification["type"], string> = {
   broadcast: "campaign",
   fee_reminder: "payments",
   account_blocked: "lock",
+  workout_prompt: "fitness_center",
 };
 
 // initialNotifications comes from the server render (dashboard/page.tsx

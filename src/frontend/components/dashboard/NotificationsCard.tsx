@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { isPushSupported, subscribeToPush } from "@/frontend/lib/pushNotifications";
 
-// AttendanceCheckInButton.tsx / AttendanceGate.tsx dispatch this on a
+// AttendanceCheckInButton.tsx / AttendanceLock.tsx dispatch this on a
 // genuinely fresh check-in success (not a repeat-tap "cooldown" response) —
 // this card listens for it to draw attention to itself right after a
 // member does something positive, rather than only nagging on page load.
 export const CHECKIN_SUCCESS_EVENT = "ff-checkin-success";
 
-type Prefs = { water: boolean; mealLog: boolean; streak: boolean };
+type Prefs = { water: boolean; mealLog: boolean; streak: boolean; workout: boolean };
 // "checking" is the only state possible during SSR (and on the client's
 // first paint, before hydration) — Notification.permission genuinely can't
 // be known on the server, so branching a lazy useState initializer on
@@ -56,6 +56,7 @@ const REMINDER_OPTIONS: { key: keyof Prefs; icon: string; label: string; hint: s
   { key: "water", icon: "water_drop", label: "Water Reminders", hint: "3x a day" },
   { key: "mealLog", icon: "restaurant", label: "Meal Log Reminders", hint: "if you haven't logged today" },
   { key: "streak", icon: "local_fire_department", label: "Streak Reminders", hint: "if you haven't checked in today" },
+  { key: "workout", icon: "fitness_center", label: "Workout Prompt", hint: "when you check in at the front desk" },
 ];
 
 export default function NotificationsCard({ initialPrefs }: { initialPrefs: Prefs }) {

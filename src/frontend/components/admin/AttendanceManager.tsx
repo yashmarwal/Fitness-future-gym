@@ -7,7 +7,7 @@ import type { TodayAttendanceRow, FeeTag } from "@/backend/services/admin/attend
 import MemberSearchSelect from "@/frontend/components/admin/MemberSearchSelect";
 
 const SECTIONS: { key: "morning" | "evening" | "other"; title: string; hint: string }[] = [
-  { key: "morning", title: "Morning", hint: "6:00 AM – 11:00 AM" },
+  { key: "morning", title: "Morning", hint: "6:00 AM – 12:00 PM" },
   { key: "evening", title: "Evening", hint: "4:00 PM – 10:30 PM" },
   { key: "other", title: "Other", hint: "Outside normal hours (manual entries)" },
 ];

@@ -1,9 +1,15 @@
 import { getMemberSession } from "@/backend/auth/session";
+import { getAttendanceStatus } from "@/backend/services/attendance";
 import { listWorkoutPlans } from "@/backend/services/workoutPlans";
+import AttendanceLock from "@/frontend/components/dashboard/AttendanceLock";
 import WorkoutPlanner from "@/frontend/components/dashboard/WorkoutPlanner";
 
 export default async function WorkoutPlanPage() {
   const session = await getMemberSession();
+  // Server-side check first — see the workouts page.
+  const { checkedIn } = await getAttendanceStatus(session!.memberId);
+  if (!checkedIn) return <AttendanceLock />;
+
   const plans = await listWorkoutPlans(session!.memberId);
 
   return (

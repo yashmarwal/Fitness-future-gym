@@ -22,7 +22,7 @@ export default function MuscleProgressBoard({
   // persist the update" read, not something to re-derive on every render,
   // and the project's set-state-in-effect lint rule specifically flags
   // calling setState synchronously inside an effect body for exactly this
-  // kind of on-mount computation (see AttendanceGate.tsx/PersonalNoteArea.tsx
+  // kind of on-mount computation (see PersonalNoteArea.tsx
   // for the same class of fix elsewhere in this codebase).
   const [leveledUp, setLeveledUp] = useState<{ category: string; rankName: string }[]>(() => {
     if (typeof window === "undefined") return [];

@@ -7,7 +7,7 @@ async function handleSignOut() {
 
 // A full-screen wall, not the usual attendance gate — this is a punitive
 // access-control state (fee-abuse tool, admin/feeAbuse.ts), not a routine
-// "haven't checked in recently" nudge, so unlike AttendanceGate it blocks
+// "haven't checked in recently" nudge, so unlike AttendanceLock it blocks
 // everything, including nutrition logging. Rendered by dashboard/layout.tsx
 // INSTEAD of the normal header/nav/gate shell entirely, before any of it
 // mounts, so there's no route a blocked member can reach.

@@ -3,6 +3,11 @@ export function daysUntil(dateIso: string): number {
   return Math.ceil((target.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
+// Whether an instant is within the last N minutes.
+export function isWithinMinutes(dateIso: string, minutes: number): boolean {
+  return Date.now() - new Date(dateIso).getTime() < minutes * 60_000;
+}
+
 export function isPastDate(dateIso: string): boolean {
   return new Date(dateIso).getTime() < Date.now();
 }

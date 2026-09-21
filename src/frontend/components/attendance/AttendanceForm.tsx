@@ -51,7 +51,7 @@ export default function AttendanceForm() {
       } else if (data.status === "outside_hours") {
         setState({
           phase: "error",
-          message: "The floor is closed right now. Attendance can only be marked 6:00–11:00 AM or 4:00–10:30 PM.",
+          message: "The floor is closed right now. Attendance can only be marked 6:00 AM–12:00 PM or 4:00–10:30 PM.",
         });
       } else {
         setState({ phase: "error", message: data.message ?? "Something went wrong." });

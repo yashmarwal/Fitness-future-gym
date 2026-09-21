@@ -3,6 +3,7 @@ import { cache } from "react";
 import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
 import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
+import { sendCheckInPrompt } from "@/backend/services/workoutPrompt";
 import type { CheckInResult } from "@/types/member";
 
 const COOLDOWN_HOURS = 3;
@@ -14,7 +15,7 @@ const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 // in production even though it happened to look right in local dev on an
 // IST machine.
 const MORNING_START_MIN = 6 * 60; // 6:00 AM
-const MORNING_END_MIN = 11 * 60; // 11:00 AM
+const MORNING_END_MIN = 12 * 60; // 12:00 PM
 const EVENING_START_MIN = 16 * 60; // 4:00 PM
 const EVENING_END_MIN = 22 * 60 + 30; // 10:30 PM
 
@@ -50,7 +51,7 @@ type MemberRow = {
 // membership number, no login needed) and the dashboard's own one-tap
 // button (already-authenticated member, looked up by id) — same cooldown,
 // same attendance row, same last_checked_in_at update either way.
-async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
+async function checkInMemberRow(member: MemberRow, source: "qr" | "dashboard"): Promise<CheckInResult> {
   const db = getDb();
 
   if (!member.is_active) {
@@ -136,6 +137,12 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
     if (fallbackError) throw new Error(`Failed to update member: ${fallbackError.message}`);
   }
 
+  // "Start logging your workout" nudge. Best-effort: a failure here must
+  // never undo or fail a check-in that has already been recorded.
+  await sendCheckInPrompt(member.id, { streak: newStreak, atFrontDesk: source === "qr" }).catch((err) =>
+    console.error("[check-in] workout prompt failed:", err instanceof Error ? err.message : err)
+  );
+
   return {
     status: "success",
     member: {
@@ -175,7 +182,7 @@ export async function checkInMember(membershipNumber: string): Promise<CheckInRe
     return { status: "not_found" };
   }
 
-  return checkInMemberRow(member);
+  return checkInMemberRow(member, "qr");
 }
 
 // Dashboard's one-tap button — the member is already authenticated, so no
@@ -187,7 +194,7 @@ export async function checkInMemberById(memberId: string): Promise<CheckInResult
     return { status: "not_found" };
   }
 
-  return checkInMemberRow(member);
+  return checkInMemberRow(member, "dashboard");
 }
 
 export type AttendanceStatus = {

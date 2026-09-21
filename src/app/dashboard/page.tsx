@@ -6,7 +6,11 @@ import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import { listNotifications } from "@/backend/services/memberNotifications";
 import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
 import { listPersonalRecords } from "@/backend/services/personalRecords";
-import { daysUntil, getIstHour, greetingForHour } from "@/frontend/lib/date";
+import { listWorkoutLogs } from "@/backend/services/workouts";
+import { listTodaysFoodLogs } from "@/backend/services/nutrition";
+import { getWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
+import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
+import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
@@ -16,6 +20,8 @@ import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBann
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
 import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
 import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidget";
+import DashboardSnapshot from "@/frontend/components/dashboard/DashboardSnapshot";
+import WorkoutPromptModal from "@/frontend/components/dashboard/WorkoutPromptModal";
 import RestTimerPill from "@/frontend/components/dashboard/RestTimerPill";
 
 const GREETING_SUBLINES: Record<string, string> = {
@@ -41,7 +47,7 @@ const QUICK_LINKS = [
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords] =
+  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords, workoutLogs, todaysFood, workoutPromptEnabled] =
     await Promise.all([
       getMemberById(session!.memberId),
       getRecentAttendance(session!.memberId, 60),
@@ -50,7 +56,34 @@ export default async function DashboardPage() {
       listNotifications(session!.memberId),
       getMemberMuscleProgress(session!.memberId),
       listPersonalRecords(session!.memberId),
+      // 400 comfortably covers two weeks of even a heavy logger (logs are kept 30 days).
+      listWorkoutLogs(session!.memberId, 400),
+      listTodaysFoodLogs(session!.memberId),
+      getWorkoutPromptEnabled(session!.memberId),
     ]);
+
+  // A front-desk QR check-in leaves a "start logging" notification behind; the
+  // popup uses it to greet the member on their next visit here. Skipped once
+  // they've already logged something since checking in (the check-in cooldown
+  // is 3 hours, so a prompt older than that belongs to a finished session).
+  const prompt = notifications.find((n) => n.type === "workout_prompt" && isWithinMinutes(n.createdAt, 170));
+  const promptId =
+    prompt && !workoutLogs.some((log) => new Date(log.loggedAt) > new Date(prompt.createdAt)) ? prompt.id : null;
+
+  const snapshot = buildMemberSnapshot({
+    member: {
+      currentStreakDays: member?.currentStreakDays ?? 0,
+      longestStreakDays: member?.longestStreakDays ?? 0,
+      feeDueDate: member?.feeDueDate ?? null,
+      plan: member?.plan ?? null,
+      joinedAt: member?.joinedAt ?? null,
+    },
+    attendance,
+    workoutLogs,
+    todaysFood,
+    personalRecords,
+    muscleProgress,
+  });
 
   const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
   const greeting = greetingForHour(getIstHour());
@@ -103,6 +136,7 @@ export default async function DashboardPage() {
           water: member?.notifyWater ?? false,
           mealLog: member?.notifyMealLog ?? false,
           streak: member?.notifyStreak ?? false,
+          workout: workoutPromptEnabled,
         }}
       />
 
@@ -135,6 +169,18 @@ export default async function DashboardPage() {
       </div>
 
       <WorkoutTimerWidget />
+
+      <DashboardSnapshot snapshot={snapshot} />
+
+      <WorkoutPromptModal
+        promptId={promptId}
+        streak={member?.currentStreakDays ?? 0}
+        todaysPlan={
+          todaysWorkout
+            ? { label: todaysWorkout.focus || todaysWorkout.day, exerciseCount: todaysWorkout.exercises.length }
+            : null
+        }
+      />
 
       <MuscleProgressTeaser progress={muscleProgress} />
 

@@ -8,10 +8,10 @@ import type { AttendanceRow } from "@/types/admin";
 // check-in can even happen under (a manual admin-added entry is the only
 // way a row lands outside these, which is what the "other" bucket is for).
 // Note these differ slightly from the marketing site's Location page copy
-// (5am-11pm there vs 6-11am/4-10:30pm here) — that's a separate, real
+// (5am-11pm there vs 6am-12pm/4-10:30pm here) — that's a separate, real
 // inconsistency worth reconciling later, not something fixed by this file.
 const MORNING_START_MIN = 6 * 60; // 6:00 AM
-const MORNING_END_MIN = 11 * 60; // 11:00 AM
+const MORNING_END_MIN = 12 * 60; // 12:00 PM
 const EVENING_START_MIN = 16 * 60; // 4:00 PM
 const EVENING_END_MIN = 22 * 60 + 30; // 10:30 PM
 

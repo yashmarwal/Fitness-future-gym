@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
 import { updateNotificationPrefs } from "@/backend/services/member";
+import { setWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();
@@ -20,6 +21,9 @@ export async function POST(request: Request) {
 
   try {
     await updateNotificationPrefs(session.memberId, prefs);
+    // Its own column (and its own migration), so it's saved separately from
+    // the others — see workoutPrompt.ts.
+    if (typeof body.workout === "boolean") await setWorkoutPromptEnabled(session.memberId, body.workout);
     return NextResponse.json({ status: "ok" });
   } catch (err) {
     console.error(err);
