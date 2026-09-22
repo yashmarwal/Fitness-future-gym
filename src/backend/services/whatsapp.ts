@@ -15,7 +15,8 @@ export type WhatsAppTemplate =
   | "welcome_card"
   | "trial_pass"
   | "trial_reminder"
-  | "account_blocked";
+  | "account_blocked"
+  | "account_unblocked";
 
 const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   otp: "WHATSAPP_TEMPLATE_OTP",
@@ -26,6 +27,7 @@ const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   trial_pass: "WHATSAPP_TEMPLATE_TRIAL_PASS",
   trial_reminder: "WHATSAPP_TEMPLATE_TRIAL_REMINDER",
   account_blocked: "WHATSAPP_TEMPLATE_ACCOUNT_BLOCKED",
+  account_unblocked: "WHATSAPP_TEMPLATE_ACCOUNT_UNBLOCKED",
 };
 
 const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
@@ -37,6 +39,7 @@ const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
   trial_pass: "ff_trial_pass",
   trial_reminder: "ff_trial_reminder",
   account_blocked: "ff_account_blocked",
+  account_unblocked: "ff_account_unblocked",
 };
 
 function isConfigured() {

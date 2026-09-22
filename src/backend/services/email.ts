@@ -22,6 +22,7 @@ export type EmailTemplate =
   | "trial_pass"
   | "trial_reminder"
   | "account_blocked"
+  | "account_unblocked"
   | "daily_summary"
   | "weekly_summary"
   | "payment_receipt";
@@ -403,6 +404,19 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
             heading("Membership On Hold") +
             paragraph(`Hi ${escapeHtml(name)}, your membership fee has been overdue for a while, so check-in and dashboard access are on hold for now.`) +
             paragraph("Please pay at the front desk — cash or UPI, whichever's easiest. Everything reopens the moment it's recorded."),
+        }),
+      };
+    }
+    case "account_unblocked": {
+      const [name] = params;
+      return {
+        subject: "Fitness Future Gym — Access Restored",
+        html: wrapEmail({
+          preheader: "Your check-in and dashboard access have been restored.",
+          bodyHtml:
+            heading("Access Restored") +
+            paragraph(`Hi ${escapeHtml(name)}, your membership is back in good standing — check-in and dashboard access are restored.`) +
+            paragraph("See you on the floor!"),
         }),
       };
     }

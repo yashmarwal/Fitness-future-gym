@@ -124,18 +124,65 @@ export async function blockMember(id: string, reason: string): Promise<void> {
   }
 }
 
+// Tells the member their access is back, on every channel — the same
+// courtesy blocking already gets, just in reverse. Lives in this one shared
+// function rather than at each call site so both ways a member actually
+// gets unblocked (an admin doing it directly, or recordManualPayment lifting
+// it automatically once a fee is paid) send it for free, with nothing to
+// keep in sync between them.
+async function notifyUnblocked(id: string, member: { full_name: string; phone: string | null; email: string | null } | null): Promise<void> {
+  if (!member) return;
+  if (member.phone) {
+    await sendWhatsAppTemplate({
+      phone: member.phone,
+      template: "account_unblocked",
+      bodyParams: [member.full_name],
+      memberId: id,
+    }).catch(() => {});
+  }
+  if (member.email) {
+    await sendEmailTemplate({
+      to: member.email,
+      template: "account_unblocked",
+      bodyParams: [member.full_name],
+      memberId: id,
+    }).catch(() => {});
+  }
+  await createNotification({
+    memberId: id,
+    type: "account_unblocked",
+    title: "Membership Reactivated",
+    body: "Your check-in and dashboard access have been restored. See you on the floor!",
+  }).catch(() => {});
+  await sendPushToMember(id, {
+    title: "Membership Reactivated",
+    body: "Your check-in and dashboard access have been restored. See you on the floor!",
+    url: "/dashboard",
+  }).catch(() => {});
+}
+
 export async function unblockMember(id: string): Promise<void> {
   const db = getDb();
-  const { error } = await db
+  const { data, error } = await db
     .from("members")
     .update({ is_frozen: false, frozen_reason: null, frozen_at: null })
-    .eq("id", id);
+    .eq("id", id)
+    .select("full_name, phone, email")
+    .maybeSingle();
 
   if (error) {
     if (!isMissingColumnError(error)) throw new Error(`Failed to unblock member: ${error.message}`);
-    const { error: fallbackError } = await db.from("members").update({ is_frozen: false }).eq("id", id);
+    const { data: fallbackData, error: fallbackError } = await db
+      .from("members")
+      .update({ is_frozen: false })
+      .eq("id", id)
+      .select("full_name, phone, email")
+      .maybeSingle();
     if (fallbackError) throw new Error(`Failed to unblock member: ${fallbackError.message}`);
+    await notifyUnblocked(id, fallbackData);
+    return;
   }
+  await notifyUnblocked(id, data);
 }
 
 const AUTO_BLOCK_OVERDUE_DAYS = 5;
