@@ -94,7 +94,12 @@ export async function sendWhatsAppTemplate(params: {
   memberId?: string;
 }): Promise<void> {
   const { phone, template, bodyParams, memberId } = params;
-  const templateName = process.env[TEMPLATE_NAME_ENV[template]] ?? TEMPLATE_NAME_DEFAULT[template];
+  // `??` only falls back on null/undefined, not on an empty string — an env
+  // var that exists in Vercel with a blank value (the key added, nothing
+  // typed into the value field) would silently send an empty template name
+  // to Meta, which fails every single send with "The parameter template.name
+  // is required" and no obvious cause. `|| ` (falsy) catches that case too.
+  const templateName = process.env[TEMPLATE_NAME_ENV[template]] || TEMPLATE_NAME_DEFAULT[template];
 
   let status: "sent" | "failed" = "sent";
   let error: string | undefined;
@@ -114,13 +119,18 @@ export async function sendWhatsAppTemplate(params: {
   }
 
   const db = getDb();
-  await db.from("whatsapp_messages").insert({
+  const { error: logError } = await db.from("whatsapp_messages").insert({
     member_id: memberId ?? null,
     phone,
     template,
     status,
     error: error ?? null,
   });
+  // Never let a logging failure hide the real send result — but do surface
+  // it, since a silently-failing insert here (a migration not run, a schema
+  // mismatch) means the whatsapp_messages table stops reflecting reality
+  // with nothing pointing at why.
+  if (logError) console.error("[whatsapp] failed to log message:", logError.message);
 
   if (status === "failed") {
     throw new Error(error);
