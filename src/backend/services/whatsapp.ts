@@ -43,7 +43,14 @@ function isConfigured() {
   return Boolean(process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
 }
 
-async function sendViaCloudApi(phone: string, templateName: string, bodyParams: string[]) {
+// Meta rejects template variables containing newlines, tabs or runs of 4+
+// spaces (error 132018), and caps their length. Admin broadcasts are free text,
+// so flatten them here instead of letting a multi-line offer fail every send.
+function cleanParam(text: string): string {
+  return text.replace(/\s*[\r\n\t]+\s*/g, " ").replace(/ {4,}/g, "   ").trim().slice(0, 1024);
+}
+
+async function sendViaCloudApi(phone: string, templateName: string, bodyParams: string[], isAuthTemplate: boolean) {
   const url = `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 
   const res = await fetch(url, {
@@ -58,12 +65,17 @@ async function sendViaCloudApi(phone: string, templateName: string, bodyParams: 
       type: "template",
       template: {
         name: templateName,
-        language: { code: "en_US" },
+        language: { code: process.env.WHATSAPP_TEMPLATE_LANG || "en_US" },
         components: [
           {
             type: "body",
-            parameters: bodyParams.map((text) => ({ type: "text", text })),
+            parameters: bodyParams.map((text) => ({ type: "text", text: cleanParam(text) })),
           },
+          // Authentication (OTP) templates carry a "Copy code" button, and Meta
+          // requires the code to be passed to it as well as to the body.
+          ...(isAuthTemplate
+            ? [{ type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: cleanParam(bodyParams[0]) }] }]
+            : []),
         ],
       },
     }),
@@ -93,7 +105,7 @@ export async function sendWhatsAppTemplate(params: {
     );
   } else {
     try {
-      await sendViaCloudApi(phone, templateName, bodyParams);
+      await sendViaCloudApi(phone, templateName, bodyParams, template === "otp");
     } catch (err) {
       status = "failed";
       error = err instanceof Error ? err.message : String(err);
