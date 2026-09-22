@@ -88,6 +88,16 @@ create extension if not exists pgcrypto;
 -- one field deliverMembershipCard actually requires to send the card:
 --
 --   alter table legacy_fee_imports add column if not exists fee_amount numeric(10, 2);
+--
+-- Also run this — the fitness-onboarding wizard's saved answers (height,
+-- weight, age, gender, activity level, goal, experience, days/week; see
+-- fitnessProfile.ts). One jsonb column rather than several scalar ones:
+-- nothing ever filters members by an individual field in SQL, it's always
+-- read and written as one unit, matching workout_plans.days' existing use
+-- of jsonb for the same reason. Without this migration the wizard still
+-- shows results (all computed client-side), it just can't save them.
+--
+--   alter table members add column if not exists fitness_profile jsonb;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -134,6 +144,10 @@ create table if not exists members (
   notify_meal_log boolean not null default false,
   notify_streak boolean not null default false,
   notify_workout boolean not null default true,
+  -- The fitness-onboarding wizard's saved answers — see the migration note
+  -- above and fitnessProfile.ts. Null until a member completes (or redoes)
+  -- the wizard.
+  fitness_profile jsonb,
   created_at timestamptz not null default now()
 );
 

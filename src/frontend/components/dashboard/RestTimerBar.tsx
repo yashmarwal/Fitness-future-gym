@@ -107,6 +107,19 @@ export default function RestTimerBar() {
           </button>
         ) : (
           <>
+            {/* Reset sits beside the volume toggle, not after Start — so
+                Start is always the last, right-aligned element in the row,
+                same as WorkoutTimerBar's lone Start/Stop button one bar up.
+                With Reset trailing (its old spot) the two bars' Start
+                buttons landed at different x-positions when stacked. */}
+            <button
+              type="button"
+              onClick={() => resetRestTimer()}
+              aria-label="Reset rest timer"
+              className="shrink-0 flex items-center justify-center w-8 h-8 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined text-base leading-none">restart_alt</span>
+            </button>
             <button
               type="button"
               onClick={() => (state.running ? pauseRestTimer() : startRestTimer())}
@@ -115,14 +128,6 @@ export default function RestTimerBar() {
             >
               <span className="material-symbols-outlined text-sm leading-none">{state.running ? "pause" : "play_arrow"}</span>
               {state.running ? "Pause" : "Start"}
-            </button>
-            <button
-              type="button"
-              onClick={() => resetRestTimer()}
-              aria-label="Reset rest timer"
-              className="shrink-0 flex items-center justify-center w-8 h-8 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
-            >
-              <span className="material-symbols-outlined text-base leading-none">restart_alt</span>
             </button>
           </>
         )}

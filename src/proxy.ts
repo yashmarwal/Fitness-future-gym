@@ -36,7 +36,14 @@ export async function proxy(request: NextRequest) {
     const token = request.cookies.get(MEMBER_COOKIE)?.value;
     const session = token ? await verifySession<MemberSession>(token) : null;
     if (!session) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Signup, not login: the only ways to land on /dashboard with no
+      // session are a first-ever visit (tapping the tab bar's Dashboard
+      // icon) or a session that's expired/been cleared — either way, most
+      // people hitting this have never created an account, so a login form
+      // asking for credentials they don't have is the wrong default. Signup
+      // itself links back to /login for the real "I already have an
+      // account" case (see SignupForm.tsx).
+      return NextResponse.redirect(new URL("/signup", request.url));
     }
 
     // Sliding session: every dashboard visit re-signs the cookie with a

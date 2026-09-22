@@ -5,6 +5,8 @@ import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
 import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
 import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
 import RestTimerAlarmWatcher from "@/frontend/components/dashboard/RestTimerAlarmWatcher";
+import WorkoutTimerActivityWatcher from "@/frontend/components/dashboard/WorkoutTimerActivityWatcher";
+import CheckInCelebration from "@/frontend/components/dashboard/CheckInCelebration";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getMemberSession();
@@ -28,6 +30,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
           dashboard page is currently open — see the component's own
           comment for why this can't live on the workouts page alone. */}
       <RestTimerAlarmWatcher />
+      <WorkoutTimerActivityWatcher />
+      <CheckInCelebration />
       <DashboardHeader fullName={member.fullName} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">

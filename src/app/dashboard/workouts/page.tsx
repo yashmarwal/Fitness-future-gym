@@ -5,6 +5,7 @@ import { listWorkoutLogs } from "@/backend/services/workouts";
 import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import AttendanceLock from "@/frontend/components/dashboard/AttendanceLock";
 import WorkoutLogForm from "@/frontend/components/dashboard/WorkoutLogForm";
+import WorkoutTimerBar from "@/frontend/components/dashboard/WorkoutTimerBar";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function WorkoutsPage() {
@@ -31,6 +32,8 @@ export default async function WorkoutsPage() {
           Plan Workouts
         </Link>
       </div>
+
+      <WorkoutTimerBar />
 
       <WorkoutLogForm logs={logs} todaysPlan={todaysPlan} />
 

@@ -1,30 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  useWorkoutTimerState,
-  startTimer,
-  stopTimer,
-  tickWorkoutTimer,
-  recordWorkoutActivity,
-  getPreviousDays,
-  getTodayMs,
-  formatDuration,
-  FLUSH_INTERVAL_MS,
-} from "@/frontend/lib/workoutTimer";
-
-const ACTIVITY_EVENTS = ["mousemove", "keydown", "click", "touchstart", "scroll"] as const;
-// Only ever write to localStorage on activity at most this often — a raw
-// mousemove listener fires far too fast to persist on every event.
-const ACTIVITY_WRITE_THROTTLE_MS = 5_000;
+import { useEffect, useState } from "react";
+import { useWorkoutTimerState, startTimer, stopTimer, getPreviousDays, getTodayMs, formatDuration } from "@/frontend/lib/workoutTimer";
 
 // A separate stat from the rest timer (RestTimer.tsx, untouched) — this
-// tracks time spent actually working out, running in the background while
-// the member is on this page until they stop it or go quiet for 10 minutes.
-// The big number is always *today's* time and starts from zero every day;
-// the last few days are shown beneath it as history (5 days kept in total). Local-only (see workoutTimer.ts) and mounted on the dashboard
-// home page, directly above the Muscle Progress teaser, so "inactivity on
-// dashboard" is tracked for exactly as long as this widget is on screen.
+// tracks time spent actually working out, until the member stops it or goes
+// quiet for 10 minutes. The big number is always *today's* time and starts
+// from zero every day; the last few days are shown beneath it as history (5
+// days kept in total). Local-only (see workoutTimer.ts).
+//
+// Purely a live display + the Start/Stop button — the actual ticking,
+// flushing, and inactivity detection (including the activity listeners that
+// keep "inactivity" meaning genuine inactivity anywhere in the dashboard,
+// not just while this widget happens to be mounted) live in
+// WorkoutTimerActivityWatcher, mounted once at the dashboard layout level.
 export default function WorkoutTimerWidget() {
   const state = useWorkoutTimerState();
   // Holds the live wall clock for the running-segment display. Starts at a
@@ -34,7 +23,6 @@ export default function WorkoutTimerWidget() {
   // ever updated from inside the interval callback below, never read via a
   // fresh Date.now() call during render.
   const [now, setNow] = useState(0);
-  const lastActivityWriteRef = useRef(0);
 
   // Live display tick — purely visual. The zero-delay first tick gets the
   // real clock in immediately instead of showing "0s" for a full second.
@@ -46,43 +34,6 @@ export default function WorkoutTimerWidget() {
       clearInterval(id);
     };
   }, []);
-
-  // Settle a timer left "running" by a closed tab right away (it auto-stops
-  // once the quiet window has passed) instead of waiting for the first
-  // 15-second flush tick.
-  useEffect(() => {
-    tickWorkoutTimer();
-  }, []);
-
-  // Persisted flush + inactivity check, independent of the display tick.
-  useEffect(() => {
-    const id = setInterval(() => tickWorkoutTimer(), FLUSH_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, []);
-
-  // Activity listeners — only registered while the timer is actually
-  // running, so this widget costs nothing when idle.
-  useEffect(() => {
-    if (!state.running) return;
-
-    function onActivity() {
-      const now = Date.now();
-      if (now - lastActivityWriteRef.current < ACTIVITY_WRITE_THROTTLE_MS) return;
-      lastActivityWriteRef.current = now;
-      recordWorkoutActivity(now);
-    }
-    for (const evt of ACTIVITY_EVENTS) window.addEventListener(evt, onActivity, { passive: true });
-
-    function onVisibilityChange() {
-      if (document.visibilityState === "hidden") tickWorkoutTimer();
-    }
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    return () => {
-      for (const evt of ACTIVITY_EVENTS) window.removeEventListener(evt, onActivity);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [state.running]);
 
   function handleToggle() {
     if (state.running) stopTimer();

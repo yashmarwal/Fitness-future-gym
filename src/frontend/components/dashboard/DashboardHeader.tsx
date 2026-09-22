@@ -1,9 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useWorkoutTimerState } from "@/frontend/lib/workoutTimer";
 
 export default function DashboardHeader({ fullName }: { fullName: string }) {
   const router = useRouter();
+  // Reads the same shared, persistent timer state as WorkoutTimerWidget/Bar
+  // (workoutTimer.ts) — this is purely a status readout, it doesn't tick or
+  // own the timer itself.
+  const { running } = useWorkoutTimerState();
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -19,7 +24,14 @@ export default function DashboardHeader({ fullName }: { fullName: string }) {
         <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
           Welcome Back
         </span>
-        <span className="font-display text-xl text-on-surface uppercase tracking-wide">{fullName}</span>
+        <span className="font-display text-xl text-on-surface uppercase tracking-wide leading-tight">{fullName}</span>
+        {/* Green/red rather than the site's usual orange accent — a
+            deliberate, literal status color (go/stop) distinct from the
+            brand palette, so it reads instantly without needing a legend. */}
+        <span className={`flex items-center gap-1 font-label text-[9px] uppercase tracking-wider ${running ? "text-green-400" : "text-error"}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${running ? "bg-green-400 animate-pulse" : "bg-error"}`} />
+          {running ? "Working Out" : "Not Working Out"}
+        </span>
       </div>
       <button
         onClick={handleLogout}

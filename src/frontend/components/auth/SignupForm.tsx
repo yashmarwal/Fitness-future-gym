@@ -119,8 +119,12 @@ export default function SignupForm() {
         // A genuine hard navigation, not router.push() — see LoginForm.tsx
         // for why this is deliberately the one place that bypasses
         // Next.js's client-side router, as the most reliable way to
-        // confirm the new session cookie actually landed.
-        window.location.href = "/dashboard";
+        // confirm the new session cookie actually landed. Goes to the
+        // fitness-onboarding wizard, not straight to the dashboard — every
+        // completion of this form is a brand-new account, so this is the
+        // one and only moment a redirect straight to it is correct (an
+        // existing member logging in never passes through here).
+        window.location.href = "/onboarding";
       } else if (data.status === "invalid") {
         setError("Incorrect or expired code — double-check it, or tap Resend Code below for a fresh one.");
       } else if (data.status === "email_already_registered") {

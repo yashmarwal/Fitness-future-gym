@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ExerciseSearchField from "@/frontend/components/dashboard/ExerciseSearchField";
 import { WORKOUT_TEMPLATES, type WorkoutTemplate } from "@/frontend/lib/workoutTemplates";
@@ -43,12 +43,52 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
     setBuilding(true);
   }
 
-  function startFromTemplate(template: WorkoutTemplate) {
+  function loadIntoBuilder(planName: string, planDays: WorkoutPlanDay[]) {
     setEditingId(null);
-    setName(template.name);
-    setDays(template.days.map((d) => ({ ...d, exercises: d.exercises.map((e) => ({ ...e })) })));
+    setName(planName);
+    setDays(planDays.map((d) => ({ ...d, exercises: d.exercises.map((e) => ({ ...e })) })));
     setBuilding(true);
   }
+
+  function startFromTemplate(template: WorkoutTemplate) {
+    loadIntoBuilder(template.name, template.days);
+  }
+
+  // Arriving from the fitness-onboarding wizard's "Use This Plan" button —
+  // either a hand-built template (?template=<id>) or a freshly generated
+  // plan (?generated=1, handed off via sessionStorage since a full plan's
+  // JSON doesn't comfortably fit a URL — see FitnessOnboardingWizard.tsx).
+  // Either way this opens straight into the same preview-then-confirm
+  // builder as tapping "Use This Template" by hand — nothing is auto-saved,
+  // the member still reviews it here and taps Save themselves. Runs once on
+  // mount only, so it never re-fires and stomps on an in-progress edit.
+  useEffect(() => {
+    const templateId = searchParams.get("template");
+    const isGenerated = searchParams.get("generated") === "1";
+    if (!templateId && !isGenerated) return;
+
+    let planToLoad: { name: string; days: WorkoutPlanDay[] } | null = null;
+    if (templateId) {
+      const template = WORKOUT_TEMPLATES.find((t) => t.id === templateId);
+      if (template) planToLoad = { name: template.name, days: template.days };
+    } else {
+      try {
+        const raw = window.sessionStorage.getItem("ff_generated_plan");
+        window.sessionStorage.removeItem("ff_generated_plan");
+        if (raw) planToLoad = JSON.parse(raw) as { name: string; days: WorkoutPlanDay[] };
+      } catch {
+        planToLoad = null;
+      }
+    }
+    if (!planToLoad) return;
+
+    // Deferred out of the effect's synchronous body, same escape used
+    // elsewhere in this app (e.g. WorkoutPromptBanner's schedule()).
+    const plan = planToLoad;
+    const timer = setTimeout(() => loadIntoBuilder(plan.name, plan.days), 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function startEdit(plan: WorkoutPlan) {
     setEditingId(plan.id);

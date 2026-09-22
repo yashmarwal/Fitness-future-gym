@@ -9,6 +9,7 @@ import { listPersonalRecords } from "@/backend/services/personalRecords";
 import { listWorkoutLogs } from "@/backend/services/workouts";
 import { listTodaysFoodLogs } from "@/backend/services/nutrition";
 import { getWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
+import { getFitnessProfile } from "@/backend/services/fitnessProfile";
 import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
@@ -23,6 +24,8 @@ import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidg
 import DashboardSnapshot from "@/frontend/components/dashboard/DashboardSnapshot";
 import WorkoutPromptBanner from "@/frontend/components/dashboard/WorkoutPromptBanner";
 import RestTimerPill from "@/frontend/components/dashboard/RestTimerPill";
+import FitnessProfileNudge from "@/frontend/components/dashboard/FitnessProfileNudge";
+import GeneratePlanBar from "@/frontend/components/dashboard/GeneratePlanBar";
 
 const GREETING_SUBLINES: Record<string, string> = {
   "Good Morning": "Early floor time — get the first set in.",
@@ -32,22 +35,44 @@ const GREETING_SUBLINES: Record<string, string> = {
   "Still Grinding": "Burning the midnight oil.",
 };
 
+// `gated: true` marks a link to one of the three attendance-locked pages
+// (workouts, plan, timer — see AttendanceLock.tsx / getAttendanceStatus)
+// — everything else here works with no check-in, matching the exemptions
+// already decided (snapshot, attendance history, muscle progress, streak,
+// fee status, membership card, personal records). Still clickable either
+// way: tapping a gated one while not checked in just lands on that page's
+// own "mark attendance" screen, same as always — this is only about giving
+// a visual heads-up before the tap, not a new block.
 const QUICK_LINKS = [
-  { href: "/dashboard/card", label: "Membership Card", icon: "badge" },
-  { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month" },
-  { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center" },
-  { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech" },
-  { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note" },
-  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome" },
-  { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant" },
-  { href: "/dashboard/timer", label: "Rest Timer", icon: "timer" },
-  { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department" },
-  { href: "/dashboard/fees", label: "Fee Status", icon: "payments" },
+  { href: "/dashboard/card", label: "Membership Card", icon: "badge", gated: false },
+  { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false },
+  { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true },
+  { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false },
+  { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note", gated: true },
+  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome", gated: true },
+  { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant", gated: false },
+  { href: "/dashboard/timer", label: "Rest Timer", icon: "timer", gated: true },
+  { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false },
+  { href: "/dashboard/fees", label: "Fee Status", icon: "payments", gated: false },
 ];
+
+// Small badge shown on a gated tile/link when the member hasn't checked in
+// yet — the dim/grayscale treatment alone can read as "broken" rather than
+// "locked," this makes the reason explicit at a glance.
+function LockBadge() {
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center bg-surface-container-lowest/90 text-tertiary"
+    >
+      <span className="material-symbols-outlined text-xs leading-none">lock</span>
+    </span>
+  );
+}
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords, workoutLogs, todaysFood, workoutPromptEnabled] =
+  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords, workoutLogs, todaysFood, workoutPromptEnabled, fitnessProfile] =
     await Promise.all([
       getMemberById(session!.memberId),
       getRecentAttendance(session!.memberId, 60),
@@ -60,12 +85,14 @@ export default async function DashboardPage() {
       listWorkoutLogs(session!.memberId, 400),
       listTodaysFoodLogs(session!.memberId),
       getWorkoutPromptEnabled(session!.memberId),
+      getFitnessProfile(session!.memberId),
     ]);
 
   // After a front-desk QR check-in the popup greets the member on their next
   // visit here. Skipped once they've already logged something since checking
   // in (the check-in cooldown is 3 hours, so an older check-in belongs to a
   // finished session). The check-in time doubles as the popup's identity.
+  const checkedIn = attendanceStatus.checkedIn;
   const checkedInAt = attendanceStatus.lastCheckedInAt;
   const promptId =
     checkedInAt &&
@@ -107,15 +134,20 @@ export default async function DashboardPage() {
         <RestTimerPill />
       </div>
 
+      <PersonalNoteArea />
+
       {/* One-tap access to the three most common actions, kept right at
           the top so they never require scrolling past everything else —
           distinct from the full "Quick Actions" link grid further down,
           which covers every dashboard route rather than just the top 3. */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${checkedIn ? "mb-6" : "mb-2"}`}>
         <Link
           href="/dashboard/workouts"
-          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+          className={`relative bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
+            checkedIn ? "" : "opacity-45 grayscale"
+          }`}
         >
+          {!checkedIn && <LockBadge />}
           <span className="material-symbols-outlined text-2xl leading-none">fitness_center</span>
           <span className="font-label text-[10px] uppercase tracking-wide">Log Workout</span>
         </Link>
@@ -128,12 +160,32 @@ export default async function DashboardPage() {
         </Link>
         <Link
           href="/dashboard/timer"
-          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+          className={`relative bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
+            checkedIn ? "" : "opacity-45 grayscale"
+          }`}
         >
+          {!checkedIn && <LockBadge />}
           <span className="material-symbols-outlined text-2xl leading-none">timer</span>
           <span className="font-label text-[10px] uppercase tracking-wide">Start Timer</span>
         </Link>
+        <Link
+          href="/dashboard/bmi"
+          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+        >
+          <span className="material-symbols-outlined text-2xl leading-none">calculate</span>
+          <span className="font-label text-[10px] uppercase tracking-wide">BMI Calc</span>
+        </Link>
       </div>
+      {!checkedIn && (
+        <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mb-6">
+          <span className="material-symbols-outlined text-xs leading-none align-text-bottom mr-0.5">lock</span>
+          Faded tiles need a check-in first
+        </p>
+      )}
+
+      <GeneratePlanBar fitnessProfile={fitnessProfile} />
+
+      {!fitnessProfile && <FitnessProfileNudge />}
 
       <NotificationsCard
         initialPrefs={{
@@ -143,8 +195,6 @@ export default async function DashboardPage() {
           workout: workoutPromptEnabled,
         }}
       />
-
-      <PersonalNoteArea />
 
       {todaysWorkout && (
         <TodayWorkoutBanner
@@ -190,18 +240,24 @@ export default async function DashboardPage() {
 
       <h2 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-        {QUICK_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="bg-surface-container p-5 shadow-hard flex flex-col gap-3 hover:border-primary-container hover:-translate-y-0.5 border border-transparent active:scale-[0.98] transition-all"
-          >
-            <span className="inline-flex items-center justify-center w-10 h-10 bg-surface-container-high text-primary-container shrink-0">
-              <span className="material-symbols-outlined text-xl leading-none">{link.icon}</span>
-            </span>
-            <span className="font-label text-xs uppercase tracking-wide text-on-surface">{link.label}</span>
-          </Link>
-        ))}
+        {QUICK_LINKS.map((link) => {
+          const dim = link.gated && !checkedIn;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`relative bg-surface-container p-5 shadow-hard flex flex-col gap-3 hover:border-primary-container hover:-translate-y-0.5 border border-transparent active:scale-[0.98] transition-all ${
+                dim ? "opacity-45 grayscale" : ""
+              }`}
+            >
+              {dim && <LockBadge />}
+              <span className="inline-flex items-center justify-center w-10 h-10 bg-surface-container-high text-primary-container shrink-0">
+                <span className="material-symbols-outlined text-xl leading-none">{link.icon}</span>
+              </span>
+              <span className="font-label text-xs uppercase tracking-wide text-on-surface">{link.label}</span>
+            </Link>
+          );
+        })}
       </div>
 
       <NotificationBar initialNotifications={notifications} />

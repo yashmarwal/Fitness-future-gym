@@ -335,3 +335,30 @@ body {
     animation: card-highlight-cycle 10.5s ease-in-out infinite;
   }
 }
+
+/* Check-in flash (CheckInCelebration.tsx) — punches in, holds, punches back
+   out, entirely within the fixed 1.5s the component keeps itself mounted. */
+@keyframes checkin-flash {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  14% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  82% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.06);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-checkin-flash {
+    animation: checkin-flash 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}

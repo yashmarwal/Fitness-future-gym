@@ -2,15 +2,30 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import gsap from "gsap";
+import { calculateBmiMacro, ftInToCm, type Gender } from "@/frontend/lib/bmiMacro";
 
-export default function CalculatorForm() {
-  const [weight, setWeight] = useState<number | "">(74);
-  const [heightFt, setHeightFt] = useState<number | "">(5);
-  const [heightIn, setHeightIn] = useState<number | "">(9);
-  const [age, setAge] = useState<number | "">(26);
-  const [gender, setGender] = useState<"male" | "female">("male");
-  const [activity, setActivity] = useState(1.65);
-  const [goal, setGoal] = useState(0);
+export type CalculatorInitial = {
+  weightKg?: number;
+  heightFt?: number;
+  heightIn?: number;
+  age?: number;
+  gender?: Gender;
+  activityMultiplier?: number;
+  goalOffset?: number;
+};
+
+// `initial` optionally pre-fills the form from a member's saved fitness
+// profile (see /dashboard/bmi) — every field still falls back to this
+// page's original defaults when omitted, so the public marketing calculator
+// (which never passes `initial`) is completely unchanged.
+export default function CalculatorForm({ initial }: { initial?: CalculatorInitial } = {}) {
+  const [weight, setWeight] = useState<number | "">(initial?.weightKg ?? 74);
+  const [heightFt, setHeightFt] = useState<number | "">(initial?.heightFt ?? 5);
+  const [heightIn, setHeightIn] = useState<number | "">(initial?.heightIn ?? 9);
+  const [age, setAge] = useState<number | "">(initial?.age ?? 26);
+  const [gender, setGender] = useState<Gender>(initial?.gender ?? "male");
+  const [activity, setActivity] = useState(initial?.activityMultiplier ?? 1.65);
+  const [goal, setGoal] = useState(initial?.goalOffset ?? 0);
 
   // Calculation Processing State
   const [isCalculating, setIsCalculating] = useState(false);
@@ -63,41 +78,23 @@ export default function CalculatorForm() {
     const inches = heightIn === "" ? 9 : heightIn;
     const a = age === "" ? 26 : age;
 
-    const height = ft * 30.48 + inches * 2.54; // ft/in -> cm
-    const heightInMeters = height / 100;
-    const bmi = w / (heightInMeters * heightInMeters);
-
-    let bmiTag = "NORMAL / OPTIMAL";
-    if (bmi < 18.5) bmiTag = "UNDERWEIGHT";
-    else if (bmi >= 25 && bmi < 29.9) bmiTag = "OVERWEIGHT";
-    else if (bmi >= 30) bmiTag = "OBESE";
-
-    const bmr =
-      gender === "male"
-        ? 10 * w + 6.25 * height - 5 * a + 5
-        : 10 * w + 6.25 * height - 5 * a - 161;
-
-    const tdee = Math.round(bmr * activity);
-    const targetCalories = tdee + Number(goal);
-    const restCalories = Math.round(tdee * 0.9);
-
-    const proteinGrams = Math.round(w * 2.15);
-    const proteinCalories = proteinGrams * 4;
-
-    const fatCalories = targetCalories * 0.25;
-    const fatsGrams = Math.round(fatCalories / 9);
-
-    const carbCalories = Math.max(0, targetCalories - (proteinCalories + fatCalories));
-    const carbsGrams = Math.round(carbCalories / 4);
+    const r = calculateBmiMacro({
+      weightKg: w,
+      heightCm: ftInToCm(ft, inches),
+      age: a,
+      gender,
+      activityMultiplier: activity,
+      goalOffset: Number(goal),
+    });
 
     return {
-      bmi: bmi.toFixed(1),
-      bmiTag,
-      tdee: targetCalories.toLocaleString("en-IN"),
-      restCalories: restCalories.toLocaleString("en-IN"),
-      proteinGrams,
-      carbsGrams,
-      fatsGrams,
+      bmi: r.bmi.toFixed(1),
+      bmiTag: r.bmiTag,
+      tdee: r.targetCalories.toLocaleString("en-IN"),
+      restCalories: r.restCalories.toLocaleString("en-IN"),
+      proteinGrams: r.proteinGrams,
+      carbsGrams: r.carbsGrams,
+      fatsGrams: r.fatsGrams,
     };
   }, [weight, heightFt, heightIn, age, gender, activity, goal]);
 
