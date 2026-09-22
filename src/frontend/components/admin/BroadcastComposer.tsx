@@ -22,7 +22,7 @@ export default function BroadcastComposer() {
       });
       const data = await res.json();
       if (data.status === "ok") {
-        setResult(`Sent to ${data.sent} member(s) (WhatsApp + email, whichever they have on file).`);
+        setResult(`Sent to ${data.sent} member(s) via WhatsApp.`);
         setSubject("");
         setMessage("");
       } else {
@@ -49,7 +49,7 @@ export default function BroadcastComposer() {
       </div>
       <div className="flex flex-col gap-1">
         <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-          Email Subject (WhatsApp ignores this)
+          Notification Title (optional — WhatsApp ignores this)
         </label>
         <input
           value={subject}

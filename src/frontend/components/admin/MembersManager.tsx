@@ -1,15 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
 
 // Same rule as the Overview "Overdue Fees" count and the Alerts page's "Fee
 // Overdue" list (active member, fee_due_date before today) — deliberately
-// not a looser check, so the tag here can never disagree with those.
+// not a looser check, so the tag here can never disagree with those, and
+// matches exactly which members show the "Fee Pending" tag below.
 function isFeeOverdue(member: AdminMember): boolean {
   return member.isActive && member.feeDueDate != null && member.feeDueDate < new Date().toISOString().slice(0, 10);
 }
+
+// "Never billed" = no fee_due_date at all — a member who's never had a plan
+// or fee assigned, as opposed to one who has a due date that just hasn't
+// arrived (or has passed) yet.
+function isNeverBilled(member: AdminMember): boolean {
+  return member.feeDueDate == null;
+}
+
+type MemberFilter = "all" | "fee_due" | "never_billed";
+const FILTER_OPTIONS: { key: MemberFilter; label: string }[] = [
+  { key: "all", label: "All Members" },
+  { key: "fee_due", label: "Fee Due" },
+  { key: "never_billed", label: "Never Billed" },
+];
 
 function FeePendingTag({ member }: { member: AdminMember }) {
   if (!isFeeOverdue(member)) return null;
@@ -38,11 +53,19 @@ const EMPTY_FORM = {
 
 export default function MembersManager({ members }: { members: AdminMember[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [query, setQuery] = useState("");
+  // Deep-linkable from the Overview page's "Overdue Fees" stat card
+  // (?filter=fee_due) — read once on initial render, same as the planner's
+  // ?tab=templates. Switching tabs by hand after that is plain client state.
+  const [activeFilter, setActiveFilter] = useState<MemberFilter>(() => {
+    const param = searchParams.get("filter");
+    return param === "fee_due" || param === "never_billed" ? param : "all";
+  });
   const formRef = useRef<HTMLFormElement>(null);
 
   // The form renders above the list, so editing a member near the bottom
@@ -122,7 +145,21 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
     router.refresh();
   }
 
-  const filtered = members.filter(
+  // Counts are always against the full member list, not the currently
+  // active filter — a tab's own count shouldn't change depending on which
+  // tab is selected.
+  const filterCounts: Record<MemberFilter, number> = {
+    all: members.length,
+    fee_due: members.filter(isFeeOverdue).length,
+    never_billed: members.filter(isNeverBilled).length,
+  };
+
+  const byFilter = members.filter((m) => {
+    if (activeFilter === "fee_due") return isFeeOverdue(m);
+    if (activeFilter === "never_billed") return isNeverBilled(m);
+    return true;
+  });
+  const filtered = byFilter.filter(
     (m) =>
       m.fullName.toLowerCase().includes(query.toLowerCase()) ||
       m.membershipNumber.toLowerCase().includes(query.toLowerCase())
@@ -130,6 +167,26 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
 
   return (
     <div className="flex flex-col gap-6">
+      {/* overflow-x-auto + shrink-0 tabs, same pattern as AdminNav's own
+          tab row, so this stays usable on a narrow phone screen instead of
+          the three tabs squeezing down to unreadable widths. */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {FILTER_OPTIONS.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setActiveFilter(f.key)}
+            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2 transition-colors ${
+              activeFilter === f.key
+                ? "bg-primary-container text-on-primary-container"
+                : "bg-surface-container-low text-tertiary hover:text-on-surface"
+            }`}
+          >
+            {f.label}
+            <span className={activeFilter === f.key ? "opacity-80" : "opacity-60"}>({filterCounts[f.key]})</span>
+          </button>
+        ))}
+      </div>
+
       <div className="flex items-center justify-between gap-4">
         <input
           value={query}
@@ -244,7 +301,11 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
 
       {filtered.length === 0 ? (
         <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
-          {members.length === 0 ? "No members yet — add one above." : "No members match your search."}
+          {members.length === 0
+            ? "No members yet — add one above."
+            : byFilter.length === 0
+              ? "No members in this filter."
+              : "No members match your search."}
         </div>
       ) : (
         <>

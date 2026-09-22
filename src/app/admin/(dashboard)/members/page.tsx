@@ -6,7 +6,9 @@ export default async function AdminMembersPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-6">Members</h1>
+      <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-6">
+        Members <span className="text-tertiary">({members.length})</span>
+      </h1>
       <MembersManager members={members} />
     </div>
   );

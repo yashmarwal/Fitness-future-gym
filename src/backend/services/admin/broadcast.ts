@@ -1,7 +1,6 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
-import { sendEmailTemplate } from "@/backend/services/email";
 import { createNotification } from "@/backend/services/memberNotifications";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
 import type { BroadcastSegment } from "@/types/admin";
@@ -50,6 +49,14 @@ async function resolveRecipients(segment: BroadcastSegment) {
   return data ?? [];
 }
 
+// Broadcasts go over WhatsApp only now (explicit ask: admin updates/offers
+// should never land in a member's inbox) — the in-app bell and push still
+// fire regardless of phone, so an email-only member isn't left with nothing,
+// just not emailed. Every other WhatsApp-triggered message (OTP, fee
+// reminders, the welcome card, etc.) is untouched; this only removes the
+// email leg of admin broadcasts specifically. `subject`, when set, is still
+// used as the in-app/push notification's title — it just no longer doubles
+// as an email subject line since there's no email to have one.
 export async function sendBroadcast(
   segment: BroadcastSegment,
   message: string,
@@ -63,14 +70,6 @@ export async function sendBroadcast(
         phone: recipient.phone,
         template: "announcement",
         bodyParams: [message],
-        memberId: recipient.id,
-      }).catch(() => {});
-    }
-    if (recipient.email) {
-      await sendEmailTemplate({
-        to: recipient.email,
-        template: "announcement",
-        bodyParams: [message, subject ?? ""],
         memberId: recipient.id,
       }).catch(() => {});
     }

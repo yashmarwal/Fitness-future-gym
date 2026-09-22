@@ -44,16 +44,20 @@ export default async function AdminOverviewPage() {
   const activeCount = members.filter((m) => m.isActive).length;
 
   const statCards = [
-    { label: "Check-Ins Today", value: todaysCheckIns, icon: "event_available", tone: "text-primary-container" },
-    { label: "Revenue This Month", value: `₹${revenueThisMonth}`, icon: "payments", tone: "text-on-surface" },
+    // Each card links to wherever that figure's actual detail already lives
+    // — no new "detail view" built for any of these, they all reuse an
+    // existing page rather than duplicate its list a second time.
+    { label: "Check-Ins Today", value: todaysCheckIns, icon: "event_available", tone: "text-primary-container", href: "/admin/attendance" },
+    { label: "Revenue This Month", value: `₹${revenueThisMonth}`, icon: "payments", tone: "text-on-surface", href: "/admin/fees" },
     {
       label: "Overdue Fees",
       value: overdueCount,
       icon: "error",
       tone: overdueCount > 0 ? "text-error" : "text-on-surface",
       accent: overdueCount > 0,
+      href: "/admin/members?filter=fee_due",
     },
-    { label: "Active Members", value: activeCount, icon: "group", tone: "text-on-surface" },
+    { label: "Active Members", value: activeCount, icon: "group", tone: "text-on-surface", href: "/admin/members" },
   ];
 
   const alertCounts = [
@@ -73,18 +77,29 @@ export default async function AdminOverviewPage() {
         <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-3">Overview</h1>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {statCards.map((s) => (
-            <div
+            <Link
               key={s.label}
-              className={`bg-surface-container-low p-5 shadow-hard flex flex-col gap-3 ${
-                s.accent ? "border-l-4 border-error" : ""
-              }`}
+              href={s.href}
+              // The accent card's red left marker is a fixed "needs
+              // attention" indicator, not a hover state — mixing Tailwind's
+              // `border` shorthand (all 4 sides) with `border-l-4` on the
+              // same element is a real risk of one silently overriding the
+              // other, so the two never combine on one element: accent
+              // cards keep their border-l-4 and only lift on hover (shadow),
+              // non-accent cards get the border-color hover treatment
+              // instead, matching the "Needs Attention" cards below.
+              className={
+                s.accent
+                  ? "bg-surface-container-low p-5 shadow-hard hover:shadow-hard-lg flex flex-col gap-3 border-l-4 border-l-error transition-shadow"
+                  : "bg-surface-container-low p-5 shadow-hard hover:shadow-hard-lg hover:border-primary-container border border-transparent flex flex-col gap-3 transition-all"
+              }
             >
               <div className="flex items-center justify-between">
                 <p className="font-label text-[10px] uppercase tracking-wider text-tertiary">{s.label}</p>
                 <span className={`material-symbols-outlined text-lg leading-none ${s.tone}`}>{s.icon}</span>
               </div>
               <span className={`font-display text-3xl ${s.tone}`}>{s.value}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

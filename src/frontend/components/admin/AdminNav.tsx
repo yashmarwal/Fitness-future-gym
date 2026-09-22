@@ -9,7 +9,6 @@ const LINKS = [
   { href: "/admin/members", label: "Members", icon: "group" },
   { href: "/admin/trials", label: "Trials", icon: "person_add" },
   { href: "/admin/attendance", label: "Attendance", icon: "event_available" },
-  { href: "/admin/qr", label: "QR Code", icon: "qr_code_2" },
   { href: "/admin/fees", label: "Fees", icon: "payments" },
   { href: "/admin/access-control", label: "Access Control", icon: "block" },
   { href: "/admin/broadcast", label: "Broadcast", icon: "campaign" },

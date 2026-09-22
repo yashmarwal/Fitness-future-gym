@@ -35,7 +35,7 @@ export default async function AdminAlertsPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {categories.map((c) => (
-          <AlertSummaryPill key={c.key} title={c.title} tone={c.tone} icon={c.icon} count={c.members.length} />
+          <AlertSummaryPill key={c.key} anchorId={c.key} title={c.title} tone={c.tone} icon={c.icon} count={c.members.length} />
         ))}
       </div>
 
@@ -46,7 +46,7 @@ export default async function AdminAlertsPage() {
       ) : (
         <div className="flex flex-col gap-6">
           {categories.map((c) => (
-            <AlertsList key={c.key} title={c.title} tone={c.tone} icon={c.icon} members={c.members} />
+            <AlertsList key={c.key} anchorId={c.key} title={c.title} tone={c.tone} icon={c.icon} members={c.members} />
           ))}
         </div>
       )}

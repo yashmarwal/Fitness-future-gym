@@ -24,25 +24,29 @@ const TONE_TEXT: Record<Tone, string> = {
 // One glanceable tile per category — shown for all 5 regardless of count, so
 // the admin sees the full picture in one row without scrolling past a wall
 // of "nothing here" sections. Detail lists below only render for the ones
-// that actually have something in them.
+// that actually have something in them — a pill only becomes a link (to its
+// own detail section further down this same page, via anchorId) once
+// there's actually something to jump to; an empty category stays a plain,
+// non-interactive tile.
 export function AlertSummaryPill({
   title,
   tone,
   icon,
   count,
+  anchorId,
 }: {
   title: string;
   tone: Tone;
   icon: string;
   count: number;
+  anchorId: string;
 }) {
   const active = count > 0;
-  return (
-    <div
-      className={`bg-surface-container-low p-4 shadow-hard flex flex-col gap-2 border-l-4 ${
-        active ? TONE_ACCENT[tone] : "border-l-surface-variant"
-      }`}
-    >
+  const className = `bg-surface-container-low p-4 shadow-hard flex flex-col gap-2 border-l-4 transition-all ${
+    active ? `${TONE_ACCENT[tone]} hover:shadow-hard-lg hover:-translate-y-0.5` : "border-l-surface-variant"
+  }`;
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <span className={`material-symbols-outlined text-xl leading-none ${active ? TONE_TEXT[tone] : "text-outline"}`}>
           {icon}
@@ -52,7 +56,14 @@ export function AlertSummaryPill({
         </span>
       </div>
       <p className="font-label text-[10px] uppercase tracking-wider text-tertiary leading-snug">{title}</p>
-    </div>
+    </>
+  );
+
+  if (!active) return <div className={className}>{content}</div>;
+  return (
+    <Link href={`#${anchorId}`} className={className}>
+      {content}
+    </Link>
   );
 }
 
@@ -61,16 +72,20 @@ export default function AlertsList({
   tone,
   icon,
   members,
+  anchorId,
 }: {
   title: string;
   tone: Tone;
   icon: string;
   members: AlertMember[];
+  anchorId: string;
 }) {
   if (members.length === 0) return null;
 
   return (
-    <div>
+    // scroll-mt-32 clears the sticky admin header (top bar + nav row) when
+    // a summary pill above jumps straight to this section.
+    <div id={anchorId} className="scroll-mt-32">
       <div className="flex items-center gap-3 mb-3">
         <span className={`material-symbols-outlined text-lg leading-none ${TONE_TEXT[tone]}`}>{icon}</span>
         <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">{title}</h2>
