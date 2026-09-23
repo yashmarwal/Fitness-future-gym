@@ -3,6 +3,12 @@ import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
 import { getIstStartOfTodayIso } from "@/frontend/lib/date";
+import { mapWithConcurrency } from "@/backend/lib/concurrency";
+
+// See backend/lib/concurrency.ts — these loops used to send one member at a
+// time; with every active member opted in they'd risk this cron's timeout
+// the same way the fee-reminder/birthday/broadcast loops did.
+const NOTIFY_CONCURRENCY = 8;
 
 // Opt-in personal reminders (water/meal-log/streak), toggled per-member
 // from the dashboard — distinct from notifications.ts's fee/birthday
@@ -26,13 +32,13 @@ async function listOptedInMemberIds(column: "notify_water" | "notify_meal_log" |
 export async function runWaterReminderCheck(): Promise<{ sent: number }> {
   const memberIds = await listOptedInMemberIds("notify_water");
 
-  for (const memberId of memberIds) {
-    await sendPushToMember(memberId, {
+  await mapWithConcurrency(memberIds, NOTIFY_CONCURRENCY, (memberId) =>
+    sendPushToMember(memberId, {
       title: "💧 Stay Hydrated",
       body: "Quick reminder to drink some water — keep the gains coming.",
       url: "/dashboard",
-    }).catch(() => {});
-  }
+    }).catch(() => {})
+  );
 
   return { sent: memberIds.length };
 }
@@ -46,27 +52,26 @@ export async function runMealLogReminderCheck(): Promise<{ sent: number }> {
 
   const db = getDb();
   const todayStart = getIstStartOfTodayIso();
-  let sent = 0;
 
-  for (const memberId of memberIds) {
+  const results = await mapWithConcurrency(memberIds, NOTIFY_CONCURRENCY, async (memberId) => {
     const { data, error } = await db
       .from("food_logs")
       .select("id")
       .eq("member_id", memberId)
       .gte("logged_at", todayStart)
       .limit(1);
-    if (error) continue;
-    if (data && data.length > 0) continue; // already logged something today
+    if (error) return false;
+    if (data && data.length > 0) return false; // already logged something today
 
     await sendPushToMember(memberId, {
       title: "🍽️ Log Today's Meals",
       body: "You haven't logged any food today — take a second to track what you've eaten.",
       url: "/dashboard/nutrition",
     }).catch(() => {});
-    sent++;
-  }
+    return true;
+  });
 
-  return { sent };
+  return { sent: results.filter(Boolean).length };
 }
 
 // Smart, not naggy: only sends to members who haven't checked in yet
@@ -79,25 +84,24 @@ export async function runStreakReminderCheck(): Promise<{ sent: number }> {
 
   const db = getDb();
   const todayStart = getIstStartOfTodayIso();
-  let sent = 0;
 
-  for (const memberId of memberIds) {
+  const results = await mapWithConcurrency(memberIds, NOTIFY_CONCURRENCY, async (memberId) => {
     const { data, error } = await db
       .from("attendance")
       .select("id")
       .eq("member_id", memberId)
       .gte("checked_in_at", todayStart)
       .limit(1);
-    if (error) continue;
-    if (data && data.length > 0) continue; // already checked in today
+    if (error) return false;
+    if (data && data.length > 0) return false; // already checked in today
 
     await sendPushToMember(memberId, {
       title: "🔥 Don't Break Your Streak",
       body: "You haven't checked in today yet — get to the floor before it closes.",
       url: "/dashboard",
     }).catch(() => {});
-    sent++;
-  }
+    return true;
+  });
 
-  return { sent };
+  return { sent: results.filter(Boolean).length };
 }

@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import type { TrialRegistration } from "@/types/admin";
 import { insertMemberWithFreshNumber } from "@/backend/services/membershipNumber";
@@ -26,6 +27,35 @@ export async function listTrialRegistrations(): Promise<TrialRegistration[]> {
     endsAt: t.ends_at,
     createdAt: t.created_at,
   }));
+}
+
+// Powers the member profile page's "came from a trial" section — trials
+// link to members by phone number, not a foreign key (a trial is a lead,
+// not an account; see convertTrialToMember), so this is the only way to
+// find one given a member id.
+export async function getTrialByPhone(phone: string): Promise<TrialRegistration | null> {
+  if (!phone) return null;
+  const db = getDb();
+  const { data, error } = await db
+    .from("trial_registrations")
+    .select("id, full_name, phone, email, shift, trial_code, status, starts_at, ends_at, created_at")
+    .eq("phone", phone)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load trial: ${error.message}`);
+  if (!data) return null;
+  return {
+    id: data.id,
+    fullName: data.full_name,
+    phone: data.phone,
+    email: data.email,
+    shift: data.shift,
+    trialCode: data.trial_code,
+    status: data.status,
+    startsAt: data.starts_at,
+    endsAt: data.ends_at,
+    createdAt: data.created_at,
+  };
 }
 
 export type ConvertTrialInput = {
@@ -109,34 +139,44 @@ export async function convertTrialToMember(trialId: string, input: ConvertTrialI
       // payment (oneMonthFromToday()) — this app has no per-duration
       // selector at conversion time the way the main Record Payment form
       // does, so the receipt's "duration" reflects that same fixed month.
-      await deliverPaymentInvoice({
-        memberId: member.id,
-        memberName: member.full_name,
-        membershipNumber: member.membership_number,
-        email: member.email,
-        paymentId: payment.id,
-        paidAtIso: payment.paid_at,
-        plan: member.plan ?? "Monthly",
-        durationMonths: 1,
-        amount: input.feeAmount as number,
-        method: input.paymentMethod as "upi" | "cash" | "manual",
-        nextDueDate: feeDueDate as string,
-      }).catch(() => {});
+      //
+      // Deferred via after() — a real Resend network call + PDF generation
+      // that's best-effort and shouldn't make the conversion click wait (see
+      // the identical fix in admin/feesAdmin.ts's recordManualPayment).
+      after(() =>
+        deliverPaymentInvoice({
+          memberId: member.id,
+          memberName: member.full_name,
+          membershipNumber: member.membership_number,
+          email: member.email,
+          paymentId: payment.id,
+          paidAtIso: payment.paid_at,
+          plan: member.plan ?? "Monthly",
+          durationMonths: 1,
+          amount: input.feeAmount as number,
+          method: input.paymentMethod as "upi" | "cash" | "manual",
+          nextDueDate: feeDueDate as string,
+        }).catch(() => {})
+      );
     }
   }
 
   await db.from("trial_registrations").update({ status: "converted" }).eq("id", trialId);
 
-  await deliverMembershipCard({
-    id: member.id,
-    fullName: member.full_name,
-    membershipNumber: member.membership_number,
-    phone: member.phone,
-    email: member.email,
-    plan: member.plan,
-    feeAmount: member.fee_amount,
-    joinedAt: member.joined_at,
-  }).catch(() => {});
+  // Same deferral — WhatsApp + email + PDF, best-effort, not worth the
+  // conversion click waiting on it.
+  after(() =>
+    deliverMembershipCard({
+      id: member.id,
+      fullName: member.full_name,
+      membershipNumber: member.membership_number,
+      phone: member.phone,
+      email: member.email,
+      plan: member.plan,
+      feeAmount: member.fee_amount,
+      joinedAt: member.joined_at,
+    }).catch(() => {})
+  );
 
   return { status: "ok", memberId: member.id };
 }

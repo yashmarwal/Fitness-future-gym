@@ -1,9 +1,11 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { getIstDateString } from "@/frontend/lib/date";
 import type { FeePaymentRow } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 import { deliverPaymentInvoice } from "@/backend/services/invoiceDelivery";
+import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { unblockMember } from "@/backend/services/admin/feeAbuse";
 
 export async function listFeePayments(limit = 100): Promise<FeePaymentRow[]> {
@@ -140,40 +142,130 @@ export async function recordManualPayment(
 
   // Recording a payment is one of the two explicit triggers for re-sending
   // the membership card (the other is a plan change, in admin/members.ts) —
-  // best-effort, a delivery failure shouldn't fail the payment record. Uses
-  // the just-written effective plan/amount, not the stale pre-payment
-  // `member.plan`/`member.fee_amount` — using the stale values here was
-  // the original bug: for a member whose plan/fee_amount had never been
-  // set, deliverMembershipCard's own guard silently no-opped on every
-  // single payment, forever, since the values it saw were always null
-  // regardless of how many payments got recorded.
-  await deliverMembershipCard({
-    id: memberId,
-    fullName: member.full_name,
-    membershipNumber: member.membership_number,
-    phone: member.phone,
-    email: member.email,
-    plan: effectivePlan,
-    feeAmount: effectiveFeeAmount,
-    joinedAt: member.joined_at,
-  }).catch(() => {});
+  // but only when it's actually a DIFFERENT plan/amount than what the
+  // member already has, same guard as updateMember's cardRelevantChange.
+  // Comparing against `member.plan`/`member.fee_amount` (the pre-update
+  // row, fetched above) rather than effectivePlan/effectiveFeeAmount
+  // themselves — a member on an identical monthly renewal would otherwise
+  // get a fresh WhatsApp template send + card email every single month for
+  // no reason, since effectivePlan/effectiveFeeAmount are recomputed from
+  // this payment regardless of whether anything changed. A member whose
+  // plan/fee_amount was never set yet (first-ever payment) always counts as
+  // a change, so the card still goes out the first time.
+  const cardRelevantChange =
+    (member.plan || null) !== effectivePlan || (member.fee_amount ?? null) !== effectiveFeeAmount;
 
-  // Every recorded payment gets its own PDF receipt, separate from the
-  // membership card above (which only re-sends when plan/fee actually
-  // change, not on every routine renewal payment).
-  await deliverPaymentInvoice({
-    memberId,
-    memberName: member.full_name,
-    membershipNumber: member.membership_number,
-    email: member.email,
-    paymentId: payment.id,
-    paidAtIso: payment.paid_at,
-    plan: effectivePlan,
-    durationMonths,
-    amount,
-    method,
-    nextDueDate: nextDueDateStr,
-  }).catch(() => {});
+  // Both deliveries below are real network calls (WhatsApp Cloud API, Resend
+  // x2) on top of PDF generation — awaiting them here used to make every
+  // "Record Payment" click wait on 3 external round-trips after the DB write
+  // had already succeeded. They're best-effort and don't affect what the
+  // admin sees, so `after()` defers them until the response has already gone
+  // back, instead of making the save itself pay for that latency. Safe here
+  // because recordManualPayment is only ever called from a Route Handler
+  // (never a cron/background job), which is exactly what `after()` needs.
+  after(async () => {
+    await Promise.all([
+      cardRelevantChange
+        ? deliverMembershipCard({
+            id: memberId,
+            fullName: member.full_name,
+            membershipNumber: member.membership_number,
+            phone: member.phone,
+            email: member.email,
+            plan: effectivePlan,
+            feeAmount: effectiveFeeAmount,
+            joinedAt: member.joined_at,
+          }).catch(() => {})
+        : // Not card-worthy (same plan/amount as before) — a routine renewal
+          // still deserves its own WhatsApp confirmation, just the lighter
+          // "payment received" template instead of resending the full card.
+          member.phone
+          ? sendWhatsAppTemplate({
+              phone: member.phone,
+              template: "fee_received",
+              bodyParams: [member.full_name, `Rs. ${effectiveFeeAmount.toLocaleString("en-IN")}`, nextDueDateStr],
+              memberId,
+            }).catch(() => {})
+          : Promise.resolve(),
+      // Every recorded payment gets its own PDF receipt, separate from the
+      // membership card above (which only re-sends when plan/fee actually
+      // change, not on every routine renewal payment).
+      deliverPaymentInvoice({
+        memberId,
+        memberName: member.full_name,
+        membershipNumber: member.membership_number,
+        email: member.email,
+        paymentId: payment.id,
+        paidAtIso: payment.paid_at,
+        plan: effectivePlan,
+        durationMonths,
+        amount,
+        method,
+        nextDueDate: nextDueDateStr,
+      }).catch(() => {}),
+    ]);
+  });
+}
+
+// Powers the member profile page's payment history — same shape as
+// listFeePayments, just scoped to one member instead of the global feed.
+export async function listFeePaymentsForMember(memberId: string): Promise<FeePaymentRow[]> {
+  const db = getDb();
+  const { data, error } = await db
+    .from("fee_payments")
+    .select("id, amount, method, status, paid_at, created_at, members(full_name, membership_number)")
+    .eq("member_id", memberId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load member's payments: ${error.message}`);
+
+  return (data ?? []).map((row) => {
+    const member = row.members as unknown as { full_name: string; membership_number: string } | null;
+    return {
+      id: row.id,
+      memberName: member?.full_name ?? "Unknown",
+      membershipNumber: member?.membership_number ?? "—",
+      amount: row.amount,
+      method: row.method,
+      status: row.status,
+      paidAt: row.paid_at,
+      createdAt: row.created_at,
+    };
+  });
+}
+
+// A correction tool, not a re-derivation of the billing cycle — editing a
+// payment's amount/method fixes a typo on the record itself, but
+// deliberately does NOT touch the member's fee_due_date, plan, or
+// fee_amount, and doesn't re-send the membership card or invoice.
+// Recomputing those correctly would mean knowing what the due date would
+// have been WITHOUT this payment's original contribution, which isn't
+// something this table can reconstruct once later payments may have
+// happened since. If a correction also needs the due date adjusted,
+// that's a separate, deliberate edit from Admin → Members.
+export async function updateFeePayment(
+  id: string,
+  input: { amount?: number; method?: "upi" | "cash" | "manual" }
+): Promise<void> {
+  const db = getDb();
+  const patch: Record<string, unknown> = {};
+  if (input.amount !== undefined) patch.amount = input.amount;
+  if (input.method !== undefined) patch.method = input.method;
+  if (Object.keys(patch).length === 0) return;
+
+  const { error } = await db.from("fee_payments").update(patch).eq("id", id);
+  if (error) throw new Error(`Failed to update payment: ${error.message}`);
+}
+
+// Same scope note as updateFeePayment above — removes only the payment
+// record itself. It does not revert fee_due_date/plan/fee_amount, since
+// those may already reflect other payments made since; if this payment
+// was recorded in error, adjust the member's due date by hand from
+// Admin → Members after deleting it here.
+export async function deleteFeePayment(id: string): Promise<void> {
+  const db = getDb();
+  const { error } = await db.from("fee_payments").delete().eq("id", id);
+  if (error) throw new Error(`Failed to delete payment: ${error.message}`);
 }
 
 export async function sumPaidThisMonth(): Promise<number> {

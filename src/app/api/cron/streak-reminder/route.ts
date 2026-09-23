@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { runStreakReminderCheck } from "@/backend/services/reminders";
 
+// Matches the headroom already given to the other member-sweep crons.
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   const auth = request.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {

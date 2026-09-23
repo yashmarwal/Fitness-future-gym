@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
 import type { AdminMember } from "@/types/admin";
@@ -6,6 +7,14 @@ import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
 import { createNotification } from "@/backend/services/memberNotifications";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
+import { mapWithConcurrency } from "@/backend/lib/concurrency";
+
+// How many members get messaged in parallel from the loops below
+// (autoBlockOverdueMembers) — high enough to clear a few hundred overdue
+// members well inside a serverless function's time limit, low enough not to
+// hammer the WhatsApp Cloud API / Resend with a burst of simultaneous
+// requests. See backend/lib/concurrency.ts.
+const NOTIFY_CONCURRENCY = 8;
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -18,6 +27,7 @@ function mapRow(row: Record<string, unknown>): AdminMember {
     // Not selected here (see SELECT_COLUMNS) — this fee-abuse list never
     // displays it.
     address: null,
+    notes: null,
     plan: row.plan as string | null,
     feeAmount: row.fee_amount as number | null,
     feeDueDate: row.fee_due_date as string | null,
@@ -105,6 +115,48 @@ export async function listBlockedMembers(): Promise<AdminMember[]> {
   return (fallbackData ?? []).map(mapRow);
 }
 
+// Tells the member their access has been put on hold, on every channel —
+// fires for BOTH ways a member ends up blocked (admin doing it directly
+// from Admin -> Members, or autoBlockOverdueMembers below catching an
+// overdue fee automatically) since it lives inside blockMember itself
+// instead of being left for each call site to remember. That used to be
+// exactly the gap: admin's manual block sent nothing at all, so a manually
+// blocked member had no idea why their access stopped, while an
+// auto-blocked one was told. Deferred via after() — same reasoning as
+// notifyUnblocked below, this is best-effort and shouldn't hold up the
+// block/unblock action's own response.
+async function notifyBlocked(
+  id: string,
+  member: { full_name: string; phone: string | null; email: string | null } | null,
+  reason: string
+): Promise<void> {
+  if (!member) return;
+  if (member.phone) {
+    await sendWhatsAppTemplate({
+      phone: member.phone,
+      template: "account_blocked",
+      bodyParams: [member.full_name],
+      memberId: id,
+    }).catch(() => {});
+  }
+  if (member.email) {
+    await sendEmailTemplate({
+      to: member.email,
+      template: "account_blocked",
+      bodyParams: [member.full_name],
+      memberId: id,
+    }).catch(() => {});
+  }
+  const body = `Your check-in and dashboard access is on hold — ${reason}. Please contact the front desk to reactivate.`;
+  await createNotification({
+    memberId: id,
+    type: "account_blocked",
+    title: "Membership Blocked",
+    body,
+  }).catch(() => {});
+  await sendPushToMember(id, { title: "Membership Blocked", body, url: "/dashboard/fees" }).catch(() => {});
+}
+
 // Writes frozen_reason/frozen_at too when those columns exist (see the
 // migration in schema.sql), but falls back to just the core is_frozen flag
 // if that migration hasn't been run yet — the actual block/unblock
@@ -112,16 +164,37 @@ export async function listBlockedMembers(): Promise<AdminMember[]> {
 // only the audit trail (why/when) that needs the migration.
 export async function blockMember(id: string, reason: string): Promise<void> {
   const db = getDb();
-  const { error } = await db
+
+  // Was this member already blocked? The write below always happens
+  // regardless — admin might be correcting the reason text on someone
+  // already blocked, and that edit should stick — but only a genuine
+  // not-blocked -> blocked transition should tell the member their access
+  // was just cut off. Without this, re-saving an existing block (or
+  // autoBlockOverdueMembers somehow re-processing the same member) would
+  // re-send "Membership Blocked" to someone who already knows.
+  const { data: before } = await db.from("members").select("is_frozen").eq("id", id).maybeSingle();
+  const wasAlreadyBlocked = before?.is_frozen === true;
+
+  const { data, error } = await db
     .from("members")
     .update({ is_frozen: true, frozen_reason: reason, frozen_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .select("full_name, phone, email")
+    .maybeSingle();
 
   if (error) {
     if (!isMissingColumnError(error)) throw new Error(`Failed to block member: ${error.message}`);
-    const { error: fallbackError } = await db.from("members").update({ is_frozen: true }).eq("id", id);
+    const { data: fallbackData, error: fallbackError } = await db
+      .from("members")
+      .update({ is_frozen: true })
+      .eq("id", id)
+      .select("full_name, phone, email")
+      .maybeSingle();
     if (fallbackError) throw new Error(`Failed to block member: ${fallbackError.message}`);
+    if (!wasAlreadyBlocked) after(() => notifyBlocked(id, fallbackData, reason));
+    return;
   }
+  if (!wasAlreadyBlocked) after(() => notifyBlocked(id, data, reason));
 }
 
 // Tells the member their access is back, on every channel — the same
@@ -129,7 +202,10 @@ export async function blockMember(id: string, reason: string): Promise<void> {
 // function rather than at each call site so both ways a member actually
 // gets unblocked (an admin doing it directly, or recordManualPayment lifting
 // it automatically once a fee is paid) send it for free, with nothing to
-// keep in sync between them.
+// keep in sync between them. Deferred via after() at both call sites below
+// (unblockMember is always invoked from a Route Handler — the admin unblock
+// route, or recordManualPayment which is itself called from one) so
+// unblocking never waits on 4 sequential network calls before responding.
 async function notifyUnblocked(id: string, member: { full_name: string; phone: string | null; email: string | null } | null): Promise<void> {
   if (!member) return;
   if (member.phone) {
@@ -163,6 +239,19 @@ async function notifyUnblocked(id: string, member: { full_name: string; phone: s
 
 export async function unblockMember(id: string): Promise<void> {
   const db = getDb();
+
+  // recordManualPayment calls this UNCONDITIONALLY on every single payment
+  // (see feesAdmin.ts) so a fee-abuse block gets lifted automatically the
+  // moment a member pays, without every caller needing to check first — but
+  // that means the overwhelming majority of calls are for a member who was
+  // never blocked at all. Checking is_frozen before touching anything is
+  // what makes this a REAL no-op for them, instead of what it used to be: a
+  // "Your membership has been reactivated!" WhatsApp/email/push firing on
+  // every routine renewal payment, for members who were never deactivated.
+  const { data: before, error: beforeError } = await db.from("members").select("is_frozen").eq("id", id).maybeSingle();
+  if (beforeError) throw new Error(`Failed to load member: ${beforeError.message}`);
+  if (!before?.is_frozen) return;
+
   const { data, error } = await db
     .from("members")
     .update({ is_frozen: false, frozen_reason: null, frozen_at: null })
@@ -179,10 +268,10 @@ export async function unblockMember(id: string): Promise<void> {
       .select("full_name, phone, email")
       .maybeSingle();
     if (fallbackError) throw new Error(`Failed to unblock member: ${fallbackError.message}`);
-    await notifyUnblocked(id, fallbackData);
+    after(() => notifyUnblocked(id, fallbackData));
     return;
   }
-  await notifyUnblocked(id, data);
+  after(() => notifyUnblocked(id, data));
 }
 
 const AUTO_BLOCK_OVERDUE_DAYS = 5;
@@ -210,37 +299,14 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
 
   if (error) throw new Error(`Failed to load overdue members: ${error.message}`);
 
-  for (const member of members ?? []) {
-    await blockMember(member.id, `Fee overdue ${AUTO_BLOCK_OVERDUE_DAYS}+ days (automatic)`);
-
-    if (member.phone) {
-      await sendWhatsAppTemplate({
-        phone: member.phone,
-        template: "account_blocked",
-        bodyParams: [member.full_name],
-        memberId: member.id,
-      }).catch(() => {});
-    }
-    if (member.email) {
-      await sendEmailTemplate({
-        to: member.email,
-        template: "account_blocked",
-        bodyParams: [member.full_name],
-        memberId: member.id,
-      }).catch(() => {});
-    }
-    await createNotification({
-      memberId: member.id,
-      type: "account_blocked",
-      title: "Membership Blocked — Fee Overdue",
-      body: "Your check-in and dashboard access is on hold until your fee is paid. Please pay at the front desk to reactivate.",
-    }).catch(() => {});
-    await sendPushToMember(member.id, {
-      title: "Membership Blocked — Fee Overdue",
-      body: "Your check-in and dashboard access is on hold until your fee is paid. Please pay at the front desk to reactivate.",
-      url: "/dashboard/fees",
-    }).catch(() => {});
-  }
+  // blockMember (above) already notifies on every channel via notifyBlocked
+  // — no need to duplicate that here. Concurrency-limited (not a plain
+  // sequential loop) since this cron has no maxDuration override and a
+  // gym-wide overdue sweep could realistically hit dozens of members; see
+  // backend/lib/concurrency.ts.
+  await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, (member) =>
+    blockMember(member.id, `Fee overdue ${AUTO_BLOCK_OVERDUE_DAYS}+ days (automatic)`)
+  );
 
   return { blocked: (members ?? []).length };
 }

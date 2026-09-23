@@ -4,6 +4,11 @@ import { sendBroadcast } from "@/backend/services/admin/broadcast";
 import { recordAuditLog } from "@/backend/services/admin/auditLog";
 import type { BroadcastSegment } from "@/types/admin";
 
+// A broadcast to "all" can be a few hundred members — concurrency-limited
+// (see backend/services/admin/broadcast.ts) but still needs real headroom,
+// not this route's default timeout.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ status: "error" }, { status: 401 });

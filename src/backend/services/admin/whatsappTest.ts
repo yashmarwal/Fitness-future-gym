@@ -7,14 +7,15 @@ export type WhatsAppTemplateTestResult = { template: WhatsAppTemplate; status: "
 // Realistic-but-obviously-fake sample data for every template this app
 // sends, in the exact param count/order each real call site actually uses
 // (memberAuth.ts, notifications.ts, membershipCardDelivery.ts, trial.ts,
-// admin/feeAbuse.ts, admin/broadcast.ts) — kept here so this stays in sync
-// by hand whenever a template's variables change, rather than guessing.
-// `memberId` is deliberately omitted (undefined) for every send: these are
-// diagnostic messages, not tied to any real member or login session, so
-// they shouldn't attribute to one in whatsapp_messages.
+// admin/feeAbuse.ts, admin/broadcast.ts, admin/feesAdmin.ts) — kept here so
+// this stays in sync by hand whenever a template's variables change, rather
+// than guessing. `memberId` is deliberately omitted (undefined) for every
+// send: these are diagnostic messages, not tied to any real member or login
+// session, so they shouldn't attribute to one in whatsapp_messages.
 const SAMPLE_CALLS: { template: WhatsAppTemplate; bodyParams: string[] }[] = [
   { template: "otp", bodyParams: ["482913"] },
   { template: "fee_reminder", bodyParams: ["Test Member", "2026-10-15"] },
+  { template: "fee_received", bodyParams: ["Test Member", "Rs. 1,500", "2026-11-15"] },
   { template: "birthday", bodyParams: ["Test Member"] },
   { template: "announcement", bodyParams: ["This is a test broadcast message — Fitness Future Gym template test."] },
   { template: "welcome_card", bodyParams: ["Test Member", "FF-9999"] },

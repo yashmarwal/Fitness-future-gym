@@ -1,12 +1,15 @@
 import "server-only";
 import { randomInt } from "node:crypto";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
 import { normalizePhone } from "@/backend/lib/phone";
 import { normalizeEmail } from "@/backend/lib/email";
+import { mapWithConcurrency } from "@/backend/lib/concurrency";
 
 const TRIAL_DURATION_DAYS = 2;
+const NOTIFY_CONCURRENCY = 8;
 
 function shiftLabel(shift: "morning" | "evening"): string {
   return shift === "morning" ? "Morning (06:00 - 11:00)" : "Evening (16:30 - 22:30)";
@@ -63,16 +66,25 @@ export async function claimTrial(input: {
   if (insertError) throw new Error(`Failed to save trial claim: ${insertError.message}`);
 
   const label = shiftLabel(input.shift);
-  await sendWhatsAppTemplate({
-    phone,
-    template: "trial_pass",
-    bodyParams: [input.fullName, trialCode, label, endsAtStr],
-  }).catch(() => {});
-  await sendEmailTemplate({
-    to: email,
-    template: "trial_pass",
-    bodyParams: [input.fullName, trialCode, label, endsAtStr],
-  }).catch(() => {});
+  // Best-effort, and the trial is already claimed (the row's inserted) by
+  // the time this fires — deferred so the public signup form doesn't wait
+  // on a WhatsApp + email round-trip before showing "claimed". Safe here
+  // since claimTrial is only ever called from a Route Handler (see
+  // api/trial/register/route.ts), same reasoning as feesAdmin.ts.
+  after(async () => {
+    await Promise.all([
+      sendWhatsAppTemplate({
+        phone,
+        template: "trial_pass",
+        bodyParams: [input.fullName, trialCode, label, endsAtStr],
+      }).catch(() => {}),
+      sendEmailTemplate({
+        to: email,
+        template: "trial_pass",
+        bodyParams: [input.fullName, trialCode, label, endsAtStr],
+      }).catch(() => {}),
+    ]);
+  });
 
   return { status: "claimed", trialCode, endsAt: endsAtStr };
 }
@@ -91,7 +103,7 @@ export async function runTrialConversionReminder(): Promise<{ sent: number }> {
 
   if (error) throw new Error(`Failed to load trials for reminder: ${error.message}`);
 
-  for (const trial of trials ?? []) {
+  await mapWithConcurrency(trials ?? [], NOTIFY_CONCURRENCY, async (trial) => {
     await sendWhatsAppTemplate({
       phone: trial.phone,
       template: "trial_reminder",
@@ -104,7 +116,7 @@ export async function runTrialConversionReminder(): Promise<{ sent: number }> {
     }).catch(() => {});
 
     await db.from("trial_registrations").update({ reminder_sent_at: new Date().toISOString() }).eq("id", trial.id);
-  }
+  });
 
   return { sent: (trials ?? []).length };
 }

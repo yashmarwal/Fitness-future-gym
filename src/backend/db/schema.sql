@@ -121,6 +121,8 @@ create table if not exists members (
   is_frozen boolean not null default false,
   frozen_reason text,
   frozen_at timestamptz,
+  -- Internal, staff-only — never shown to the member. Edited from the
+  -- admin member profile page (admin/members/[id]).
   notes text,
   -- Persists independently of the attendance log's 1-month retention policy
   -- (see deleteOldAttendance), so long-term inactivity (e.g. 4+ months) can
@@ -368,7 +370,7 @@ create table if not exists whatsapp_messages (
   id uuid primary key default gen_random_uuid(),
   member_id uuid references members(id) on delete set null,
   phone text not null,
-  template text not null, -- 'otp' | 'fee_reminder' | 'birthday' | 'announcement' | 'welcome_card' | 'auto_reply_contact_info' (webhook auto-reply, see whatsappInbound.ts)
+  template text not null, -- 'otp' | 'fee_reminder' | 'fee_received' | 'birthday' | 'announcement' | 'welcome_card' | 'trial_pass' | 'trial_reminder' | 'account_blocked' | 'account_unblocked' | 'auto_reply_contact_info' (webhook auto-reply, see whatsappInbound.ts)
   status text not null default 'sent', -- 'sent' | 'failed'
   error text,
   created_at timestamptz not null default now()
