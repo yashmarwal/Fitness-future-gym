@@ -13,13 +13,25 @@ import { getAdminSession } from "@/backend/auth/session";
 // `{waba-id}/subscribed_apps` call below — and nothing in the App Dashboard
 // UI makes that step obvious, so it's a common reason a correctly-verified
 // webhook still receives nothing.
-export async function GET() {
+export async function GET(request: Request) {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ status: "error", message: "Log into /admin first." }, { status: 401 });
 
+  // Deriving the WABA id from the phone number id isn't reliably possible
+  // via the Graph API (no stable field for it across versions) — instead
+  // pass it explicitly: WhatsApp Manager → API Setup shows "WhatsApp
+  // Business Account ID" right next to "Phone number ID", the same screen
+  // WHATSAPP_PHONE_NUMBER_ID came from originally.
+  const wabaId = new URL(request.url).searchParams.get("wabaId");
+  if (!wabaId) {
+    return NextResponse.json(
+      { status: "error", message: "Add ?wabaId=YOUR_WABA_ID — find it in WhatsApp Manager → API Setup." },
+      { status: 400 }
+    );
+  }
+
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  if (!token || !phoneNumberId) {
+  if (!token) {
     return NextResponse.json({ status: "error", message: "WhatsApp isn't configured (missing env vars)." }, { status: 400 });
   }
 
@@ -30,19 +42,12 @@ export async function GET() {
     }).then(async (res) => ({ ok: res.ok, status: res.status, body: await res.json().catch(() => null) }));
 
   try {
-    const phone = await graph(`${phoneNumberId}?fields=whatsapp_business_account,display_phone_number`);
-    const wabaId = phone.body?.whatsapp_business_account?.id;
-    if (!phone.ok || !wabaId) {
-      return NextResponse.json({ status: "error", step: "look up WABA from phone number", detail: phone.body }, { status: 400 });
-    }
-
     const before = await graph(`${wabaId}/subscribed_apps`);
     const subscribe = await graph(`${wabaId}/subscribed_apps`, { method: "POST" });
     const after = await graph(`${wabaId}/subscribed_apps`);
 
     return NextResponse.json({
       status: "ok",
-      displayPhoneNumber: phone.body?.display_phone_number,
       wabaId,
       subscribedAppsBefore: before.body,
       subscribeCallResult: subscribe.body,
