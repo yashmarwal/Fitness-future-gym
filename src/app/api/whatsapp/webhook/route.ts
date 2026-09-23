@@ -17,19 +17,7 @@ export async function GET(request: Request) {
   if (mode === "subscribe" && token && token === process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN) {
     return new NextResponse(challenge ?? "", { status: 200 });
   }
-  // TEMP DEBUG (remove once webhook verification is confirmed working):
-  // lengths only, never the actual secret values, to diagnose a Vercel env
-  // var mismatch without leaking WHATSAPP_WEBHOOK_VERIFY_TOKEN itself.
-  const envVal = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN;
-  return new NextResponse("Forbidden", {
-    status: 403,
-    headers: {
-      "x-debug-env-set": envVal ? "yes" : "no",
-      "x-debug-env-len": String(envVal?.length ?? 0),
-      "x-debug-received-len": String(token?.length ?? 0),
-      "x-debug-mode": String(mode),
-    },
-  });
+  return new NextResponse("Forbidden", { status: 403 });
 }
 
 // Confirms a POST actually came from Meta, not a random request forging a
