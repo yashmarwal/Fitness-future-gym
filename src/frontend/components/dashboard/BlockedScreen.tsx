@@ -14,7 +14,7 @@ async function handleSignOut() {
 export default function BlockedScreen({ fullName }: { fullName: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-surface">
-      <div className="bg-surface-container-low shadow-hard-lg p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
+      <div className="bg-surface-container-low shadow-soft-lg rounded-3xl p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
         <span className="material-symbols-outlined text-5xl text-error">block</span>
         <div>
           <h1 className="font-display text-xl text-on-surface uppercase tracking-wide">Membership On Hold</h1>
@@ -23,7 +23,7 @@ export default function BlockedScreen({ fullName }: { fullName: string }) {
             overdue fee — please see the front desk to sort it out.
           </p>
         </div>
-        <p className="font-body text-xs text-tertiary bg-surface-container p-3">
+        <p className="font-body text-xs text-tertiary bg-surface-container rounded-xl p-3">
           Everything reopens automatically the moment your fee is recorded as paid.
         </p>
         <button

@@ -17,7 +17,7 @@ export default async function AttendanceHistoryPage() {
           No check-ins yet. Scan the QR code at the front desk.
         </DashboardEmptyState>
       ) : (
-        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-hard">
+        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden">
           {attendance.map((iso) => {
             const date = new Date(iso);
             return (

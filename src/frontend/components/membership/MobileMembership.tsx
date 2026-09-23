@@ -106,7 +106,7 @@ export default function MobileMembership() {
         </p>
 
         {/* Registration Form */}
-        <div className="mobile-mem-form mt-space-lg bg-surface-container p-space-md border-t-2 border-primary-container border border-surface-variant/40 shadow-md">
+        <div className="mobile-mem-form mt-space-lg bg-surface-container p-space-md rounded-2xl border-t-2 border-primary-container border border-surface-variant/40 shadow-md">
           <h2 className="font-title-sm text-title-sm uppercase tracking-wider text-on-surface flex items-center gap-space-xs mb-space-xs">
             <span className="material-symbols-outlined text-primary-container">timer</span>
             INSTANT PASS REGISTRATION
@@ -119,7 +119,7 @@ export default function MobileMembership() {
                   Full Name
                 </label>
                 <input
-                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-none"
+                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-xl"
                   placeholder="e.g. Vikram Sharma"
                   required
                   value={formData.name}
@@ -131,7 +131,7 @@ export default function MobileMembership() {
                   WhatsApp Number
                 </label>
                 <input
-                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-none"
+                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-xl"
                   placeholder="8700978341"
                   required
                   type="tel"
@@ -144,7 +144,7 @@ export default function MobileMembership() {
                   Email
                 </label>
                 <input
-                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-none"
+                  className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-xs font-body-md focus:outline-none focus:border-primary-container rounded-xl"
                   placeholder="you@example.com"
                   required
                   type="email"
@@ -157,7 +157,7 @@ export default function MobileMembership() {
                   Preferred Floor Shift
                 </label>
                 <div className="grid grid-cols-2 gap-space-xs">
-                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs flex items-center justify-between">
+                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs rounded-lg flex items-center justify-between">
                     <span className="flex items-center gap-space-2xs">
                       <input
                         type="radio"
@@ -170,7 +170,7 @@ export default function MobileMembership() {
                       <span className="font-label-sm text-label-sm uppercase text-on-surface">Morning</span>
                     </span>
                   </label>
-                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs flex items-center justify-between">
+                  <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-xs rounded-lg flex items-center justify-between">
                     <span className="flex items-center gap-space-2xs">
                       <input
                         type="radio"
@@ -189,14 +189,14 @@ export default function MobileMembership() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-space-2xs w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider flex items-center justify-center gap-space-xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform cursor-pointer disabled:opacity-60"
+                className="mt-space-2xs w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md rounded-xl tracking-wider flex items-center justify-center gap-space-xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform cursor-pointer disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-title-md">bolt</span>
                 {loading ? "Booking..." : "Book 2-Day Free Trial"}
               </button>
             </form>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center p-space-md bg-surface-container-lowest border border-primary-container">
+            <div className="flex flex-col items-center justify-center text-center p-space-md bg-surface-container-lowest border border-primary-container rounded-2xl">
               <span className="material-symbols-outlined text-primary-container text-headline-md animate-bounce">
                 verified
               </span>
@@ -207,7 +207,7 @@ export default function MobileMembership() {
                 Show registered phone ({(submitted ?? deviceClaim)!.phone}) at front desk. Your pass was also
                 emailed to you.
               </p>
-              <div className="mt-space-sm p-space-xs bg-surface-container border border-surface-variant w-full text-center">
+              <div className="mt-space-sm p-space-xs bg-surface-container border border-surface-variant rounded-lg w-full text-center">
                 <span className="font-label-sm text-label-sm uppercase text-primary-container tracking-widest font-bold">
                   CODE: {(submitted ?? deviceClaim)!.trialCode}
                 </span>
@@ -232,7 +232,7 @@ export default function MobileMembership() {
         </div>
 
         {/* Monthly */}
-        <div className="mobile-tier-card bg-surface-container-low p-space-md border border-surface-variant/40 flex flex-col gap-space-xs shadow-sm">
+        <div className="mobile-tier-card bg-surface-container-low p-space-md rounded-2xl border border-surface-variant/40 flex flex-col gap-space-xs shadow-sm">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
               TIER 01 • 30 DAYS
@@ -247,19 +247,19 @@ export default function MobileMembership() {
             href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass."
             target="_blank"
             rel="noreferrer"
-            className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"
+            className="w-full h-11 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"
           >
             Inquire Monthly Pass
           </a>
         </div>
 
         {/* Quarterly */}
-        <div className="mobile-tier-card bg-surface-container-low p-space-md border-2 border-primary-container flex flex-col gap-space-xs shadow-md">
+        <div className="mobile-tier-card bg-surface-container-low p-space-md rounded-2xl border-2 border-primary-container flex flex-col gap-space-xs shadow-md">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
               TIER 02 • 90 DAYS
             </span>
-            <span className="font-label-sm text-label-sm uppercase bg-primary-container text-on-primary-container font-bold px-1.5 py-0.5">
+            <span className="font-label-sm text-label-sm uppercase bg-primary-container text-on-primary-container font-bold px-1.5 py-0.5 rounded-full">
               POPULAR
             </span>
           </div>
@@ -271,14 +271,14 @@ export default function MobileMembership() {
             href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Quarterly%20Pass."
             target="_blank"
             rel="noreferrer"
-            className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center font-label-lg text-label-lg uppercase font-bold tracking-wider mt-space-2xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
+            className="w-full h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center font-label-lg text-label-lg uppercase font-bold tracking-wider mt-space-2xs shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
           >
             Inquire Quarterly Pass
           </a>
         </div>
 
         {/* Annual */}
-        <div className="mobile-tier-card bg-surface-container-low p-space-md border border-surface-variant/40 flex flex-col gap-space-xs shadow-sm">
+        <div className="mobile-tier-card bg-surface-container-low p-space-md rounded-2xl border border-surface-variant/40 flex flex-col gap-space-xs shadow-sm">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
               TIER 03 • 365 DAYS
@@ -293,7 +293,7 @@ export default function MobileMembership() {
             href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Pass."
             target="_blank"
             rel="noreferrer"
-            className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"
+            className="w-full h-11 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase tracking-wider border border-surface-variant/40 mt-space-2xs active:scale-[0.97] transition-transform"
           >
             Inquire Annual Pass
           </a>

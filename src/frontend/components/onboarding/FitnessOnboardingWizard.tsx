@@ -262,7 +262,7 @@ function StepShell({
 }) {
   return (
     <div className={`flex-1 flex flex-col ${direction === "forward" ? "animate-suggest-in-up" : "animate-suggest-in"}`}>
-      <span className="w-14 h-14 flex items-center justify-center bg-primary-container text-on-primary-container shadow-hard mb-5 shrink-0">
+      <span className="w-14 h-14 rounded-2xl flex items-center justify-center bg-primary-container text-on-primary-container shadow-soft mb-5 shrink-0">
         <span className="material-symbols-outlined text-2xl leading-none">{icon}</span>
       </span>
       <p className="font-label text-[11px] uppercase tracking-[0.2em] text-primary-container font-bold mb-1">{eyebrow}</p>
@@ -277,7 +277,7 @@ function StepShell({
             type="button"
             onClick={onBack}
             aria-label="Back"
-            className="shrink-0 flex items-center justify-center w-12 h-12 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+            className="shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
           >
             <span className="material-symbols-outlined text-xl leading-none">chevron_left</span>
           </button>
@@ -286,7 +286,7 @@ function StepShell({
           type="button"
           onClick={onNext}
           disabled={nextDisabled}
-          className="flex-1 flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-hard transition-colors active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none"
+          className="flex-1 flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none"
         >
           {nextLabel}
           <span className="material-symbols-outlined text-lg leading-none">chevron_right</span>
@@ -313,7 +313,7 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`text-left p-4 flex items-center justify-between gap-3 border transition-colors ${
+      className={`text-left p-4 rounded-xl flex items-center justify-between gap-3 border transition-colors ${
         selected ? "bg-surface-container border-primary-container" : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
       }`}
     >
@@ -335,7 +335,7 @@ function OptionCard({
 function WelcomeStep({ onStart, onSkip, direction }: { onStart: () => void; onSkip: () => void; direction: "forward" | "back" }) {
   return (
     <div className={`flex-1 flex flex-col ${direction === "forward" ? "animate-suggest-in-up" : "animate-suggest-in"}`}>
-      <span className="w-16 h-16 flex items-center justify-center bg-primary-container text-on-primary-container shadow-hard mb-6 animate-snap-pop">
+      <span className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary-container text-on-primary-container shadow-soft mb-6 animate-snap-pop">
         <span className="material-symbols-outlined text-3xl leading-none">auto_awesome</span>
       </span>
       <p className="font-label text-[11px] uppercase tracking-[0.2em] text-primary-container font-bold mb-1">Welcome</p>
@@ -351,8 +351,8 @@ function WelcomeStep({ onStart, onSkip, direction }: { onStart: () => void; onSk
           { icon: "stars", label: "Your goal" },
           { icon: "workspace_premium", label: "Your personalized plan" },
         ].map((s, i) => (
-          <div key={s.label} className="flex items-center gap-3 bg-surface-container-low px-4 py-3">
-            <span className="w-7 h-7 flex items-center justify-center bg-surface-container-high text-primary-container shrink-0 font-label text-xs font-bold">
+          <div key={s.label} className="flex items-center gap-3 bg-surface-container-low rounded-xl px-4 py-3">
+            <span className="w-7 h-7 rounded-full flex items-center justify-center bg-surface-container-high text-primary-container shrink-0 font-label text-xs font-bold">
               {i + 1}
             </span>
             <span className="material-symbols-outlined text-lg leading-none text-tertiary">{s.icon}</span>
@@ -367,7 +367,7 @@ function WelcomeStep({ onStart, onSkip, direction }: { onStart: () => void; onSk
         <button
           type="button"
           onClick={onStart}
-          className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-hard transition-colors active:scale-[0.98]"
+          className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
         >
           Get Started
           <span className="material-symbols-outlined text-lg leading-none">chevron_right</span>
@@ -420,7 +420,7 @@ function BodyStep(props: {
             step={0.5}
             value={weightKg}
             onChange={(e) => setWeightKg(e.target.value === "" ? "" : Number(e.target.value))}
-            className="w-full bg-surface-container-lowest text-on-surface font-display text-xl px-3 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
+            className="w-full rounded-xl bg-surface-container-lowest text-on-surface font-display text-xl px-3 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
           />
         </label>
         <label className="block">
@@ -432,7 +432,7 @@ function BodyStep(props: {
             max={90}
             value={age}
             onChange={(e) => setAge(e.target.value === "" ? "" : Number(e.target.value))}
-            className="w-full bg-surface-container-lowest text-on-surface font-display text-xl px-3 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
+            className="w-full rounded-xl bg-surface-container-lowest text-on-surface font-display text-xl px-3 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
           />
         </label>
       </div>
@@ -448,7 +448,7 @@ function BodyStep(props: {
               max={8}
               value={heightFt}
               onChange={(e) => setHeightFt(e.target.value === "" ? "" : Number(e.target.value))}
-              className="w-full bg-surface-container-lowest text-on-surface font-display text-xl pl-3 pr-9 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
+              className="w-full rounded-xl bg-surface-container-lowest text-on-surface font-display text-xl pl-3 pr-9 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 font-label text-[10px] text-outline">FT</span>
           </div>
@@ -460,7 +460,7 @@ function BodyStep(props: {
               max={11}
               value={heightIn}
               onChange={(e) => setHeightIn(e.target.value === "" ? "" : Number(e.target.value))}
-              className="w-full bg-surface-container-lowest text-on-surface font-display text-xl pl-3 pr-9 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
+              className="w-full rounded-xl bg-surface-container-lowest text-on-surface font-display text-xl pl-3 pr-9 py-2.5 outline-none focus:bg-surface-container border border-surface-variant/40"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 font-label text-[10px] text-outline">IN</span>
           </div>
@@ -475,7 +475,7 @@ function BodyStep(props: {
               key={g}
               type="button"
               onClick={() => setGender(g)}
-              className={`py-2.5 font-label text-xs uppercase tracking-wide text-center transition-colors ${
+              className={`py-2.5 rounded-xl font-label text-xs uppercase tracking-wide text-center transition-colors ${
                 gender === g ? "bg-primary-container text-on-primary-container font-bold" : "bg-surface-container-lowest text-tertiary hover:text-on-surface border border-surface-variant/40"
               }`}
             >
@@ -617,7 +617,7 @@ function DaysStep({
             key={d}
             type="button"
             onClick={() => setDaysPerWeek(d)}
-            className={`aspect-square flex flex-col items-center justify-center gap-0.5 transition-colors ${
+            className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors ${
               daysPerWeek === d ? "bg-primary-container text-on-primary-container font-bold" : "bg-surface-container-lowest text-tertiary hover:text-on-surface border border-surface-variant/40"
             }`}
           >
@@ -665,7 +665,7 @@ function ResultsStep({
 
   return (
     <div className="flex-1 flex flex-col animate-suggest-in-up">
-      <span className="w-14 h-14 flex items-center justify-center bg-primary-container text-on-primary-container shadow-hard mb-5 animate-snap-pop shrink-0">
+      <span className="w-14 h-14 rounded-2xl flex items-center justify-center bg-primary-container text-on-primary-container shadow-soft mb-5 animate-snap-pop shrink-0">
         <span className="material-symbols-outlined text-2xl leading-none">workspace_premium</span>
       </span>
       <p className="font-label text-[11px] uppercase tracking-[0.2em] text-primary-container font-bold mb-1">All Set</p>
@@ -682,12 +682,12 @@ function ResultsStep({
       </p>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <div className="bg-surface-container-low p-4 shadow-hard">
+        <div className="bg-surface-container-low p-4 rounded-xl shadow-soft">
           <span className="font-label text-[9px] uppercase tracking-wider text-outline">Body Mass Index</span>
           <p className="font-display text-3xl text-primary-container leading-none mt-1.5">{results.bmi}</p>
           <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mt-1">{results.bmiTag}</p>
         </div>
-        <div className="bg-surface-container-low p-4 shadow-hard">
+        <div className="bg-surface-container-low p-4 rounded-xl shadow-soft">
           <span className="font-label text-[9px] uppercase tracking-wider text-outline">Daily Target</span>
           <p className="font-display text-3xl text-on-surface leading-none mt-1.5">{results.targetCalories.toLocaleString("en-IN")}</p>
           <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mt-1">KCAL / DAY</p>
@@ -700,21 +700,21 @@ function ResultsStep({
           { label: "Carbs", value: results.carbsGrams },
           { label: "Fats", value: results.fatsGrams },
         ].map((m) => (
-          <div key={m.label} className="bg-surface-container p-2.5 text-center">
+          <div key={m.label} className="bg-surface-container p-2.5 rounded-lg text-center">
             <p className="font-display text-lg text-on-surface leading-none">{m.value}g</p>
             <p className="font-label text-[8px] uppercase tracking-wider text-tertiary mt-1">{m.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-surface-container-low border-l-4 border-primary-container p-4 shadow-hard mb-3">
+      <div className="bg-surface-container-low border-l-4 border-primary-container p-4 rounded-2xl shadow-soft mb-3">
         <span className="font-label text-[9px] uppercase tracking-wider text-primary-container font-bold">Your Generated Plan</span>
         <h2 className="font-display text-xl text-on-surface uppercase tracking-wide leading-tight mt-1">{generatedPlan.name}</h2>
         <p className="font-label text-[9px] uppercase tracking-wider text-outline mt-1">{generatedPlan.scheduleLabel}</p>
 
         <div className="flex flex-col gap-1.5 mt-3">
           {generatedPlan.days.map((d) => (
-            <div key={d.day} className="flex items-center justify-between gap-2 bg-surface-container px-3 py-2">
+            <div key={d.day} className="flex items-center justify-between gap-2 bg-surface-container rounded-lg px-3 py-2">
               <span className="font-label text-xs uppercase tracking-wide text-on-surface truncate">
                 {d.day}
                 {d.focus ? ` — ${d.focus}` : ""}
@@ -727,7 +727,7 @@ function ResultsStep({
         <button
           type="button"
           onClick={useGeneratedPlan}
-          className="w-full mt-3 flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-3 shadow-hard transition-colors active:scale-[0.98]"
+          className="w-full mt-3 flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
         >
           Use This Plan
           <span className="material-symbols-outlined text-base leading-none">chevron_right</span>
@@ -745,7 +745,7 @@ function ResultsStep({
       ) : (
         <div className="flex flex-col gap-2 mb-6">
           {templateAlternates.map((t) => (
-            <div key={t.id} className="bg-surface-container p-3 flex items-center justify-between gap-3">
+            <div key={t.id} className="bg-surface-container p-3 rounded-xl flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <span className="block font-label text-xs uppercase tracking-wide text-on-surface truncate">{t.name}</span>
                 <span className="block font-body text-[10px] text-tertiary truncate">{t.schedule}</span>
@@ -753,7 +753,7 @@ function ResultsStep({
               <button
                 type="button"
                 onClick={() => applyTemplate(t)}
-                className="shrink-0 font-label text-[9px] uppercase font-bold px-3 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+                className="shrink-0 font-label text-[9px] uppercase font-bold px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
               >
                 Use This
               </button>
@@ -769,14 +769,14 @@ function ResultsStep({
           type="button"
           onClick={onBack}
           aria-label="Back"
-          className="shrink-0 flex items-center justify-center w-12 h-12 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+          className="shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
         >
           <span className="material-symbols-outlined text-xl leading-none">chevron_left</span>
         </button>
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
-          className="flex-1 flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label text-sm uppercase font-bold px-6 py-3.5 shadow-hard transition-colors active:scale-[0.98]"
+          className="flex-1 flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
         >
           Go To Dashboard
         </button>

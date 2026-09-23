@@ -96,7 +96,7 @@ export default function MobileHome() {
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/75 to-transparent"></div>
 
           {/* Location Tag */}
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 shadow-lg border border-primary-container/30">
+          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 shadow-lg rounded-full border border-primary-container/30">
             <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
@@ -127,14 +127,14 @@ export default function MobileHome() {
             <div className="mobile-hero-cta flex flex-col gap-space-xs w-full">
               <Link
                 href="/membership"
-                className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
+                className="w-full h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
               >
                 <span className="material-symbols-outlined text-title-md">bolt</span>
                 <span>CLAIM YOUR 2-DAY FREE TRIAL</span>
               </Link>
               <Link
                 href="/programs"
-                className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center gap-space-xs font-label-lg text-label-lg uppercase tracking-wider active:bg-surface-container-highest active:scale-[0.97] transition-all border border-surface-variant/40"
+                className="w-full h-11 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center gap-space-xs font-label-lg text-label-lg uppercase tracking-wider active:bg-surface-container-highest active:scale-[0.97] transition-all border border-surface-variant/40"
               >
                 <span>EXPLORE TRAINING PROGRAMS</span>
                 <span className="material-symbols-outlined text-title-sm text-primary-container">
@@ -163,7 +163,7 @@ export default function MobileHome() {
         </div>
 
         <div className="grid grid-cols-2 gap-space-xs">
-          <div className="bg-surface-container p-space-md flex flex-col justify-between shadow-sm border border-surface-variant/30">
+          <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between shadow-sm border border-surface-variant/30">
             <div className="flex items-baseline justify-between mb-space-xs">
               <span className="home-count-years font-display-lg-mobile text-display-lg-mobile text-primary-container leading-none font-bold">
                 8+
@@ -180,7 +180,7 @@ export default function MobileHome() {
             </div>
           </div>
 
-          <div className="bg-surface-container p-space-md flex flex-col justify-between shadow-sm border border-surface-variant/30">
+          <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between shadow-sm border border-surface-variant/30">
             <div className="flex items-baseline justify-between mb-space-xs">
               <span className="font-headline-md text-headline-md text-primary-container leading-none font-bold">
                 UNISEX
@@ -197,7 +197,7 @@ export default function MobileHome() {
             </div>
           </div>
 
-          <div className="bg-surface-container p-space-md flex flex-col justify-between shadow-sm border border-surface-variant/30">
+          <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between shadow-sm border border-surface-variant/30">
             <div className="flex items-baseline justify-between mb-space-xs">
               <span className="font-display-lg-mobile text-display-lg-mobile text-primary-container leading-none font-bold">
                 1:1
@@ -214,7 +214,7 @@ export default function MobileHome() {
             </div>
           </div>
 
-          <div className="bg-surface-container p-space-md flex flex-col justify-between shadow-sm border border-surface-variant/30">
+          <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between shadow-sm border border-surface-variant/30">
             <div className="flex items-baseline justify-between mb-space-xs">
               <span className="home-count-days font-display-lg-mobile text-display-lg-mobile text-primary-container leading-none font-bold">
                 6
@@ -235,7 +235,7 @@ export default function MobileHome() {
 
       {/* 3. PHILOSOPHY BLOCK */}
       <section className="mobile-anim-sec px-space-md pt-space-xl">
-        <div className="bg-surface-container-low p-space-lg flex flex-col gap-space-sm relative overflow-hidden shadow-md border border-surface-variant/40">
+        <div className="bg-surface-container-low p-space-lg rounded-2xl flex flex-col gap-space-sm relative overflow-hidden shadow-md border border-surface-variant/40">
           <div className="flex items-center gap-space-xs">
             <span className="w-3 h-1 bg-primary-container inline-block"></span>
             <span className="font-label-sm text-label-sm text-primary-container uppercase tracking-widest font-bold">
@@ -249,8 +249,8 @@ export default function MobileHome() {
             We stripped away the air-conditioned illusion of boutique wellness. Fitness Future Gym is engineered for lifters who respect the barbell, heavy dumbbells, and real overload.
           </p>
 
-          <div className="mt-space-xs pt-space-xs bg-surface-container-high/60 p-space-sm flex items-center gap-space-sm border border-surface-variant/30">
-            <div className="w-10 h-10 bg-surface-container flex-shrink-0 flex items-center justify-center text-primary-container">
+          <div className="mt-space-xs pt-space-xs bg-surface-container-high/60 p-space-sm rounded-xl flex items-center gap-space-sm border border-surface-variant/30">
+            <div className="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0 flex items-center justify-center text-primary-container">
               <span className="material-symbols-outlined text-title-md">format_quote</span>
             </div>
             <div className="flex flex-col">
@@ -276,7 +276,7 @@ export default function MobileHome() {
           </h2>
         </div>
 
-        <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
+        <div className="bg-surface-container-low p-space-md rounded-2xl border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
             <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
             <div className="flex flex-col">
@@ -289,11 +289,11 @@ export default function MobileHome() {
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
           </p>
-          <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold">
+          <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs rounded-full font-bold">
             <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
             IBBFF (FFBA Delhi Judge)
           </span>
-          <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
+          <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs rounded-lg border border-surface-variant/30">
             <span className="text-on-surface">Best Squat: 220KG</span>
             <span className="home-count-deadlift text-primary-container font-bold">Best Deadlift: 250KG</span>
           </div>
@@ -310,7 +310,7 @@ export default function MobileHome() {
           </div>
         </div>
 
-        <div className="bg-surface-container-low p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
+        <div className="bg-surface-container-low p-space-md rounded-2xl border border-surface-variant/40 shadow-sm flex flex-col gap-space-sm">
           <div className="flex items-center gap-space-sm">
             <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
             <div className="flex flex-col">
@@ -323,7 +323,7 @@ export default function MobileHome() {
           <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
             Hypertrophy programming, physique architecture, and custom Indian nutrition blueprints for recomposition.
           </p>
-          <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs border border-surface-variant/30">
+          <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container p-space-xs rounded-lg border border-surface-variant/30">
             <span className="home-count-bench text-on-surface">Best Bench: 170KG</span>
             <span className="text-primary-container font-bold">70+ Athletes</span>
           </div>
@@ -347,19 +347,19 @@ export default function MobileHome() {
           FLOOR ARSENAL SPECS
         </span>
         <div className="grid grid-cols-2 gap-space-xs font-label-sm text-label-sm uppercase">
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex items-center gap-space-xs">
+          <div className="bg-surface-container p-space-sm rounded-lg border border-surface-variant/30 flex items-center gap-space-xs">
             <span className="material-symbols-outlined text-primary-container text-title-sm">fitness_center</span>
             <span className="text-on-surface">Olympic Knurled Bars</span>
           </div>
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex items-center gap-space-xs">
+          <div className="bg-surface-container p-space-sm rounded-lg border border-surface-variant/30 flex items-center gap-space-xs">
             <span className="material-symbols-outlined text-primary-container text-title-sm">shield</span>
             <span className="text-on-surface">400KG Squat Cages</span>
           </div>
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex items-center gap-space-xs">
+          <div className="bg-surface-container p-space-sm rounded-lg border border-surface-variant/30 flex items-center gap-space-xs">
             <span className="material-symbols-outlined text-primary-container text-title-sm">sports_gymnastics</span>
             <span className="text-on-surface">Dumbbells To 50KG+</span>
           </div>
-          <div className="bg-surface-container p-space-sm border border-surface-variant/30 flex items-center gap-space-xs">
+          <div className="bg-surface-container p-space-sm rounded-lg border border-surface-variant/30 flex items-center gap-space-xs">
             <span className="material-symbols-outlined text-primary-container text-title-sm">view_compact</span>
             <span className="text-on-surface">Shock Rubber Bays</span>
           </div>
@@ -388,7 +388,7 @@ export default function MobileHome() {
 
         <div className="flex flex-col gap-space-md">
           {/* Card 1 */}
-          <div className="bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
+          <div className="bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
                 MODALITY 01
@@ -413,7 +413,7 @@ export default function MobileHome() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
+          <div className="bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
                 MODALITY 02
@@ -438,7 +438,7 @@ export default function MobileHome() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
+          <div className="bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
                 MODALITY 03
@@ -467,7 +467,7 @@ export default function MobileHome() {
       {/* 6b. MEMBER DASHBOARD FEATURES */}
       <section className="mobile-anim-sec pt-space-xl pb-space-xl px-space-md flex flex-col gap-space-md border-y-2 border-primary-container/60 bg-surface-container-lowest">
         <div className="flex flex-col">
-          <div className="inline-flex items-center gap-space-2xs text-primary-container mb-space-xs bg-primary-container/10 border border-primary-container/40 px-space-sm py-space-2xs w-fit">
+          <div className="inline-flex items-center gap-space-2xs text-primary-container mb-space-xs bg-primary-container/10 border border-primary-container/40 px-space-sm py-space-2xs rounded-full w-fit">
             <span className="material-symbols-outlined text-title-sm">verified</span>
             <span className="font-label-sm text-label-sm uppercase tracking-widest font-bold">
               INCLUDED FREE
@@ -483,7 +483,7 @@ export default function MobileHome() {
 
         <div className="grid grid-cols-2 gap-space-xs">
           <div
-            className="card-highlight-cycle col-span-2 bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle col-span-2 bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "9s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">event_note</span>
@@ -494,7 +494,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "0s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">restaurant</span>
@@ -505,7 +505,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "1.5s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">
@@ -518,7 +518,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "3s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">qr_code_scanner</span>
@@ -529,7 +529,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "4.5s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">badge</span>
@@ -540,7 +540,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "6s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">calendar_month</span>
@@ -551,7 +551,7 @@ export default function MobileHome() {
           </div>
 
           <div
-            className="card-highlight-cycle bg-surface-container p-space-sm border border-surface-variant/30 flex flex-col gap-space-2xs"
+            className="card-highlight-cycle bg-surface-container p-space-sm rounded-xl border border-surface-variant/30 flex flex-col gap-space-2xs"
             style={{ animationDelay: "7.5s" }}
           >
             <span className="material-symbols-outlined text-primary-container text-title-md">fitness_center</span>
@@ -562,7 +562,7 @@ export default function MobileHome() {
 
         <Link
           href="/signup"
-          className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
+          className="w-full h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
         >
           <span className="material-symbols-outlined text-title-md">bolt</span>
           <span>CREATE YOUR FREE ACCOUNT</span>
@@ -571,7 +571,7 @@ export default function MobileHome() {
 
       {/* 8. CLOSING CTA BANNER */}
       <section className="mobile-anim-sec px-space-md pt-space-2xl">
-        <div className="bg-primary-container p-space-lg flex flex-col gap-space-md shadow-md text-on-primary-container">
+        <div className="bg-primary-container p-space-lg rounded-2xl flex flex-col gap-space-md shadow-md text-on-primary-container">
           <span className="font-label-sm text-label-sm uppercase tracking-widest font-bold">
             NO CONTRACT LOCKS • NO BULLSHIT
           </span>
@@ -583,7 +583,7 @@ export default function MobileHome() {
           </p>
           <Link
             href="/membership"
-            className="w-full h-12 bg-surface-container-lowest text-on-surface flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.98] transition-transform"
+            className="w-full h-12 rounded-xl bg-surface-container-lowest text-on-surface flex items-center justify-center gap-space-xs font-headline-sm text-headline-sm uppercase tracking-wider shadow-md active:scale-[0.98] transition-transform"
           >
             <span>GET STARTED NOW</span>
             <span className="material-symbols-outlined text-title-md">arrow_forward</span>

@@ -45,7 +45,7 @@ export default function WhatsAppTemplateTester() {
   }
 
   return (
-    <div className="bg-surface-container-low p-6 shadow-hard flex flex-col gap-4 max-w-xl">
+    <div className="bg-surface-container-low p-6 rounded-2xl shadow-soft flex flex-col gap-4 max-w-xl">
       <div>
         <h2 className="font-display text-lg text-on-surface uppercase tracking-wide">Test WhatsApp Templates</h2>
         <p className="font-body text-xs text-tertiary mt-1">
@@ -64,20 +64,20 @@ export default function WhatsAppTemplateTester() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="8287470299 or +918287470299"
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
         </div>
         <button
           type="submit"
           disabled={running}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2.5 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors shrink-0"
+          className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2.5 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors shrink-0"
         >
           {running ? "Sending..." : "Send All"}
         </button>
       </form>
 
       {error && (
-        <div className="bg-error-container/20 border-l-4 border-error p-3">
+        <div className="bg-error-container/20 border-l-4 border-error p-3 rounded-lg">
           <p className="font-body text-sm text-error">{error}</p>
         </div>
       )}
@@ -85,7 +85,7 @@ export default function WhatsAppTemplateTester() {
       {results && (
         <div className="flex flex-col gap-2">
           <p className="font-label text-[10px] uppercase tracking-widest text-outline">Sent to {sentTo}</p>
-          <div className="flex flex-col divide-y divide-surface-variant/30 border border-surface-variant/30">
+          <div className="flex flex-col divide-y divide-surface-variant/30 border border-surface-variant/30 rounded-xl overflow-hidden">
             {results.map((r) => (
               <div key={r.template} className="flex items-start gap-3 px-3 py-2.5">
                 <span

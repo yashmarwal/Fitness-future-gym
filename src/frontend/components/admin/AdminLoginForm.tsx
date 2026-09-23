@@ -37,7 +37,7 @@ export default function AdminLoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-gutter-mobile py-16">
-      <div className="w-full max-w-sm bg-surface-container-low shadow-hard-lg p-8">
+      <div className="w-full max-w-sm bg-surface-container-low rounded-2xl shadow-soft-lg p-8">
         <span className="material-symbols-outlined text-3xl text-primary-container leading-none">lock</span>
         <span className="font-label text-xs uppercase tracking-widest text-primary-container block mt-3">
           Staff Access
@@ -51,7 +51,7 @@ export default function AdminLoginForm() {
             onChange={(e) => setUsername(e.target.value)}
             required
             placeholder="Username"
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
           />
           <input
             type="password"
@@ -59,12 +59,12 @@ export default function AdminLoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Password"
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
           />
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>

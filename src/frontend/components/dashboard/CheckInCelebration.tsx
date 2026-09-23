@@ -42,7 +42,7 @@ export default function CheckInCelebration() {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none px-8">
       <p
         key={phrase}
-        className="animate-checkin-flash font-display text-5xl sm:text-6xl text-on-primary-container bg-primary-container px-6 py-4 uppercase tracking-wide text-center shadow-hard-lg"
+        className="animate-checkin-flash font-display text-5xl sm:text-6xl text-on-primary-container bg-primary-container px-6 py-4 rounded-3xl uppercase tracking-wide text-center shadow-soft-lg"
       >
         {phrase}
       </p>

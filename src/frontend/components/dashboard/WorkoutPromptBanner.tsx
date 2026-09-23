@@ -121,10 +121,10 @@ export default function WorkoutPromptBanner({
           opacity: leaving ? 0 : undefined,
           transition: touching ? "none" : `transform ${EXIT_MS}ms ease-in, opacity ${EXIT_MS}ms ease-in`,
         }}
-        className="animate-banner-drop pointer-events-auto mx-auto w-full max-w-md flex items-stretch bg-surface-container-lowest border border-surface-variant/60 border-l-4 border-l-primary-container shadow-hard-lg"
+        className="animate-banner-drop pointer-events-auto mx-auto w-full max-w-md flex items-stretch bg-surface-container-lowest border border-surface-variant/60 border-l-4 border-l-primary-container shadow-soft-lg rounded-2xl overflow-hidden"
       >
         <Link href="/dashboard/workouts" onClick={dismiss} className="flex-1 min-w-0 flex items-center gap-3 pl-3 py-3">
-          <span className="w-10 h-10 flex items-center justify-center shrink-0 bg-primary-container text-on-primary-container">
+          <span className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary-container text-on-primary-container">
             <span className="material-symbols-outlined text-xl leading-none">fitness_center</span>
           </span>
           <span className="flex-1 min-w-0">

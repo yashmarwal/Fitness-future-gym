@@ -38,7 +38,7 @@ export default async function DashboardBmiPage() {
           {profile ? "Redo Full Wizard" : "Get A Plan Recommendation"}
         </Link>
       </div>
-      <CalculatorForm initial={initial} />
+      <CalculatorForm initial={initial} dashboardStyle />
     </div>
   );
 }

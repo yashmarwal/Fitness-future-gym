@@ -39,7 +39,7 @@ export default function SiteFooter() {
             <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
               KH.No.52, Shop No.5 Plot No.8-A, 18, near Rao Vihar, Rao Vihar, Nangloi, Delhi, 110041
             </p>
-            <div className="mt-space-xs bg-surface-container p-space-sm border-l-2 border-primary-container">
+            <div className="mt-space-xs bg-surface-container p-space-sm rounded-xl border-l-2 border-primary-container">
               <p className="font-label-sm text-label-sm uppercase text-tertiary">Operational Hours</p>
               <p className="font-title-sm text-title-sm text-on-surface">Mon - Sat: 5–11 AM &amp; 4–11 PM</p>
               <p className="font-body-sm text-body-sm text-tertiary-fixed-dim">Sunday: Closed for Recovery</p>
@@ -100,12 +100,12 @@ export default function SiteFooter() {
             </div>
             <p className="font-body-sm text-body-sm text-tertiary">contact.fitnessfuture@gmail.com</p>
             <div className="flex items-center gap-space-sm mt-space-sm">
-              <Link aria-label="Location" className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/location">
+              <Link aria-label="Location" className="p-space-xs rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="/location">
                 <span className="material-symbols-outlined text-title-md">location_on</span>
               </Link>
               <a
                 aria-label="Fitness Future Gym on Instagram"
-                className="p-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                className="p-space-xs rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
                 href={INSTAGRAM_GYM}
                 target="_blank"
                 rel="noreferrer"

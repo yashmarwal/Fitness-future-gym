@@ -170,7 +170,7 @@ function AthleteCard({
 }) {
   return (
     <div data-athlete-index={index} className="shrink-0 w-36 sm:w-44 lg:w-52 mx-space-2xs lg:mx-space-xs">
-      <div className="pointer-events-none rounded-2xl border border-primary-container/40 bg-surface-container-high p-1 shadow-hard">
+      <div className="pointer-events-none rounded-2xl border border-primary-container/40 bg-surface-container-high p-1 shadow-soft">
         <div className="relative w-full aspect-[3/4] overflow-hidden rounded-xl">
           {/* unoptimized: these are already pre-compressed to a proper web
               size (~30-55KB each, capped at 640px — see the compression

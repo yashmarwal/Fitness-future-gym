@@ -71,7 +71,7 @@ export default function AttendanceManager({
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={handleAdd} className="bg-surface-container-low p-5 shadow-hard flex flex-wrap items-center gap-3">
+      <form onSubmit={handleAdd} className="bg-surface-container-low p-5 rounded-2xl shadow-soft flex flex-wrap items-center gap-3">
         <span className="font-label text-xs uppercase tracking-widest text-primary-container">
           Manual Check-In
         </span>
@@ -79,7 +79,7 @@ export default function AttendanceManager({
         <button
           type="submit"
           disabled={submitting || !memberId}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Add
         </button>
@@ -94,7 +94,7 @@ export default function AttendanceManager({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search today's check-ins by name or membership no."
-            className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body pl-10 pr-3 py-2.5 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body pl-10 pr-3 py-2.5 outline-none focus:border-primary-container"
           />
         </div>
         {/* Manual, on-demand only — this page is not live/auto-updating.
@@ -104,7 +104,7 @@ export default function AttendanceManager({
           onClick={handleRefresh}
           disabled={isRefreshing}
           aria-label="Refresh attendance"
-          className="flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-2.5 bg-surface-container-low border border-surface-variant text-on-surface-variant hover:text-on-surface hover:border-primary-container disabled:opacity-60 transition-colors shrink-0"
+          className="flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-variant text-on-surface-variant hover:text-on-surface hover:border-primary-container disabled:opacity-60 transition-colors shrink-0"
         >
           <span className={`material-symbols-outlined text-lg leading-none ${isRefreshing ? "animate-spin" : ""}`}>
             refresh
@@ -114,7 +114,7 @@ export default function AttendanceManager({
       </div>
 
       {filteredRecords.length === 0 ? (
-        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
           {records.length === 0 ? "No check-ins yet today." : "No check-ins match your search."}
         </div>
       ) : (
@@ -156,7 +156,7 @@ function AttendanceSection({
         </span>
       </div>
 
-      <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+      <div className="hidden md:block bg-surface-container-low rounded-2xl shadow-soft overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b-2 border-surface-variant/60">
@@ -182,7 +182,7 @@ function AttendanceSection({
                   <button
                     onClick={() => onDelete(r.id)}
                     aria-label="Delete check-in"
-                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">delete</span>
                     Delete
@@ -196,7 +196,7 @@ function AttendanceSection({
 
       <div className="md:hidden flex flex-col gap-3">
         {rows.map((r) => (
-          <div key={r.id} className="bg-surface-container-low shadow-hard p-4 flex items-center justify-between gap-3">
+          <div key={r.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex items-center justify-between gap-3">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-body text-sm font-semibold text-on-surface truncate">{r.memberName}</p>
@@ -212,7 +212,7 @@ function AttendanceSection({
             <button
               onClick={() => onDelete(r.id)}
               aria-label="Delete check-in"
-              className="shrink-0 flex items-center justify-center p-2.5 bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
+              className="shrink-0 flex items-center justify-center p-2.5 rounded-lg bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
             >
               <span className="material-symbols-outlined text-lg leading-none">delete</span>
             </button>
@@ -230,7 +230,7 @@ function FeeTagPill({ tag }: { tag: FeeTag }) {
       ? "bg-error-container/40 text-error"
       : "bg-transparent border border-primary-container/50 text-primary-container";
   return (
-    <span className={`font-label text-[9px] uppercase tracking-wide px-2 py-1 whitespace-nowrap shrink-0 ${toneClasses}`}>
+    <span className={`font-label text-[9px] uppercase tracking-wide px-2 py-1 rounded-full whitespace-nowrap shrink-0 ${toneClasses}`}>
       {tag.label}
     </span>
   );

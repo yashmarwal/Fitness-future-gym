@@ -56,7 +56,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard flex flex-wrap items-center gap-3">
+      <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 rounded-2xl shadow-soft flex flex-wrap items-center gap-3">
         <span className="font-label text-xs uppercase tracking-widest text-primary-container">
           Record Manual Payment
         </span>
@@ -64,7 +64,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
           value={memberId}
           onChange={(e) => setMemberId(e.target.value)}
           required
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container flex-1 min-w-48"
+          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container flex-1 min-w-48"
         >
           <option value="">Select member...</option>
           {members.map((m) => (
@@ -79,12 +79,12 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount ₹"
           required
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-32"
+          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-32"
         />
         <select
           value={method}
           onChange={(e) => setMethod(e.target.value as "upi" | "cash" | "manual")}
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         >
           <option value="upi">UPI</option>
           <option value="cash">Cash</option>
@@ -94,7 +94,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
           value={durationMonths}
           onChange={(e) => setDurationMonths(Number(e.target.value) as 1 | 3 | 6 | 12)}
           title="How many months of fees this payment covers — pushes the member's next due date out by this much."
-          className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         >
           <option value={1}>1 Month</option>
           <option value={3}>3 Months (Quarterly)</option>
@@ -104,7 +104,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         <button
           type="submit"
           disabled={submitting}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Record
         </button>
@@ -119,13 +119,13 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by member name or membership no."
-            className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body pl-10 pr-3 py-2.5 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body pl-10 pr-3 py-2.5 outline-none focus:border-primary-container"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
         >
           <option value="all">All Statuses</option>
           <option value="paid">Paid</option>
@@ -134,7 +134,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         <select
           value={methodFilter}
           onChange={(e) => setMethodFilter(e.target.value as MethodFilter)}
-          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
         >
           <option value="all">All Methods</option>
           <option value="upi">UPI</option>
@@ -143,7 +143,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         </select>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 bg-surface-container-low px-5 py-3 shadow-hard">
+      <div className="flex flex-wrap items-center gap-4 bg-surface-container-low px-5 py-3 rounded-xl shadow-soft">
         <span className="font-label text-xs uppercase tracking-wider text-outline">
           {filteredPayments.length} Payment{filteredPayments.length === 1 ? "" : "s"}
         </span>
@@ -153,12 +153,12 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
       </div>
 
       {filteredPayments.length === 0 ? (
-        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
           {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
         </div>
       ) : (
         <>
-          <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+          <div className="hidden md:block bg-surface-container-low rounded-2xl shadow-soft overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b-2 border-surface-variant/60">
@@ -197,7 +197,7 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
 
           <div className="md:hidden flex flex-col gap-3">
             {filteredPayments.map((p) => (
-              <div key={p.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-2">
+              <div key={p.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-2">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-body text-sm font-semibold text-on-surface truncate">{p.memberName}</p>

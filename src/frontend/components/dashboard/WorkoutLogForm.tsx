@@ -123,7 +123,7 @@ export default function WorkoutLogForm({
       <RestTimerBar />
 
       {todaysPlan && (
-        <div className="bg-surface-container-low p-4 shadow-hard flex flex-col gap-2">
+        <div className="bg-surface-container-low p-4 shadow-soft rounded-2xl flex flex-col gap-2">
           <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
             <span className="material-symbols-outlined text-base leading-none">event_note</span>
             Today&apos;s Plan — {todaysPlan.day}
@@ -136,7 +136,7 @@ export default function WorkoutLogForm({
                 key={i}
                 type="button"
                 onClick={() => handlePickPlanExercise(ex)}
-                className="font-body text-xs px-3 py-2 bg-surface-container border border-surface-variant hover:border-primary-container text-on-surface transition-colors"
+                className="font-body text-xs px-3 py-2 rounded-xl bg-surface-container border border-surface-variant hover:border-primary-container text-on-surface transition-colors"
               >
                 {ex.name} <span className="text-tertiary">— {ex.sets}×{ex.reps}</span>
               </button>
@@ -149,7 +149,7 @@ export default function WorkoutLogForm({
         <button
           type="button"
           onClick={() => applyEntry(lastLog)}
-          className="flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 bg-surface-container-low border border-primary-container/50 text-primary-container hover:bg-surface-container transition-colors w-fit"
+          className="flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl bg-surface-container-low border border-primary-container/50 text-primary-container hover:bg-surface-container transition-colors w-fit"
         >
           <span className="material-symbols-outlined text-base leading-none">repeat</span>
           Repeat Last Set — {lastLog.exerciseName} {lastLog.sets}×{lastLog.reps}
@@ -157,7 +157,7 @@ export default function WorkoutLogForm({
         </button>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-3">
         <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
           <span className="material-symbols-outlined text-base leading-none">fitness_center</span>
           Log A Set
@@ -180,7 +180,7 @@ export default function WorkoutLogForm({
           <button
             type="button"
             onClick={handleUseSuggestion}
-            className="flex items-center justify-between gap-2 font-body text-xs px-3 py-2.5 bg-surface-container border border-primary-container/40 text-on-surface hover:border-primary-container transition-colors text-left"
+            className="flex items-center justify-between gap-2 font-body text-xs px-3 py-2.5 rounded-xl bg-surface-container border border-primary-container/40 text-on-surface hover:border-primary-container transition-colors text-left"
           >
             <span>
               Last time:{" "}
@@ -202,7 +202,7 @@ export default function WorkoutLogForm({
         <button
           type="submit"
           disabled={submitting}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 transition-colors"
+          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
         >
           {submitting ? "Saving..." : "Log Set"}
         </button>
@@ -225,7 +225,7 @@ function NumberStepper({
   return (
     <label className="flex flex-col gap-1">
       <span className="font-label text-[9px] uppercase tracking-wider text-outline">{label}</span>
-      <div className="flex items-stretch border border-surface-variant">
+      <div className="flex items-stretch rounded-xl overflow-hidden border border-surface-variant">
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
@@ -262,7 +262,7 @@ function WeightStepper({ value, onChange }: { value: string; onChange: (v: strin
   return (
     <label className="flex flex-col gap-1">
       <span className="font-label text-[9px] uppercase tracking-wider text-outline">Weight (kg)</span>
-      <div className="flex items-stretch border border-surface-variant">
+      <div className="flex items-stretch rounded-xl overflow-hidden border border-surface-variant">
         <button
           type="button"
           onClick={() => step(-2.5)}

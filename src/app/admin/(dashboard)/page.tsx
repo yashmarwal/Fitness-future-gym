@@ -90,8 +90,8 @@ export default async function AdminOverviewPage() {
               // instead, matching the "Needs Attention" cards below.
               className={
                 s.accent
-                  ? "bg-surface-container-low p-5 shadow-hard hover:shadow-hard-lg flex flex-col gap-3 border-l-4 border-l-error transition-shadow"
-                  : "bg-surface-container-low p-5 shadow-hard hover:shadow-hard-lg hover:border-primary-container border border-transparent flex flex-col gap-3 transition-all"
+                  ? "bg-surface-container-low p-5 rounded-2xl shadow-soft hover:shadow-soft-lg flex flex-col gap-3 border-l-4 border-l-error transition-shadow"
+                  : "bg-surface-container-low p-5 rounded-2xl shadow-soft hover:shadow-soft-lg hover:border-primary-container border border-transparent flex flex-col gap-3 transition-all"
               }
             >
               <div className="flex items-center justify-between">
@@ -119,7 +119,7 @@ export default async function AdminOverviewPage() {
             <Link
               key={a.label}
               href={a.href}
-              className="bg-surface-container-low p-4 shadow-hard hover:shadow-hard-lg hover:border-primary-container border border-transparent transition-all flex flex-col gap-2"
+              className="bg-surface-container-low p-4 rounded-2xl shadow-soft hover:shadow-soft-lg hover:border-primary-container border border-transparent transition-all flex flex-col gap-2"
             >
               <span className={`material-symbols-outlined text-lg leading-none ${a.tone}`}>{a.icon}</span>
               <span className={`font-display text-2xl ${a.tone}`}>{a.count}</span>

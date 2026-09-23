@@ -56,7 +56,7 @@ export default function RestTimerBar() {
 
   return (
     <div
-      className={`shadow-hard mb-6 flex flex-col gap-2.5 px-4 py-3 transition-colors ${
+      className={`shadow-soft rounded-2xl mb-6 flex flex-col gap-2.5 px-4 py-3 transition-colors ${
         state.alarming ? "bg-primary-container animate-pulse" : "bg-surface-container-low"
       }`}
     >
@@ -87,7 +87,7 @@ export default function RestTimerBar() {
           type="button"
           onClick={() => setRestTimerSound(!state.soundOn)}
           aria-label={state.soundOn ? "Mute rest timer sound" : "Unmute rest timer sound"}
-          className={`shrink-0 flex items-center justify-center w-8 h-8 transition-colors ${
+          className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
             state.alarming ? "text-on-primary-container/70 hover:text-on-primary-container" : "text-tertiary hover:text-on-surface"
           }`}
         >
@@ -100,7 +100,7 @@ export default function RestTimerBar() {
           <button
             type="button"
             onClick={() => resetRestTimer()}
-            className="shrink-0 flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 bg-error text-on-error transition-colors"
+            className="shrink-0 flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-xl bg-error text-on-error transition-colors"
           >
             <span className="material-symbols-outlined text-sm leading-none">notifications_off</span>
             Stop
@@ -116,7 +116,7 @@ export default function RestTimerBar() {
               type="button"
               onClick={() => resetRestTimer()}
               aria-label="Reset rest timer"
-              className="shrink-0 flex items-center justify-center w-8 h-8 bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+              className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
             >
               <span className="material-symbols-outlined text-base leading-none">restart_alt</span>
             </button>
@@ -124,7 +124,7 @@ export default function RestTimerBar() {
               type="button"
               onClick={() => (state.running ? pauseRestTimer() : startRestTimer())}
               disabled={remaining <= 0}
-              className="shrink-0 flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 bg-primary-container hover:bg-secondary-container text-on-primary-container disabled:opacity-60 transition-colors"
+              className="shrink-0 flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container disabled:opacity-60 transition-colors"
             >
               <span className="material-symbols-outlined text-sm leading-none">{state.running ? "pause" : "play_arrow"}</span>
               {state.running ? "Pause" : "Start"}
@@ -139,7 +139,7 @@ export default function RestTimerBar() {
             key={preset}
             type="button"
             onClick={() => selectRestTimerPreset(preset)}
-            className={`shrink-0 font-label text-[10px] uppercase px-2.5 py-1.5 transition-colors ${
+            className={`shrink-0 font-label text-[10px] uppercase px-2.5 py-1.5 rounded-full transition-colors ${
               state.duration === preset
                 ? state.alarming
                   ? "bg-on-primary-container/25 text-on-primary-container"

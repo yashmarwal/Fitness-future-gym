@@ -39,12 +39,12 @@ function ToggleSwitch({
       aria-label={label}
       onClick={onChange}
       disabled={disabled}
-      className={`relative w-11 h-6 shrink-0 transition-colors ${
+      className={`relative w-11 h-6 rounded-full shrink-0 transition-colors ${
         checked ? "bg-primary-container" : "bg-surface-container-high border border-surface-variant/50"
       } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <span
-        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-surface-container-lowest shadow-sm transition-transform ${
+        className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm transition-transform ${
           checked ? "translate-x-5" : "translate-x-0"
         }`}
       />
@@ -130,7 +130,7 @@ export default function NotificationsCard({ initialPrefs }: { initialPrefs: Pref
 
   return (
     <div
-      className={`bg-surface-container-low border border-primary-container/40 shadow-hard p-4 mb-6 flex flex-col gap-3 ${
+      className={`bg-surface-container-low border border-primary-container/40 shadow-soft rounded-2xl p-4 mb-6 flex flex-col gap-3 ${
         highlighted ? "animate-[notif-glow_1.4s_ease-in-out_3]" : ""
       }`}
     >
@@ -152,7 +152,7 @@ export default function NotificationsCard({ initialPrefs }: { initialPrefs: Pref
           <button
             onClick={handleEnable}
             disabled={requesting}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 transition-colors shrink-0"
+            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 rounded-xl shadow-soft disabled:opacity-60 transition-colors shrink-0"
           >
             {requesting ? "Enabling…" : "Enable"}
           </button>

@@ -317,7 +317,7 @@ export default function ExerciseSearchField({
           aria-autocomplete="list"
           aria-activedescendant={showing && activeIndex >= 0 ? optionId(activeIndex) : undefined}
           // 16px on phones: anything smaller makes iOS Safari zoom the page in on focus.
-          className={`w-full border border-surface-variant text-on-surface font-body outline-none focus:border-primary-container placeholder:text-outline/70 ${
+          className={`w-full rounded-xl border border-surface-variant text-on-surface font-body outline-none focus:border-primary-container placeholder:text-outline/70 ${
             compact ? "bg-surface-container-low pl-8 pr-8 py-2 text-base sm:text-sm" : "bg-surface-container pl-10 pr-10 py-3"
           }`}
         />
@@ -342,7 +342,7 @@ export default function ExerciseSearchField({
 
         {showing && (
           <div
-            className={`${layout.up ? "animate-suggest-in-up bottom-full mb-1.5" : "animate-suggest-in top-full mt-1.5"} absolute z-30 bg-surface-container-low border border-primary-container shadow-hard`}
+            className={`${layout.up ? "animate-suggest-in-up bottom-full mb-1.5" : "animate-suggest-in top-full mt-1.5"} absolute z-30 bg-surface-container-low border border-primary-container shadow-soft rounded-xl overflow-hidden`}
             style={layout.width != null ? { width: layout.width, left: layout.shift } : { left: 0, right: 0 }}
           >
             <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-surface-variant/60 bg-surface-container-lowest">
@@ -389,7 +389,7 @@ export default function ExerciseSearchField({
                       aria-hidden="true"
                       className={`absolute left-0 top-0 h-full w-0.5 bg-primary-container transition-opacity ${isActive ? "opacity-100" : "opacity-0"}`}
                     />
-                    <span className="w-9 h-9 shrink-0 flex items-center justify-center bg-surface-container-high text-primary-container">
+                    <span className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center bg-surface-container-high text-primary-container">
                       <span className="material-symbols-outlined text-lg leading-none">
                         {rowCategory ? CATEGORY_ICON[rowCategory] : "fitness_center"}
                       </span>

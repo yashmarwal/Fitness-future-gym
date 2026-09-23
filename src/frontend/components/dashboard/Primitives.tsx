@@ -29,7 +29,7 @@ export function StatCard({
   icon?: string;
 }) {
   return (
-    <div className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-1 transition-transform hover:-translate-y-0.5">
+    <div className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-1 transition-transform hover:-translate-y-0.5">
       {icon && (
         <span className={`material-symbols-outlined text-lg leading-none mb-1 ${toneClass(tone)}`}>{icon}</span>
       )}
@@ -49,13 +49,13 @@ export function StatCard({
  * instead of each route inventing its own gray boxes.
  */
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-surface-container-high ${className}`} />;
+  return <div className={`animate-pulse bg-surface-container-high rounded-xl ${className}`} />;
 }
 
 /** Shared empty-state block for "no logs yet" style messages. */
 export function DashboardEmptyState({ icon, children }: { icon: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 text-center bg-surface-container-low/60 border border-dashed border-surface-variant px-6 py-10 shadow-hard">
+    <div className="flex flex-col items-center gap-2 text-center bg-surface-container-low/60 border border-dashed border-surface-variant rounded-2xl px-6 py-10 shadow-soft">
       <span className="material-symbols-outlined text-3xl text-outline">{icon}</span>
       <p className="font-body text-sm text-tertiary max-w-xs">{children}</p>
     </div>

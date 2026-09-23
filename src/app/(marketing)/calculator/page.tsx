@@ -31,7 +31,7 @@ export default function CalculatorPage() {
 
       <section className="w-full bg-background px-gutter-mobile lg:px-gutter-desktop py-12 lg:py-20">
         <div className="max-w-(--container-max) mx-auto">
-          <CalculatorForm />
+          <CalculatorForm dashboardStyle />
         </div>
       </section>
     </div>

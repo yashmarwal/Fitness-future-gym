@@ -20,7 +20,7 @@ export default function TodayWorkoutBanner({
   if (dismissed) return null;
 
   return (
-    <div className="bg-primary-container text-on-primary-container p-4 shadow-hard-lg mb-6 flex flex-col gap-2">
+    <div className="bg-primary-container text-on-primary-container p-4 shadow-soft-lg rounded-2xl mb-6 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest">
           <span className="material-symbols-outlined text-lg leading-none">today</span>

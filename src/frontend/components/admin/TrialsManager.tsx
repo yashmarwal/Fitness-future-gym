@@ -66,14 +66,14 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
   // table's expanded row (desktop) and the mobile card's expanded panel.
   function ConvertForm({ id }: { id: string }) {
     return (
-      <div className="bg-surface-container-high p-4 shadow-hard border-l-4 border-primary-container flex flex-wrap items-end gap-3">
+      <div className="bg-surface-container-high p-4 rounded-xl shadow-soft border-l-4 border-primary-container flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1">
           <label className="font-label text-[10px] uppercase tracking-widest text-outline">Program / Plan</label>
           <input
             value={plan}
             onChange={(e) => setPlan(e.target.value)}
             placeholder="e.g. Group Training"
-            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-auto"
+            className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-auto"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -83,7 +83,7 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
             value={feeAmount}
             onChange={(e) => setFeeAmount(e.target.value)}
             placeholder="3000"
-            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-32"
+            className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-full sm:w-32"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -92,7 +92,7 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value as "upi" | "cash" | "manual")}
             disabled={!feeAmount}
-            className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container disabled:opacity-50 w-full sm:w-auto"
+            className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container disabled:opacity-50 w-full sm:w-auto"
           >
             <option value="upi">UPI</option>
             <option value="cash">Cash</option>
@@ -102,14 +102,14 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
         <button
           onClick={() => submitConvert(id, false)}
           disabled={submitting}
-          className="w-full sm:w-auto bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2.5 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:w-auto rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2.5 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Convert
         </button>
         <button
           onClick={() => submitConvert(id, true)}
           disabled={submitting}
-          className="w-full sm:w-auto bg-surface-container-highest hover:bg-surface-variant text-on-surface font-label text-xs uppercase px-4 py-2.5 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:w-auto rounded-xl bg-surface-container-highest hover:bg-surface-variant text-on-surface font-label text-xs uppercase px-4 py-2.5 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           Skip (Convert Without Program)
         </button>
@@ -120,7 +120,7 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
 
   return (
     <>
-      <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+      <div className="hidden md:block bg-surface-container-low rounded-2xl shadow-soft overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b-2 border-surface-variant/60">
@@ -175,7 +175,7 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
 
       <div className="md:hidden flex flex-col gap-3">
         {trials.map((t) => (
-          <div key={t.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-3">
+          <div key={t.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-body text-sm font-semibold text-on-surface truncate">{t.fullName}</p>
@@ -198,7 +198,7 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
             {t.status === "active" && (
               <button
                 onClick={() => (openId === t.id ? setOpenId(null) : openConvert(t.id))}
-                className="w-full font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors border-t border-surface-variant/30 pt-3"
+                className="w-full rounded-lg font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors border-t border-surface-variant/30 pt-3"
               >
                 {openId === t.id ? "Cancel" : "Convert To Member"}
               </button>

@@ -49,7 +49,7 @@ export default function RestTimer() {
         <button
           onClick={() => setRestTimerSound(!state.soundOn)}
           aria-label={state.soundOn ? "Mute sound" : "Unmute sound"}
-          className="flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-tertiary hover:text-on-surface font-label text-[10px] uppercase tracking-widest px-3 py-2 transition-colors"
+          className="flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-tertiary hover:text-on-surface font-label text-[10px] uppercase tracking-widest px-3 py-2 rounded-xl transition-colors"
         >
           <span className="material-symbols-outlined text-base leading-none">
             {state.soundOn ? "volume_up" : "volume_off"}
@@ -59,7 +59,7 @@ export default function RestTimer() {
       </div>
 
       <div
-        className={`w-full aspect-square max-w-xs flex flex-col items-center justify-center shadow-hard mb-6 ${
+        className={`w-full aspect-square max-w-xs flex flex-col items-center justify-center shadow-soft rounded-3xl mb-6 ${
           state.alarming ? "bg-primary-container animate-pulse" : "bg-surface-container-low"
         }`}
       >
@@ -82,7 +82,7 @@ export default function RestTimer() {
           <button
             key={preset}
             onClick={() => selectRestTimerPreset(preset)}
-            className={`font-label text-xs uppercase py-2.5 transition-colors ${
+            className={`font-label text-xs uppercase py-2.5 rounded-xl transition-colors ${
               state.duration === preset
                 ? "bg-primary-container text-on-primary-container"
                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
@@ -97,7 +97,7 @@ export default function RestTimer() {
         {state.alarming ? (
           <button
             onClick={() => resetRestTimer()}
-            className="flex-1 bg-error text-on-error font-label text-sm uppercase font-bold px-6 py-3 shadow-hard"
+            className="flex-1 bg-error text-on-error font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft"
           >
             Stop Alarm
           </button>
@@ -106,13 +106,13 @@ export default function RestTimer() {
             <button
               onClick={() => (state.running ? pauseRestTimer() : startRestTimer())}
               disabled={remaining === 0}
-              className="flex-1 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+              className="flex-1 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft disabled:opacity-60"
             >
               {state.running ? "Pause" : "Start"}
             </button>
             <button
               onClick={() => resetRestTimer()}
-              className="flex-1 bg-surface-container-high text-on-surface font-label text-sm uppercase px-6 py-3"
+              className="flex-1 bg-surface-container-high text-on-surface font-label text-sm uppercase px-6 py-3 rounded-xl"
             >
               Reset
             </button>

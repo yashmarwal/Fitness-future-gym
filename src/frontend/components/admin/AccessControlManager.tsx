@@ -43,7 +43,7 @@ function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked
         {!expanded ? (
           <button
             onClick={() => setExpanded(true)}
-            className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
+            className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
           >
             <span className="material-symbols-outlined text-sm leading-none">block</span>
             Block
@@ -59,17 +59,17 @@ function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked
       </div>
 
       {expanded && (
-        <div className="flex flex-wrap items-center gap-2 bg-surface-container p-3">
+        <div className="flex flex-wrap items-center gap-2 bg-surface-container p-3 rounded-xl">
           <input
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Reason (shown to the member)"
-            className="flex-1 min-w-48 bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-error"
+            className="flex-1 min-w-48 rounded-lg bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-error"
           />
           <button
             onClick={handleConfirmBlock}
             disabled={submitting}
-            className="bg-error-container/70 hover:bg-error-container text-error font-label text-xs uppercase font-bold px-4 py-2 shadow-hard disabled:opacity-60 transition-colors"
+            className="rounded-lg bg-error-container/70 hover:bg-error-container text-error font-label text-xs uppercase font-bold px-4 py-2 shadow-soft disabled:opacity-60 transition-colors"
           >
             {submitting ? "Blocking..." : "Confirm Block"}
           </button>
@@ -104,7 +104,7 @@ function BlockedRow({ member, onUnblocked }: { member: AdminMember; onUnblocked:
       <button
         onClick={handleUnblock}
         disabled={submitting}
-        className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors shrink-0 disabled:opacity-60"
+        className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors shrink-0 disabled:opacity-60"
       >
         <span className="material-symbols-outlined text-sm leading-none">lock_open</span>
         {submitting ? "Unblocking..." : "Unblock"}
@@ -130,7 +130,7 @@ export default function AccessControlManager({
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">
             Needs Review — Active, No Paid-Up Fees
           </h2>
-          <span className="font-label text-[10px] uppercase px-2 py-0.5 border border-primary-container text-primary-container">
+          <span className="font-label text-[10px] uppercase px-2 py-0.5 rounded-full border border-primary-container text-primary-container">
             {unpaidActive.length}
           </span>
         </div>
@@ -139,7 +139,7 @@ export default function AccessControlManager({
             Nobody&apos;s flagged — every active, recently-checked-in member has a paid-up fee status.
           </DashboardEmptyState>
         ) : (
-          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low shadow-hard">
+          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
             {unpaidActive.map((m) => (
               <BlockRow key={m.id} member={m} onBlocked={() => router.refresh()} />
             ))}
@@ -153,14 +153,14 @@ export default function AccessControlManager({
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">
             Currently Blocked
           </h2>
-          <span className="font-label text-[10px] uppercase px-2 py-0.5 border border-error text-error">
+          <span className="font-label text-[10px] uppercase px-2 py-0.5 rounded-full border border-error text-error">
             {blocked.length}
           </span>
         </div>
         {blocked.length === 0 ? (
           <DashboardEmptyState icon="lock_open">No one&apos;s currently blocked.</DashboardEmptyState>
         ) : (
-          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low shadow-hard">
+          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
             {blocked.map((m) => (
               <BlockedRow key={m.id} member={m} onUnblocked={() => router.refresh()} />
             ))}
