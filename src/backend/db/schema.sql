@@ -368,7 +368,7 @@ create table if not exists whatsapp_messages (
   id uuid primary key default gen_random_uuid(),
   member_id uuid references members(id) on delete set null,
   phone text not null,
-  template text not null, -- 'otp' | 'fee_reminder' | 'birthday' | 'announcement' | 'welcome_card'
+  template text not null, -- 'otp' | 'fee_reminder' | 'birthday' | 'announcement' | 'welcome_card' | 'auto_reply_contact_info' (webhook auto-reply, see whatsappInbound.ts)
   status text not null default 'sent', -- 'sent' | 'failed'
   error text,
   created_at timestamptz not null default now()

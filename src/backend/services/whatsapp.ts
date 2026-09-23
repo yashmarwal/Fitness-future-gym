@@ -90,6 +90,62 @@ async function sendViaCloudApi(phone: string, templateName: string, bodyParams: 
   }
 }
 
+async function sendTextViaCloudApi(phone: string, body: string) {
+  const url = `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ messaging_product: "whatsapp", to: phone, type: "text", text: { body } }),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`WhatsApp Cloud API error (${res.status}): ${errBody}`);
+  }
+}
+
+// Free-form text, not a template — Meta only allows this within the 24h
+// customer-service window a user opens by messaging the business first
+// (rejected outside it with error 131047), so this exists solely for
+// whatsappInbound.ts's webhook auto-reply, never for anything
+// business-initiated. Logged into whatsapp_messages the same way a template
+// send is, under the synthetic "auto_reply_contact_info" template name, so
+// the table stays a complete record and whatsappInbound.ts can query it to
+// dedupe repeat replies to the same sender.
+export async function sendWhatsAppReplyText(params: { phone: string; body: string }): Promise<void> {
+  const { phone, body } = params;
+  let status: "sent" | "failed" = "sent";
+  let error: string | undefined;
+
+  if (!isConfigured()) {
+    console.log(`[whatsapp:dev-mode] reply to=${phone} body=${body}`);
+  } else {
+    try {
+      await sendTextViaCloudApi(phone, body);
+    } catch (err) {
+      status = "failed";
+      error = err instanceof Error ? err.message : String(err);
+      console.error("[whatsapp] reply send failed:", error);
+    }
+  }
+
+  const db = getDb();
+  const { error: logError } = await db.from("whatsapp_messages").insert({
+    member_id: null,
+    phone,
+    template: "auto_reply_contact_info",
+    status,
+    error: error ?? null,
+  });
+  if (logError) console.error("[whatsapp] failed to log auto-reply:", logError.message);
+
+  if (status === "failed") throw new Error(error);
+}
+
 export async function sendWhatsAppTemplate(params: {
   phone: string;
   template: WhatsAppTemplate;
