@@ -96,7 +96,7 @@ export default function LocationPageContent() {
               </p>
             </div>
             <div className="lg:col-span-4 flex flex-col justify-end lg:items-end">
-              <div className="loc-hero-anim bg-surface-container-high p-space-md w-full lg:max-w-xs shadow-md border border-surface-variant/40">
+              <div className="loc-hero-anim bg-surface-container-high p-space-md rounded-2xl w-full lg:max-w-xs shadow-md border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline block">
                   QUICK ACCESS HOTLINE
                 </span>
@@ -135,7 +135,7 @@ export default function LocationPageContent() {
           {/* Left Specs */}
           <div className="lg:col-span-6 flex flex-col gap-space-2xl">
             {/* Physical Address Panel */}
-            <div className="loc-card-anim bg-surface-container-low p-space-xl relative shadow-hard border border-surface-variant/40 hover:border-primary-container transition-colors">
+            <div className="loc-card-anim bg-surface-container-low p-space-xl rounded-2xl relative shadow-soft border border-surface-variant/40 hover:border-primary-container transition-colors">
               <div className="flex items-center justify-between pb-space-md border-b border-surface-variant/30">
                 <div className="flex items-center gap-space-xs">
                   <span className="material-symbols-outlined text-primary-container text-headline-sm">
@@ -145,7 +145,7 @@ export default function LocationPageContent() {
                     GROUND FLOOR STATION
                   </h2>
                 </div>
-                <span className="font-label-sm text-label-sm uppercase bg-surface-container text-primary-container px-space-xs py-space-2xs font-bold">
+                <span className="font-label-sm text-label-sm uppercase bg-surface-container text-primary-container px-space-xs py-space-2xs rounded-full font-bold">
                   ZONE 01
                 </span>
               </div>
@@ -159,7 +159,7 @@ export default function LocationPageContent() {
                   </p>
                 </div>
 
-                <div className="bg-surface-container-high p-space-md text-on-surface shadow-sm border border-surface-variant/30">
+                <div className="bg-surface-container-high p-space-md rounded-xl text-on-surface shadow-sm border border-surface-variant/30">
                   <div className="flex items-start gap-space-xs">
                     <span className="material-symbols-outlined text-primary-container text-title-md shrink-0">
                       navigation
@@ -176,7 +176,7 @@ export default function LocationPageContent() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
-                  <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
+                  <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between border border-surface-variant/30">
                     <div>
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
                         COACH VAIBHAV
@@ -200,7 +200,7 @@ export default function LocationPageContent() {
                       </a>
                     </div>
                   </div>
-                  <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30">
+                  <div className="bg-surface-container p-space-md rounded-xl flex flex-col justify-between border border-surface-variant/30">
                     <div>
                       <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline block">
                         COACH HRITIK
@@ -229,7 +229,7 @@ export default function LocationPageContent() {
             </div>
 
             {/* Timings Table */}
-            <div className="loc-card-anim bg-surface-container-low p-space-xl shadow-hard border border-surface-variant/40">
+            <div className="loc-card-anim bg-surface-container-low p-space-xl rounded-2xl shadow-soft border border-surface-variant/40">
               <div className="flex items-center justify-between pb-space-md border-b border-surface-variant/40">
                 <h2 className="font-headline-sm text-headline-sm uppercase text-on-surface m-0">
                   OPERATIONAL TIMINGS
@@ -248,7 +248,7 @@ export default function LocationPageContent() {
                       <span className="font-body-md text-body-md text-primary-container font-mono">
                         {row.time}
                       </span>
-                      <span className="font-label-sm text-label-sm uppercase text-tertiary bg-surface-container px-space-xs py-space-2xs">
+                      <span className="font-label-sm text-label-sm uppercase text-tertiary bg-surface-container px-space-xs py-space-2xs rounded-full">
                         {row.status}
                       </span>
                     </div>
@@ -261,7 +261,7 @@ export default function LocationPageContent() {
           {/* Right Map & Form */}
           <div className="lg:col-span-6 flex flex-col gap-space-2xl">
             {/* Embedded Location Map Preview */}
-            <div className="loc-card-anim bg-surface-container-low p-space-lg shadow-hard border border-surface-variant/40 flex flex-col gap-space-sm">
+            <div className="loc-card-anim bg-surface-container-low p-space-lg rounded-2xl shadow-soft border border-surface-variant/40 flex flex-col gap-space-sm">
               <div className="flex items-center justify-between flex-wrap gap-space-xs">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
                   MAP VECTOR // NANGLOI STATION
@@ -285,7 +285,7 @@ export default function LocationPageContent() {
                   </a>
                 </div>
               </div>
-              <div className="w-full h-72 bg-surface-container flex items-center justify-center relative overflow-hidden border border-surface-variant/30">
+              <div className="w-full h-72 bg-surface-container flex items-center justify-center relative overflow-hidden rounded-xl border border-surface-variant/30">
                 <iframe
                   title="Nangloi Location Map"
                   src="https://www.google.com/maps?q=KH.No.52%2C%20Shop%20No.5%20Plot%20No.8-A%2C%2018%2C%20near%20Rao%20Vihar%2C%20Rao%20Vihar%2C%20Nangloi%2C%20Delhi%2C%20110041&output=embed"
@@ -296,7 +296,7 @@ export default function LocationPageContent() {
             </div>
 
             {/* Quick Inquiry Form */}
-            <div id="inquiry" className="loc-card-anim bg-surface-container p-space-xl shadow-hard border border-surface-variant/40 scroll-mt-24">
+            <div id="inquiry" className="loc-card-anim bg-surface-container p-space-xl rounded-2xl shadow-soft border border-surface-variant/40 scroll-mt-24">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold block mb-space-2xs">
                 DIRECT INQUIRY DISPATCH
               </span>
@@ -313,7 +313,7 @@ export default function LocationPageContent() {
                     <input
                       required
                       name="name"
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
+                      className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="e.g. Rahul Sharma"
                     />
                   </div>
@@ -325,7 +325,7 @@ export default function LocationPageContent() {
                       required
                       name="phone"
                       type="tel"
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
+                      className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="+91 87009 78341"
                     />
                   </div>
@@ -336,25 +336,25 @@ export default function LocationPageContent() {
                     <textarea
                       rows={3}
                       name="message"
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
+                      className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body-md px-space-md py-space-sm outline-none focus:border-primary-container"
                       placeholder="e.g. Want to inquire about personal training slots or monthly pass."
                     />
                   </div>
                   {error && (
-                    <p className="font-body-sm text-body-sm text-error-container bg-error/10 border border-error-container/40 px-space-sm py-space-xs">
+                    <p className="font-body-sm text-body-sm text-error-container bg-error/10 border border-error-container/40 px-space-sm py-space-xs rounded-lg">
                       {error}
                     </p>
                   )}
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md shadow-hard transition-all cursor-pointer mt-space-2xs hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md rounded-xl shadow-soft transition-all cursor-pointer mt-space-2xs hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {submitting ? "Sending…" : "Submit Inquiry"}
                   </button>
                 </form>
               ) : (
-                <div className="bg-surface-container-lowest p-space-lg text-center border border-primary-container">
+                <div className="bg-surface-container-lowest p-space-lg rounded-2xl text-center border border-primary-container">
                   <span className="material-symbols-outlined text-primary-container text-headline-md">
                     check_circle
                   </span>

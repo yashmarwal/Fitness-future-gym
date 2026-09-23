@@ -160,7 +160,7 @@ function Tile({
     <Link
       href={href}
       style={{ animationDelay: `${delay}ms` }}
-      className={`min-w-0 bg-surface-container border border-surface-variant/40 p-3 flex flex-col gap-1 hover:border-primary-container transition-colors ${
+      className={`min-w-0 bg-surface-container border border-surface-variant/40 rounded-xl p-3 flex flex-col gap-1 hover:border-primary-container transition-colors ${
         played ? "animate-snap-in" : "opacity-0"
       }`}
     >
@@ -179,7 +179,7 @@ function Tile({
 
 function Chip({ icon, children }: { icon: string; children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 bg-surface-container border border-surface-variant/40 px-2.5 py-1.5 font-label text-[10px] uppercase tracking-wider text-on-surface">
+    <span className="inline-flex items-center gap-1.5 bg-surface-container border border-surface-variant/40 rounded-full px-2.5 py-1.5 font-label text-[10px] uppercase tracking-wider text-on-surface">
       <span className="material-symbols-outlined text-sm leading-none text-primary-container">{icon}</span>
       {children}
     </span>
@@ -228,7 +228,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
     <section
       ref={ref}
       aria-label="Your snapshot"
-      className={`relative overflow-hidden bg-surface-container-low shadow-hard mb-6 border transition-colors ${
+      className={`relative overflow-hidden bg-surface-container-low shadow-soft rounded-2xl mb-6 border transition-colors ${
         open ? "border-primary-container/50" : "border-transparent hover:border-primary-container"
       } ${revealed ? "animate-snap-in" : "opacity-0"}`}
     >
@@ -239,7 +239,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
         aria-controls={panelId}
         className="w-full flex items-center gap-3 pl-3 pr-4 py-2.5 text-left"
       >
-        <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-hard bg-surface-container-high text-primary-container">
+        <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
           <span className="material-symbols-outlined text-xl leading-none">monitor_heart</span>
         </span>
         <span className="flex-1 min-w-0">
@@ -297,7 +297,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
                   <p className="font-label text-[10px] uppercase tracking-wider text-tertiary mt-1">Days trained · last 7 days</p>
                 </div>
                 <span
-                  className={`flex items-center gap-1 px-2 py-1 font-label text-[10px] uppercase tracking-wider ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded-full font-label text-[10px] uppercase tracking-wider ${
                     delta > 0 ? "bg-primary-container/15 text-primary-container" : "bg-surface-container-high text-tertiary"
                   }`}
                 >
@@ -545,10 +545,10 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
               }
             >
               {records.recent.length > 0 ? (
-                <ul className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container border border-surface-variant/40">
+                <ul className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container border border-surface-variant/40 rounded-xl overflow-hidden">
                   {records.recent.map((record) => (
                     <li key={record.name} className="flex items-center gap-3 px-3 py-2.5">
-                      <span className="w-8 h-8 shrink-0 flex items-center justify-center bg-surface-container-high text-primary-container">
+                      <span className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center bg-surface-container-high text-primary-container">
                         <span className="material-symbols-outlined text-base leading-none">emoji_events</span>
                       </span>
                       <span className="flex-1 min-w-0">
@@ -579,8 +579,8 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
               }
             >
               {rank && tier ? (
-                <div className="flex items-center gap-3 bg-surface-container border border-surface-variant/40 p-3">
-                  <span className={`w-9 h-9 shrink-0 flex items-center justify-center border ${tier.badge}`}>
+                <div className="flex items-center gap-3 bg-surface-container border border-surface-variant/40 rounded-xl p-3">
+                  <span className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center border ${tier.badge}`}>
                     <span className="material-symbols-outlined text-base leading-none">{CATEGORY_ICON[rank.category] ?? "fitness_center"}</span>
                   </span>
                   <span className="flex-1 min-w-0">
@@ -626,7 +626,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
                 {fee.kind !== "none" && (
                   <Link
                     href="/dashboard/fees"
-                    className={`inline-flex items-center gap-1.5 border px-2.5 py-1.5 font-label text-[10px] uppercase tracking-wider ${FEE_TONE[fee.kind]}`}
+                    className={`inline-flex items-center gap-1.5 border rounded-full px-2.5 py-1.5 font-label text-[10px] uppercase tracking-wider ${FEE_TONE[fee.kind]}`}
                   >
                     <span className="material-symbols-outlined text-sm leading-none">payments</span>
                     {fee.label}
@@ -646,7 +646,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
                     <li
                       key={insight.text}
                       style={{ animationDelay: `${520 + i * 60}ms` }}
-                      className={`flex items-start gap-3 bg-surface-container border border-surface-variant/40 px-3 py-2.5 ${
+                      className={`flex items-start gap-3 bg-surface-container border border-surface-variant/40 rounded-xl px-3 py-2.5 ${
                         hasOpened ? "animate-snap-tick" : "opacity-0"
                       }`}
                     >

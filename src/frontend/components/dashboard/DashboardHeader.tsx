@@ -35,7 +35,7 @@ export default function DashboardHeader({ fullName }: { fullName: string }) {
       </div>
       <button
         onClick={handleLogout}
-        className="flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary-container font-label text-xs uppercase tracking-wider px-3 py-2 transition-colors"
+        className="flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary-container font-label text-xs uppercase tracking-wider px-3 py-2 rounded-xl transition-colors"
       >
         <span className="material-symbols-outlined text-base leading-none">logout</span>
         Sign Out

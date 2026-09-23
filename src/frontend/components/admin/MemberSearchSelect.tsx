@@ -59,7 +59,7 @@ export default function MemberSearchSelect({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="w-full flex items-center justify-between gap-2 bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 text-left"
+          className="w-full flex items-center justify-between gap-2 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 text-left"
         >
           <span className="truncate">
             {selected.fullName} <span className="text-tertiary">({selected.membershipNumber})</span>
@@ -77,7 +77,7 @@ export default function MemberSearchSelect({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setOpen(true)}
             placeholder={placeholder}
-            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body pl-9 pr-8 py-2 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body pl-9 pr-8 py-2 outline-none focus:border-primary-container"
           />
           {selected && (
             <button
@@ -93,7 +93,7 @@ export default function MemberSearchSelect({
       )}
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto bg-surface-container-low border border-surface-variant shadow-hard-lg">
+        <div className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto bg-surface-container-low border border-surface-variant shadow-soft-lg rounded-xl">
           {results.length === 0 ? (
             <p className="px-3 py-3 font-body text-sm text-tertiary">No members match.</p>
           ) : (

@@ -101,7 +101,7 @@ export default function MemberAttendanceCalendar({ members }: { members: AdminMe
       {error && <p className="font-body text-sm text-error">{error}</p>}
 
       {memberId && !loading && timestamps !== null && (
-        <div className="bg-surface-container-low p-4 shadow-hard max-w-sm">
+        <div className="bg-surface-container-low p-4 rounded-2xl shadow-soft max-w-sm">
           <div className="flex items-center justify-between mb-1">
             <span className="font-label text-xs uppercase tracking-widest text-primary-container">
               {selectedMember?.fullName}
@@ -115,7 +115,7 @@ export default function MemberAttendanceCalendar({ members }: { members: AdminMe
             <button
               onClick={() => changeMonth(-1)}
               aria-label="Previous month"
-              className="flex items-center justify-center w-9 h-9 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <span className="material-symbols-outlined text-lg leading-none">chevron_left</span>
             </button>
@@ -123,7 +123,7 @@ export default function MemberAttendanceCalendar({ members }: { members: AdminMe
             <button
               onClick={() => changeMonth(1)}
               aria-label="Next month"
-              className="flex items-center justify-center w-9 h-9 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <span className="material-symbols-outlined text-lg leading-none">chevron_right</span>
             </button>
@@ -151,7 +151,7 @@ export default function MemberAttendanceCalendar({ members }: { members: AdminMe
                   onClick={() => setSelectedDay(checkedIn ? (isSelected ? null : dateStr) : null)}
                   disabled={!checkedIn}
                   aria-label={checkedIn ? `Checked in on ${dateStr}` : undefined}
-                  className={`aspect-square flex items-center justify-center font-label text-xs relative
+                  className={`aspect-square rounded-lg flex items-center justify-center font-label text-xs relative
                     ${checkedIn ? "bg-primary-container text-on-primary-container font-bold cursor-pointer" : "bg-surface-container text-on-surface cursor-default"}
                     ${isSelected ? "ring-2 ring-inset ring-on-surface" : ""}
                   `}

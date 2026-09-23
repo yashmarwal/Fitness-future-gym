@@ -231,7 +231,7 @@ export default function DesktopHome() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-end">
             <div className="lg:col-span-8 flex flex-col">
               {/* Industrial Badge */}
-              <div ref={heroBadgeRef} className="inline-flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-2xs w-fit mb-space-md border border-surface-variant/40 shadow-sm">
+              <div ref={heroBadgeRef} className="inline-flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-2xs w-fit mb-space-md border border-surface-variant/40 shadow-sm rounded-full">
                 <span className="w-2.5 h-2.5 bg-primary-container inline-block animate-pulse"></span>
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant font-bold">
                   ⚡ RAW IRON CULTURE • EST. 2016 • HEAVYWEIGHT STRENGTH TEMPLE
@@ -266,20 +266,20 @@ export default function DesktopHome() {
               <div ref={heroCtaRef} className="flex flex-wrap items-center gap-space-md">
                 <Link
                   href="/membership"
-                  className="group inline-flex items-center justify-center gap-space-xs bg-primary-container hover:bg-secondary-container text-on-primary-container font-title-sm text-title-sm uppercase px-space-xl py-space-md shadow-hard transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group inline-flex items-center justify-center gap-space-xs bg-primary-container hover:bg-secondary-container text-on-primary-container font-title-sm text-title-sm uppercase px-space-xl py-space-md shadow-soft rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <span>Claim Your 2-Day Free Trial</span>
                   <span className="material-symbols-outlined text-title-md transition-transform group-hover:translate-x-1">arrow_forward</span>
                 </Link>
                 <Link
                   href="/programs"
-                  className="inline-flex items-center justify-center bg-surface-container-low hover:bg-surface-container text-on-surface hover:text-primary-container font-title-sm text-title-sm uppercase px-space-xl py-space-md transition-all duration-200 hover:border-primary-container border border-surface-variant/40"
+                  className="inline-flex items-center justify-center bg-surface-container-low hover:bg-surface-container text-on-surface hover:text-primary-container font-title-sm text-title-sm uppercase px-space-xl py-space-md rounded-xl transition-all duration-200 hover:border-primary-container border border-surface-variant/40"
                 >
                   Explore Programs
                 </Link>
                 <Link
                   href="/location"
-                  className="inline-flex items-center justify-center bg-surface-container-high/60 hover:bg-surface-container-high text-tertiary-fixed hover:text-on-surface font-title-sm text-title-sm uppercase px-space-lg py-space-md transition-colors border border-surface-variant/30"
+                  className="inline-flex items-center justify-center bg-surface-container-high/60 hover:bg-surface-container-high text-tertiary-fixed hover:text-on-surface font-title-sm text-title-sm uppercase px-space-lg py-space-md rounded-xl transition-colors border border-surface-variant/30"
                 >
                   <span className="material-symbols-outlined text-title-sm mr-space-2xs">location_on</span>
                   Location &amp; Timings
@@ -289,7 +289,7 @@ export default function DesktopHome() {
 
             {/* Right Metric Highlight Cards */}
             <div ref={heroCardRef} className="lg:col-span-4 flex flex-col gap-space-md mt-space-xl lg:mt-0">
-              <div className="bg-surface-container-low p-space-lg shadow-hard relative border border-surface-variant/40 group hover:border-primary-container transition-colors duration-300">
+              <div className="bg-surface-container-low p-space-lg rounded-2xl shadow-soft relative border border-surface-variant/40 group hover:border-primary-container transition-colors duration-300">
                 <div className="absolute top-0 left-0 w-full h-0.5 bg-primary-container"></div>
                 <div className="flex items-baseline justify-between mb-space-xs">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
@@ -310,7 +310,7 @@ export default function DesktopHome() {
                 </p>
               </div>
 
-              <div className="bg-surface-container-low p-space-md shadow-hard border border-surface-variant/40 flex items-center justify-between">
+              <div className="bg-surface-container-low p-space-md rounded-2xl shadow-soft border border-surface-variant/40 flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">WEEKLY TONNAGE MOVED</span>
                   <span className="font-headline-sm text-headline-sm text-primary-container font-mono">142,850 KG</span>
@@ -408,7 +408,7 @@ export default function DesktopHome() {
               <h2 className="philo-anim font-headline-lg text-headline-lg uppercase text-on-surface tracking-wide">
                 BUILT ON IRON, <span className="text-primary-container">NOT GIMMICKS.</span>
               </h2>
-              <div className="philo-anim bg-surface-container-low p-space-xl relative shadow-hard border border-surface-variant/40">
+              <div className="philo-anim bg-surface-container-low p-space-xl rounded-2xl relative shadow-soft border border-surface-variant/40">
                 <div className="orange-accent-line absolute left-0 top-0 bottom-0 w-1 bg-primary-container origin-top"></div>
                 <p className="font-body-lg text-body-lg text-on-surface font-light leading-relaxed">
                   Authentic training ground serving Rao Vihar &amp; Nangloi community for nearly a decade. No fluff, no pastel spa amenities—just serious iron, heavyweight bars, calibrated dumbbells, and experienced coaching for lifters who show up.
@@ -416,7 +416,7 @@ export default function DesktopHome() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-sm">
-                <div className="philo-anim bg-surface-container p-space-md flex items-start gap-space-sm border border-surface-variant/30 hover:border-primary-container transition-colors">
+                <div className="philo-anim bg-surface-container p-space-md rounded-xl flex items-start gap-space-sm border border-surface-variant/30 hover:border-primary-container transition-colors">
                   <span className="material-symbols-outlined text-primary-container text-headline-sm">
                     precision_manufacturing
                   </span>
@@ -430,7 +430,7 @@ export default function DesktopHome() {
                   </div>
                 </div>
 
-                <div className="philo-anim bg-surface-container p-space-md flex items-start gap-space-sm border border-surface-variant/30 hover:border-primary-container transition-colors">
+                <div className="philo-anim bg-surface-container p-space-md rounded-xl flex items-start gap-space-sm border border-surface-variant/30 hover:border-primary-container transition-colors">
                   <span className="material-symbols-outlined text-primary-container text-headline-sm">
                     sports_kabaddi
                   </span>
@@ -447,7 +447,7 @@ export default function DesktopHome() {
             </div>
 
             <div className="lg:col-span-5 relative flex flex-col gap-space-md">
-              <div className="philo-anim relative w-full h-[400px] overflow-hidden bg-surface-container-low shadow-hard-lg border border-surface-variant/40 group">
+              <div className="philo-anim relative w-full h-[400px] overflow-hidden rounded-2xl bg-surface-container-low shadow-soft-lg border border-surface-variant/40 group">
                 <Image
                   alt="Atmospheric gym environment"
                   src="/images/gym-facility.jpg"
@@ -465,7 +465,7 @@ export default function DesktopHome() {
                 </div>
               </div>
 
-              <div className="philo-anim bg-surface-container-low p-space-md flex items-center justify-between border border-surface-variant/40">
+              <div className="philo-anim bg-surface-container-low p-space-md rounded-xl flex items-center justify-between border border-surface-variant/40">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-tertiary">
                     Weekly Tonnage Moved
@@ -510,7 +510,7 @@ export default function DesktopHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-space-xl">
             {/* Coach 1: Vaibhav */}
-            <div className="coach-card bg-surface-container-low p-space-xl border border-surface-variant/40 relative shadow-hard flex flex-col justify-between hover:border-primary-container transition-all duration-300 hover:-translate-y-1">
+            <div className="coach-card bg-surface-container-low p-space-xl rounded-2xl border border-surface-variant/40 relative shadow-soft flex flex-col justify-between hover:border-primary-container transition-all duration-300 hover:-translate-y-1">
               <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
@@ -526,11 +526,11 @@ export default function DesktopHome() {
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-md">
                   Specializes in maximal compound loading, lumbar safety protocols, and competition deadlift/squat setup. Vaibhav has trained over 1,500+ lifters in Nangloi from raw beginners to 250kg+ pullers.
                 </p>
-                <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold mb-space-md">
+                <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs rounded-full font-bold mb-space-md">
                   <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
                   IBBFF (FFBA Delhi Judge)
                 </span>
-                <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
+                <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm rounded-xl border border-surface-variant/30">
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST SQUAT</span>
                     <span className="font-title-sm text-title-sm text-on-surface">220 KG</span>
@@ -559,7 +559,7 @@ export default function DesktopHome() {
             </div>
 
             {/* Coach 2: Hritik */}
-            <div className="coach-card bg-surface-container-low p-space-xl border border-surface-variant/40 relative shadow-hard flex flex-col justify-between hover:border-primary-container transition-all duration-300 hover:-translate-y-1">
+            <div className="coach-card bg-surface-container-low p-space-xl rounded-2xl border border-surface-variant/40 relative shadow-soft flex flex-col justify-between hover:border-primary-container transition-all duration-300 hover:-translate-y-1">
               <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant"></div>
               <div>
                 <div className="flex items-center gap-space-md mb-space-md">
@@ -575,7 +575,7 @@ export default function DesktopHome() {
                 <p className="font-body-md text-body-md text-tertiary leading-relaxed mb-space-md">
                   Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints. Hritik oversees body transformation and recomposition protocols for 70+ athletes, plus conditioning work for armed-forces recruits.
                 </p>
-                <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm border border-surface-variant/30">
+                <div className="grid grid-cols-3 gap-space-xs bg-surface-container p-space-sm rounded-xl border border-surface-variant/30">
                   <div className="flex flex-col">
                     <span className="font-label-sm text-label-sm uppercase text-outline">BEST BENCH</span>
                     <span className="font-title-sm text-title-sm text-on-surface">170 KG</span>
@@ -627,7 +627,7 @@ export default function DesktopHome() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-space-md">
-            <div className="hw-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div className="hw-card bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
               <span className="material-symbols-outlined text-primary-container text-headline-md">fitness_center</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Olympic Knurled Barbells</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -636,7 +636,7 @@ export default function DesktopHome() {
               <span className="font-label-sm text-label-sm text-primary-container font-bold uppercase mt-auto">28mm &amp; 29mm Shafts</span>
             </div>
 
-            <div className="hw-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div className="hw-card bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
               <span className="material-symbols-outlined text-primary-container text-headline-md">shield</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">400KG Rated Squat Cages</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -645,7 +645,7 @@ export default function DesktopHome() {
               <span className="font-label-sm text-label-sm text-primary-container font-bold uppercase mt-auto">4 Full Cages</span>
             </div>
 
-            <div className="hw-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div className="hw-card bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
               <span className="material-symbols-outlined text-primary-container text-headline-md">sports_gymnastics</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Dumbbell Tier (5kg - 52kg)</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -654,7 +654,7 @@ export default function DesktopHome() {
               <span className="font-label-sm text-label-sm text-primary-container font-bold uppercase mt-auto">Twin Complete Racks</span>
             </div>
 
-            <div className="hw-card bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
+            <div className="hw-card bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200">
               <span className="material-symbols-outlined text-primary-container text-headline-md">view_compact</span>
               <h4 className="font-title-sm text-title-sm text-on-surface uppercase">Shock Rubber Drop Bays</h4>
               <p className="font-body-sm text-body-sm text-tertiary">
@@ -692,7 +692,7 @@ export default function DesktopHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
             {/* Card 1 */}
-            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl flex flex-col justify-between transition-all duration-300 shadow-hard relative border border-surface-variant/40 hover:-translate-y-1">
+            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl rounded-2xl flex flex-col justify-between transition-all duration-300 shadow-soft relative border border-surface-variant/40 hover:-translate-y-1">
               <div className="absolute top-0 left-0 right-0 h-1 bg-surface-variant group-hover:bg-primary-container transition-colors"></div>
               <div>
                 <div className="flex items-center justify-between mb-space-md pt-space-xs">
@@ -724,7 +724,7 @@ export default function DesktopHome() {
             </div>
 
             {/* Card 2 */}
-            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl flex flex-col justify-between transition-all duration-300 shadow-hard relative border border-surface-variant/40 hover:-translate-y-1">
+            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl rounded-2xl flex flex-col justify-between transition-all duration-300 shadow-soft relative border border-surface-variant/40 hover:-translate-y-1">
               <div className="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div>
               <div>
                 <div className="flex items-center justify-between mb-space-md pt-space-xs">
@@ -756,7 +756,7 @@ export default function DesktopHome() {
             </div>
 
             {/* Card 3 */}
-            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl flex flex-col justify-between transition-all duration-300 shadow-hard relative border border-surface-variant/40 hover:-translate-y-1">
+            <div className="prog-card group bg-surface-container-low hover:bg-surface-container p-space-xl rounded-2xl flex flex-col justify-between transition-all duration-300 shadow-soft relative border border-surface-variant/40 hover:-translate-y-1">
               <div className="absolute top-0 left-0 right-0 h-1 bg-surface-variant group-hover:bg-primary-container transition-colors"></div>
               <div>
                 <div className="flex items-center justify-between mb-space-md pt-space-xs">
@@ -813,7 +813,7 @@ export default function DesktopHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-space-md mb-space-xl">
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200 md:col-span-1"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200 md:col-span-1"
               style={{ animationDelay: "9s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">event_note</span>
@@ -825,7 +825,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "0s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">restaurant</span>
@@ -837,7 +837,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "1.5s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">
@@ -851,7 +851,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "3s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">qr_code_scanner</span>
@@ -863,7 +863,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "4.5s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">badge</span>
@@ -875,7 +875,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "6s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">calendar_month</span>
@@ -887,7 +887,7 @@ export default function DesktopHome() {
             </div>
 
             <div
-              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg border border-surface-variant/40 shadow-hard flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
+              className="dash-card card-highlight-cycle bg-surface-container-low p-space-lg rounded-2xl border border-surface-variant/40 shadow-soft flex flex-col gap-space-xs hover:border-primary-container transition-all duration-200"
               style={{ animationDelay: "7.5s" }}
             >
               <span className="material-symbols-outlined text-primary-container text-headline-md">fitness_center</span>
@@ -902,7 +902,7 @@ export default function DesktopHome() {
           <div className="flex justify-center">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-space-xs bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md shadow-hard transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="inline-flex items-center gap-space-xs bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md rounded-xl shadow-soft transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <span className="material-symbols-outlined text-title-md">bolt</span>
               CREATE YOUR FREE ACCOUNT
@@ -914,7 +914,7 @@ export default function DesktopHome() {
       {/* 8. OPERATIONAL SCHEDULE BANNER */}
       <section className="w-full bg-surface py-space-2xl border-t border-surface-variant/40">
         <div className="max-w-container-max mx-auto px-gutter-desktop">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-space-lg bg-surface-container-low p-space-xl shadow-hard border border-surface-variant/40">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-space-lg bg-surface-container-low p-space-xl rounded-2xl shadow-soft border border-surface-variant/40">
             <div className="md:col-span-5 flex flex-col justify-center">
               <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold mb-space-2xs">
                 DAILY DISCIPLINE
@@ -927,7 +927,7 @@ export default function DesktopHome() {
               </p>
             </div>
             <div className="md:col-span-7 flex flex-col gap-space-sm justify-center">
-              <div className="flex items-center justify-between p-space-sm bg-surface-container border border-surface-variant/30 hover:border-primary-container transition-colors">
+              <div className="flex items-center justify-between p-space-sm rounded-lg bg-surface-container border border-surface-variant/30 hover:border-primary-container transition-colors">
                 <div className="flex items-center gap-space-sm">
                   <span className="w-2.5 h-2.5 bg-primary-container"></span>
                   <span className="font-title-sm text-title-sm text-on-surface uppercase">
@@ -938,7 +938,7 @@ export default function DesktopHome() {
                   06:00 AM — 11:00 AM
                 </span>
               </div>
-              <div className="flex items-center justify-between p-space-sm bg-surface-container border border-surface-variant/30 hover:border-primary-container transition-colors">
+              <div className="flex items-center justify-between p-space-sm rounded-lg bg-surface-container border border-surface-variant/30 hover:border-primary-container transition-colors">
                 <div className="flex items-center gap-space-sm">
                   <span className="w-2.5 h-2.5 bg-primary-container"></span>
                   <span className="font-title-sm text-title-sm text-on-surface uppercase">
@@ -972,14 +972,14 @@ export default function DesktopHome() {
             <div className="shrink-0 flex flex-col sm:flex-row gap-space-sm w-full lg:w-auto">
               <Link
                 href="/membership"
-                className="inline-flex items-center justify-center gap-space-xs bg-surface-container-lowest hover:bg-surface-container text-on-surface font-title-sm text-title-sm uppercase px-space-xl py-space-md shadow-hard transition-colors text-center"
+                className="inline-flex items-center justify-center gap-space-xs bg-surface-container-lowest hover:bg-surface-container text-on-surface font-title-sm text-title-sm uppercase px-space-xl py-space-md rounded-xl shadow-soft transition-colors text-center"
               >
                 <span>Get Started Now</span>
                 <span className="material-symbols-outlined text-title-md">arrow_forward</span>
               </Link>
               <Link
                 href="/location"
-                className="inline-flex items-center justify-center bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-on-primary font-title-sm text-title-sm uppercase px-space-lg py-space-md transition-colors text-center border border-on-primary/30"
+                className="inline-flex items-center justify-center bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-on-primary font-title-sm text-title-sm uppercase px-space-lg py-space-md rounded-xl transition-colors text-center border border-on-primary/30"
               >
                 Find Us on Map
               </Link>

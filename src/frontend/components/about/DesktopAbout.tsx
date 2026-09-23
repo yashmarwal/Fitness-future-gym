@@ -77,7 +77,7 @@ export default function DesktopAbout() {
             </p>
           </div>
 
-          <div className="grid grid-cols-4 gap-space-md mt-space-2xl pt-space-md bg-surface-container-low p-space-lg shadow-hard border border-surface-variant/40">
+          <div className="grid grid-cols-4 gap-space-md mt-space-2xl pt-space-md bg-surface-container-low p-space-lg rounded-2xl shadow-soft border border-surface-variant/40">
             <div className="about-stat-item flex flex-col">
               <span className="font-headline-lg text-headline-lg text-primary-container">500+</span>
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-tertiary">
@@ -137,13 +137,13 @@ export default function DesktopAbout() {
               <div className="about-anim-item pt-space-xs flex items-center gap-space-md">
                 <Link
                   href="/membership"
-                  className="inline-flex items-center justify-center bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold px-space-lg py-space-sm transition-colors shadow-hard hover:scale-[1.02] active:scale-[0.98]"
+                  className="inline-flex items-center justify-center bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold px-space-lg py-space-sm rounded-xl transition-colors shadow-soft hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Explore Floor Rigs
                 </Link>
                 <Link
                   href="/programs"
-                  className="inline-flex items-center justify-center bg-surface-container text-on-surface hover:text-primary-container font-label-md text-label-md uppercase px-space-lg py-space-sm transition-colors shadow-hard border border-surface-variant/40"
+                  className="inline-flex items-center justify-center bg-surface-container text-on-surface hover:text-primary-container font-label-md text-label-md uppercase px-space-lg py-space-sm rounded-xl transition-colors shadow-soft border border-surface-variant/40"
                 >
                   Our Programs
                 </Link>
@@ -151,7 +151,7 @@ export default function DesktopAbout() {
             </div>
 
             <div className="col-span-6 grid grid-cols-2 gap-space-md">
-              <div className="about-anim-item relative bg-surface-container-low shadow-hard overflow-hidden group border border-surface-variant/40">
+              <div className="about-anim-item relative bg-surface-container-low rounded-2xl shadow-soft overflow-hidden group border border-surface-variant/40">
                 <Image
                   alt="Atmospheric training session"
                   src="/images/about-training.jpg"
@@ -169,7 +169,7 @@ export default function DesktopAbout() {
                 </div>
               </div>
 
-              <div className="about-anim-item relative bg-surface-container-low shadow-hard overflow-hidden group mt-space-xl border border-surface-variant/40">
+              <div className="about-anim-item relative bg-surface-container-low rounded-2xl shadow-soft overflow-hidden group mt-space-xl border border-surface-variant/40">
                 {/* TODO: temporary stand-in — the original hotlinked source for this
                     tile ("Knurled steel barbell") was already dead (400 from Google's
                     temp CDN) when this was self-hosted on 2026-09-14. Reusing the
@@ -213,7 +213,7 @@ export default function DesktopAbout() {
           </div>
 
           <div className="grid grid-cols-3 gap-space-lg">
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-space-md">
                   <span className="font-headline-lg text-headline-lg text-primary-container">01</span>
@@ -228,7 +228,7 @@ export default function DesktopAbout() {
                   Show up and do the hard sets when motivation fades. Sweat is the initial physical toll exacted for transformation. No excuses for humidity, fatigue, or time; our athletes leave hesitation at the doorway.
                 </p>
               </div>
-              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm border border-surface-variant/30">
+              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm rounded-lg border border-surface-variant/30">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
                   Standard
                 </span>
@@ -236,7 +236,7 @@ export default function DesktopAbout() {
               </div>
             </div>
 
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-space-md">
                   <span className="font-headline-lg text-headline-lg text-primary-container">02</span>
@@ -251,7 +251,7 @@ export default function DesktopAbout() {
                   Incremental progressive overload, strength of mind and muscle. We do not chase temporary pump or empty exhaustion. We engineer structural adaptation by adding 1.25kg plates and executing sharper reps.
                 </p>
               </div>
-              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm border border-surface-variant/30">
+              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm rounded-lg border border-surface-variant/30">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
                   Standard
                 </span>
@@ -259,7 +259,7 @@ export default function DesktopAbout() {
               </div>
             </div>
 
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft flex flex-col justify-between border border-surface-variant/40 hover:border-primary-container transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-space-md">
                   <span className="font-headline-lg text-headline-lg text-primary-container">03</span>
@@ -274,7 +274,7 @@ export default function DesktopAbout() {
                   The ruthless discipline of daily consistency. True strength is not built in a heroic weekend; it is constructed across months of showing up when no one is applauding. Unbreakable athletic rhythm.
                 </p>
               </div>
-              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm border border-surface-variant/30">
+              <div className="mt-space-lg pt-space-sm bg-surface-container-high p-space-sm rounded-lg border border-surface-variant/30">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
                   Standard
                 </span>
@@ -303,7 +303,7 @@ export default function DesktopAbout() {
           </div>
 
           <div className="grid grid-cols-2 gap-space-lg">
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard relative border border-surface-variant/40 hover:border-primary-container transition-colors">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft relative border border-surface-variant/40 hover:border-primary-container transition-colors">
               <div className="w-full h-0.5 bg-primary-container absolute top-0 left-0"></div>
               <div className="flex items-center justify-between mb-space-sm">
                 <span className="font-headline-md text-headline-md text-primary-container">01</span>
@@ -319,7 +319,7 @@ export default function DesktopAbout() {
               </p>
             </div>
 
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard relative border border-surface-variant/40 hover:border-primary-container transition-colors">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft relative border border-surface-variant/40 hover:border-primary-container transition-colors">
               <div className="w-full h-0.5 bg-primary-container absolute top-0 left-0"></div>
               <div className="flex items-center justify-between mb-space-sm">
                 <span className="font-headline-md text-headline-md text-primary-container">02</span>
@@ -335,7 +335,7 @@ export default function DesktopAbout() {
               </p>
             </div>
 
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard relative border border-surface-variant/40 hover:border-primary-container transition-colors">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft relative border border-surface-variant/40 hover:border-primary-container transition-colors">
               <div className="w-full h-0.5 bg-primary-container absolute top-0 left-0"></div>
               <div className="flex items-center justify-between mb-space-sm">
                 <span className="font-headline-md text-headline-md text-primary-container">03</span>
@@ -351,7 +351,7 @@ export default function DesktopAbout() {
               </p>
             </div>
 
-            <div className="about-anim-item bg-surface-container p-space-xl shadow-hard relative border border-surface-variant/40 hover:border-primary-container transition-colors">
+            <div className="about-anim-item bg-surface-container p-space-xl rounded-2xl shadow-soft relative border border-surface-variant/40 hover:border-primary-container transition-colors">
               <div className="w-full h-0.5 bg-primary-container absolute top-0 left-0"></div>
               <div className="flex items-center justify-between mb-space-sm">
                 <span className="font-headline-md text-headline-md text-primary-container">04</span>
@@ -387,7 +387,7 @@ export default function DesktopAbout() {
           </div>
 
           <div className="grid grid-cols-2 gap-space-lg">
-            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
+            <div className="about-anim-item bg-surface-container rounded-2xl shadow-soft border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
                 <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-16 h-16" borderClass="border-primary-container" />
                 <div className="flex flex-col">
@@ -402,11 +402,11 @@ export default function DesktopAbout() {
               <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                 8+ years strength &amp; biomechanics specialist. Maximal compound loading, lumbar safety protocols, and competition deadlift/squat setup — trained over 1,500+ lifters from raw beginners to 250kg+ pullers.
               </p>
-              <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold mt-space-sm">
+              <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs rounded-full font-bold mt-space-sm">
                 <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
                 IBBFF (FFBA Delhi Judge)
               </span>
-              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
+              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm rounded-lg border border-surface-variant/30">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Squat</span>
                   <span className="font-title-sm text-title-sm text-on-surface">220 KG</span>
@@ -433,7 +433,7 @@ export default function DesktopAbout() {
               </div>
             </div>
 
-            <div className="about-anim-item bg-surface-container shadow-hard border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
+            <div className="about-anim-item bg-surface-container rounded-2xl shadow-soft border border-surface-variant/40 hover:border-primary-container transition-all duration-300 flex flex-col p-space-xl">
               <div className="flex items-center gap-space-md mb-space-md">
                 <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-16 h-16" />
                 <div className="flex flex-col">
@@ -448,7 +448,7 @@ export default function DesktopAbout() {
               <p className="font-body-md text-body-md text-tertiary leading-relaxed">
                 Focuses on hypertrophy programming, physique architecture, and custom Indian nutrition blueprints — oversees body transformation and recomposition protocols for 70+ athletes.
               </p>
-              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm border border-surface-variant/30">
+              <div className="grid grid-cols-3 gap-space-xs mt-space-md bg-surface-container-high p-space-sm rounded-lg border border-surface-variant/30">
                 <div className="flex flex-col">
                   <span className="font-label-sm text-label-sm uppercase text-outline">Best Bench</span>
                   <span className="font-title-sm text-title-sm text-on-surface">170 KG</span>

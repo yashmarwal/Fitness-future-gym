@@ -57,7 +57,7 @@ export default function AiAssistantChat() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-surface-container-low border border-surface-variant/40 shadow-hard">
+    <div className="flex flex-col flex-1 min-h-0 bg-surface-container-low border border-surface-variant/40 rounded-2xl shadow-soft overflow-hidden">
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 flex flex-col gap-4">
         {messages.length === 0 && (
           <div className="flex flex-col gap-4 items-start">
@@ -71,7 +71,7 @@ export default function AiAssistantChat() {
                   key={prompt}
                   type="button"
                   onClick={() => send(prompt)}
-                  className="font-label text-xs uppercase tracking-wide px-3 py-2 bg-surface-container text-on-surface-variant border border-surface-variant/50 hover:border-primary-container hover:text-primary-container transition-colors"
+                  className="font-label text-xs uppercase tracking-wide px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant border border-surface-variant/50 hover:border-primary-container hover:text-primary-container transition-colors"
                 >
                   {prompt}
                 </button>
@@ -83,7 +83,7 @@ export default function AiAssistantChat() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] sm:max-w-[70%] px-4 py-3 font-body text-sm whitespace-pre-wrap leading-relaxed ${
+              className={`max-w-[85%] sm:max-w-[70%] px-4 py-3 rounded-2xl font-body text-sm whitespace-pre-wrap leading-relaxed ${
                 m.role === "user"
                   ? "bg-primary-container text-on-primary-container"
                   : "bg-surface-container text-on-surface border border-surface-variant/40"
@@ -96,7 +96,7 @@ export default function AiAssistantChat() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-surface-container text-tertiary border border-surface-variant/40 px-4 py-3 font-body text-sm">
+            <div className="bg-surface-container text-tertiary border border-surface-variant/40 px-4 py-3 rounded-2xl font-body text-sm">
               Thinking…
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function AiAssistantChat() {
 
         {error && (
           <div className="flex justify-start">
-            <div className="bg-error-container/20 text-error border border-error-container/40 px-4 py-3 font-body text-sm max-w-[85%] sm:max-w-[70%]">
+            <div className="bg-error-container/20 text-error border border-error-container/40 px-4 py-3 rounded-2xl font-body text-sm max-w-[85%] sm:max-w-[70%]">
               {error}
             </div>
           </div>
@@ -117,12 +117,12 @@ export default function AiAssistantChat() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about members, fees, attendance, trials..."
           disabled={loading}
-          className="flex-1 bg-surface-container-lowest border border-surface-variant text-on-surface font-body text-sm px-4 py-3 outline-none focus:border-primary-container disabled:opacity-60"
+          className="flex-1 rounded-xl bg-surface-container-lowest border border-surface-variant text-on-surface font-body text-sm px-4 py-3 outline-none focus:border-primary-container disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-5 py-3 shadow-hard disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+          className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-5 py-3 shadow-soft disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
         >
           Ask
         </button>

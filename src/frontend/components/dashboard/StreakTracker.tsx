@@ -34,7 +34,7 @@ export default function StreakTracker({
           return (
             <div
               key={badge.days}
-              className={`flex flex-col items-center gap-1 p-3 shadow-hard text-center ${
+              className={`flex flex-col items-center gap-1 p-3 shadow-soft rounded-2xl text-center ${
                 unlocked ? "bg-surface-container-low" : "bg-surface-container/40 opacity-50"
               }`}
             >

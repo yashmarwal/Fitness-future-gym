@@ -33,7 +33,7 @@ export default function NotificationBar({ initialNotifications }: { initialNotif
   }
 
   return (
-    <div className="bg-surface-container-low shadow-hard mb-6">
+    <div className="bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden mb-6">
       <button onClick={handleToggle} className="w-full flex items-center justify-between px-4 py-3 text-left">
         <span className="flex items-center gap-2">
           <span

@@ -10,7 +10,7 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
   return (
     <Link
       href="/dashboard/progress"
-      className="block bg-surface-container-low p-5 shadow-hard mb-6 hover:border-primary-container border border-transparent transition-colors"
+      className="block bg-surface-container-low p-5 shadow-soft rounded-2xl mb-6 hover:border-primary-container border border-transparent transition-colors"
     >
       <div className="flex items-center justify-between mb-3">
         <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
@@ -25,7 +25,7 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
           return (
             <div key={p.category} className="flex flex-col items-center gap-1 shrink-0 w-14">
               <span
-                className={`w-9 h-9 flex items-center justify-center border ${tier.badge}`}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center border ${tier.badge}`}
                 title={`${p.category}: ${p.rankName}`}
               >
                 <span className="material-symbols-outlined text-base leading-none">

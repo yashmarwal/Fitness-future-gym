@@ -10,6 +10,12 @@ type Status = { checkedIn: boolean; retryAfterMinutes: number | null };
 // fetches getAttendanceStatus for this), so the button shows real,
 // interactive state on first paint instead of a disabled "Loading…" that
 // only resolves after a second client→API round-trip.
+//
+// Look/animation loosely inspired by a Uiverse.io "install button" concept
+// (tap → ripple + an orbiting loader ring while pending → the icon pops
+// into a checkmark once done, pill border animating to an accent color) —
+// see the attendance-* keyframes in globals.css. The check-in logic below
+// is unchanged from before the restyle.
 export default function AttendanceCheckInButton({ initialStatus }: { initialStatus: Status }) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>(initialStatus);
@@ -55,26 +61,46 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       : "Tap to check in and unlock your dashboard";
 
   return (
-    <div className="flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-hard mb-6">
+    <div
+      className={`flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 ${
+        checkedIn ? "border-primary-container" : "border-surface-variant"
+      }`}
+    >
       <button
         onClick={handleTap}
         disabled={checkedIn || marking}
         aria-label={checkedIn ? "Attendance already marked" : "Tap to mark attendance"}
-        className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-hard transition-all
+        className={`relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft transition-all
           ${
             checkedIn
               ? "bg-surface-container-high text-primary-container cursor-default"
               : "bg-primary-container text-on-primary-container hover:bg-secondary-container active:scale-90"
           }
+          ${marking ? "animate-attendance-pulse" : ""}
         `}
       >
-        <span className="material-symbols-outlined text-xl leading-none">
+        {/* Loader ring — a single dot orbiting the button, looping for as
+            long as the real request is in flight (see attendance-orbit). */}
+        {marking && (
+          <span aria-hidden="true" className="absolute inset-0 animate-attendance-orbit">
+            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-on-background" />
+          </span>
+        )}
+        {/* key forces a remount when the state flips so the pop-in
+            animation reliably replays, same idiom as CheckInCelebration.tsx. */}
+        <span
+          key={checkedIn ? "done" : "pending"}
+          className={`material-symbols-outlined text-xl leading-none ${checkedIn ? "animate-attendance-check-pop" : ""}`}
+        >
           {checkedIn ? "check_circle" : "event_available"}
         </span>
       </button>
       <div className="flex-1 min-w-0">
         <p className="font-label text-xs uppercase tracking-wide text-on-surface">Attendance</p>
-        <p className={`font-body text-xs truncate ${error ? "text-error" : "text-tertiary"}`}>
+        <p
+          key={error ?? statusText}
+          className={`font-body text-xs truncate animate-attendance-status-in ${error ? "text-error" : "text-tertiary"}`}
+        >
           {error ?? statusText}
         </p>
       </div>

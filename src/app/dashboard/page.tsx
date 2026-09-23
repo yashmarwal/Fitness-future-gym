@@ -63,7 +63,7 @@ function LockBadge() {
   return (
     <span
       aria-hidden="true"
-      className="absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center bg-surface-container-lowest/90 text-tertiary"
+      className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center bg-surface-container-lowest/90 text-tertiary"
     >
       <span className="material-symbols-outlined text-xs leading-none">lock</span>
     </span>
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${checkedIn ? "mb-6" : "mb-2"}`}>
         <Link
           href="/dashboard/workouts"
-          className={`relative bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
+          className={`relative bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
             checkedIn ? "" : "opacity-45 grayscale"
           }`}
         >
@@ -153,14 +153,14 @@ export default async function DashboardPage() {
         </Link>
         <Link
           href="/dashboard/nutrition"
-          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+          className="bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
         >
           <span className="material-symbols-outlined text-2xl leading-none">restaurant</span>
           <span className="font-label text-[10px] uppercase tracking-wide">Log Food</span>
         </Link>
         <Link
           href="/dashboard/timer"
-          className={`relative bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
+          className={`relative bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
             checkedIn ? "" : "opacity-45 grayscale"
           }`}
         >
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
         </Link>
         <Link
           href="/dashboard/bmi"
-          className="bg-primary-container text-on-primary-container p-4 shadow-hard flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
+          className="bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
         >
           <span className="material-symbols-outlined text-2xl leading-none">calculate</span>
           <span className="font-label text-[10px] uppercase tracking-wide">BMI Calc</span>
@@ -182,6 +182,8 @@ export default async function DashboardPage() {
           Faded tiles need a check-in first
         </p>
       )}
+
+      <AttendanceCheckInButton initialStatus={attendanceStatus} />
 
       <GeneratePlanBar fitnessProfile={fitnessProfile} />
 
@@ -205,7 +207,6 @@ export default async function DashboardPage() {
         />
       )}
 
-      <AttendanceCheckInButton initialStatus={attendanceStatus} />
       <PersonalRecordsBar records={personalRecords} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
@@ -246,12 +247,12 @@ export default async function DashboardPage() {
             <Link
               key={link.href}
               href={link.href}
-              className={`relative bg-surface-container p-5 shadow-hard flex flex-col gap-3 hover:border-primary-container hover:-translate-y-0.5 border border-transparent active:scale-[0.98] transition-all ${
+              className={`relative bg-surface-container p-5 shadow-soft rounded-2xl flex flex-col gap-3 hover:border-primary-container hover:-translate-y-0.5 border border-transparent active:scale-[0.98] transition-all ${
                 dim ? "opacity-45 grayscale" : ""
               }`}
             >
               {dim && <LockBadge />}
-              <span className="inline-flex items-center justify-center w-10 h-10 bg-surface-container-high text-primary-container shrink-0">
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-high text-primary-container shrink-0">
                 <span className="material-symbols-outlined text-xl leading-none">{link.icon}</span>
               </span>
               <span className="font-label text-xs uppercase tracking-wide text-on-surface">{link.label}</span>

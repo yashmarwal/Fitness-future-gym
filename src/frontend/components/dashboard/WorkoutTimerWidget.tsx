@@ -44,7 +44,7 @@ export default function WorkoutTimerWidget() {
   const previousDays = getPreviousDays(state, now);
 
   return (
-    <div className="bg-surface-container-low p-5 shadow-hard mb-6 flex items-center justify-between gap-4">
+    <div className="bg-surface-container-low p-5 shadow-soft rounded-2xl mb-6 flex items-center justify-between gap-4">
       <div className="min-w-0">
         <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
           <span className="material-symbols-outlined text-base leading-none">timelapse</span>
@@ -68,7 +68,7 @@ export default function WorkoutTimerWidget() {
         type="button"
         onClick={handleToggle}
         aria-pressed={state.running}
-        className={`shrink-0 flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 shadow-hard transition-colors ${
+        className={`shrink-0 flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft transition-colors ${
           state.running
             ? "bg-error-container/40 text-error hover:bg-error-container/60"
             : "bg-primary-container text-on-primary-container hover:bg-secondary-container"

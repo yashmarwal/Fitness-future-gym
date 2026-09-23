@@ -59,7 +59,7 @@ export default function MuscleProgressBoard({
     <div className="relative">
       {leveledUp.length > 0 && (
         <div
-          className="fixed top-20 left-1/2 z-100 -translate-x-1/2 bg-primary-container text-on-primary-container shadow-hard-lg px-5 py-3 flex items-center gap-2 whitespace-nowrap"
+          className="fixed top-20 left-1/2 z-100 -translate-x-1/2 bg-primary-container text-on-primary-container shadow-soft-lg rounded-2xl px-5 py-3 flex items-center gap-2 whitespace-nowrap"
           style={{ animation: "toast-slide-in 0.35s ease-out" }}
         >
           <span className="material-symbols-outlined text-xl leading-none" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -82,7 +82,7 @@ export default function MuscleProgressBoard({
             <button
               key={p.category}
               onClick={() => setExpanded(isExpanded ? null : p.category)}
-              className={`text-left bg-surface-container-low p-4 shadow-hard border transition-all hover:-translate-y-0.5 ${
+              className={`text-left bg-surface-container-low p-4 shadow-soft rounded-2xl border transition-all hover:-translate-y-0.5 ${
                 isExpanded ? "col-span-2 border-primary-container" : "border-transparent"
               } ${justLeveled ? "animate-[notif-glow_1.4s_ease-in-out_3]" : ""}`}
             >
@@ -91,7 +91,7 @@ export default function MuscleProgressBoard({
                   {CATEGORY_ICON[p.category] ?? "fitness_center"}
                 </span>
                 <span
-                  className={`font-label text-[9px] uppercase tracking-widest font-bold px-2 py-1 border ${tier.badge} ${
+                  className={`font-label text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full border ${tier.badge} ${
                     justLeveled ? "[animation:rank-pop_0.5s_ease-out]" : ""
                   }`}
                 >

@@ -94,15 +94,15 @@ export default function MobilePrograms() {
 
         {/* Quick Metrics */}
         <div className="grid grid-cols-3 gap-space-2xs mt-space-md">
-          <div className="mobile-prog-metric bg-surface-container-high p-space-xs flex flex-col items-center text-center border border-surface-variant/30">
+          <div className="mobile-prog-metric bg-surface-container-high p-space-xs rounded-lg flex flex-col items-center text-center border border-surface-variant/30">
             <span className="prog-count-db font-headline-sm text-headline-sm text-primary-container font-bold">50KG+</span>
             <span className="font-label-sm text-[9px] uppercase text-tertiary">Dumbbells</span>
           </div>
-          <div className="mobile-prog-metric bg-surface-container-high p-space-xs flex flex-col items-center text-center border border-surface-variant/30">
+          <div className="mobile-prog-metric bg-surface-container-high p-space-xs rounded-lg flex flex-col items-center text-center border border-surface-variant/30">
             <span className="prog-count-racks font-headline-sm text-headline-sm text-on-surface font-bold">100%</span>
             <span className="font-label-sm text-[9px] uppercase text-tertiary">Iron Racks</span>
           </div>
-          <div className="mobile-prog-metric bg-primary-container p-space-xs flex flex-col items-center text-center text-on-primary-container">
+          <div className="mobile-prog-metric bg-primary-container p-space-xs rounded-lg flex flex-col items-center text-center text-on-primary-container">
             <span className="prog-count-yrs font-headline-sm text-headline-sm text-on-primary-container font-bold">8+ YRS</span>
             <span className="font-label-sm text-[9px] uppercase text-on-primary-container/90 font-bold">Unbroken</span>
           </div>
@@ -112,7 +112,7 @@ export default function MobilePrograms() {
       {/* PROGRAM CARDS */}
       <section className="mobile-prog-sec px-space-md py-space-lg flex flex-col gap-space-md">
         {/* Modality 1 */}
-        <div className="mobile-prog-card bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
+        <div className="mobile-prog-card bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
               MODALITY 01
@@ -134,14 +134,14 @@ export default function MobilePrograms() {
           <div className="grid grid-cols-3 gap-space-2xs mt-space-2xs">
             <a
               href="tel:+919643526435"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">call</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
             </a>
             <Link
               href="/location#inquiry"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">edit_note</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
@@ -150,7 +150,7 @@ export default function MobilePrograms() {
               href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Group%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
               target="_blank"
               rel="noreferrer"
-              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
@@ -159,7 +159,7 @@ export default function MobilePrograms() {
         </div>
 
         {/* Modality 2 */}
-        <div className="mobile-prog-card bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
+        <div className="mobile-prog-card bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
               MODALITY 02
@@ -181,14 +181,14 @@ export default function MobilePrograms() {
           <div className="grid grid-cols-3 gap-space-2xs mt-space-2xs">
             <a
               href="tel:+919643526435"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">call</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
             </a>
             <Link
               href="/location#inquiry"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">edit_note</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
@@ -197,7 +197,7 @@ export default function MobilePrograms() {
               href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Personal%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
               target="_blank"
               rel="noreferrer"
-              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>
@@ -206,7 +206,7 @@ export default function MobilePrograms() {
         </div>
 
         {/* Modality 3 */}
-        <div className="mobile-prog-card bg-surface-container-low p-space-md flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
+        <div className="mobile-prog-card bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-sm border border-surface-variant/40 shadow-sm relative border-l-2 border-l-primary-container">
           <div className="flex items-center justify-between">
             <span className="font-label-sm text-label-sm uppercase text-primary-container font-bold">
               MODALITY 03
@@ -227,21 +227,21 @@ export default function MobilePrograms() {
           </p>
           <Link
             href="/calculator"
-            className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase font-bold tracking-wider mt-space-2xs border border-surface-variant/40 active:scale-[0.97] transition-transform"
+            className="w-full h-11 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md uppercase font-bold tracking-wider mt-space-2xs border border-surface-variant/40 active:scale-[0.97] transition-transform"
           >
             Calculate Daily Targets
           </Link>
           <div className="grid grid-cols-3 gap-space-2xs">
             <a
               href="tel:+919643526435"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">call</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Call</span>
             </a>
             <Link
               href="/location#inquiry"
-              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-surface-container-high text-on-surface px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <span className="material-symbols-outlined text-title-sm">edit_note</span>
               <span className="font-label-sm text-[9px] uppercase tracking-wide">Form</span>
@@ -250,7 +250,7 @@ export default function MobilePrograms() {
               href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20the%20Diet%20Plan%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
               target="_blank"
               rel="noreferrer"
-              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm shadow-sm active:scale-[0.96] transition-transform"
+              className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container px-space-2xs py-space-sm rounded-lg shadow-sm active:scale-[0.96] transition-transform"
             >
               <WhatsAppIcon className="w-4 h-4" />
               <span className="font-label-sm text-[9px] uppercase tracking-wide">WhatsApp</span>

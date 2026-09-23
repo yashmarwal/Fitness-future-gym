@@ -147,13 +147,13 @@ export default function LoginForm() {
               onChange={(e) => setIdentifier(e.target.value)}
               required
               placeholder="+91XXXXXXXXXX or you@example.com"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
           >
             {loading ? "Sending..." : "Send Login Code"}
           </button>
@@ -184,13 +184,13 @@ export default function LoginForm() {
               required
               maxLength={6}
               placeholder="123456"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container tracking-widest"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container tracking-widest"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
           >
             {loading ? "Verifying..." : "Verify & Sign In"}
           </button>

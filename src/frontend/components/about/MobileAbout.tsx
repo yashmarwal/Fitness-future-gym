@@ -129,7 +129,7 @@ export default function MobileAbout() {
         </p>
 
         {/* 2x2 Stats Grid */}
-        <div className="mobile-stat-sec grid grid-cols-2 gap-space-xs mt-space-lg pt-space-md bg-surface-container-low p-space-md border border-surface-variant/40">
+        <div className="mobile-stat-sec grid grid-cols-2 gap-space-xs mt-space-lg pt-space-md bg-surface-container-low p-space-md rounded-2xl border border-surface-variant/40">
           <div className="mobile-stat-card flex flex-col">
             <span className="count-athletes font-headline-md text-headline-md text-primary-container font-bold">500+</span>
             <span className="font-label-sm text-label-sm uppercase text-tertiary">Athletes Molded</span>
@@ -178,13 +178,13 @@ export default function MobileAbout() {
         <div className="mobile-dossier-anim flex flex-col gap-space-xs pt-space-xs">
           <Link
             href="/membership"
-            className="w-full h-12 bg-primary-container text-on-primary-container flex items-center justify-center font-label-lg text-label-lg uppercase font-bold tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
+            className="w-full h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center font-label-lg text-label-lg uppercase font-bold tracking-wider shadow-md active:scale-[0.96] active:shadow-inner transition-transform"
           >
             Explore Floor Rigs
           </Link>
           <Link
             href="/programs"
-            className="w-full h-11 bg-surface-container-high text-on-surface flex items-center justify-center font-label-lg text-label-lg uppercase tracking-wider border border-surface-variant/40 active:scale-[0.97] transition-transform"
+            className="w-full h-11 rounded-xl bg-surface-container-high text-on-surface flex items-center justify-center font-label-lg text-label-lg uppercase tracking-wider border border-surface-variant/40 active:scale-[0.97] transition-transform"
           >
             Our Programs
           </Link>
@@ -204,7 +204,7 @@ export default function MobileAbout() {
         </div>
 
         <div className="flex flex-col gap-space-md">
-          <div className="mobile-law-card bg-surface-container p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
+          <div className="mobile-law-card bg-surface-container p-space-md rounded-xl border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
             <div className="flex items-center justify-between">
               <span className="font-headline-md text-headline-md text-primary-container font-bold">01</span>
               <span className="font-title-sm text-title-sm text-on-surface uppercase font-bold">SWEAT</span>
@@ -214,7 +214,7 @@ export default function MobileAbout() {
             </p>
           </div>
 
-          <div className="mobile-law-card bg-surface-container p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
+          <div className="mobile-law-card bg-surface-container p-space-md rounded-xl border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
             <div className="flex items-center justify-between">
               <span className="font-headline-md text-headline-md text-primary-container font-bold">02</span>
               <span className="font-title-sm text-title-sm text-on-surface uppercase font-bold">GAIN</span>
@@ -224,7 +224,7 @@ export default function MobileAbout() {
             </p>
           </div>
 
-          <div className="mobile-law-card bg-surface-container p-space-md border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
+          <div className="mobile-law-card bg-surface-container p-space-md rounded-xl border border-surface-variant/40 shadow-sm flex flex-col gap-space-xs border-l-2 border-l-primary-container">
             <div className="flex items-center justify-between">
               <span className="font-headline-md text-headline-md text-primary-container font-bold">03</span>
               <span className="font-title-sm text-title-sm text-on-surface uppercase font-bold">REPEAT</span>
@@ -249,7 +249,7 @@ export default function MobileAbout() {
         </div>
 
         <div className="flex flex-col gap-space-md">
-          <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm rounded-2xl p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
               <CoachAvatar src="/images/coach-vaibhav.jpg" alt="Coach Vaibhav, bodybuilding prep coach at Fitness Future Gym" name="Coach Vaibhav" sizeClass="w-12 h-12" borderClass="border-primary-container" imgSize={96} />
               <div className="flex flex-col">
@@ -262,11 +262,11 @@ export default function MobileAbout() {
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
               8+ years strength &amp; biomechanics. Maximal compound loading, lumbar safety protocols, competition deadlift/squat setup.
             </p>
-            <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs font-bold">
+            <span className="inline-flex items-center gap-space-2xs self-start bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wide px-space-sm py-space-2xs rounded-full font-bold">
               <span className="material-symbols-outlined text-label-lg leading-none">military_tech</span>
               IBBFF (FFBA Delhi Judge)
             </span>
-            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
+            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs rounded-lg border border-surface-variant/30">
               <span className="text-on-surface">Best Squat: 220KG</span>
               <span className="text-primary-container font-bold">Best Deadlift: 250KG</span>
             </div>
@@ -283,7 +283,7 @@ export default function MobileAbout() {
             </div>
           </div>
 
-          <div className="bg-surface-container border border-surface-variant/40 shadow-sm p-space-md flex flex-col gap-space-sm">
+          <div className="bg-surface-container border border-surface-variant/40 shadow-sm rounded-2xl p-space-md flex flex-col gap-space-sm">
             <div className="flex items-center gap-space-sm">
               <CoachAvatar src="/images/coach-hritik.jpg" alt="Coach Hritik, bodybuilding prep coach at Fitness Future Gym" name="Coach Hritik" sizeClass="w-12 h-12" imgSize={96} />
               <div className="flex flex-col">
@@ -296,7 +296,7 @@ export default function MobileAbout() {
             <p className="font-body-sm text-body-sm text-tertiary leading-relaxed">
               Hypertrophy programming, physique architecture, and custom Indian nutrition blueprints for recomposition.
             </p>
-            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs border border-surface-variant/30">
+            <div className="grid grid-cols-2 gap-space-2xs text-center font-label-sm text-label-sm uppercase bg-surface-container-high p-space-xs rounded-lg border border-surface-variant/30">
               <span className="text-on-surface">Best Bench: 170KG</span>
               <span className="text-primary-container font-bold">70+ Athletes</span>
             </div>

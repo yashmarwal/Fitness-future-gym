@@ -40,7 +40,7 @@ export default async function WorkoutsPage() {
       {logs.length === 0 ? (
         <DashboardEmptyState icon="fitness_center">No workouts logged yet.</DashboardEmptyState>
       ) : (
-        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-hard">
+        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden">
           {logs.map((log) => (
             <div key={log.id} className="flex items-center gap-3 px-5 py-3">
               <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">

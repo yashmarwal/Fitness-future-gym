@@ -220,7 +220,7 @@ export default function SiteHeader() {
           <div className="flex items-center gap-space-sm shrink-0">
             <Link
               href="/membership"
-              className="hidden sm:inline-flex items-center justify-center bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold px-space-md py-space-sm transition-colors duration-150 rounded-none shadow-[2px_2px_0px_#000000]"
+              className="hidden sm:inline-flex items-center justify-center bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold px-space-md py-space-sm transition-colors duration-150 rounded-xl shadow-soft"
             >
               Claim 2-Day Trial
             </Link>
@@ -231,7 +231,7 @@ export default function SiteHeader() {
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
               onClick={handleToggleMenu}
-              className="xl:hidden w-11 h-11 flex items-center justify-center text-on-surface hover:text-primary-container bg-surface-container border border-surface-variant/40 focus:outline-none transition-all active:scale-95"
+              className="xl:hidden w-11 h-11 rounded-xl flex items-center justify-center text-on-surface hover:text-primary-container bg-surface-container border border-surface-variant/40 focus:outline-none transition-all active:scale-95"
             >
               <span
                 className={`material-symbols-outlined text-2xl leading-none block transition-transform duration-300 ${
@@ -277,7 +277,7 @@ export default function SiteHeader() {
                     href={link.href}
                     onClick={handleCloseMenu}
                     style={{ opacity: 0 }}
-                    className={`mobile-nav-item font-headline-sm text-headline-sm uppercase tracking-wider py-space-sm px-space-md border-l-2 transition-all flex items-center justify-between group active:scale-[0.99] ${
+                    className={`mobile-nav-item rounded-xl font-headline-sm text-headline-sm uppercase tracking-wider py-space-sm px-space-md border-l-2 transition-all flex items-center justify-between group active:scale-[0.99] ${
                       isActive
                         ? "text-primary-container font-bold border-primary-container bg-surface-container-high/80 shadow-sm"
                         : "text-on-surface border-transparent hover:border-primary-container/50 hover:bg-surface-container-low"
@@ -302,13 +302,13 @@ export default function SiteHeader() {
             <Link
               href="/membership"
               onClick={handleCloseMenu}
-              className="w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md text-center tracking-wider shadow-hard flex items-center justify-center gap-space-xs hover:bg-secondary-container active:scale-[0.98] transition-all"
+              className="w-full bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold py-space-md rounded-xl text-center tracking-wider shadow-soft flex items-center justify-center gap-space-xs hover:bg-secondary-container active:scale-[0.98] transition-all"
             >
               <span className="material-symbols-outlined text-title-md">bolt</span>
               <span>Claim Your 2-Day Free Trial</span>
             </Link>
 
-            <div className="bg-surface-container p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30 text-body-sm font-body-sm">
+            <div className="bg-surface-container p-space-sm rounded-xl flex flex-col gap-space-2xs border border-surface-variant/30 text-body-sm font-body-sm">
               <div className="flex items-center justify-between">
                 <span className="text-tertiary">Coach Vaibhav:</span>
                 <a href="tel:+919643526435" className="text-primary-container font-bold font-mono">

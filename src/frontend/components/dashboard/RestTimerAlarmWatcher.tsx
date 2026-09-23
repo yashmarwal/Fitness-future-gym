@@ -71,8 +71,8 @@ export default function RestTimerAlarmWatcher() {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-xl p-6">
       <div className="relative w-full max-w-sm">
         <div className="absolute -inset-1 bg-primary-container/40 blur-2xl animate-pulse" aria-hidden="true" />
-        <div className="relative bg-surface-container-lowest border-2 border-primary-container shadow-[0_0_80px_rgba(255,90,31,0.35)] flex flex-col items-center text-center px-8 py-10 gap-5">
-          <span className="w-20 h-20 flex items-center justify-center bg-primary-container text-on-primary-container animate-bounce shrink-0">
+        <div className="relative bg-surface-container-lowest border-2 border-primary-container rounded-3xl shadow-[0_0_80px_rgba(255,90,31,0.35)] flex flex-col items-center text-center px-8 py-10 gap-5">
+          <span className="w-20 h-20 rounded-2xl flex items-center justify-center bg-primary-container text-on-primary-container animate-bounce shrink-0">
             <span className="material-symbols-outlined text-4xl leading-none">notifications_active</span>
           </span>
 
@@ -89,7 +89,7 @@ export default function RestTimerAlarmWatcher() {
           <button
             type="button"
             onClick={() => resetRestTimer()}
-            className="w-full flex items-center justify-center gap-2 bg-error hover:bg-error/90 text-on-error font-label text-sm uppercase font-bold px-6 py-4 shadow-hard transition-colors active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 bg-error hover:bg-error/90 text-on-error font-label text-sm uppercase font-bold px-6 py-4 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
           >
             <span className="material-symbols-outlined text-lg leading-none">notifications_off</span>
             Stop Alarm

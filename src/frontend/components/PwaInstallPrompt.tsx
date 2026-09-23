@@ -70,7 +70,7 @@ export default function PwaInstallPrompt() {
   if (dismissed || (!installEvent && !showIosInstructions)) return null;
 
   return (
-    <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 lg:left-auto lg:right-4 lg:max-w-sm z-40 bg-surface-container-high shadow-hard-lg p-4 flex items-center justify-between gap-3">
+    <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 lg:left-auto lg:right-4 lg:max-w-sm z-40 bg-surface-container-high rounded-2xl shadow-soft-lg p-4 flex items-center justify-between gap-3">
       {installEvent ? (
         <>
           <p className="font-label text-xs uppercase tracking-wide text-on-surface">
@@ -82,7 +82,7 @@ export default function PwaInstallPrompt() {
                 await installEvent.prompt();
                 setInstallEvent(null);
               }}
-              className="bg-primary-container text-on-primary-container font-label text-[10px] uppercase font-bold px-3 py-2"
+              className="rounded-lg bg-primary-container text-on-primary-container font-label text-[10px] uppercase font-bold px-3 py-2"
             >
               Install
             </button>

@@ -47,7 +47,7 @@ export default function AttendanceLock() {
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-10 flex justify-center">
-      <div className="bg-surface-container-low shadow-hard-lg p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
+      <div className="bg-surface-container-low shadow-soft-lg rounded-3xl p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
         <span className="material-symbols-outlined text-5xl text-primary-container">event_available</span>
         <h1 className="font-display text-xl text-on-surface uppercase tracking-wide">Mark Attendance First</h1>
         <p className="font-body text-sm text-tertiary">
@@ -56,7 +56,7 @@ export default function AttendanceLock() {
         <button
           onClick={handleMark}
           disabled={marking || unlocking}
-          className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 transition-colors"
+          className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
         >
           {unlocking ? "Unlocking..." : marking ? "Checking In..." : "Mark Attendance"}
         </button>

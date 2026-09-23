@@ -42,9 +42,9 @@ export default function GeneratePlanBar({ fitnessProfile }: { fitnessProfile: Fi
     <button
       type="button"
       onClick={handleTap}
-      className="w-full flex items-center gap-3 bg-surface-container-low shadow-hard px-4 py-3 mb-6 hover:bg-surface-container transition-colors text-left"
+      className="w-full flex items-center gap-3 bg-surface-container-low shadow-soft rounded-2xl px-4 py-3 mb-6 hover:bg-surface-container transition-colors text-left"
     >
-      <span className="w-9 h-9 flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
+      <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
         <span className="material-symbols-outlined text-lg leading-none">auto_awesome</span>
       </span>
       <span className="flex-1 min-w-0">

@@ -42,8 +42,8 @@ export function AlertSummaryPill({
   anchorId: string;
 }) {
   const active = count > 0;
-  const className = `bg-surface-container-low p-4 shadow-hard flex flex-col gap-2 border-l-4 transition-all ${
-    active ? `${TONE_ACCENT[tone]} hover:shadow-hard-lg hover:-translate-y-0.5` : "border-l-surface-variant"
+  const className = `bg-surface-container-low p-4 rounded-2xl shadow-soft flex flex-col gap-2 border-l-4 transition-all ${
+    active ? `${TONE_ACCENT[tone]} hover:shadow-soft-lg hover:-translate-y-0.5` : "border-l-surface-variant"
   }`;
   const content = (
     <>
@@ -89,12 +89,12 @@ export default function AlertsList({
       <div className="flex items-center gap-3 mb-3">
         <span className={`material-symbols-outlined text-lg leading-none ${TONE_TEXT[tone]}`}>{icon}</span>
         <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">{title}</h2>
-        <span className={`font-label text-[10px] uppercase px-2 py-0.5 border ${TONE_CLASSES[tone]}`}>
+        <span className={`font-label text-[10px] uppercase px-2 py-0.5 rounded-full border ${TONE_CLASSES[tone]}`}>
           {members.length}
         </span>
       </div>
 
-      <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low shadow-hard">
+      <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
         {members.map((m) => (
           <div
             key={m.id}

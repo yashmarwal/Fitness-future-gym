@@ -87,7 +87,7 @@ export default function DesktopMembership() {
         <div className="max-w-container-max mx-auto">
           <div className="flex flex-col lg:flex-row items-stretch gap-space-lg">
             {/* Left Box */}
-            <div className="mem-hero-anim w-full lg:w-7/12 bg-surface-container-low p-space-xl border-l-4 border-primary-container relative flex flex-col justify-between shadow-2xl border border-surface-variant/40">
+            <div className="mem-hero-anim w-full lg:w-7/12 bg-surface-container-low p-space-xl rounded-2xl border-l-4 border-primary-container relative flex flex-col justify-between shadow-2xl border border-surface-variant/40">
               <div className="flex flex-col gap-space-sm">
                 <div className="flex items-center gap-space-xs">
                   <span className="inline-block w-2.5 h-2.5 bg-primary-container animate-pulse"></span>
@@ -133,7 +133,7 @@ export default function DesktopMembership() {
                 </div>
               </div>
 
-              <div className="bg-surface-container p-space-sm flex items-center justify-between gap-space-sm border border-surface-variant/30">
+              <div className="bg-surface-container p-space-sm rounded-lg flex items-center justify-between gap-space-sm border border-surface-variant/30">
                 <div className="flex items-center gap-space-xs">
                   <span className="material-symbols-outlined text-primary-container text-title-sm">location_on</span>
                   <span className="font-label-md text-label-md uppercase text-on-surface-variant">
@@ -147,7 +147,7 @@ export default function DesktopMembership() {
             </div>
 
             {/* Right Registration Form */}
-            <div className="mem-hero-anim w-full lg:w-5/12 bg-surface-container p-space-xl flex flex-col justify-center border-t-2 border-primary-container shadow-hard border border-surface-variant/40">
+            <div className="mem-hero-anim w-full lg:w-5/12 bg-surface-container p-space-xl rounded-2xl flex flex-col justify-center border-t-2 border-primary-container shadow-soft border border-surface-variant/40">
               <div className="mb-space-md">
                 <h2 className="font-title-md text-title-md uppercase tracking-wider text-on-surface flex items-center gap-space-xs">
                   <span className="material-symbols-outlined text-primary-container">timer</span>
@@ -165,7 +165,7 @@ export default function DesktopMembership() {
                       Full Name
                     </label>
                     <input
-                      className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-none placeholder:text-outline"
+                      className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-xl placeholder:text-outline"
                       placeholder="e.g. Vikram Sharma"
                       required
                       value={formData.name}
@@ -177,11 +177,11 @@ export default function DesktopMembership() {
                       Phone / WhatsApp Number
                     </label>
                     <div className="flex items-stretch">
-                      <span className="inline-flex items-center px-space-sm bg-surface-container-high text-outline text-label-md font-label-md border border-r-0 border-surface-variant">
+                      <span className="inline-flex items-center px-space-sm bg-surface-container-high text-outline text-label-md font-label-md border border-r-0 border-surface-variant rounded-l-xl">
                         +91
                       </span>
                       <input
-                        className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-none placeholder:text-outline"
+                        className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-r-xl placeholder:text-outline"
                         placeholder="8700978341"
                         required
                         type="tel"
@@ -195,7 +195,7 @@ export default function DesktopMembership() {
                       Email
                     </label>
                     <input
-                      className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-none placeholder:text-outline"
+                      className="w-full bg-surface-container-lowest border border-surface-variant text-on-surface px-space-md py-space-sm font-body-md focus:outline-none focus:border-primary-container rounded-xl placeholder:text-outline"
                       placeholder="you@example.com"
                       required
                       type="email"
@@ -208,7 +208,7 @@ export default function DesktopMembership() {
                       Preferred Floor Shift
                     </label>
                     <div className="grid grid-cols-2 gap-space-xs">
-                      <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-sm flex items-center justify-between hover:border-primary-container transition-colors">
+                      <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-sm rounded-xl flex items-center justify-between hover:border-primary-container transition-colors">
                         <div className="flex items-center gap-space-xs">
                           <input
                             type="radio"
@@ -222,7 +222,7 @@ export default function DesktopMembership() {
                         </div>
                         <span className="font-label-sm text-label-sm text-tertiary">06:00 - 11:00</span>
                       </label>
-                      <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-sm flex items-center justify-between hover:border-primary-container transition-colors">
+                      <label className="cursor-pointer border border-surface-variant bg-surface-container-lowest p-space-sm rounded-xl flex items-center justify-between hover:border-primary-container transition-colors">
                         <div className="flex items-center gap-space-xs">
                           <input
                             type="radio"
@@ -242,14 +242,14 @@ export default function DesktopMembership() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="mt-space-xs w-full bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider transition-all duration-150 rounded-none shadow-hard flex items-center justify-center gap-space-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+                    className="mt-space-xs w-full bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider transition-all duration-150 rounded-xl shadow-soft flex items-center justify-center gap-space-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
                   >
                     <span className="material-symbols-outlined text-title-md">bolt</span>
                     {loading ? "Booking..." : "Book 2-Day Free Trial"}
                   </button>
                 </form>
               ) : (
-                <div className="flex flex-col items-center justify-center text-center p-space-lg bg-surface-container-lowest border border-primary-container shadow-hard">
+                <div className="flex flex-col items-center justify-center text-center p-space-lg bg-surface-container-lowest border border-primary-container rounded-2xl shadow-soft">
                   <span className="material-symbols-outlined text-primary-container text-headline-lg">
                     verified
                   </span>
@@ -260,7 +260,7 @@ export default function DesktopMembership() {
                     Show your registered phone ({(submitted ?? deviceClaim)!.phone}) at front desk to claim your
                     token. Your pass was also emailed to you.
                   </p>
-                  <div className="mt-space-md p-space-xs bg-surface-container border border-surface-variant w-full text-center">
+                  <div className="mt-space-md p-space-xs bg-surface-container border border-surface-variant rounded-lg w-full text-center">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container tracking-widest font-bold">
                       CODE: {(submitted ?? deviceClaim)!.trialCode}
                     </span>
@@ -291,7 +291,7 @@ export default function DesktopMembership() {
                 Pure iron access without predatory contracts or hidden upkeep fees. Choose the duration that matches your training cycle.
               </p>
             </div>
-            <div className="bg-surface-container-high border-l-2 border-primary-container p-space-sm max-w-md">
+            <div className="bg-surface-container-high border-l-2 border-primary-container rounded-xl p-space-sm max-w-md">
               <div className="flex items-center gap-space-xs text-primary-container">
                 <span className="material-symbols-outlined text-title-sm">campaign</span>
                 <span className="font-label-sm text-label-sm uppercase tracking-wider font-bold">
@@ -306,13 +306,13 @@ export default function DesktopMembership() {
 
           <div className="grid grid-cols-3 gap-space-lg items-stretch">
             {/* Monthly */}
-            <div className="tier-card-anim bg-surface-container-low border border-surface-variant/60 flex flex-col justify-between shadow-hard hover:border-primary-container transition-all duration-300">
+            <div className="tier-card-anim bg-surface-container-low border border-surface-variant/60 rounded-2xl flex flex-col justify-between shadow-soft hover:border-primary-container transition-all duration-300">
               <div className="p-space-lg">
                 <div className="flex items-center justify-between mb-space-xs">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
                     TIER 01 • BASE CYCLE
                   </span>
-                  <span className="font-label-sm text-label-sm uppercase bg-surface-container px-space-xs py-space-2xs text-tertiary">
+                  <span className="font-label-sm text-label-sm uppercase bg-surface-container px-space-xs py-space-2xs rounded-full text-tertiary">
                     30 DAYS
                   </span>
                 </div>
@@ -361,7 +361,7 @@ export default function DesktopMembership() {
                   href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Monthly%20Pass%20pricing."
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"
+                  className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant text-on-surface font-label-md text-label-md uppercase py-space-md rounded-xl text-center block tracking-wider transition-colors"
                 >
                   Inquire About Monthly
                 </a>
@@ -369,8 +369,8 @@ export default function DesktopMembership() {
             </div>
 
             {/* Quarterly (Featured) */}
-            <div className="tier-card-anim bg-surface-container-low border-2 border-primary-container flex flex-col justify-between relative shadow-hard-lg hover:-translate-y-1 transition-all duration-300">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase font-bold px-space-md py-1 tracking-widest shadow-md">
+            <div className="tier-card-anim bg-surface-container-low border-2 border-primary-container rounded-2xl flex flex-col justify-between relative shadow-soft-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase font-bold px-space-md py-1 tracking-widest shadow-md rounded-full">
                 MOST POPULAR IN NANGLOI
               </div>
               <div className="p-space-lg pt-space-xl">
@@ -378,7 +378,7 @@ export default function DesktopMembership() {
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container">
                     TIER 02 • HYPERTROPHY BLOCK
                   </span>
-                  <span className="font-label-sm text-label-sm uppercase bg-surface-container-highest px-space-xs py-space-2xs text-on-surface">
+                  <span className="font-label-sm text-label-sm uppercase bg-surface-container-highest px-space-xs py-space-2xs rounded-full text-on-surface">
                     90 DAYS
                   </span>
                 </div>
@@ -386,7 +386,7 @@ export default function DesktopMembership() {
                 <p className="font-body-sm text-body-sm text-tertiary mt-space-2xs mb-space-lg">
                   The benchmark window to see noticeable strength jumps, body composition changes, and technical mastery.
                 </p>
-                <div className="py-space-md border-y border-surface-variant/40 mb-space-lg bg-surface-container/50 px-space-sm -mx-space-sm">
+                <div className="py-space-md border-y border-surface-variant/40 mb-space-lg bg-surface-container/50 px-space-sm -mx-space-sm rounded-lg">
                   <span className="font-label-sm text-label-sm uppercase text-primary-container tracking-wider block mb-space-2xs">
                     OPTIMIZED RATE
                   </span>
@@ -435,7 +435,7 @@ export default function DesktopMembership() {
                   href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20claim%20the%20Quarterly%20Pass."
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold py-space-md text-center block tracking-wider transition-colors shadow-hard"
+                  className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container hover:text-on-secondary font-label-md text-label-md uppercase font-bold py-space-md rounded-xl text-center block tracking-wider transition-colors shadow-soft"
                 >
                   Inquire About Quarterly
                 </a>
@@ -443,13 +443,13 @@ export default function DesktopMembership() {
             </div>
 
             {/* Annual */}
-            <div className="tier-card-anim bg-surface-container-low border border-surface-variant/60 flex flex-col justify-between shadow-hard hover:border-primary-container transition-all duration-300">
+            <div className="tier-card-anim bg-surface-container-low border border-surface-variant/60 rounded-2xl flex flex-col justify-between shadow-soft hover:border-primary-container transition-all duration-300">
               <div className="p-space-lg">
                 <div className="flex items-center justify-between mb-space-xs">
                   <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
                     TIER 03 • IRON LIFESTYLE
                   </span>
-                  <span className="font-label-sm text-label-sm uppercase bg-surface-container px-space-xs py-space-2xs text-primary-container font-bold">
+                  <span className="font-label-sm text-label-sm uppercase bg-surface-container px-space-xs py-space-2xs rounded-full text-primary-container font-bold">
                     BEST VALUE
                   </span>
                 </div>
@@ -498,7 +498,7 @@ export default function DesktopMembership() {
                   href="https://wa.me/918700978341?text=Hi%20Fitness%20Future%20Gym%2C%20I%20want%20to%20inquire%20about%20Annual%20Commitment."
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant hover:border-primary-container text-on-surface font-label-md text-label-md uppercase py-space-md text-center block tracking-wider transition-colors"
+                  className="w-full bg-surface-container hover:bg-surface-container-high border border-surface-variant hover:border-primary-container text-on-surface font-label-md text-label-md uppercase py-space-md rounded-xl text-center block tracking-wider transition-colors"
                 >
                   Inquire About Annual
                 </a>

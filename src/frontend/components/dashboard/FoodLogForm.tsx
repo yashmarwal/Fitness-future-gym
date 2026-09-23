@@ -210,7 +210,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-hard flex flex-col gap-3 mb-6">
+    <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-3 mb-6">
       <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
         <span className="material-symbols-outlined text-base leading-none">restaurant</span>
         Log A Meal
@@ -226,7 +226,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
                 key={item.description}
                 onClick={() => logAgain(item)}
                 disabled={loggingAgain !== null}
-                className="flex items-center gap-1.5 font-body text-xs px-3 py-2 bg-surface-container border border-surface-variant hover:border-primary-container text-on-surface disabled:opacity-60 transition-colors"
+                className="flex items-center gap-1.5 font-body text-xs px-3 py-2 rounded-xl bg-surface-container border border-surface-variant hover:border-primary-container text-on-surface disabled:opacity-60 transition-colors"
               >
                 <span className="material-symbols-outlined text-sm leading-none text-primary-container">
                   {loggingAgain === item.description ? "hourglass_top" : "add_circle"}
@@ -247,7 +247,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
           onBlur={() => setTimeout(() => setShowResults(false), 150)}
           required
           placeholder="e.g. Banana — start typing to look up calories"
-          className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+          className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
         />
         {searching && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 font-label text-[9px] uppercase text-tertiary">
@@ -255,7 +255,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
           </span>
         )}
         {showResults && results.length > 0 && (
-          <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-surface-container-high shadow-hard-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-surface-container-high shadow-soft-lg rounded-xl max-h-60 overflow-y-auto">
             {results.map((r) => (
               <button
                 type="button"
@@ -294,7 +294,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
             onChange={(e) => handleQuantityChange(e.target.value)}
             min={1}
             placeholder="100"
-            className="w-full bg-surface-container border border-primary-container text-on-surface font-body px-3 py-3 outline-none"
+            className="w-full rounded-xl bg-surface-container border border-primary-container text-on-surface font-body px-3 py-3 outline-none"
           />
         </label>
       )}
@@ -308,7 +308,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
             onChange={(e) => handleMacroFieldChange(setCalories, e.target.value)}
             required
             placeholder="Calories"
-            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -318,7 +318,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
             value={proteinG}
             onChange={(e) => handleMacroFieldChange(setProteinG, e.target.value)}
             placeholder="Protein"
-            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -328,7 +328,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
             value={carbsG}
             onChange={(e) => handleMacroFieldChange(setCarbsG, e.target.value)}
             placeholder="Carbs"
-            className="w-full bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-3 outline-none focus:border-primary-container"
           />
         </label>
       </div>
@@ -346,7 +346,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
       <button
         type="submit"
         disabled={submitting}
-        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 transition-colors"
+        className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
       >
         {submitting ? "Saving..." : "Log Meal"}
       </button>

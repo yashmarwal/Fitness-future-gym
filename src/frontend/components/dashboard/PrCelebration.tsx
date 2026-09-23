@@ -34,8 +34,8 @@ export default function PrCelebration({ pr, onDismiss }: { pr: PrCheckResult; on
     >
       <div className="relative w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
         <div className="absolute -inset-1 bg-primary-container/50 blur-2xl animate-pulse" aria-hidden="true" />
-        <div className="relative bg-surface-container-lowest border-2 border-primary-container shadow-[0_0_100px_rgba(255,90,31,0.4)] flex flex-col items-center text-center px-8 py-10 gap-4">
-          <span className="w-20 h-20 flex items-center justify-center bg-primary-container text-on-primary-container shadow-hard-lg animate-bounce">
+        <div className="relative bg-surface-container-lowest border-2 border-primary-container rounded-3xl shadow-[0_0_100px_rgba(255,90,31,0.4)] flex flex-col items-center text-center px-8 py-10 gap-4">
+          <span className="w-20 h-20 rounded-2xl flex items-center justify-center bg-primary-container text-on-primary-container shadow-soft-lg animate-bounce">
             <span className="material-symbols-outlined text-4xl leading-none">emoji_events</span>
           </span>
 
@@ -47,7 +47,7 @@ export default function PrCelebration({ pr, onDismiss }: { pr: PrCheckResult; on
             <p className="font-body text-sm text-tertiary mt-1">{pr.exerciseName}</p>
           </div>
 
-          <div className="w-full bg-surface-container border-l-4 border-primary-container p-4 flex flex-col gap-1">
+          <div className="w-full bg-surface-container border-l-4 border-primary-container rounded-xl p-4 flex flex-col gap-1">
             <span className="font-display text-3xl text-primary-container tabular-nums leading-none">
               {weightLabel}
             </span>
@@ -61,7 +61,7 @@ export default function PrCelebration({ pr, onDismiss }: { pr: PrCheckResult; on
           <button
             type="button"
             onClick={onDismiss}
-            className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-hard transition-colors active:scale-[0.98]"
+            className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
           >
             Keep Going
           </button>

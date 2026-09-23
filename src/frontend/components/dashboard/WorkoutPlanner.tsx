@@ -196,12 +196,12 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Plan name (e.g. Push Pull Legs)"
-          className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
         />
 
         <div className="flex flex-col gap-4">
           {days.map((day, dayIndex) => (
-            <div key={dayIndex} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-3">
+            <div key={dayIndex} className="bg-surface-container-low shadow-soft rounded-2xl p-4 flex flex-col gap-3">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <input
@@ -209,26 +209,26 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
                     value={day.day}
                     onChange={(e) => updateDay(dayIndex, { day: e.target.value })}
                     placeholder="Day (e.g. Monday)"
-                    className="flex-1 min-w-0 bg-surface-container border border-surface-variant text-on-surface font-label text-xs uppercase px-3 py-2 outline-none focus:border-primary-container"
+                    className="flex-1 min-w-0 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-label text-xs uppercase px-3 py-2 outline-none focus:border-primary-container"
                   />
                   <input
                     value={day.focus ?? ""}
                     onChange={(e) => updateDay(dayIndex, { focus: e.target.value })}
                     placeholder="Focus (e.g. Push)"
-                    className="flex-1 min-w-0 bg-surface-container border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-primary-container"
+                    className="flex-1 min-w-0 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-primary-container"
                   />
                 </div>
                 <button
                   onClick={() => removeDay(dayIndex)}
                   aria-label="Remove day"
-                  className="flex items-center justify-center w-9 h-9 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0 self-end sm:self-auto"
+                  className="flex items-center justify-center w-9 h-9 rounded-xl bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0 self-end sm:self-auto"
                 >
                   <span className="material-symbols-outlined text-base leading-none">delete</span>
                 </button>
               </div>
 
               {day.exercises.map((exercise, exIndex) => (
-                <div key={exIndex} className="flex flex-wrap items-end gap-2 bg-surface-container p-3">
+                <div key={exIndex} className="flex flex-wrap items-end gap-2 bg-surface-container rounded-xl p-3">
                   <div className="flex-1 min-w-40">
                     <ExerciseSearchField
                       compact
@@ -247,7 +247,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
                       min={1}
                       value={exercise.sets}
                       onChange={(e) => updateExercise(dayIndex, exIndex, { sets: Number(e.target.value) })}
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-2 py-2 outline-none focus:border-primary-container"
+                      className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-2 py-2 outline-none focus:border-primary-container"
                     />
                   </div>
                   <div className="w-20">
@@ -258,13 +258,13 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
                       value={exercise.reps}
                       onChange={(e) => updateExercise(dayIndex, exIndex, { reps: e.target.value })}
                       placeholder="8-10"
-                      className="w-full bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-2 py-2 outline-none focus:border-primary-container"
+                      className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-2 py-2 outline-none focus:border-primary-container"
                     />
                   </div>
                   <button
                     onClick={() => removeExercise(dayIndex, exIndex)}
                     aria-label="Remove exercise"
-                    className="flex items-center justify-center w-9 h-9 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
+                    className="flex items-center justify-center w-9 h-9 rounded-xl bg-error-container/40 text-error hover:bg-error-container/60 transition-colors shrink-0"
                   >
                     <span className="material-symbols-outlined text-base leading-none">close</span>
                   </button>
@@ -290,7 +290,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
 
         <button
           onClick={addDay}
-          className="flex items-center justify-center gap-1 bg-surface-container-high text-on-surface font-label text-xs uppercase px-4 py-3 hover:bg-surface-container-highest transition-colors w-fit"
+          className="flex items-center justify-center gap-1 rounded-xl bg-surface-container-high text-on-surface font-label text-xs uppercase px-4 py-3 hover:bg-surface-container-highest transition-colors w-fit"
         >
           <span className="material-symbols-outlined text-base leading-none">add</span>
           Add Day
@@ -299,7 +299,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
         <button
           onClick={savePlan}
           disabled={saving || !name.trim() || days.length === 0}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 transition-colors"
+          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
         >
           {saving ? "Saving..." : "Save Plan"}
         </button>
@@ -312,14 +312,14 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
       <div className="flex flex-wrap gap-3">
         <button
           onClick={startNew}
-          className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard transition-colors w-fit"
+          className="flex items-center justify-center gap-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 rounded-xl shadow-soft transition-colors w-fit"
         >
           <span className="material-symbols-outlined text-base leading-none">add</span>
           New Plan
         </button>
         <button
           onClick={() => setShowTemplates((s) => !s)}
-          className="flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label text-sm uppercase px-6 py-3 transition-colors w-fit"
+          className="flex items-center justify-center gap-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label text-sm uppercase px-6 py-3 transition-colors w-fit"
         >
           <span className="material-symbols-outlined text-base leading-none">
             {showTemplates ? "expand_less" : "auto_awesome"}
@@ -333,7 +333,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
           {WORKOUT_TEMPLATES.map((template) => (
             <div
               key={template.id}
-              className="bg-surface-container-low shadow-hard border-t-2 border-primary-container p-4 flex flex-col gap-2"
+              className="bg-surface-container-low shadow-soft rounded-2xl border-t-2 border-primary-container p-4 flex flex-col gap-2"
             >
               <h3 className="font-display text-base text-on-surface uppercase tracking-wide leading-tight">
                 {template.name}
@@ -347,7 +347,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
               </span>
               <button
                 onClick={() => startFromTemplate(template)}
-                className="flex items-center justify-center gap-1.5 bg-primary-container/15 hover:bg-primary-container/25 text-primary-container font-label text-[10px] uppercase font-bold px-4 py-2.5 transition-colors mt-1"
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-primary-container/15 hover:bg-primary-container/25 text-primary-container font-label text-[10px] uppercase font-bold px-4 py-2.5 transition-colors mt-1"
               >
                 <span className="material-symbols-outlined text-sm leading-none">add_task</span>
                 Use This Template
@@ -365,14 +365,14 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {plans.map((plan) => (
-            <div key={plan.id} className="bg-surface-container-low shadow-hard p-5">
+            <div key={plan.id} className="bg-surface-container-low shadow-soft rounded-2xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-display text-lg text-on-surface uppercase tracking-wide">{plan.name}</h3>
                 <div className="flex gap-2">
                   <button
                     onClick={() => startEdit(plan)}
                     aria-label="Edit plan"
-                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
+                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-xl bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">edit</span>
                     Edit
@@ -380,7 +380,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
                   <button
                     onClick={() => deletePlan(plan.id)}
                     aria-label="Delete plan"
-                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                    className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-xl bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">delete</span>
                     Delete

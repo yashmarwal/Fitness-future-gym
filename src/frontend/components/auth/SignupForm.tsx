@@ -162,7 +162,7 @@ export default function SignupForm() {
               onChange={(e) => setFullName(e.target.value)}
               required
               placeholder="e.g. Vikram Sharma"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -174,7 +174,7 @@ export default function SignupForm() {
               onChange={(e) => setPhone(e.target.value)}
               required
               placeholder="+91XXXXXXXXXX"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -187,7 +187,7 @@ export default function SignupForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -200,7 +200,7 @@ export default function SignupForm() {
               required
               rows={2}
               placeholder="House no., street, area, city"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container resize-none"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container resize-none"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -211,13 +211,13 @@ export default function SignupForm() {
               type="date"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
           >
             {loading ? "Creating..." : "Create Account"}
           </button>
@@ -249,13 +249,13 @@ export default function SignupForm() {
               required
               maxLength={6}
               placeholder="123456"
-              className="bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container tracking-widest"
+              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container tracking-widest"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60"
+            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
           >
             {loading ? "Verifying..." : "Verify & Enter"}
           </button>

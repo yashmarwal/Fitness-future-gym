@@ -18,7 +18,16 @@ export type CalculatorInitial = {
 // profile (see /dashboard/bmi) — every field still falls back to this
 // page's original defaults when omitted, so the public marketing calculator
 // (which never passes `initial`) is completely unchanged.
-export default function CalculatorForm({ initial }: { initial?: CalculatorInitial } = {}) {
+//
+// `dashboardStyle` switches the original flat/neubrutalist shadow-hard look
+// to the rounded-corner/soft-shadow one — both /dashboard/bmi and the public
+// /calculator page now pass this (the whole site moved to the rounded look);
+// the prop stays opt-in rather than the default so a future caller that
+// wants the original flat look back still can.
+export default function CalculatorForm({
+  initial,
+  dashboardStyle = false,
+}: { initial?: CalculatorInitial; dashboardStyle?: boolean } = {}) {
   const [weight, setWeight] = useState<number | "">(initial?.weightKg ?? 74);
   const [heightFt, setHeightFt] = useState<number | "">(initial?.heightFt ?? 5);
   const [heightIn, setHeightIn] = useState<number | "">(initial?.heightIn ?? 9);
@@ -33,6 +42,15 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
   const formRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
+
+  // Class fragments swapped between the two looks — computed once here
+  // rather than repeating the ternary at every call site below.
+  const cardShadow = dashboardStyle ? "shadow-soft" : "shadow-hard";
+  const cardRadius = dashboardStyle ? "rounded-2xl" : "";
+  const fieldRadius = dashboardStyle ? "rounded-xl" : "";
+  const chipRadius = dashboardStyle ? "rounded-full" : "";
+  const subCardRadius = dashboardStyle ? "rounded-xl" : "";
+  const smallBoxRadius = dashboardStyle ? "rounded-lg" : "";
 
   useEffect(() => {
     if (formRef.current) {
@@ -101,12 +119,12 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
   return (
     <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
       {/* Parameters Panel */}
-      <div className="lg:col-span-5 bg-surface-container-low p-space-xl shadow-hard border border-surface-variant/40">
+      <div className={`lg:col-span-5 bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border border-surface-variant/40`}>
         <div className="flex items-center justify-between pb-space-sm mb-space-lg border-b border-surface-variant/40">
           <span className="font-title-md text-title-md uppercase text-on-surface">
             01 / Athlete Parameters
           </span>
-          <span className="font-label-sm text-label-sm uppercase px-space-xs py-space-2xs bg-surface text-tertiary">
+          <span className={`font-label-sm text-label-sm uppercase px-space-xs py-space-2xs bg-surface text-tertiary ${chipRadius}`}>
             ISO UNITS (KG / FT-IN)
           </span>
         </div>
@@ -126,7 +144,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                   step={0.5}
                   value={weight}
                   onChange={(e) => setWeight(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                  className={`w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40 ${fieldRadius}`}
                 />
                 <span className="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
                   KG
@@ -146,7 +164,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                     max={8}
                     value={heightFt}
                     onChange={(e) => setHeightFt(e.target.value === "" ? "" : Number(e.target.value))}
-                    className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                    className={`w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40 ${fieldRadius}`}
                   />
                   <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
                     FT
@@ -159,7 +177,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                     max={11}
                     value={heightIn}
                     onChange={(e) => setHeightIn(e.target.value === "" ? "" : Number(e.target.value))}
-                    className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                    className={`w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm pl-space-md pr-space-lg py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40 ${fieldRadius}`}
                   />
                   <span className="absolute right-space-sm top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
                     IN
@@ -182,7 +200,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                   max={90}
                   value={age}
                   onChange={(e) => setAge(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40"
+                  className={`w-full bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm px-space-md py-space-sm outline-none focus:bg-surface-variant transition-colors border border-surface-variant/40 ${fieldRadius}`}
                 />
                 <span className="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-outline">
                   YRS
@@ -198,7 +216,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                 <button
                   type="button"
                   onClick={() => setGender("male")}
-                  className={`py-space-sm font-label-md text-label-md uppercase text-center transition-all cursor-pointer ${
+                  className={`py-space-sm font-label-md text-label-md uppercase text-center transition-all cursor-pointer ${fieldRadius} ${
                     gender === "male"
                       ? "bg-primary-container text-on-primary-container font-bold"
                       : "bg-surface-container-lowest text-tertiary hover:text-on-surface border border-surface-variant/40"
@@ -209,7 +227,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                 <button
                   type="button"
                   onClick={() => setGender("female")}
-                  className={`py-space-sm font-label-md text-label-md uppercase text-center transition-all cursor-pointer ${
+                  className={`py-space-sm font-label-md text-label-md uppercase text-center transition-all cursor-pointer ${fieldRadius} ${
                     gender === "female"
                       ? "bg-primary-container text-on-primary-container font-bold"
                       : "bg-surface-container-lowest text-tertiary hover:text-on-surface border border-surface-variant/40"
@@ -230,7 +248,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               <button
                 type="button"
                 onClick={() => setActivity(1.2)}
-                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${
+                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${fieldRadius} ${
                   activity === 1.2
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -258,7 +276,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               <button
                 type="button"
                 onClick={() => setActivity(1.45)}
-                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${
+                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${fieldRadius} ${
                   activity === 1.45
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -286,7 +304,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               <button
                 type="button"
                 onClick={() => setActivity(1.65)}
-                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${
+                className={`text-left p-space-sm flex items-center justify-between transition-colors border ${fieldRadius} ${
                   activity === 1.65
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -322,7 +340,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
             </label>
             <div className="flex flex-col gap-space-xs">
               <label
-                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${fieldRadius} ${
                   goal === -500
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -352,7 +370,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               </label>
 
               <label
-                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${fieldRadius} ${
                   goal === 0
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -382,7 +400,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               </label>
 
               <label
-                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${
+                className={`cursor-pointer p-space-sm flex items-center justify-between border transition-colors ${fieldRadius} ${
                   goal === 350
                     ? "bg-surface-container border-primary-container"
                     : "bg-surface-container-lowest border-surface-variant/40 hover:bg-surface-container"
@@ -419,7 +437,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
               type="button"
               onClick={runCalculation}
               disabled={isCalculating}
-              className="w-full py-space-md px-space-lg bg-primary-container text-on-primary-container font-label-md text-label-md uppercase tracking-widest font-bold shadow-md hover:brightness-110 active:scale-[0.99] transition-all text-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+              className={`w-full py-space-md px-space-lg bg-primary-container text-on-primary-container font-label-md text-label-md uppercase tracking-widest font-bold shadow-md hover:brightness-110 active:scale-[0.99] transition-all text-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${fieldRadius}`}
             >
               <span>{isCalculating ? "CALCULATING..." : "CALCULATE"}</span>
             </button>
@@ -432,14 +450,14 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
         {/* Top Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
           {/* BMI Card */}
-          <div className="bg-surface-container-low p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40 relative overflow-hidden">
+          <div className={`bg-surface-container-low p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 01 // Body Index</span>
                 {isCalculating ? (
                   <div className="h-5 w-24 bg-surface-container-highest animate-pulse rounded"></div>
                 ) : (
-                  <span className="px-space-xs py-space-2xs bg-surface-container-highest text-primary-container font-label-sm text-label-sm uppercase font-bold tracking-widest">
+                  <span className={`px-space-xs py-space-2xs bg-surface-container-highest text-primary-container font-label-sm text-label-sm uppercase font-bold tracking-widest ${chipRadius}`}>
                     {results.bmiTag}
                   </span>
                 )}
@@ -477,7 +495,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
           </div>
 
           {/* Calories Card */}
-          <div className="bg-surface-container p-space-xl flex flex-col justify-between shadow-hard border border-surface-variant/40 relative overflow-hidden">
+          <div className={`bg-surface-container p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 02 // Energy Budget</span>
@@ -521,7 +539,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
         </div>
 
         {/* Macro Distribution Cards */}
-        <div className="bg-surface-container-low p-space-xl shadow-hard border border-surface-variant/40">
+        <div className={`bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border border-surface-variant/40`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs pb-space-sm mb-space-lg border-b border-surface-variant/40">
             <span className="font-title-md text-title-md uppercase text-on-surface">
               02 / Daily Macro Target Distribution
@@ -533,7 +551,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
             {/* Protein Card */}
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
+            <div className={`bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden ${subCardRadius}`}>
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-primary-container font-bold">
@@ -561,14 +579,14 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                   </div>
                 )}
               </div>
-              <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
+              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
                 Eggs, Paneer, Chicken, Soya Chunks, Whey Isolate.
               </div>
             </div>
 
             {/* Carbs Card */}
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
+            <div className={`bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden ${subCardRadius}`}>
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-on-surface font-bold">
@@ -596,14 +614,14 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                   </div>
                 )}
               </div>
-              <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
+              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
                 Oats, Brown Rice, Roti, Sweet Potato, Bananas.
               </div>
             </div>
 
             {/* Fats Card */}
-            <div className="bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden">
+            <div className={`bg-surface-container p-space-md flex flex-col justify-between border border-surface-variant/30 relative overflow-hidden ${subCardRadius}`}>
               <div>
                 <div className="flex justify-between items-center mb-space-xs">
                   <span className="font-label-md text-label-md uppercase tracking-wider text-tertiary font-bold">
@@ -631,7 +649,7 @@ export default function CalculatorForm({ initial }: { initial?: CalculatorInitia
                   </div>
                 )}
               </div>
-              <div className="mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30">
+              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
                 <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
                 Almonds, Desi Ghee, Peanut Butter, Whole Eggs.
               </div>

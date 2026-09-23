@@ -69,15 +69,15 @@ export default function DesktopPrograms() {
 
           {/* Metrics */}
           <div className="prog-hero-anim flex items-stretch gap-space-xs shrink-0">
-            <div className="bg-surface-container-high px-space-md py-space-sm flex flex-col justify-center border border-surface-variant/40">
+            <div className="bg-surface-container-high px-space-md py-space-sm rounded-xl flex flex-col justify-center border border-surface-variant/40">
               <span className="font-headline-sm text-headline-sm text-primary-container leading-none">50KG+</span>
               <span className="font-label-sm text-label-sm uppercase text-tertiary">Dumbbell Tier</span>
             </div>
-            <div className="bg-surface-container-high px-space-md py-space-sm flex flex-col justify-center border border-surface-variant/40">
+            <div className="bg-surface-container-high px-space-md py-space-sm rounded-xl flex flex-col justify-center border border-surface-variant/40">
               <span className="font-headline-sm text-headline-sm text-on-surface leading-none">100%</span>
               <span className="font-label-sm text-label-sm uppercase text-tertiary">Raw Iron Racks</span>
             </div>
-            <div className="bg-primary-container px-space-md py-space-sm flex flex-col justify-center text-on-primary-container">
+            <div className="bg-primary-container px-space-md py-space-sm rounded-xl flex flex-col justify-center text-on-primary-container">
               <span className="font-headline-sm text-headline-sm text-on-primary-container leading-none">8+ YRS</span>
               <span className="font-label-sm text-label-sm uppercase text-on-primary-container/80 font-bold">Unbroken</span>
             </div>
@@ -89,7 +89,7 @@ export default function DesktopPrograms() {
       <section className="w-full px-gutter-desktop py-space-3xl bg-background">
         <div className="max-w-container-max mx-auto flex flex-col gap-space-2xl">
           {/* Block 1 */}
-          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
+          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-soft rounded-2xl overflow-hidden transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
               <Image
@@ -99,7 +99,7 @@ export default function DesktopPrograms() {
                 sizes="(min-width: 1024px) 42vw, 100vw"
                 className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
+              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs rounded-full border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   PROTOCOL #01 // HYPERTROPHY
                 </span>
@@ -123,12 +123,12 @@ export default function DesktopPrograms() {
                   Built on periodized volume, progressive barbell tension, and stage-ready physique mechanics. We discard soft cardio-style workouts for structured resistance training calibrated around real training failure and muscular adaptation.
                 </p>
                 <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Arsenal Spec</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Heavy Barbell Platforms</span>
                     <p className="font-body-sm text-body-sm text-tertiary">Dedicated shock-absorbing deadlift bays and Olympic knurled bars.</p>
                   </div>
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Resistance Curve</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Dumbbells To 50KG+</span>
                     <p className="font-body-sm text-body-sm text-tertiary">Steel-welded pro-style dumbbells ready for maximum chest &amp; row outputs.</p>
@@ -136,7 +136,7 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm rounded-xl flex flex-col gap-space-sm border border-surface-variant/40">
                 <div className="flex items-center gap-space-md flex-wrap">
                   <div>
                     <span className="font-headline-sm text-headline-sm text-on-surface">4</span>
@@ -151,14 +151,14 @@ export default function DesktopPrograms() {
                 <div className="grid grid-cols-3 gap-space-2xs">
                   <a
                     href="tel:+919643526435"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">call</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
                   </a>
                   <Link
                     href="/location#inquiry"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">edit_note</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
@@ -167,7 +167,7 @@ export default function DesktopPrograms() {
                     href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Group%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
@@ -178,7 +178,7 @@ export default function DesktopPrograms() {
           </div>
 
           {/* Block 2 */}
-          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row-reverse items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
+          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row-reverse items-stretch shadow-soft rounded-2xl overflow-hidden transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 right-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
               <Image
@@ -188,7 +188,7 @@ export default function DesktopPrograms() {
                 sizes="(min-width: 1024px) 42vw, 100vw"
                 className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
+              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs rounded-full border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   PROTOCOL #02 // DIRECT COACHING
                 </span>
@@ -212,12 +212,12 @@ export default function DesktopPrograms() {
                   Direct accountability under experienced strength coaches. We diagnose movement dysfunctions, correct joint angles, and build customized intensity ramps that force muscular adaptation while protecting lumbar integrity.
                 </p>
                 <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Execution</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Kinetic Posture Alignment</span>
                     <p className="font-body-sm text-body-sm text-tertiary">Continuous micro-adjustments on ankle, hip, and shoulder tracking.</p>
                   </div>
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Metrics</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Bi-Weekly Body Calipers</span>
                     <p className="font-body-sm text-body-sm text-tertiary">Direct subcutaneous fat fold auditing every 14 days.</p>
@@ -225,7 +225,7 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm rounded-xl flex flex-col gap-space-sm border border-surface-variant/40">
                 <div className="flex items-center gap-space-md flex-wrap">
                   <div>
                     <span className="font-headline-sm text-headline-sm text-on-surface">1:1</span>
@@ -240,14 +240,14 @@ export default function DesktopPrograms() {
                 <div className="grid grid-cols-3 gap-space-2xs">
                   <a
                     href="tel:+919643526435"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">call</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
                   </a>
                   <Link
                     href="/location#inquiry"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">edit_note</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
@@ -256,7 +256,7 @@ export default function DesktopPrograms() {
                     href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20Personal%20Training%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>
@@ -267,7 +267,7 @@ export default function DesktopPrograms() {
           </div>
 
           {/* Block 3 */}
-          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-hard transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
+          <div className="prog-block-anim group relative bg-surface-container flex flex-col lg:flex-row items-stretch shadow-soft rounded-2xl overflow-hidden transition-all duration-300 border border-surface-variant/40 hover:border-primary-container">
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-primary-container"></div>
             <div className="w-full lg:w-5/12 min-h-[340px] relative overflow-hidden bg-surface-container-high shrink-0">
               <Image
@@ -277,7 +277,7 @@ export default function DesktopPrograms() {
                 sizes="(min-width: 1024px) 42vw, 100vw"
                 className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs border border-surface-variant/40">
+              <div className="absolute top-space-md left-space-md bg-surface-container-lowest/90 px-space-sm py-space-2xs rounded-full border border-surface-variant/40">
                 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary-container font-bold">
                   PROTOCOL #03 // BIO-FUEL
                 </span>
@@ -301,12 +301,12 @@ export default function DesktopPrograms() {
                   No generic Western diet templates. We build caloric partitioning and micronutrient blueprints mapped around local North Indian, vegetarian, and non-vegetarian pantry staples—calculating actual protein efficiency without gimmicks.
                 </p>
                 <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Dietary Localization</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Indian Macros &amp; Soya/Paneer/Chicken</span>
                     <p className="font-body-sm text-body-sm text-tertiary">Soya, eggs, paneer, and dahi factored into strict amino-acid profiles.</p>
                   </div>
-                  <div className="bg-surface-container-high p-space-sm flex flex-col gap-space-2xs border border-surface-variant/30">
+                  <div className="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-space-2xs border border-surface-variant/30">
                     <span className="font-label-sm text-label-sm uppercase text-primary-container">Integrity Guarantee</span>
                     <span className="font-title-sm text-title-sm text-on-surface">Zero Snake-Oil Supplements</span>
                     <p className="font-body-sm text-body-sm text-tertiary">No unvetted fat burners. Only evidence-based creatine and whey.</p>
@@ -314,7 +314,7 @@ export default function DesktopPrograms() {
                 </div>
               </div>
 
-              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm flex flex-col gap-space-sm border border-surface-variant/40">
+              <div className="pt-space-lg mt-space-md bg-surface-container-low p-space-sm rounded-xl flex flex-col gap-space-sm border border-surface-variant/40">
                 <div className="flex items-center justify-between gap-space-md flex-wrap">
                   <div className="flex items-center gap-space-md flex-wrap">
                     <div>
@@ -329,7 +329,7 @@ export default function DesktopPrograms() {
                   </div>
                   <Link
                     href="/calculator"
-                    className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm shadow-hard hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                    className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-md text-label-md uppercase px-space-md py-space-sm rounded-xl shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-transform"
                   >
                     Calculate Caloric Target
                     <span className="material-symbols-outlined ml-space-xs text-body-md">calculate</span>
@@ -338,14 +338,14 @@ export default function DesktopPrograms() {
                 <div className="grid grid-cols-3 gap-space-2xs">
                   <a
                     href="tel:+919643526435"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">call</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Call Vaibhav</span>
                   </a>
                   <Link
                     href="/location#inquiry"
-                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <span className="material-symbols-outlined text-title-md">edit_note</span>
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">Fill A Form</span>
@@ -354,7 +354,7 @@ export default function DesktopPrograms() {
                     href="https://wa.me/919643526435?text=Hi%20Coach%20Vaibhav%2C%20I%27m%20interested%20in%20the%20Diet%20Plan%20at%20Fitness%20Future%20Gym.%20Can%20you%20tell%20me%20more%3F"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm shadow-sm transition-colors"
+                    className="flex flex-col items-center gap-space-2xs bg-primary-container text-on-primary-container hover:bg-secondary-container px-space-sm py-space-sm rounded-lg shadow-sm transition-colors"
                   >
                     <WhatsAppIcon className="w-5 h-5" />
                     <span className="font-label-sm text-label-sm uppercase tracking-wide">WhatsApp</span>

@@ -16,7 +16,7 @@ export default function PersonalNoteArea() {
   }
 
   return (
-    <div className="flex items-center gap-3 bg-primary-container text-on-primary-container pl-4 pr-3 py-3 shadow-hard mb-6">
+    <div className="flex items-center gap-3 bg-primary-container text-on-primary-container pl-4 pr-3 py-3 shadow-soft rounded-2xl mb-6">
       <span className="material-symbols-outlined text-xl leading-none shrink-0">bolt</span>
       <input
         // Remounts (and re-seeds defaultValue) the one time the stored value

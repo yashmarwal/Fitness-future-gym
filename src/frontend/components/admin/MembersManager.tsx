@@ -31,7 +31,7 @@ function FeePendingTag({ member }: { member: AdminMember }) {
   return (
     <span
       title={`Fee due since ${member.feeDueDate}`}
-      className="shrink-0 font-label text-[10px] uppercase px-2 py-1 bg-error-container/40 text-error"
+      className="shrink-0 font-label text-[10px] uppercase px-2 py-1 rounded-full bg-error-container/40 text-error"
     >
       Fee Pending
     </span>
@@ -175,7 +175,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           <button
             key={f.key}
             onClick={() => setActiveFilter(f.key)}
-            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2 transition-colors ${
+            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2 rounded-xl transition-colors ${
               activeFilter === f.key
                 ? "bg-primary-container text-on-primary-container"
                 : "bg-surface-container-low text-tertiary hover:text-on-surface"
@@ -192,11 +192,11 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name or membership number..."
-          className="flex-1 bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
+          className="flex-1 rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
         />
         <button
           onClick={showForm ? closeForm : startCreate}
-          className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-hard shrink-0 transition-colors"
+          className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft shrink-0 transition-colors"
         >
           {showForm ? "Cancel" : "+ Add Member"}
         </button>
@@ -207,7 +207,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="scroll-mt-32 bg-surface-container-low p-5 shadow-hard grid grid-cols-1 sm:grid-cols-2 gap-3"
+          className="scroll-mt-32 bg-surface-container-low p-5 rounded-2xl shadow-soft grid grid-cols-1 sm:grid-cols-2 gap-3"
         >
           <span className="sm:col-span-2 font-label text-xs uppercase tracking-widest text-primary-container">
             {editingId ? "Edit Member" : "New Member"}
@@ -217,27 +217,27 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
             placeholder="Membership Number"
             value={form.membershipNumber}
             onChange={(e) => setForm({ ...form, membershipNumber: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <input
             required
             placeholder="Full Name"
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <input
             placeholder="Phone (+91XXXXXXXXXX)"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <input
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">Date of Birth</label>
@@ -245,7 +245,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               type="date"
               value={form.dateOfBirth}
               onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1 sm:col-span-2">
@@ -255,21 +255,21 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               rows={2}
-              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container resize-none"
+              className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container resize-none"
             />
           </div>
           <input
             placeholder="Plan (e.g. Quarterly)"
             value={form.plan}
             onChange={(e) => setForm({ ...form, plan: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <input
             type="number"
             placeholder="Fee Amount (₹)"
             value={form.feeAmount}
             onChange={(e) => setForm({ ...form, feeAmount: e.target.value })}
-            className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           />
           <div className="flex flex-col gap-1">
             <label className="font-label text-[10px] uppercase tracking-widest text-outline">Fee Due Date</label>
@@ -277,7 +277,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               type="date"
               value={form.feeDueDate}
               onChange={(e) => setForm({ ...form, feeDueDate: e.target.value })}
-              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -286,13 +286,13 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               type="date"
               value={form.joinedAt}
               onChange={(e) => setForm({ ...form, joinedAt: e.target.value })}
-              className="bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+              className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
             />
           </div>
           <button
             type="submit"
             disabled={submitting}
-            className="sm:col-span-2 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-hard disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="sm:col-span-2 rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? "Saving..." : editingId ? "Save Changes" : "Create Member"}
           </button>
@@ -300,7 +300,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
       )}
 
       {filtered.length === 0 ? (
-        <div className="bg-surface-container-low shadow-hard py-8 px-4 text-center font-body text-sm text-tertiary">
+        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
           {members.length === 0
             ? "No members yet — add one above."
             : byFilter.length === 0
@@ -312,7 +312,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           {/* Table — desktop/tablet. A 9-column table has no good way to
               read on a phone even with horizontal scroll, so below md it's
               replaced entirely by the card list, not just scroll-wrapped. */}
-          <div className="hidden md:block bg-surface-container-low shadow-hard overflow-x-auto">
+          <div className="hidden md:block bg-surface-container-low rounded-2xl shadow-soft overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b-2 border-surface-variant/60">
@@ -341,7 +341,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <button
                           onClick={() => toggleActive(m)}
-                          className={`font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                          className={`font-label text-[10px] uppercase px-2 py-1 rounded-full transition-colors ${
                             m.isActive
                               ? "bg-primary-container/20 text-primary-container hover:bg-primary-container/30"
                               : "bg-surface-container-high text-error hover:bg-surface-container-highest"
@@ -357,7 +357,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                         <button
                           onClick={() => startEdit(m)}
                           aria-label="Edit member"
-                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
+                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
                         >
                           <span className="material-symbols-outlined text-sm leading-none">edit</span>
                           Edit
@@ -365,7 +365,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                         <button
                           onClick={() => handleDelete(m.id)}
                           aria-label="Delete member"
-                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
                         >
                           <span className="material-symbols-outlined text-sm leading-none">delete</span>
                           Delete
@@ -381,7 +381,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           {/* Card list — mobile only. */}
           <div className="md:hidden flex flex-col gap-3">
             {filtered.map((m) => (
-              <div key={m.id} className="bg-surface-container-low shadow-hard p-4 flex flex-col gap-3">
+              <div key={m.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
@@ -392,7 +392,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                   <div className="shrink-0 flex items-center justify-end gap-1.5 flex-wrap">
                     <button
                       onClick={() => toggleActive(m)}
-                      className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 transition-colors ${
+                      className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 rounded-full transition-colors ${
                         m.isActive
                           ? "bg-primary-container/20 text-primary-container"
                           : "bg-surface-container-high text-error"
@@ -412,14 +412,14 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                 <div className="flex gap-2 pt-1 border-t border-surface-variant/30">
                   <button
                     onClick={() => startEdit(m)}
-                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">edit</span>
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(m.id)}
-                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">delete</span>
                     Delete

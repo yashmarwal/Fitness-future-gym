@@ -46,8 +46,8 @@ export default function FitnessProfileNudge() {
   if (dismissed) return null;
 
   return (
-    <div className="bg-surface-container-low border-l-4 border-primary-container shadow-hard p-4 mb-6 flex items-center gap-3">
-      <span className="w-10 h-10 flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
+    <div className="bg-surface-container-low border-l-4 border-primary-container shadow-soft rounded-2xl p-4 mb-6 flex items-center gap-3">
+      <span className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
         <span className="material-symbols-outlined text-lg leading-none">auto_awesome</span>
       </span>
       <div className="flex-1 min-w-0">
@@ -58,7 +58,7 @@ export default function FitnessProfileNudge() {
       </div>
       <Link
         href="/onboarding"
-        className="shrink-0 font-label text-[10px] uppercase font-bold px-3 py-2 bg-primary-container hover:bg-secondary-container text-on-primary-container transition-colors"
+        className="shrink-0 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container transition-colors"
       >
         Start
       </Link>
@@ -66,7 +66,7 @@ export default function FitnessProfileNudge() {
         type="button"
         onClick={dismiss}
         aria-label="Dismiss"
-        className="shrink-0 flex items-center justify-center w-7 h-7 text-tertiary hover:text-on-surface transition-colors"
+        className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full text-tertiary hover:text-on-surface transition-colors"
       >
         <span className="material-symbols-outlined text-base leading-none">close</span>
       </button>
