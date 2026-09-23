@@ -43,20 +43,42 @@ function isValidSignature(rawBody: string, signatureHeader: string | null): bool
 // (Meta retries an event that doesn't get a 2xx, repeatedly, forever).
 export async function POST(request: Request) {
   const rawBody = await request.text();
+  const signatureHeader = request.headers.get("x-hub-signature-256");
 
-  if (!isValidSignature(rawBody, request.headers.get("x-hub-signature-256"))) {
+  if (!isValidSignature(rawBody, signatureHeader)) {
+    // Logged (not just 401'd) because this failure is otherwise invisible —
+    // Meta gets the 401, but nothing about *why* shows up anywhere you'd
+    // see it. The two real causes: WHATSAPP_APP_SECRET unset, or set to the
+    // wrong/mistyped value (never logged itself — just whether one was
+    // configured at all, and whether Meta sent a signature to check).
+    console.error(
+      "[whatsapp:webhook] rejected: invalid signature — check WHATSAPP_APP_SECRET " +
+        `(configured: ${Boolean(process.env.WHATSAPP_APP_SECRET)}, signature header present: ${Boolean(signatureHeader)})`
+    );
     return new NextResponse("Invalid signature", { status: 401 });
   }
 
   try {
     const payload = JSON.parse(rawBody);
+    let messageCount = 0;
     for (const entry of payload?.entry ?? []) {
       for (const change of entry?.changes ?? []) {
         const messages = change?.value?.messages as { from?: string }[] | undefined;
         for (const message of messages ?? []) {
-          if (message.from) await handleInboundWhatsAppMessage(message.from);
+          messageCount++;
+          if (message.from) {
+            console.log(`[whatsapp:webhook] inbound message from ${message.from}, replying`);
+            await handleInboundWhatsAppMessage(message.from);
+          }
         }
       }
+    }
+    if (messageCount === 0) {
+      // Normal for most events this webhook receives (delivery/read
+      // statuses, template updates) — logged at this level only to make a
+      // "why didn't my test message trigger anything" report easy to
+      // confirm-or-rule-out: did a message event even arrive here at all.
+      console.log("[whatsapp:webhook] received event with no inbound messages (status update or similar)");
     }
   } catch (err) {
     console.error("[whatsapp:webhook] failed to process payload:", err instanceof Error ? err.message : err);
