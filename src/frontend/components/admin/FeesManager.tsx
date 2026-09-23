@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { FeePaymentRow, AdminMember } from "@/types/admin";
+import MemberSearchSelect from "@/frontend/components/admin/MemberSearchSelect";
 
 type StatusFilter = "all" | "paid" | "pending";
 type MethodFilter = "all" | "upi" | "cash" | "manual";
@@ -60,19 +61,13 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
         <span className="font-label text-xs uppercase tracking-widest text-primary-container">
           Record Manual Payment
         </span>
-        <select
+        <MemberSearchSelect
+          members={members}
           value={memberId}
-          onChange={(e) => setMemberId(e.target.value)}
-          required
-          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container flex-1 min-w-48"
-        >
-          <option value="">Select member...</option>
-          {members.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.fullName} ({m.membershipNumber})
-            </option>
-          ))}
-        </select>
+          onChange={setMemberId}
+          placeholder="Search member by name or membership no..."
+          className="flex-1 min-w-48"
+        />
         <input
           type="number"
           value={amount}

@@ -91,7 +91,22 @@ export async function recordManualPayment(
   // previously this was hardcoded to +1 month regardless of plan, so a
   // quarterly/annual payment would silently mark the member "due again" and
   // eventually auto-block them after just one month.
-  const anchor = member.fee_due_date ? new Date(member.fee_due_date) : new Date();
+  //
+  // For a member's very first payment there's no fee_due_date yet (it's
+  // null until the first payment is ever recorded — see schema.sql), so the
+  // anchor used to fall back to *today*, the day the admin happens to get
+  // around to entering it — not the day the member actually joined. A
+  // member who joined 6 days ago but only gets their first payment logged
+  // today would silently get 6 extra free days, and every renewal after
+  // that stays offset from their real join date. joined_at (always set,
+  // defaults to signup date) is the correct anchor for that first payment;
+  // `new Date()` is only a last-resort fallback for the case joined_at is
+  // somehow missing too.
+  const anchor = member.fee_due_date
+    ? new Date(member.fee_due_date)
+    : member.joined_at
+      ? new Date(member.joined_at)
+      : new Date();
   const nextDueDate = new Date(anchor);
   nextDueDate.setMonth(nextDueDate.getMonth() + durationMonths);
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
