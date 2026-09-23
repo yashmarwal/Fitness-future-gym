@@ -7,9 +7,18 @@ import { getDb } from "@/backend/db/client";
 // profile edit or payment, which was over-broad in an earlier pass.
 // trial_pass/trial_reminder are the one exception, for leads who aren't
 // members yet (the marketing site's 2-day free trial claim).
+//
+// fee_received is the one deliberate exception to "not for every payment":
+// welcome_card only re-sends when a payment is the member's first ever, or
+// changes their plan/amount (see feesAdmin.ts::recordManualPayment) — a
+// routine same-plan renewal used to get no WhatsApp confirmation at all,
+// just a payment-receipt email. fee_received fills that gap with a short
+// "payment received, here's your next due date" message instead of
+// resending the whole card every month.
 export type WhatsAppTemplate =
   | "otp"
   | "fee_reminder"
+  | "fee_received"
   | "birthday"
   | "announcement"
   | "welcome_card"
@@ -21,6 +30,7 @@ export type WhatsAppTemplate =
 const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
   otp: "WHATSAPP_TEMPLATE_OTP",
   fee_reminder: "WHATSAPP_TEMPLATE_FEE_REMINDER",
+  fee_received: "WHATSAPP_TEMPLATE_FEE_RECEIVED",
   birthday: "WHATSAPP_TEMPLATE_BIRTHDAY",
   announcement: "WHATSAPP_TEMPLATE_ANNOUNCEMENT",
   welcome_card: "WHATSAPP_TEMPLATE_WELCOME_CARD",
@@ -33,6 +43,7 @@ const TEMPLATE_NAME_ENV: Record<WhatsAppTemplate, string> = {
 const TEMPLATE_NAME_DEFAULT: Record<WhatsAppTemplate, string> = {
   otp: "ff_login_otp",
   fee_reminder: "ff_fee_reminder",
+  fee_received: "ff_fee_received",
   birthday: "ff_birthday",
   announcement: "ff_announcement",
   welcome_card: "ff_welcome_card",

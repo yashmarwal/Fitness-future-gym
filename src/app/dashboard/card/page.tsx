@@ -29,7 +29,7 @@ export default async function MembershipCardPage() {
         <div className="p-6 flex flex-col gap-6">
           <div>
             <span className="font-display text-xl uppercase tracking-wide text-on-surface">
-              Fitness <span className="text-primary-container">Future</span> Gym
+              Fitness Future <span className="text-primary-container">Gym</span>
             </span>
             <p className="font-label text-[9px] uppercase tracking-[0.2em] text-tertiary mt-1">
               Raw Iron Culture &bull; Est. 2016

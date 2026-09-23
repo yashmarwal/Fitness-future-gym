@@ -13,6 +13,10 @@ export type AdminMember = {
   isActive: boolean;
   isBlocked: boolean;
   blockedReason: string | null;
+  // Internal, staff-only — never shown to the member. The `notes` column
+  // has been in schema.sql from the start but was never wired into the
+  // app until the admin member-profile page — see members.ts.
+  notes: string | null;
 };
 
 export type MemberInput = {
@@ -26,6 +30,17 @@ export type MemberInput = {
   feeAmount?: number;
   feeDueDate?: string;
   joinedAt?: string;
+  notes?: string;
+};
+
+// The admin nav's global quick-search — deliberately a small, separate
+// shape from AdminMember (just enough to show a result and link to it),
+// not the full member record.
+export type MemberSearchResult = {
+  id: string;
+  fullName: string;
+  membershipNumber: string;
+  phone: string | null;
 };
 
 export type AttendanceRow = {

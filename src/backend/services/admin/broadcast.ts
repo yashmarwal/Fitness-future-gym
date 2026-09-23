@@ -3,7 +3,16 @@ import { getDb } from "@/backend/db/client";
 import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { createNotification } from "@/backend/services/memberNotifications";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
+import { mapWithConcurrency } from "@/backend/lib/concurrency";
 import type { BroadcastSegment } from "@/types/admin";
+
+// A broadcast to "all" can mean every active member in the gym — sending
+// one at a time used to mean the admin's request had to survive N
+// sequential WhatsApp round-trips (easily minutes for a few hundred
+// members), almost certainly past this route's serverless timeout, with no
+// way to tell how many had actually gone out or to resume. See
+// backend/lib/concurrency.ts.
+const SEND_CONCURRENCY = 8;
 
 const HAS_CONTACT_INFO = "phone.not.is.null,email.not.is.null";
 
@@ -64,7 +73,7 @@ export async function sendBroadcast(
 ): Promise<{ sent: number }> {
   const recipients = await resolveRecipients(segment);
 
-  for (const recipient of recipients) {
+  await mapWithConcurrency(recipients, SEND_CONCURRENCY, async (recipient) => {
     if (recipient.phone) {
       await sendWhatsAppTemplate({
         phone: recipient.phone,
@@ -83,7 +92,7 @@ export async function sendBroadcast(
       title: subject || "Gym Update",
       body: message,
     }).catch(() => {});
-  }
+  });
 
   return { sent: recipients.length };
 }

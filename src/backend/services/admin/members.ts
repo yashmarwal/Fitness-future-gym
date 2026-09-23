@@ -1,6 +1,7 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
-import type { AdminMember, MemberInput } from "@/types/admin";
+import type { AdminMember, MemberInput, MemberSearchResult } from "@/types/admin";
 import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery";
 import { normalizePhone } from "@/backend/lib/phone";
 import { normalizeEmail } from "@/backend/lib/email";
@@ -27,16 +28,17 @@ function mapRow(row: Record<string, unknown>): AdminMember {
     // members list in feeAbuse.ts selects it separately and degrades
     // gracefully if the column isn't there yet.
     blockedReason: null,
+    notes: (row.notes as string | null | undefined) ?? null,
   };
 }
 
 const BASE_COLUMNS =
   "id, membership_number, full_name, phone, email, date_of_birth, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen";
-// `address` is a newer column — select it separately and fall back to
-// BASE_COLUMNS if the migration hasn't run yet (see isMissingColumnError),
-// same pattern as member.ts::getMemberById, so a pending migration doesn't
-// 500 the entire admin Members page.
-const FULL_COLUMNS = `${BASE_COLUMNS}, address`;
+// `address` and `notes` are both newer/optional columns — select them
+// separately and fall back to BASE_COLUMNS if a migration hasn't run yet
+// (see isMissingColumnError), same pattern as member.ts::getMemberById, so
+// a pending migration doesn't 500 the entire admin Members page.
+const FULL_COLUMNS = `${BASE_COLUMNS}, address, notes`;
 
 export async function listMembers(): Promise<AdminMember[]> {
   const db = getDb();
@@ -60,6 +62,32 @@ export async function getMember(id: string): Promise<AdminMember | null> {
   return base.data ? mapRow(base.data) : null;
 }
 
+// Powers the admin nav's global quick-search — a small, fast, on-demand
+// query (not a full listMembers() fetch, which would mean re-downloading
+// every member on every keystroke). Matches name OR membership number,
+// case-insensitively, capped at `limit` results. Empty/whitespace-only
+// query returns nothing rather than the first N members alphabetically,
+// which would look like a bug ("why do these specific people show up").
+export async function searchMembers(query: string, limit = 8): Promise<MemberSearchResult[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const db = getDb();
+  const { data, error } = await db
+    .from("members")
+    .select("id, full_name, membership_number, phone")
+    .or(`full_name.ilike.%${q}%,membership_number.ilike.%${q}%`)
+    .order("full_name", { ascending: true })
+    .limit(limit);
+
+  if (error) throw new Error(`Failed to search members: ${error.message}`);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    fullName: row.full_name,
+    membershipNumber: row.membership_number,
+    phone: row.phone,
+  }));
+}
+
 export async function createMember(input: MemberInput): Promise<AdminMember> {
   const db = getDb();
   const { data, error } = await db
@@ -75,6 +103,7 @@ export async function createMember(input: MemberInput): Promise<AdminMember> {
       fee_amount: input.feeAmount ?? null,
       fee_due_date: input.feeDueDate || null,
       joined_at: input.joinedAt || undefined,
+      notes: input.notes || null,
     })
     .select(FULL_COLUMNS)
     .single();
@@ -97,6 +126,7 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
   if (input.feeDueDate !== undefined) patch.fee_due_date = input.feeDueDate || null;
   if (input.joinedAt !== undefined) patch.joined_at = input.joinedAt;
   if (input.isActive !== undefined) patch.is_active = input.isActive;
+  if (input.notes !== undefined) patch.notes = input.notes || null;
 
   // Only attempt a card (re)send when plan or fee actually changes — not on
   // every edit, since the admin form always submits the full record whether
@@ -125,16 +155,21 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
       .eq("id", id)
       .maybeSingle();
     if (member) {
-      await deliverMembershipCard({
-        id: member.id,
-        fullName: member.full_name,
-        membershipNumber: member.membership_number,
-        phone: member.phone,
-        email: member.email,
-        plan: member.plan,
-        feeAmount: member.fee_amount,
-        joinedAt: member.joined_at,
-      }).catch(() => {});
+      // Deferred via after() — same reasoning as recordManualPayment in
+      // admin/feesAdmin.ts: WhatsApp + email + PDF, best-effort, not worth
+      // making this save wait on it.
+      after(() =>
+        deliverMembershipCard({
+          id: member.id,
+          fullName: member.full_name,
+          membershipNumber: member.membership_number,
+          phone: member.phone,
+          email: member.email,
+          plan: member.plan,
+          feeAmount: member.fee_amount,
+          joinedAt: member.joined_at,
+        }).catch(() => {})
+      );
     }
   }
 }

@@ -4,8 +4,16 @@ import { sendWhatsAppTemplate } from "@/backend/services/whatsapp";
 import { sendEmailTemplate } from "@/backend/services/email";
 import { createNotification } from "@/backend/services/memberNotifications";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
+import { mapWithConcurrency } from "@/backend/lib/concurrency";
 
 const FEE_REMINDER_WINDOW_DAYS = 3;
+
+// See backend/lib/concurrency.ts — both loops below used to send to members
+// one at a time, which for a gym-wide sweep (birthdays across ~400 members,
+// or everyone due in the next few days) risked this cron's function timeout
+// killing the request partway through, silently skipping whoever hadn't
+// been reached yet.
+const NOTIFY_CONCURRENCY = 8;
 
 export async function runBirthdayCheck(): Promise<{ sent: number }> {
   const db = getDb();
@@ -23,7 +31,7 @@ export async function runBirthdayCheck(): Promise<{ sent: number }> {
     return dob.getUTCMonth() === today.getUTCMonth() && dob.getUTCDate() === today.getUTCDate();
   });
 
-  for (const member of todaysBirthdays) {
+  await mapWithConcurrency(todaysBirthdays, NOTIFY_CONCURRENCY, async (member) => {
     if (member.phone) {
       await sendWhatsAppTemplate({
         phone: member.phone,
@@ -44,7 +52,7 @@ export async function runBirthdayCheck(): Promise<{ sent: number }> {
       title: "🎂 Happy Birthday!",
       body: `Happy Birthday, ${member.full_name}! Here's to another year of raw strength.`,
     }).catch(() => {});
-  }
+  });
 
   return { sent: todaysBirthdays.length };
 }
@@ -64,7 +72,7 @@ export async function runFeeReminderCheck(): Promise<{ sent: number }> {
 
   if (error) throw new Error(`Failed to load members: ${error.message}`);
 
-  for (const member of members ?? []) {
+  await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, async (member) => {
     if (member.phone) {
       await sendWhatsAppTemplate({
         phone: member.phone,
@@ -92,7 +100,7 @@ export async function runFeeReminderCheck(): Promise<{ sent: number }> {
       body: `Your membership fee is due on ${member.fee_due_date}.`,
       url: "/dashboard/fees",
     }).catch(() => {});
-  }
+  });
 
   return { sent: (members ?? []).length };
 }

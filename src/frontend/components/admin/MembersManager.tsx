@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
+import { downloadCsv } from "@/frontend/lib/csv";
 
 // Same rule as the Overview "Overdue Fees" count and the Alerts page's "Fee
 // Overdue" list (active member, fee_due_date before today) — deliberately
@@ -76,6 +78,19 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
     if (showForm) formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [showForm, editingId]);
 
+  // Deep-linkable from the member profile page's "Edit Full Details"
+  // button (?edit=<id>) — same one-time-read-on-mount pattern as the
+  // ?filter deep-link above. Runs once; if `members` hasn't loaded the
+  // target yet (shouldn't happen, this page always gets the full list
+  // server-rendered) it just quietly does nothing rather than retrying.
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (!editId) return;
+    const target = members.find((m) => m.id === editId);
+    if (target) startEdit(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function startCreate() {
     setEditingId(null);
     setForm(EMPTY_FORM);
@@ -145,6 +160,25 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
     router.refresh();
   }
 
+  function handleExportCsv() {
+    downloadCsv(
+      `members-${new Date().toISOString().slice(0, 10)}.csv`,
+      filtered,
+      [
+        { key: "membershipNumber", label: "Membership No." },
+        { key: "fullName", label: "Name" },
+        { key: "phone", label: "Phone" },
+        { key: "email", label: "Email" },
+        { key: "plan", label: "Plan" },
+        { key: "feeAmount", label: "Fee Amount (INR)" },
+        { key: "feeDueDate", label: "Fee Due Date" },
+        { key: "joinedAt", label: "Joined" },
+        { key: "isActive", label: "Active" },
+        { key: "isBlocked", label: "Blocked" },
+      ]
+    );
+  }
+
   // Counts are always against the full member list, not the currently
   // active filter — a tab's own count shouldn't change depending on which
   // tab is selected.
@@ -194,6 +228,15 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           placeholder="Search by name or membership number..."
           className="flex-1 rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
         />
+        <button
+          type="button"
+          onClick={handleExportCsv}
+          disabled={filtered.length === 0}
+          className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+        >
+          <span className="material-symbols-outlined text-sm leading-none">download</span>
+          CSV
+        </button>
         <button
           onClick={showForm ? closeForm : startCreate}
           className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft shrink-0 transition-colors"
@@ -354,6 +397,14 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
+                        <Link
+                          href={`/admin/members/${m.id}`}
+                          aria-label="View member profile"
+                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm leading-none">person</span>
+                          View
+                        </Link>
                         <button
                           onClick={() => startEdit(m)}
                           aria-label="Edit member"
@@ -410,6 +461,13 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                   <span>Joined: {m.joinedAt}</span>
                 </div>
                 <div className="flex gap-2 pt-1 border-t border-surface-variant/30">
+                  <Link
+                    href={`/admin/members/${m.id}`}
+                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-surface-container-high active:bg-surface-container-highest text-on-surface transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm leading-none">person</span>
+                    View
+                  </Link>
                   <button
                     onClick={() => startEdit(m)}
                     className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors"
