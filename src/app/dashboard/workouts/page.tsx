@@ -5,6 +5,7 @@ import { listWorkoutLogs } from "@/backend/services/workouts";
 import { findTodaysWorkout } from "@/backend/services/workoutPlans";
 import AttendanceLock from "@/frontend/components/dashboard/AttendanceLock";
 import WorkoutLogForm from "@/frontend/components/dashboard/WorkoutLogForm";
+import WorkoutLogHistory from "@/frontend/components/dashboard/WorkoutLogHistory";
 import WorkoutTimerBar from "@/frontend/components/dashboard/WorkoutTimerBar";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
@@ -40,25 +41,7 @@ export default async function WorkoutsPage() {
       {logs.length === 0 ? (
         <DashboardEmptyState icon="fitness_center">No workouts logged yet.</DashboardEmptyState>
       ) : (
-        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden">
-          {logs.map((log) => (
-            <div key={log.id} className="flex items-center gap-3 px-5 py-3">
-              <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">
-                fitness_center
-              </span>
-              <div className="flex-1">
-                <p className="font-label text-sm uppercase tracking-wide text-on-surface">{log.exerciseName}</p>
-                <p className="font-body text-xs text-tertiary">
-                  {new Date(log.loggedAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short" })}
-                </p>
-              </div>
-              <p className="font-display text-lg text-primary-container">
-                {log.sets}×{log.reps}
-                {log.weightKg ? ` @ ${log.weightKg}kg` : ""}
-              </p>
-            </div>
-          ))}
-        </div>
+        <WorkoutLogHistory logs={logs} />
       )}
     </div>
   );

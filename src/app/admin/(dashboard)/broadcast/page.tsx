@@ -1,5 +1,4 @@
 import BroadcastComposer from "@/frontend/components/admin/BroadcastComposer";
-import WhatsAppTemplateTester from "@/frontend/components/admin/WhatsAppTemplateTester";
 
 export default function AdminBroadcastPage() {
   return (
@@ -11,7 +10,6 @@ export default function AdminBroadcastPage() {
         </p>
         <BroadcastComposer />
       </div>
-      <WhatsAppTemplateTester />
     </div>
   );
 }

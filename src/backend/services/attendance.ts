@@ -149,6 +149,7 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
       fullName: member.full_name,
       membershipNumber: member.membership_number,
     },
+    streak: newStreak,
   };
 }
 

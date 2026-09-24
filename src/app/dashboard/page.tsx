@@ -185,18 +185,11 @@ export default async function DashboardPage() {
 
       <AttendanceCheckInButton initialStatus={attendanceStatus} />
 
+      <PersonalRecordsBar />
+
       <GeneratePlanBar fitnessProfile={fitnessProfile} />
 
       {!fitnessProfile && <FitnessProfileNudge />}
-
-      <NotificationsCard
-        initialPrefs={{
-          water: member?.notifyWater ?? false,
-          mealLog: member?.notifyMealLog ?? false,
-          streak: member?.notifyStreak ?? false,
-          workout: workoutPromptEnabled,
-        }}
-      />
 
       {todaysWorkout && (
         <TodayWorkoutBanner
@@ -206,8 +199,6 @@ export default async function DashboardPage() {
           exercises={todaysWorkout.exercises}
         />
       )}
-
-      <PersonalRecordsBar records={personalRecords} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard value={member?.currentStreakDays ?? 0} label="Day Streak" tone="accent" icon="local_fire_department" />
@@ -260,6 +251,15 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+
+      <NotificationsCard
+        initialPrefs={{
+          water: member?.notifyWater ?? false,
+          mealLog: member?.notifyMealLog ?? false,
+          streak: member?.notifyStreak ?? false,
+          workout: workoutPromptEnabled,
+        }}
+      />
 
       <NotificationBar initialNotifications={notifications} />
     </div>
