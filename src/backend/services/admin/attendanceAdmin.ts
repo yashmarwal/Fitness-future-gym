@@ -146,6 +146,35 @@ export async function getMemberAttendanceTimestamps(memberId: string): Promise<s
   return (data ?? []).map((row) => row.checked_in_at as string);
 }
 
+export type DayAttendanceSummary = { date: string; morning: number; evening: number; other: number; total: number };
+
+// Powers the gym-wide monthly calendar on the admin Attendance page —
+// distinct from getMemberAttendanceTimestamps, which is scoped to one
+// member. Bounded by the same 30-day attendance retention as that
+// function (deleteOldAttendance), so there's no separate date-range filter
+// needed here either: whatever's in the table already IS "the last month."
+// Grouped server-side (not per-row on the client) since gym-wide could be
+// a few thousand rows over that window, and the client only ever needs the
+// per-day totals, never the individual timestamps.
+export async function getDailyAttendanceSummary(): Promise<DayAttendanceSummary[]> {
+  const db = getDb();
+  const { data, error } = await db.from("attendance").select("checked_in_at");
+  if (error) throw new Error(`Failed to load attendance summary: ${error.message}`);
+
+  const byDay = new Map<string, { morning: number; evening: number; other: number }>();
+  for (const row of data ?? []) {
+    const day = getIstDateString(new Date(row.checked_in_at));
+    const shift = classifyShift(row.checked_in_at);
+    const entry = byDay.get(day) ?? { morning: 0, evening: 0, other: 0 };
+    entry[shift]++;
+    byDay.set(day, entry);
+  }
+
+  return [...byDay.entries()]
+    .map(([date, counts]) => ({ date, ...counts, total: counts.morning + counts.evening + counts.other }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
 export async function countTodaysCheckIns(): Promise<number> {
   const db = getDb();
   // IST-explicit, not server-local time (Vercel runs UTC) — the same class

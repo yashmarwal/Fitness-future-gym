@@ -12,11 +12,15 @@ const TYPES = [
   { value: "rank", label: "Rank" },
 ] as const;
 
-// Cache-busted per request so the preview/download always reflects today's
-// real numbers — the route itself is marked no-store, but browsers
-// sometimes still cache an <img> src between navigations without this.
+// No cache-busting query param — the route itself is marked
+// `Cache-Control: private, no-store`, which already tells the browser to
+// never cache this response at all, so a query-string timestamp added
+// nothing real. It also caused a genuine bug: Date.now() evaluated during
+// render produced a different `src` on the server-rendered HTML than on
+// the client's hydration pass, which React flags as a hydration mismatch
+// (the two <img> tags disagreeing on `src`).
 function cardUrl(type: string): string {
-  return `${CARD_URL}?type=${type}&t=${Date.now()}`;
+  return `${CARD_URL}?type=${type}`;
 }
 
 export default function ShareAchievementsCard() {
@@ -78,7 +82,7 @@ export default function ShareAchievementsCard() {
         ))}
       </div>
 
-      <div className="rounded-xl overflow-hidden border border-surface-variant/40 bg-surface-container-lowest aspect-3/4 max-w-55">
+      <div className="mx-auto rounded-xl overflow-hidden border border-surface-variant/40 bg-surface-container-lowest aspect-3/4 max-w-55 w-full">
         {/* eslint-disable-next-line @next/next/no-img-element -- server-generated PNG, not a next/image-optimizable static asset */}
         <img key={type} src={cardUrl(type)} alt={`${type} achievement card preview`} className="w-full h-full object-cover" />
       </div>

@@ -54,6 +54,12 @@ export default function WorkoutTimerWidget() {
         <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mt-0.5">
           Today &middot; resets at midnight
         </p>
+        {state.running && (
+          <p className="font-body text-[10px] text-tertiary mt-1.5 flex items-center gap-1">
+            <span className="material-symbols-outlined text-xs leading-none">info</span>
+            Stops automatically after 10 min of inactivity
+          </p>
+        )}
         {previousDays.length > 0 && (
           <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-2" aria-label="Previous days">
             {previousDays.map((day) => (

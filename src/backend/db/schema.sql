@@ -98,6 +98,15 @@ create extension if not exists pgcrypto;
 -- shows results (all computed client-side), it just can't save them.
 --
 --   alter table members add column if not exists fitness_profile jsonb;
+--
+-- Also run this — tracks whether a member has ever been shown the "leave
+-- us a Google review" prompt (fires once, ever, right after a genuine 30+
+-- day streak milestone — see attendance.ts::checkInMemberRow /
+-- StreakMilestoneCelebration.tsx). Without this migration the app still
+-- works exactly as before; the review ask just silently never fires
+-- (isMissingColumnError falls back to the base check-in columns).
+--
+--   alter table members add column if not exists review_prompted_at timestamptz;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -150,6 +159,10 @@ create table if not exists members (
   -- above and fitnessProfile.ts. Null until a member completes (or redoes)
   -- the wizard.
   fitness_profile jsonb,
+  -- Set the one time a member is ever shown the "leave us a Google review"
+  -- prompt — see the migration note above and attendance.ts. Null forever
+  -- for a member who hasn't yet hit a 30+ day streak milestone.
+  review_prompted_at timestamptz,
   created_at timestamptz not null default now()
 );
 

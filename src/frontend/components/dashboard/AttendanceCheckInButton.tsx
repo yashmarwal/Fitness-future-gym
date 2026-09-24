@@ -27,6 +27,11 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
   // milestone (see isStreakMilestone) — an ordinary day-to-day +1 never
   // shows this, or the popup would stop meaning anything.
   const [milestoneStreak, setMilestoneStreak] = useState<number | null>(null);
+  // Server-decided, not derived client-side — reviewPrompt is only ever
+  // true once per member, ever (see attendance.ts's review_prompted_at),
+  // so this component just relays whatever the API already decided rather
+  // than re-implementing that "only once" rule here too.
+  const [reviewPrompt, setReviewPrompt] = useState(false);
 
   async function handleTap() {
     if (marking || status.checkedIn) return;
@@ -40,6 +45,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         window.dispatchEvent(new Event(CHECKIN_SUCCESS_EVENT));
         if (typeof data.streak === "number" && isStreakMilestone(data.streak)) {
           setMilestoneStreak(data.streak);
+          setReviewPrompt(Boolean(data.reviewPrompt));
         }
         router.refresh();
       } else if (data.status === "cooldown") {
@@ -114,7 +120,11 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         </p>
       </div>
       {milestoneStreak != null && (
-        <StreakMilestoneCelebration days={milestoneStreak} onDismiss={() => setMilestoneStreak(null)} />
+        <StreakMilestoneCelebration
+          days={milestoneStreak}
+          reviewPrompt={reviewPrompt}
+          onDismiss={() => setMilestoneStreak(null)}
+        />
       )}
     </div>
   );

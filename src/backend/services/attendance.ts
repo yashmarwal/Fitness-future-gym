@@ -4,7 +4,13 @@ import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
 import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
 import { sendCheckInPrompt } from "@/backend/services/workoutPrompt";
+import { isStreakMilestone } from "@/frontend/lib/streakTiers";
 import type { CheckInResult } from "@/types/member";
+
+// Below this, a "please review us" ask feels premature — a 7 or 14-day
+// streak is a good start, not yet the kind of loyalty that makes an
+// unprompted 5-star review, so the first ask only ever fires at 30+.
+const REVIEW_PROMPT_MIN_STREAK = 30;
 
 const COOLDOWN_HOURS = 3;
 const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
@@ -45,6 +51,7 @@ type MemberRow = {
   last_checked_in_at: string | null;
   current_streak_days: number;
   longest_streak_days: number;
+  review_prompted_at: string | null;
 };
 
 // Shared by both check-in paths: the front-desk QR poster (looked up by
@@ -114,6 +121,14 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   }
   const newLongest = Math.max(member.longest_streak_days, newStreak);
 
+  // A one-time-ever ask, not "every time a milestone happens again" — once
+  // review_prompted_at is set, this member is never asked again regardless
+  // of how many more milestones they hit. Real streak milestones only
+  // (isStreakMilestone), not every day the streak happens to be >= 30, so
+  // this fires exactly once at whichever named milestone comes first.
+  const shouldPromptReview =
+    !member.review_prompted_at && newStreak >= REVIEW_PROMPT_MIN_STREAK && isStreakMilestone(newStreak);
+
   // Kept on the member row (not just the attendance log) since attendance
   // rows are purged after 30 days but long-term inactivity — and now the
   // streak counters too — still need to be readable after that purge.
@@ -123,13 +138,15 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
       last_checked_in_at: checkedInAt,
       current_streak_days: newStreak,
       longest_streak_days: newLongest,
+      ...(shouldPromptReview ? { review_prompted_at: checkedInAt } : {}),
     })
     .eq("id", member.id);
 
   if (updateError) {
     if (!isMissingColumnError(updateError)) throw new Error(`Failed to update member: ${updateError.message}`);
     // Migration not run yet — check-in itself still has to succeed; the
-    // streak just won't persist correctly until it does.
+    // streak (and review-prompt tracking) just won't persist correctly
+    // until it does.
     const { error: fallbackError } = await db
       .from("members")
       .update({ last_checked_in_at: checkedInAt })
@@ -150,11 +167,12 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
       membershipNumber: member.membership_number,
     },
     streak: newStreak,
+    reviewPrompt: shouldPromptReview,
   };
 }
 
 const CHECKIN_COLUMNS =
-  "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at, current_streak_days, longest_streak_days";
+  "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at, current_streak_days, longest_streak_days, review_prompted_at";
 const CHECKIN_COLUMNS_BASE = "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at";
 
 // Falls back to a query without the streak columns if that migration
@@ -174,7 +192,7 @@ async function fetchMemberForCheckIn(column: "membership_number" | "id", value: 
     .maybeSingle();
   if (fallbackError) throw new Error(`Failed to look up member: ${fallbackError.message}`);
   if (!fallbackData) return null;
-  return { ...fallbackData, current_streak_days: 0, longest_streak_days: 0 } as MemberRow;
+  return { ...fallbackData, current_streak_days: 0, longest_streak_days: 0, review_prompted_at: null } as MemberRow;
 }
 
 export async function checkInMember(membershipNumber: string): Promise<CheckInResult> {
