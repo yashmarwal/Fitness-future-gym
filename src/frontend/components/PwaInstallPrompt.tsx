@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -52,6 +53,12 @@ export default function PwaInstallPrompt() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const showIosInstructions = useShowIosInstructions();
   const [dismissed, setDismissed] = useState(false);
+  // The banner's copy follows whichever manifest is actually active on this
+  // page (see admin/(dashboard)/layout.tsx) — installing from an admin page
+  // installs the admin shortcut (start_url "/admin"), so the label should
+  // say so instead of always reading "Fitness Future".
+  const isAdmin = usePathname()?.startsWith("/admin") ?? false;
+  const appLabel = isAdmin ? "Fitness Future Admin" : "Fitness Future";
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -74,7 +81,7 @@ export default function PwaInstallPrompt() {
       {installEvent ? (
         <>
           <p className="font-label text-xs uppercase tracking-wide text-on-surface">
-            Add Fitness Future to your home screen
+            Add {appLabel} to your home screen
           </p>
           <div className="flex items-center gap-2 shrink-0">
             <button
