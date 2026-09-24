@@ -328,6 +328,24 @@ body {
   }
 }
 
+/* SettingsPanel's bottom sheet — slides up from off-screen on mobile;
+   on desktop the sheet is centered instead (see the component), where this
+   still reads fine as a gentle rise-in rather than a true off-screen slide. */
+@keyframes sheet-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-sheet-up {
+    animation: sheet-up 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+
 /* Same drop-in, for when the panel opens above its input. */
 @keyframes suggest-in-up {
   0% {

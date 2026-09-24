@@ -3,12 +3,10 @@ import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
 import { getRecentAttendance, getAttendanceStatus } from "@/backend/services/attendance";
 import { findTodaysWorkout } from "@/backend/services/workoutPlans";
-import { listNotifications } from "@/backend/services/memberNotifications";
 import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
 import { listPersonalRecords } from "@/backend/services/personalRecords";
 import { listWorkoutLogs } from "@/backend/services/workouts";
 import { listTodaysFoodLogs } from "@/backend/services/nutrition";
-import { getWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
 import { getFitnessProfile } from "@/backend/services/fitnessProfile";
 import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
@@ -16,10 +14,8 @@ import { StatCard } from "@/frontend/components/dashboard/Primitives";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
 import PersonalRecordsBar from "@/frontend/components/dashboard/PersonalRecordsBar";
-import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 import TodayWorkoutBanner from "@/frontend/components/dashboard/TodayWorkoutBanner";
 import MuscleProgressTeaser from "@/frontend/components/dashboard/MuscleProgressTeaser";
-import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
 import WorkoutTimerWidget from "@/frontend/components/dashboard/WorkoutTimerWidget";
 import DashboardSnapshot from "@/frontend/components/dashboard/DashboardSnapshot";
 import WorkoutPromptBanner from "@/frontend/components/dashboard/WorkoutPromptBanner";
@@ -44,7 +40,6 @@ const GREETING_SUBLINES: Record<string, string> = {
 // own "mark attendance" screen, same as always — this is only about giving
 // a visual heads-up before the tap, not a new block.
 const QUICK_LINKS = [
-  { href: "/dashboard/card", label: "Membership Card", icon: "badge", gated: false },
   { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false },
   { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true },
   { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false },
@@ -73,19 +68,17 @@ function LockBadge() {
 
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout, attendanceStatus, notifications, muscleProgress, personalRecords, workoutLogs, todaysFood, workoutPromptEnabled, fitnessProfile] =
+  const [member, attendance, todaysWorkout, attendanceStatus, muscleProgress, personalRecords, workoutLogs, todaysFood, fitnessProfile] =
     await Promise.all([
       getMemberById(session!.memberId),
       getRecentAttendance(session!.memberId, 60),
       findTodaysWorkout(session!.memberId),
       getAttendanceStatus(session!.memberId),
-      listNotifications(session!.memberId),
       getMemberMuscleProgress(session!.memberId),
       listPersonalRecords(session!.memberId),
       // 400 comfortably covers two weeks of even a heavy logger (logs are kept 30 days).
       listWorkoutLogs(session!.memberId, 400),
       listTodaysFoodLogs(session!.memberId),
-      getWorkoutPromptEnabled(session!.memberId),
       getFitnessProfile(session!.memberId),
     ]);
 
@@ -253,16 +246,6 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      <NotificationsCard
-        initialPrefs={{
-          water: member?.notifyWater ?? false,
-          mealLog: member?.notifyMealLog ?? false,
-          streak: member?.notifyStreak ?? false,
-          workout: workoutPromptEnabled,
-        }}
-      />
-
-      <NotificationBar initialNotifications={notifications} />
     </div>
   );
 }
