@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { renderChatContent } from "@/frontend/lib/chatMarkdown";
 
 type ChatMessage = { role: "user" | "model"; content: string };
 
@@ -134,13 +135,17 @@ export default function AiAssistantChat() {
           >
             {m.role === "model" && <AiAvatar />}
             <div
-              className={`max-w-[85%] sm:max-w-[70%] px-4 py-3 font-body text-sm whitespace-pre-wrap leading-relaxed shadow-soft ${
+              className={`min-w-0 px-4 py-3 font-body text-sm leading-relaxed shadow-soft ${
                 m.role === "user"
-                  ? "bg-primary-container text-on-primary-container rounded-2xl rounded-br-md"
-                  : "bg-surface-container text-on-surface border border-surface-variant/40 rounded-2xl rounded-bl-md"
+                  ? "max-w-[85%] sm:max-w-[70%] whitespace-pre-wrap bg-primary-container text-on-primary-container rounded-2xl rounded-br-md"
+                  // Wider cap than the user's own bubble — model replies are
+                  // the ones that actually carry tables/lists (see
+                  // chatMarkdown.tsx), which need the room a short typed
+                  // question never does.
+                  : "max-w-[92%] sm:max-w-[85%] bg-surface-container text-on-surface border border-surface-variant/40 rounded-2xl rounded-bl-md"
               }`}
             >
-              {m.content}
+              {m.role === "model" ? renderChatContent(m.content) : m.content}
             </div>
           </div>
         ))}
