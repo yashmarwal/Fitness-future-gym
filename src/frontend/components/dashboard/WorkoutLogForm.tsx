@@ -193,7 +193,12 @@ export default function WorkoutLogForm({
           </button>
         )}
 
-        <div className="grid grid-cols-3 gap-2">
+        {/* Weight gets noticeably more width than Sets/Reps (1.3fr vs 1fr) —
+            a 3-digit weight (100kg+, common on leg press/machines) was
+            getting visually clipped behind the flanking +/- buttons in an
+            equal 3-column split, tight enough on mobile to look like the
+            digits vanished rather than just being close to the edge. */}
+        <div className="grid grid-cols-[1fr_1fr_1.3fr] gap-2">
           <NumberStepper label="Sets" value={sets} min={1} onChange={setSets} />
           <NumberStepper label="Reps" value={reps} min={1} onChange={setReps} />
           <WeightStepper value={weightKg} onChange={setWeightKg} />
@@ -230,7 +235,7 @@ function NumberStepper({
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
           aria-label={`Decrease ${label}`}
-          className="w-9 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
+          className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
           <span className="material-symbols-outlined text-base leading-none">remove</span>
         </button>
@@ -239,13 +244,13 @@ function NumberStepper({
           value={value}
           min={min}
           onChange={(e) => onChange(Math.max(min, Number(e.target.value) || min))}
-          className="w-full min-w-0 bg-surface-container text-on-surface font-body text-center px-1 py-3 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="w-full min-w-0 bg-surface-container text-on-surface font-body text-sm tabular-nums text-center px-0.5 py-3 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           type="button"
           onClick={() => onChange(value + 1)}
           aria-label={`Increase ${label}`}
-          className="w-9 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
+          className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
           <span className="material-symbols-outlined text-base leading-none">add</span>
         </button>
@@ -267,7 +272,7 @@ function WeightStepper({ value, onChange }: { value: string; onChange: (v: strin
           type="button"
           onClick={() => step(-2.5)}
           aria-label="Decrease weight"
-          className="w-9 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
+          className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
           <span className="material-symbols-outlined text-base leading-none">remove</span>
         </button>
@@ -277,13 +282,13 @@ function WeightStepper({ value, onChange }: { value: string; onChange: (v: strin
           step="0.5"
           onChange={(e) => onChange(e.target.value)}
           placeholder="0"
-          className="w-full min-w-0 bg-surface-container text-on-surface font-body text-center px-1 py-3 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="w-full min-w-0 bg-surface-container text-on-surface font-body text-sm tabular-nums text-center px-0.5 py-3 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           type="button"
           onClick={() => step(2.5)}
           aria-label="Increase weight"
-          className="w-9 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
+          className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
           <span className="material-symbols-outlined text-base leading-none">add</span>
         </button>

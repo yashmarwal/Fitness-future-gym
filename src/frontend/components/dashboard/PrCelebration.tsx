@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import type { PrCheckResult } from "@/backend/services/personalRecords";
+import { fetchCardFile, shareOrDownloadCard } from "@/frontend/lib/shareCard";
 
-const AUTO_DISMISS_MS = 6000;
+const AUTO_DISMISS_MS = 10000;
 
 // Fires only for a genuine improvement over a previous attempt (never for
 // the first-ever log of an exercise — see WorkoutLogForm, which only
@@ -13,11 +14,45 @@ const AUTO_DISMISS_MS = 6000;
 // exercise someone tries would get old fast). Dismissible by tapping the
 // backdrop, unlike the rest-timer's finish alarm — this is a positive
 // surprise, not something that needs forced acknowledgment.
+//
+// This is also the ONLY moment "Share This PR" can exist at all: the
+// before→after card needs the previous best, and member_exercise_prs only
+// ever stores the current one — checkAndRecordPr already overwrote it
+// before this component's props even arrived. There's no "go share an old
+// PR later" flow for that reason; the achievement-card route's `type=pr`
+// only works with a prevWeight/prevReps carried over from right here.
 export default function PrCelebration({ pr, onDismiss }: { pr: PrCheckResult; onDismiss: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
+
   useEffect(() => {
+    // Paused, not cancelled, while a share is in flight — an auto-dismiss
+    // mid-fetch would yank the modal (and the member's exercise-name
+    // context for the share) out from under a request they just started.
+    if (busy) return;
     const id = setTimeout(onDismiss, AUTO_DISMISS_MS);
     return () => clearTimeout(id);
-  }, [onDismiss]);
+  }, [onDismiss, busy]);
+
+  async function handleShare() {
+    setShareError(null);
+    setBusy(true);
+    try {
+      const params = new URLSearchParams({ type: "pr", exercise: pr.exerciseName });
+      if (pr.previousBestWeightKg != null) params.set("prevWeight", String(pr.previousBestWeightKg));
+      if (pr.previousBestReps != null) params.set("prevReps", String(pr.previousBestReps));
+      const file = await fetchCardFile(`/api/dashboard/achievement-card?${params.toString()}`, `fitness-future-pr.png`);
+      await shareOrDownloadCard(
+        file,
+        `New PR at Fitness Future Gym`,
+        `New personal record on ${pr.exerciseName} at Fitness Future Gym 💪`
+      );
+    } catch {
+      setShareError("Couldn't share right now — try again from the Achievements page.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const weightLabel = pr.weightKg != null ? `${pr.weightKg}kg × ${pr.reps}` : `${pr.reps} reps`;
   const previousLabel =
@@ -58,13 +93,26 @@ export default function PrCelebration({ pr, onDismiss }: { pr: PrCheckResult; on
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="w-full bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
-          >
-            Keep Going
-          </button>
+          {shareError && <p className="font-body text-xs text-error">{shareError}</p>}
+
+          <div className="w-full flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleShare}
+              disabled={busy}
+              className="w-full flex items-center justify-center gap-1.5 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98] disabled:opacity-60"
+            >
+              <span className="material-symbols-outlined text-lg leading-none">ios_share</span>
+              {busy ? "Preparing..." : "Share This PR"}
+            </button>
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label text-sm uppercase font-bold px-6 py-3.5 rounded-xl shadow-soft transition-colors active:scale-[0.98]"
+            >
+              Keep Going
+            </button>
+          </div>
         </div>
       </div>
     </div>,

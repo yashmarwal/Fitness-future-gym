@@ -7,7 +7,7 @@ export type Member = {
 };
 
 export type CheckInResult =
-  | { status: "success"; member: Pick<Member, "fullName" | "membershipNumber"> }
+  | { status: "success"; member: Pick<Member, "fullName" | "membershipNumber">; streak: number }
   | { status: "not_found" }
   | { status: "inactive" }
   | { status: "blocked" }

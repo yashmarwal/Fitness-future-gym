@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
+import StreakMilestoneCelebration from "@/frontend/components/dashboard/StreakMilestoneCelebration";
+import { isStreakMilestone } from "@/frontend/lib/streakTiers";
 
 type Status = { checkedIn: boolean; retryAfterMinutes: number | null };
 
@@ -21,6 +23,10 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
   const [status, setStatus] = useState<Status>(initialStatus);
   const [marking, setMarking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Set only when this check-in's streak is a genuine round-number
+  // milestone (see isStreakMilestone) — an ordinary day-to-day +1 never
+  // shows this, or the popup would stop meaning anything.
+  const [milestoneStreak, setMilestoneStreak] = useState<number | null>(null);
 
   async function handleTap() {
     if (marking || status.checkedIn) return;
@@ -32,6 +38,9 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       if (data.status === "success") {
         setStatus({ checkedIn: true, retryAfterMinutes: 180 });
         window.dispatchEvent(new Event(CHECKIN_SUCCESS_EVENT));
+        if (typeof data.streak === "number" && isStreakMilestone(data.streak)) {
+          setMilestoneStreak(data.streak);
+        }
         router.refresh();
       } else if (data.status === "cooldown") {
         setStatus({ checkedIn: true, retryAfterMinutes: data.retryAfterMinutes });
@@ -104,6 +113,9 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
           {error ?? statusText}
         </p>
       </div>
+      {milestoneStreak != null && (
+        <StreakMilestoneCelebration days={milestoneStreak} onDismiss={() => setMilestoneStreak(null)} />
+      )}
     </div>
   );
 }

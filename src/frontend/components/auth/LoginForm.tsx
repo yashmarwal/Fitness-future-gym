@@ -128,94 +128,126 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="max-w-sm mx-auto px-gutter-mobile py-16">
-      <span className="font-label text-xs uppercase tracking-widest text-primary-container">
-        Member Sign In
-      </span>
-      <h1 className="font-display text-headline-lg-mobile text-on-surface uppercase tracking-wide mt-2 mb-6">
-        Enter The Floor
-      </h1>
+    <div className="min-h-[calc(100dvh-64px)] flex items-center justify-center px-gutter-mobile py-12">
+      <div className="w-full max-w-sm bg-surface-container-low shadow-soft-lg rounded-3xl border border-surface-variant/30 p-6 sm:p-8">
+        <div
+          style={{ animationDelay: "0ms" }}
+          className="animate-snap-in w-14 h-14 rounded-full bg-surface-container-high shadow-soft flex items-center justify-center text-primary-container mb-5"
+        >
+          <span className="material-symbols-outlined text-2xl leading-none">lock</span>
+        </div>
+        <span
+          style={{ animationDelay: "60ms" }}
+          className="animate-snap-in block font-label text-xs uppercase tracking-widest text-primary-container"
+        >
+          Member Sign In
+        </span>
+        <h1
+          style={{ animationDelay: "120ms" }}
+          className="animate-snap-in font-display text-headline-lg-mobile text-on-surface uppercase tracking-wide mt-2 mb-6"
+        >
+          Enter The Floor
+        </h1>
 
-      {step === "phone" ? (
-        <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-              Phone Or Email
-            </label>
-            <input
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              required
-              placeholder="+91XXXXXXXXXX or you@example.com"
-              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
-          >
-            {loading ? "Sending..." : "Send Login Code"}
-          </button>
-          <Link href="/signup" className="text-center font-label text-xs uppercase tracking-wider text-tertiary">
-            New here? Create an account
-          </Link>
-        </form>
-      ) : (
-        <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-          <p className="font-body text-sm text-tertiary">
-            Enter the 6-digit code sent to your WhatsApp (and email, if you have one on file).
-          </p>
-          <p className="font-body text-xs text-tertiary">
-            Don&apos;t see it? Check your email&apos;s spam/junk folder — the code is valid for 15 minutes.
-          </p>
-          {devCode && (
-            <p className="font-body text-xs text-primary-container">
-              Dev mode (no WhatsApp configured yet) — your code is <strong>{devCode}</strong>.
+        {step === "phone" ? (
+          <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
+            <div style={{ animationDelay: "180ms" }} className="animate-snap-in flex flex-col gap-1">
+              <label className="font-label text-[10px] uppercase tracking-widest text-outline">Phone Or Email</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg leading-none pointer-events-none">
+                  call
+                </span>
+                <input
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                  placeholder="+91XXXXXXXXXX or you@example.com"
+                  className="w-full rounded-2xl bg-surface-container border border-surface-variant text-on-surface font-body pl-11 pr-4 py-3.5 outline-none transition-colors focus:border-primary-container"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{ animationDelay: "240ms" }}
+              className="animate-snap-in rounded-2xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-soft disabled:opacity-60 active:scale-[0.98] transition-[transform,background-color]"
+            >
+              {loading ? "Sending..." : "Send Login Code"}
+            </button>
+            <Link
+              href="/signup"
+              style={{ animationDelay: "300ms" }}
+              className="animate-snap-in text-center font-label text-xs uppercase tracking-wider text-tertiary hover:text-primary-container transition-colors"
+            >
+              New here? Create an account
+            </Link>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+            <p style={{ animationDelay: "0ms" }} className="animate-snap-in font-body text-sm text-tertiary">
+              Enter the 6-digit code sent to your WhatsApp (and email, if you have one on file).
             </p>
-          )}
-          <div className="flex flex-col gap-1">
-            <label className="font-label text-[10px] uppercase tracking-widest text-outline">
-              Login Code
-            </label>
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-              maxLength={6}
-              placeholder="123456"
-              className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container tracking-widest"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3 shadow-soft disabled:opacity-60"
-          >
-            {loading ? "Verifying..." : "Verify & Sign In"}
-          </button>
-          <div className="flex items-center justify-between">
+            <p style={{ animationDelay: "40ms" }} className="animate-snap-in font-body text-xs text-tertiary">
+              Don&apos;t see it? Check your email&apos;s spam/junk folder — the code is valid for 15 minutes.
+            </p>
+            {devCode && (
+              <p className="animate-snap-in font-body text-xs text-primary-container">
+                Dev mode (no WhatsApp configured yet) — your code is <strong>{devCode}</strong>.
+              </p>
+            )}
+            <div style={{ animationDelay: "80ms" }} className="animate-snap-in flex flex-col gap-1">
+              <label className="font-label text-[10px] uppercase tracking-widest text-outline">Login Code</label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg leading-none pointer-events-none">
+                  lock_open
+                </span>
+                <input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  required
+                  maxLength={6}
+                  placeholder="123456"
+                  className="w-full rounded-2xl bg-surface-container border border-surface-variant text-on-surface font-body pl-11 pr-4 py-3.5 outline-none transition-colors focus:border-primary-container tracking-[0.3em]"
+                />
+              </div>
+            </div>
             <button
-              type="button"
-              onClick={() => setStep("phone")}
-              className="font-label text-xs uppercase tracking-wider text-tertiary"
+              type="submit"
+              disabled={loading}
+              style={{ animationDelay: "140ms" }}
+              className="animate-snap-in rounded-2xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-soft disabled:opacity-60 active:scale-[0.98] transition-[transform,background-color]"
             >
-              ← Use A Different Number
+              {loading ? "Verifying..." : "Verify & Sign In"}
             </button>
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={resending}
-              className="font-label text-xs uppercase tracking-wider text-primary-container disabled:opacity-60"
-            >
-              {resending ? "Sending..." : "Resend Code"}
-            </button>
-          </div>
-          {resendMessage && <p className="font-body text-xs text-primary-container">{resendMessage}</p>}
-        </form>
-      )}
+            <div style={{ animationDelay: "200ms" }} className="animate-snap-in flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep("phone")}
+                className="flex items-center gap-1 font-label text-xs uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm leading-none">arrow_back</span>
+                Different Number
+              </button>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending}
+                className="font-label text-xs uppercase tracking-wider text-primary-container disabled:opacity-60 hover:text-secondary transition-colors"
+              >
+                {resending ? "Sending..." : "Resend Code"}
+              </button>
+            </div>
+            {resendMessage && <p className="animate-snap-in font-body text-xs text-primary-container">{resendMessage}</p>}
+          </form>
+        )}
 
-      {error && <p className="mt-4 font-body text-sm text-error">{error}</p>}
+        {error && (
+          <p className="animate-snap-in mt-4 flex items-start gap-2 rounded-xl bg-error-container/15 border border-error/30 px-4 py-3 font-body text-sm text-error">
+            <span className="material-symbols-outlined text-base leading-none shrink-0 mt-0.5">warning</span>
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
