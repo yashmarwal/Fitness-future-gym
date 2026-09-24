@@ -150,15 +150,15 @@ export default function AdminNav({ username }: { username: string }) {
           </button>
         </div>
       </div>
-      <nav className="flex items-center gap-1 px-gutter-mobile lg:px-gutter-desktop overflow-x-auto">
+      <nav className="flex items-center gap-2 px-gutter-mobile lg:px-gutter-desktop py-2.5 overflow-x-auto">
         {LINKS.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-1.5 font-label text-xs uppercase tracking-wider px-4 py-3 whitespace-nowrap border-b-2 transition-colors ${
+            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
               pathname === link.href
-                ? "text-primary-container border-primary-container bg-surface-container-low/60"
-                : "text-on-surface-variant border-transparent hover:text-on-surface hover:bg-surface-container-low/30"
+                ? "bg-primary-container text-on-primary-container"
+                : "bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
             }`}
           >
             <span className="material-symbols-outlined text-base leading-none">{link.icon}</span>

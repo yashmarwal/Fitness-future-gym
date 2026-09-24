@@ -54,6 +54,7 @@ const QUICK_LINKS = [
   { href: "/dashboard/timer", label: "Rest Timer", icon: "timer", gated: true },
   { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false },
   { href: "/dashboard/fees", label: "Fee Status", icon: "payments", gated: false },
+  { href: "/dashboard/exercises", label: "Exercise Library", icon: "menu_book", gated: false },
 ];
 
 // Small badge shown on a gated tile/link when the member hasn't checked in
