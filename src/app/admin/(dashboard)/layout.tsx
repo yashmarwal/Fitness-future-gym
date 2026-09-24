@@ -1,6 +1,21 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/backend/auth/session";
 import AdminNav from "@/frontend/components/admin/AdminNav";
+
+// Overrides the root layout's manifest link (which points at
+// admin-manifest.json — start_url "/admin" instead of "/dashboard" — the
+// root manifest.json's start_url is member-facing). Without this, "Add to
+// Home Screen" from anywhere in the admin panel installs a shortcut that
+// still launches to the member dashboard, since Chrome/Android read
+// whichever manifest is linked on the page you tapped install from, not
+// the URL of that page itself. Only the `manifest` field is set here —
+// Next.js metadata fields aren't deep-merged, so redefining `appleWebApp`
+// or `icons` here too would silently drop the rest of what root layout.tsx
+// sets on them.
+export const metadata: Metadata = {
+  manifest: "/admin-manifest.json",
+};
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdminSession();
