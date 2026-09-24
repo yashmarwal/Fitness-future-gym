@@ -40,7 +40,6 @@ const GREETING_SUBLINES: Record<string, string> = {
 // own "mark attendance" screen, same as always — this is only about giving
 // a visual heads-up before the tap, not a new block.
 const QUICK_LINKS = [
-  { href: "/dashboard/card", label: "Membership Card", icon: "badge", gated: false },
   { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false },
   { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true },
   { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false },
