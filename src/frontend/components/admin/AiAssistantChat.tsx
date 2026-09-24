@@ -126,14 +126,16 @@ export default function AiAssistantChat() {
           </div>
         )}
 
+        {/* No avatar on a delivered bubble — it only marks the AI as
+            actively "present" while a reply is still in flight (the typing
+            indicator below), same as it does in the empty-state hero.
+            Once a reply lands, the bubble's own asymmetric corner (like the
+            member's own bubble) is enough to tell the two sides apart. */}
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex items-end gap-2 ${
-              m.role === "user" ? "justify-end animate-chat-in-right" : "justify-start animate-chat-in-left"
-            }`}
+            className={`flex ${m.role === "user" ? "justify-end animate-chat-in-right" : "justify-start animate-chat-in-left"}`}
           >
-            {m.role === "model" && <AiAvatar />}
             <div
               className={`min-w-0 px-4 py-3 font-body text-sm leading-relaxed shadow-soft ${
                 m.role === "user"
