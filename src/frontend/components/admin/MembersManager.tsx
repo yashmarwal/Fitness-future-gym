@@ -221,12 +221,20 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
         ))}
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      {/* flex-wrap, not a rigid single row — on a narrow phone, a flex-1
+          search input plus two shrink-0 buttons ("CSV", "+ Add Member" in
+          bold tracked-out uppercase) don't leave enough room and were
+          forcing the whole row (and with it, the page) wider than the
+          viewport instead of actually shrinking. min-w-0 on the input is
+          what lets it compress at all instead of protecting its full
+          placeholder-implied width; wrapping is the fallback once even
+          that isn't enough room. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name or membership number..."
-          className="flex-1 rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
+          className="flex-1 min-w-0 rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2 outline-none focus:border-primary-container"
         />
         <button
           type="button"
