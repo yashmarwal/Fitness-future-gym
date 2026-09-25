@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
@@ -10,7 +11,7 @@ import { listTodaysFoodLogs } from "@/backend/services/nutrition";
 import { getFitnessProfile } from "@/backend/services/fitnessProfile";
 import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
-import { StatCard } from "@/frontend/components/dashboard/Primitives";
+import { StatCard, Skeleton } from "@/frontend/components/dashboard/Primitives";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
 import PersonalRecordsBar from "@/frontend/components/dashboard/PersonalRecordsBar";
@@ -66,51 +67,23 @@ function LockBadge() {
   );
 }
 
+// Only what checking in actually needs — session, member (for the
+// greeting/gating), and today's attendance status — awaited directly so
+// this paints as fast as possible. Everything else on this page (workout
+// history, muscle progress, personal records, food log, fitness profile —
+// five separate queries, one of them a 400-row scan) used to block this
+// same first paint despite having nothing to do with whether the member
+// can check in. That's pulled out into DashboardBelowFold below, which
+// streams in on its own once ready instead of holding up the part of the
+// page that's actually time-sensitive.
 export default async function DashboardPage() {
   const session = await getMemberSession();
-  const [member, attendance, todaysWorkout, attendanceStatus, muscleProgress, personalRecords, workoutLogs, todaysFood, fitnessProfile] =
-    await Promise.all([
-      getMemberById(session!.memberId),
-      getRecentAttendance(session!.memberId, 60),
-      findTodaysWorkout(session!.memberId),
-      getAttendanceStatus(session!.memberId),
-      getMemberMuscleProgress(session!.memberId),
-      listPersonalRecords(session!.memberId),
-      // 400 comfortably covers two weeks of even a heavy logger (logs are kept 30 days).
-      listWorkoutLogs(session!.memberId, 400),
-      listTodaysFoodLogs(session!.memberId),
-      getFitnessProfile(session!.memberId),
-    ]);
+  const [member, attendanceStatus] = await Promise.all([
+    getMemberById(session!.memberId),
+    getAttendanceStatus(session!.memberId),
+  ]);
 
-  // After a front-desk QR check-in the popup greets the member on their next
-  // visit here. Skipped once they've already logged something since checking
-  // in (the check-in cooldown is 3 hours, so an older check-in belongs to a
-  // finished session). The check-in time doubles as the popup's identity.
   const checkedIn = attendanceStatus.checkedIn;
-  const checkedInAt = attendanceStatus.lastCheckedInAt;
-  const promptId =
-    checkedInAt &&
-    isWithinMinutes(checkedInAt, 170) &&
-    !workoutLogs.some((log) => new Date(log.loggedAt) > new Date(checkedInAt))
-      ? checkedInAt
-      : null;
-
-  const snapshot = buildMemberSnapshot({
-    member: {
-      currentStreakDays: member?.currentStreakDays ?? 0,
-      longestStreakDays: member?.longestStreakDays ?? 0,
-      feeDueDate: member?.feeDueDate ?? null,
-      plan: member?.plan ?? null,
-      joinedAt: member?.joinedAt ?? null,
-    },
-    attendance,
-    workoutLogs,
-    todaysFood,
-    personalRecords,
-    muscleProgress,
-  });
-
-  const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
   const greeting = greetingForHour(getIstHour());
   const greetingLine = GREETING_SUBLINES[greeting] ?? GREETING_SUBLINES["Good Morning"];
 
@@ -181,6 +154,79 @@ export default async function DashboardPage() {
 
       <PersonalRecordsBar />
 
+      <Suspense fallback={<DashboardBelowFoldSkeleton />}>
+        <DashboardBelowFold
+          memberId={session!.memberId}
+          member={member}
+          checkedIn={checkedIn}
+          lastCheckedInAt={attendanceStatus.lastCheckedInAt}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+// Everything that ISN'T needed to decide "can this member check in right
+// now" — plan-generation nudge, today's planned workout, the four stat
+// cards, the workout timer, the full snapshot bar (attendance history +
+// workout logs + personal records + today's food + muscle progress, five
+// queries combined into one derived view), the post-check-in workout
+// prompt, the muscle-progress teaser, and the Quick Actions grid. Reads
+// `member`/`checkedIn`/`lastCheckedInAt` from the fast shell above instead
+// of re-fetching them.
+async function DashboardBelowFold({
+  memberId,
+  member,
+  checkedIn,
+  lastCheckedInAt,
+}: {
+  memberId: string;
+  member: Awaited<ReturnType<typeof getMemberById>>;
+  checkedIn: boolean;
+  lastCheckedInAt: string | null;
+}) {
+  const [attendance, todaysWorkout, muscleProgress, personalRecords, workoutLogs, todaysFood, fitnessProfile] =
+    await Promise.all([
+      getRecentAttendance(memberId, 60),
+      findTodaysWorkout(memberId),
+      getMemberMuscleProgress(memberId),
+      listPersonalRecords(memberId),
+      // 400 comfortably covers two weeks of even a heavy logger (logs are kept 30 days).
+      listWorkoutLogs(memberId, 400),
+      listTodaysFoodLogs(memberId),
+      getFitnessProfile(memberId),
+    ]);
+
+  // After a front-desk QR check-in the popup greets the member on their next
+  // visit here. Skipped once they've already logged something since checking
+  // in (the check-in cooldown is 3 hours, so an older check-in belongs to a
+  // finished session). The check-in time doubles as the popup's identity.
+  const promptId =
+    lastCheckedInAt &&
+    isWithinMinutes(lastCheckedInAt, 170) &&
+    !workoutLogs.some((log) => new Date(log.loggedAt) > new Date(lastCheckedInAt))
+      ? lastCheckedInAt
+      : null;
+
+  const snapshot = buildMemberSnapshot({
+    member: {
+      currentStreakDays: member?.currentStreakDays ?? 0,
+      longestStreakDays: member?.longestStreakDays ?? 0,
+      feeDueDate: member?.feeDueDate ?? null,
+      plan: member?.plan ?? null,
+      joinedAt: member?.joinedAt ?? null,
+    },
+    attendance,
+    workoutLogs,
+    todaysFood,
+    personalRecords,
+    muscleProgress,
+  });
+
+  const daysUntilDue = member?.feeDueDate ? daysUntil(member.feeDueDate) : null;
+
+  return (
+    <>
       <GeneratePlanBar fitnessProfile={fitnessProfile} />
 
       {!fitnessProfile && <FitnessProfileNudge />}
@@ -245,7 +291,30 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+    </>
+  );
+}
 
-    </div>
+// Shapes roughly match DashboardBelowFold's real content so nothing visibly
+// jumps when it swaps in — same idea as dashboard/loading.tsx, just scoped
+// to this one Suspense boundary instead of the whole route.
+function DashboardBelowFoldSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-16 w-full mb-6" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6" aria-hidden="true">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+      <Skeleton className="h-19 w-full mb-6" />
+      <Skeleton className="h-28 w-full mb-6" />
+      <Skeleton className="h-7 w-40 mb-4" />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6" aria-hidden="true">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    </>
   );
 }
