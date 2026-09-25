@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWorkoutTimerState } from "@/frontend/lib/workoutTimer";
 import SettingsPanel from "@/frontend/components/dashboard/SettingsPanel";
 
@@ -22,6 +22,29 @@ export default function DashboardHeader({
   // home page) — they now all live in one settings sheet reachable from
   // every dashboard route, see SettingsPanel.tsx.
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // A dedicated, cheap head-count endpoint (see unread-count/route.ts) —
+  // not the same fetch SettingsPanel does lazily on open (that one pulls
+  // the full notification list). Checked whenever the panel is NOT open,
+  // which covers both the initial mount AND every close: if the member
+  // opened the notification feed inside the panel, it already marked
+  // everything read server-side, so re-checking on close is what clears
+  // the dot without needing a prop/callback threaded down through
+  // SettingsPanel -> NotificationBar just for this.
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    if (settingsOpen) return;
+    let cancelled = false;
+    fetch("/api/dashboard/notifications/unread-count")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!cancelled && d.status === "ok") setHasUnread(d.count > 0);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsOpen]);
 
   return (
     <header className="w-full bg-surface-container-lowest border-b border-surface-variant/50 px-gutter-mobile lg:px-gutter-desktop h-16 flex items-center justify-between">
@@ -40,11 +63,17 @@ export default function DashboardHeader({
       </div>
       <button
         onClick={() => setSettingsOpen(true)}
-        aria-label="Open settings"
-        className="flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary-container font-label text-xs uppercase tracking-wider px-3 py-2 rounded-xl transition-colors"
+        aria-label={hasUnread ? "Open settings — unread notifications" : "Open settings"}
+        className="relative flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary-container font-label text-xs uppercase tracking-wider px-3 py-2 rounded-xl transition-colors"
       >
         <span className="material-symbols-outlined text-base leading-none">settings</span>
         <span className="hidden sm:inline">Settings</span>
+        {hasUnread && (
+          <span className="absolute -top-1 -right-1 flex w-2.5 h-2.5" aria-hidden="true">
+            <span className="animate-ping absolute inline-flex w-full h-full rounded-full bg-error opacity-75" />
+            <span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-container-high" />
+          </span>
+        )}
       </button>
 
       <SettingsPanel

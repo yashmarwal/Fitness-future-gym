@@ -49,6 +49,24 @@ export async function listNotifications(memberId: string, limit = 20): Promise<M
   }));
 }
 
+// A head-count query (no rows fetched or serialized) — deliberately not
+// `listNotifications(...).filter(unread)`, which would pull all 20 rows
+// just to answer a yes/no question. This is what powers the red dot on
+// DashboardHeader's Settings button (see unread-count/route.ts): cheap
+// enough to call on every page load without reintroducing the latency
+// dashboard/layout.tsx got fixed for eagerly fetching the full list.
+export async function countUnreadNotifications(memberId: string): Promise<number> {
+  const db = getDb();
+  const { count, error } = await db
+    .from("member_notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("member_id", memberId)
+    .is("read_at", null);
+
+  if (error) throw new Error(`Failed to count unread notifications: ${error.message}`);
+  return count ?? 0;
+}
+
 export async function markNotificationsRead(memberId: string): Promise<void> {
   const db = getDb();
   const { error } = await db
