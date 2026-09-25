@@ -1,7 +1,31 @@
 import { NextResponse } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
+import { getMemberById } from "@/backend/services/member";
 import { updateNotificationPrefs } from "@/backend/services/member";
-import { setWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
+import { getWorkoutPromptEnabled, setWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
+
+// Fetched lazily by SettingsPanel.tsx when it actually opens, not eagerly
+// by dashboard/layout.tsx on every navigation — see that file's comment for
+// why these two queries were pulled back out of the layout's blocking path.
+export async function GET() {
+  const session = await getMemberSession();
+  if (!session) return NextResponse.json({ status: "error" }, { status: 401 });
+
+  try {
+    const [member, workout] = await Promise.all([
+      getMemberById(session.memberId),
+      getWorkoutPromptEnabled(session.memberId),
+    ]);
+    if (!member) return NextResponse.json({ status: "error" }, { status: 404 });
+    return NextResponse.json({
+      status: "ok",
+      prefs: { water: member.notifyWater, mealLog: member.notifyMealLog, streak: member.notifyStreak, workout },
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ status: "error", message: "Something went wrong." }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   const session = await getMemberSession();

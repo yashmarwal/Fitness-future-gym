@@ -1,24 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { MemberNotification } from "@/backend/services/memberNotifications";
 import { useWorkoutTimerState } from "@/frontend/lib/workoutTimer";
 import SettingsPanel from "@/frontend/components/dashboard/SettingsPanel";
-
-type Prefs = { water: boolean; mealLog: boolean; streak: boolean; workout: boolean };
 
 export default function DashboardHeader({
   fullName,
   membershipNumber,
   plan,
-  initialPrefs,
-  initialNotifications,
 }: {
   fullName: string;
   membershipNumber: string;
   plan: string | null;
-  initialPrefs: Prefs;
-  initialNotifications: MemberNotification[];
 }) {
   // Reads the same shared, persistent timer state as WorkoutTimerWidget/Bar
   // (workoutTimer.ts) — this is purely a status readout, it doesn't tick or
@@ -60,8 +53,6 @@ export default function DashboardHeader({
         fullName={fullName}
         membershipNumber={membershipNumber}
         plan={plan}
-        initialPrefs={initialPrefs}
-        initialNotifications={initialNotifications}
       />
     </header>
   );

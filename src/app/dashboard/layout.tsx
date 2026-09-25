@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
-import { listNotifications } from "@/backend/services/memberNotifications";
-import { getWorkoutPromptEnabled } from "@/backend/services/workoutPrompt";
 import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
 import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
 import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
@@ -26,17 +24,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // route tree via redirect() stops that work from happening at all.
   if (member.isBlocked) redirect("/account-blocked");
 
-  // Fetched here (rather than only on the home page, as before) because the
-  // Settings panel — Membership Card, Notifications, Sign Out — now lives in
-  // DashboardHeader, which renders on every dashboard route. getMemberById
-  // itself is React-cache()'d, so dashboard/page.tsx's own call for the same
-  // memberId in the same request shares this one round-trip instead of
-  // doubling it; these two calls are the only genuinely new queries.
-  const [notifications, workoutPromptEnabled] = await Promise.all([
-    listNotifications(session.memberId),
-    getWorkoutPromptEnabled(session.memberId),
-  ]);
-
+  // Deliberately NOT fetching notifications/workout-prompt-pref here for
+  // SettingsPanel — this layout wraps every dashboard route, so anything
+  // awaited here adds latency to every single navigation (and to a cold
+  // PWA launch, which already has no warm client cache to fall back on).
+  // SettingsPanel almost never opens on a given page view, so it fetches
+  // that data itself, lazily, only once actually opened (GET
+  // /api/dashboard/notification-prefs, /api/dashboard/notifications) —
+  // this used to await both eagerly and got reverted once it showed up as
+  // real added latency on every dashboard page load.
   return (
     <div className="flex flex-col min-h-screen">
       {/* Watches the rest timer and shows the finish alarm no matter which
@@ -45,18 +41,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <RestTimerAlarmWatcher />
       <WorkoutTimerActivityWatcher />
       <CheckInCelebration />
-      <DashboardHeader
-        fullName={member.fullName}
-        membershipNumber={member.membershipNumber}
-        plan={member.plan}
-        initialPrefs={{
-          water: member.notifyWater,
-          mealLog: member.notifyMealLog,
-          streak: member.notifyStreak,
-          workout: workoutPromptEnabled,
-        }}
-        initialNotifications={notifications}
-      />
+      <DashboardHeader fullName={member.fullName} membershipNumber={member.membershipNumber} plan={member.plan} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">
         {children}
