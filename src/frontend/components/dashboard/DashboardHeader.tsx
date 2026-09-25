@@ -68,10 +68,15 @@ export default function DashboardHeader({
       >
         <span className="material-symbols-outlined text-base leading-none">settings</span>
         <span className="hidden sm:inline">Settings</span>
+        {/* bg-red-500, not the theme's --color-error (bg-error) — that
+            token is tuned as a soft pink for legible text/icons on a dark
+            surface (see AttendanceCheckInButton's error text), which reads
+            as pink, not red, at this size. Same "deliberate literal color"
+            call as the green/red Working Out dot above. */}
         {hasUnread && (
           <span className="absolute -top-1 -right-1 flex w-2.5 h-2.5" aria-hidden="true">
-            <span className="animate-ping absolute inline-flex w-full h-full rounded-full bg-error opacity-75" />
-            <span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-container-high" />
+            <span className="animate-ping absolute inline-flex w-full h-full rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-surface-container-high" />
           </span>
         )}
       </button>
