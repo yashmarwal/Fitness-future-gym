@@ -3,12 +3,14 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MemberNotification } from "@/backend/services/memberNotifications";
+import { Skeleton } from "@/frontend/components/dashboard/Primitives";
 import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard";
 import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 
 type Prefs = { water: boolean; mealLog: boolean; streak: boolean; workout: boolean };
+type NotificationsData = { prefs: Prefs; notifications: MemberNotification[] };
 
 // Everything that used to be scattered — the Sign Out button (previously
 // its own button in DashboardHeader), the Notifications card + feed
@@ -25,19 +27,50 @@ export default function SettingsPanel({
   fullName,
   membershipNumber,
   plan,
-  initialPrefs,
-  initialNotifications,
 }: {
   open: boolean;
   onClose: () => void;
   fullName: string;
   membershipNumber: string;
   plan: string | null;
-  initialPrefs: Prefs;
-  initialNotifications: MemberNotification[];
 }) {
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  // Notifications (push prefs + the feed) used to arrive as a prop, fetched
+  // by dashboard/layout.tsx on every single dashboard navigation — but this
+  // panel is opened rarely, so that was pure added latency (felt worst on a
+  // cold PWA launch, which has no warm client cache to hide it behind) for
+  // data almost nobody was about to look at. Fetched here instead, lazily,
+  // the first time the panel actually opens.
+  const [data, setData] = useState<NotificationsData | null>(null);
+  const [error, setError] = useState(false);
+  // A ref, not state — it only guards against firing the fetch twice, it's
+  // never read during render. Keeping it out of state means the effect
+  // below never needs to call setState synchronously in its own body (only
+  // from the fetch's .then()/.catch() callbacks), which is what
+  // react-hooks/set-state-in-effect actually objects to.
+  const startedRef = useRef(false);
+
+  function loadNotifications() {
+    startedRef.current = true;
+    Promise.all([
+      fetch("/api/dashboard/notification-prefs").then((r) => r.json()),
+      fetch("/api/dashboard/notifications").then((r) => r.json()),
+    ])
+      .then(([prefsRes, notifsRes]) => {
+        if (prefsRes.status !== "ok" || notifsRes.status !== "ok") throw new Error("bad response");
+        setData({ prefs: prefsRes.prefs, notifications: notifsRes.notifications });
+        setError(false);
+      })
+      .catch(() => {
+        startedRef.current = false;
+        setError(true);
+      });
+  }
+
+  useEffect(() => {
+    if (open && !startedRef.current) loadNotifications();
+  }, [open]);
 
   // Escape closes it too — a keyboard/desktop-friendly touch to go with the
   // backdrop-tap and X button, same as any other dismissible overlay.
@@ -126,8 +159,30 @@ export default function SettingsPanel({
               that spacing doubles up. */}
           <div>
             <h3 className="font-label text-[11px] uppercase tracking-widest text-tertiary px-1 mb-3">Notifications</h3>
-            <NotificationsCard initialPrefs={initialPrefs} />
-            <NotificationBar initialNotifications={initialNotifications} />
+            {data ? (
+              <>
+                <NotificationsCard initialPrefs={data.prefs} />
+                <NotificationBar initialNotifications={data.notifications} />
+              </>
+            ) : error ? (
+              <div className="bg-surface-container-low border border-error-container/40 rounded-2xl p-4 flex items-center justify-between gap-3">
+                <p className="font-body text-xs text-error">Couldn&apos;t load notifications.</p>
+                <button
+                  onClick={() => {
+                    setError(false);
+                    loadNotifications();
+                  }}
+                  className="shrink-0 font-label text-[10px] uppercase font-bold text-primary-container hover:text-on-surface transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3" aria-hidden="true">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-14 w-full" />
+              </div>
+            )}
           </div>
 
           <button
