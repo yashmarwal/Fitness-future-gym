@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Oswald, Inter } from "next/font/google";
 import PwaInstallPrompt from "@/frontend/components/PwaInstallPrompt";
+import CookieConsentBanner from "@/frontend/components/CookieConsentBanner";
 import {
   SITE_URL,
   BUSINESS_NAME,
@@ -148,6 +149,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-background antialiased selection:bg-primary-container selection:text-on-primary-container">
         {children}
         <PwaInstallPrompt />
+        <CookieConsentBanner />
       </body>
     </html>
   );

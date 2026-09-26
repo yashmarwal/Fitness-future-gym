@@ -19,6 +19,7 @@ export default function SignupForm() {
   // see DateOfBirthField/dateOfBirth.ts. Re-parsed to ISO right before
   // submitting below, since the field itself only ever deals in display text.
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [consentGiven, setConsentGiven] = useState(false);
   const [code, setCode] = useState("");
   const [devCode, setDevCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -248,9 +249,32 @@ export default function SignupForm() {
               <label className="font-label text-[10px] uppercase tracking-widest text-outline">Date Of Birth (Optional)</label>
               <DateOfBirthField value={dateOfBirth} onChange={setDateOfBirth} />
             </div>
+            <label
+              style={{ animationDelay: "340ms" }}
+              className="animate-snap-in flex items-start gap-2.5 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={consentGiven}
+                onChange={(e) => setConsentGiven(e.target.checked)}
+                required
+                className="mt-0.5 w-4 h-4 shrink-0 accent-primary-container"
+              />
+              <span className="font-body text-xs text-tertiary leading-snug">
+                I agree to the{" "}
+                <Link href="/privacy-policy" target="_blank" className="text-primary-container hover:underline">
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link href="/terms-conditions" target="_blank" className="text-primary-container hover:underline">
+                  Terms &amp; Conditions
+                </Link>
+                , and consent to being contacted about my membership by WhatsApp, email, and phone.
+              </span>
+            </label>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !consentGiven}
               style={{ animationDelay: "360ms" }}
               className="animate-snap-in rounded-2xl bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-sm uppercase font-bold px-6 py-3.5 shadow-soft disabled:opacity-60 active:scale-[0.98] transition-[transform,background-color]"
             >

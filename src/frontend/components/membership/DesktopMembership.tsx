@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTrialClaim, saveTrialClaim } from "@/frontend/lib/trialClaim";
@@ -13,6 +14,7 @@ export default function DesktopMembership() {
   const deviceClaim = useTrialClaim();
   const [submitted, setSubmitted] = useState<{ phone: string; trialCode: string; endsAt: string } | null>(null);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", shift: "morning" });
+  const [consentGiven, setConsentGiven] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -238,10 +240,30 @@ export default function DesktopMembership() {
                       </label>
                     </div>
                   </div>
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consentGiven}
+                      onChange={(e) => setConsentGiven(e.target.checked)}
+                      required
+                      className="mt-0.5 w-4 h-4 shrink-0 accent-primary-container"
+                    />
+                    <span className="font-body-sm text-body-sm text-tertiary leading-snug">
+                      I agree to the{" "}
+                      <Link href="/privacy-policy" target="_blank" className="text-primary-container hover:underline">
+                        Privacy Policy
+                      </Link>{" "}
+                      and{" "}
+                      <Link href="/terms-conditions" target="_blank" className="text-primary-container hover:underline">
+                        Terms &amp; Conditions
+                      </Link>
+                      , and consent to being contacted about my trial by WhatsApp, email, and phone.
+                    </span>
+                  </label>
                   {error && <p className="font-body-sm text-body-sm text-error">{error}</p>}
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !consentGiven}
                     className="mt-space-xs w-full bg-primary-container text-on-primary-container hover:bg-secondary-container hover:text-on-secondary font-label-lg text-label-lg uppercase font-bold py-space-md tracking-wider transition-all duration-150 rounded-xl shadow-soft flex items-center justify-center gap-space-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
                   >
                     <span className="material-symbols-outlined text-title-md">bolt</span>

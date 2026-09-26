@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { submitToWeb3Forms } from "@/frontend/lib/web3forms";
 import WhatsAppIcon from "@/frontend/components/icons/WhatsAppIcon";
+import { getConsent, setConsent, CONSENT_CHANGE_EVENT } from "@/frontend/lib/cookieConsent";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -25,6 +27,30 @@ export default function LocationPageContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // The Google Maps embed is the one real non-essential, blockable resource
+  // on this site (see Cookies Policy) — it never loads until "functional"
+  // consent is on, either from the cookie banner or the click-to-load button
+  // below (which grants that one category, same as accepting it in the
+  // banner). Starts false and is only ever flipped true in an effect/handler
+  // (never read synchronously during render otherwise) so this can't cause
+  // a hydration mismatch the way reading localStorage during render would.
+  const [mapAllowed, setMapAllowed] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMapAllowed(getConsent().functional);
+    function handleConsentChange(e: Event) {
+      setMapAllowed((e as CustomEvent<{ functional: boolean }>).detail.functional);
+    }
+    window.addEventListener(CONSENT_CHANGE_EVENT, handleConsentChange);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, handleConsentChange);
+  }, []);
+
+  function loadMap() {
+    const current = getConsent();
+    setConsent({ functional: true, analytics: current.analytics, marketing: current.marketing });
+  }
 
   async function handleInquirySubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -286,12 +312,29 @@ export default function LocationPageContent() {
                 </div>
               </div>
               <div className="w-full h-72 bg-surface-container flex items-center justify-center relative overflow-hidden rounded-xl border border-surface-variant/30">
-                <iframe
-                  title="Nangloi Location Map"
-                  src="https://www.google.com/maps?q=KH.No.52%2C%20Shop%20No.5%20Plot%20No.8-A%2C%2018%2C%20near%20Rao%20Vihar%2C%20Rao%20Vihar%2C%20Nangloi%2C%20Delhi%2C%20110041&output=embed"
-                  className="w-full h-full border-0 filter contrast-125 brightness-90 grayscale opacity-80 hover:opacity-100 transition-opacity"
-                  loading="lazy"
-                ></iframe>
+                {mapAllowed ? (
+                  <iframe
+                    title="Nangloi Location Map"
+                    src="https://www.google.com/maps?q=KH.No.52%2C%20Shop%20No.5%20Plot%20No.8-A%2C%2018%2C%20near%20Rao%20Vihar%2C%20Rao%20Vihar%2C%20Nangloi%2C%20Delhi%2C%20110041&output=embed"
+                    className="w-full h-full border-0 filter contrast-125 brightness-90 grayscale opacity-80 hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                  ></iframe>
+                ) : (
+                  // Not loaded until you opt in — this iframe is a third-party
+                  // Google resource, disclosed and gated per our Cookies Policy.
+                  <div className="flex flex-col items-center gap-space-sm text-center px-space-md">
+                    <p className="font-body-sm text-body-sm text-tertiary max-w-xs">
+                      The map is loaded from Google Maps, which isn&apos;t shown until you allow it.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={loadMap}
+                      className="font-label-sm text-label-sm uppercase font-bold text-primary-container border border-primary-container/50 rounded-xl px-space-md py-space-xs hover:bg-primary-container hover:text-on-primary-container transition-colors"
+                    >
+                      Load Map
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -340,6 +383,23 @@ export default function LocationPageContent() {
                       placeholder="e.g. Want to inquire about personal training slots or monthly pass."
                     />
                   </div>
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consentGiven}
+                      onChange={(e) => setConsentGiven(e.target.checked)}
+                      required
+                      className="mt-0.5 w-4 h-4 shrink-0 accent-primary-container"
+                    />
+                    <span className="font-body-sm text-body-sm text-tertiary leading-snug">
+                      I agree to the{" "}
+                      <Link href="/privacy-policy" target="_blank" className="text-primary-container hover:underline">
+                        Privacy Policy
+                      </Link>{" "}
+                      and understand this form is processed by a third-party form service (Web3Forms) to reach
+                      our inbox.
+                    </span>
+                  </label>
                   {error && (
                     <p className="font-body-sm text-body-sm text-error-container bg-error/10 border border-error-container/40 px-space-sm py-space-xs rounded-lg">
                       {error}
@@ -347,7 +407,7 @@ export default function LocationPageContent() {
                   )}
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !consentGiven}
                     className="bg-primary-container hover:bg-secondary-container text-on-primary-container font-label-lg text-label-lg uppercase font-bold px-space-xl py-space-md rounded-xl shadow-soft transition-all cursor-pointer mt-space-2xs hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {submitting ? "Sending…" : "Submit Inquiry"}
