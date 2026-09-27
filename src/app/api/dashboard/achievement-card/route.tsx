@@ -44,7 +44,7 @@ const HEIGHT = 1440;
 // hub (see the exercise/prevWeight/prevReps params below for why: the
 // "previous" value doesn't exist in the database anymore by the time this
 // route runs, since checkAndRecordPr already overwrote it).
-export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr"] as const;
+export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate"] as const;
 export type CardType = (typeof CARD_TYPES)[number];
 
 // Brand tokens as literal hex — Satori renders independently of the site's
@@ -233,6 +233,103 @@ function SingleStatCard({
   );
 }
 
+// A distinct, formal template — separate from SingleStatCard above, not a
+// variant of it — for sharing ANY personal record on demand from the
+// Personal Records list (see PersonalRecordRow.tsx), not just the single
+// current best lift or the split-second moment a record just broke
+// (PrCelebration.tsx still uses the "pr" type / SingleStatCard for that
+// quick flex card, unchanged). Framed literally as a certificate — a double
+// border, "This certifies that", the member's name treated like a
+// recipient's name on a diploma — since a record set weeks ago being shared
+// today reads better as "here's proof I did this" than as another
+// Instagram-story stat flex.
+function CertificateCard({
+  logoDataUri,
+  exerciseName,
+  statLabel,
+  name,
+  dateLabel,
+}: {
+  logoDataUri: string;
+  exerciseName: string;
+  statLabel: string;
+  name: string;
+  dateLabel: string;
+}) {
+  return (
+    <div
+      style={{
+        width: WIDTH,
+        height: HEIGHT,
+        display: "flex",
+        flexDirection: "column",
+        background: CARD_BACKGROUND,
+        position: "relative",
+        padding: 88,
+      }}
+    >
+      {/* Double frame — an outer neutral line, an inner orange one, the way
+          an actual printed certificate is bordered. */}
+      <div style={{ position: "absolute", top: 40, left: 40, right: 40, bottom: 40, border: `2px solid ${CARD_BORDER}`, display: "flex" }} />
+      <div style={{ position: "absolute", top: 52, left: 52, right: 52, bottom: 52, border: `1px solid ${ORANGE}`, display: "flex" }} />
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          flex: 1,
+          justifyContent: "center",
+          padding: "0 70px",
+          textAlign: "center",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- Satori (next/og) renders this to a PNG server-side; it requires a plain <img>. */}
+        <img src={logoDataUri} width={130} height={130} style={{ marginBottom: 26 }} alt="" />
+
+        <div style={{ display: "flex", fontFamily: "Oswald-Bold", fontSize: 24, color: ORANGE, letterSpacing: 6 }}>
+          CERTIFICATE OF ACHIEVEMENT
+        </div>
+        <div style={{ display: "flex", width: 110, height: 2, backgroundColor: ORANGE, marginTop: 20, marginBottom: 32 }} />
+
+        <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 22, color: MUTED, marginBottom: 12 }}>
+          This certifies that
+        </div>
+        <div style={{ display: "flex", fontFamily: "Bebas Neue", fontSize: 64, color: TEXT, letterSpacing: 2, marginBottom: 12 }}>
+          {name.toUpperCase()}
+        </div>
+        <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 22, color: MUTED, marginBottom: 30 }}>
+          has set a personal record in
+        </div>
+
+        <div style={{ display: "flex", fontFamily: "Oswald-Bold", fontSize: 30, color: TEXT, letterSpacing: 2, marginBottom: 16 }}>
+          {exerciseName.toUpperCase()}
+        </div>
+        <div style={{ display: "flex", fontFamily: "Bebas Neue", fontSize: 104, color: ORANGE, lineHeight: 1, marginBottom: 30 }}>
+          {statLabel}
+        </div>
+
+        <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 20, color: MUTED }}>Achieved {dateLabel}</div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingTop: 26,
+          borderTop: `1px solid ${CARD_BORDER}`,
+        }}
+      >
+        <div style={{ display: "flex", fontFamily: "Oswald-Bold", fontSize: 22, color: TEXT, letterSpacing: 3 }}>
+          FITNESS FUTURE GYM
+        </div>
+        <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 16, color: MUTED }}>{SITE_DOMAIN}</div>
+      </div>
+    </div>
+  );
+}
+
 export async function GET(request: Request) {
   const session = await getMemberSession();
   if (!session) return new Response("Unauthorized", { status: 401 });
@@ -274,6 +371,46 @@ export async function GET(request: Request) {
   const logoDataUri = `data:image/png;base64,${logoData.toString("base64")}`;
   const name = member.fullName;
   const dateLabel = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
+
+  if (type === "certificate") {
+    // Any exercise, any time — not just the current single best lift and
+    // not just the instant a record breaks (that's still the "pr" type
+    // below). `exercise` must match a record actually on file; a 404 here
+    // (rather than silently falling back to an unrelated exercise) is
+    // correct for something framed as a certificate of a SPECIFIC
+    // achievement — substituting a different lift would just be wrong, not
+    // a graceful degrade.
+    const exercise = params.get("exercise")?.trim();
+    const record = exercise
+      ? personalRecords.find((r) => r.exerciseName.trim().toLowerCase() === exercise.toLowerCase())
+      : null;
+    if (!record) return new Response("Record not found", { status: 404 });
+
+    const statLabel = record.bestWeightKg != null ? `${record.bestWeightKg}KG × ${record.bestReps}` : `${record.bestReps} REPS`;
+    // The record's own achieved-at date, not today's — this is a
+    // certificate of when the achievement actually happened, unlike the
+    // other card types below which are all "as of today" snapshots.
+    const achievedDateLabel = new Date(record.achievedAt).toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    return new ImageResponse(
+      <CertificateCard logoDataUri={logoDataUri} exerciseName={record.exerciseName} statLabel={statLabel} name={name} dateLabel={achievedDateLabel} />,
+      {
+        width: WIDTH,
+        height: HEIGHT,
+        fonts: [
+          { name: "Oswald-Bold", data: oswaldBoldData, weight: 700, style: "normal" },
+          { name: "Oswald-Medium", data: oswaldMediumData, weight: 500, style: "normal" },
+          { name: "Bebas Neue", data: bebasNeueData, weight: 400, style: "normal" },
+        ],
+        headers: { "Cache-Control": "private, no-store" },
+      }
+    );
+  }
 
   let props: {
     eyebrow?: string;

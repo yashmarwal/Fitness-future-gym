@@ -12,6 +12,7 @@ import {
 } from "@/frontend/lib/bmiMacro";
 import { recommendTemplate } from "@/frontend/lib/workoutRecommendation";
 import { generatePlan, type GeneratedPlan } from "@/frontend/lib/exerciseSplits";
+import GeneratingPlanOverlay from "@/frontend/components/dashboard/GeneratingPlanOverlay";
 import type { ExperienceLevel, WorkoutTemplate } from "@/frontend/lib/workoutTemplates";
 import type { FitnessProfile } from "@/backend/services/fitnessProfile";
 
@@ -52,6 +53,13 @@ export default function FitnessOnboardingWizard({ initialProfile }: { initialPro
   const router = useRouter();
   const [step, setStep] = useState<StepId>(0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
+  // True for the ~5s beat between tapping "See My Plan" on the last
+  // question and actually arriving at the results step — the same branded
+  // GeneratingPlanOverlay the dashboard's one-tap regenerate used to show
+  // instead of the wizard entirely (see GeneratePlanBar.tsx), now shown
+  // where it actually belongs: after every question has been answered,
+  // right before the plan appears.
+  const [generating, setGenerating] = useState(false);
 
   const [weightKg, setWeightKg] = useState<number | "">(initialProfile?.weightKg ?? "");
   const [heightFt, setHeightFt] = useState<number | "">(initialProfile ? Math.floor(initialProfile.heightCm / 30.48) : "");
@@ -210,7 +218,14 @@ export default function FitnessOnboardingWizard({ initialProfile }: { initialPro
         )}
 
         {step === 5 && (
-          <DaysStep key={5} daysPerWeek={daysPerWeek} setDaysPerWeek={setDaysPerWeek} onBack={() => go(4)} onNext={() => go(6)} direction={direction} />
+          <DaysStep
+            key={5}
+            daysPerWeek={daysPerWeek}
+            setDaysPerWeek={setDaysPerWeek}
+            onBack={() => go(4)}
+            onNext={() => setGenerating(true)}
+            direction={direction}
+          />
         )}
 
         {step === 6 && results && generatedPlan && (
@@ -231,6 +246,14 @@ export default function FitnessOnboardingWizard({ initialProfile }: { initialPro
           />
         )}
       </div>
+      {generating && (
+        <GeneratingPlanOverlay
+          onDone={() => {
+            setGenerating(false);
+            go(6);
+          }}
+        />
+      )}
     </div>
   );
 }

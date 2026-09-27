@@ -34,7 +34,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // this used to await both eagerly and got reverted once it showed up as
   // real added latency on every dashboard page load.
   return (
-    <div className="flex flex-col min-h-screen">
+    // bg-black (pure #000), not the site-wide --color-background token
+    // (#141311, a warm near-black used everywhere else via body's own
+    // background-color in globals.css) — a deliberate, dashboard-only
+    // override, not a site-wide color change.
+    <div className="flex flex-col min-h-screen bg-black">
       {/* Watches the rest timer and shows the finish alarm no matter which
           dashboard page is currently open — see the component's own
           comment for why this can't live on the workouts page alone. */}
