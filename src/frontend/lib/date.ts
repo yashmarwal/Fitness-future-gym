@@ -76,3 +76,22 @@ export function daysBetweenIstDates(earlier: string, later: string): number {
   const laterMs = new Date(`${later}T00:00:00+05:30`).getTime();
   return Math.round((laterMs - earlierMs) / (1000 * 60 * 60 * 24));
 }
+
+// Adds `days` (may be negative) calendar days to an IST date string,
+// returning a new YYYY-MM-DD string. IST has no DST, so the fixed +05:30
+// offset used to parse it is safe for this arithmetic. Used by the gym
+// holiday/streak-exemption logic (gymCalendar.ts, attendance.ts) to walk
+// day-by-day between two dates.
+export function addIstDays(dateStr: string, days: number): string {
+  const d = new Date(`${dateStr}T00:00:00+05:30`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return getIstDateString(d);
+}
+
+// Whether an IST calendar-date string falls on a Sunday — the gym's
+// standing weekly closure (see attendance.ts / gymCalendar.ts). Noon
+// (not midnight) avoids any edge case turning the offset parse into the
+// wrong calendar day.
+export function isIstSunday(dateStr: string): boolean {
+  return getIstWeekday(new Date(`${dateStr}T12:00:00+05:30`)) === "Sunday";
+}

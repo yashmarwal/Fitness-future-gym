@@ -14,3 +14,14 @@ export function isMissingColumnError(error: { code?: string; message?: string } 
   const msg = error?.message?.toLowerCase() ?? "";
   return msg.includes("column") && (msg.includes("schema cache") || msg.includes("does not exist"));
 }
+
+// Same idea as isMissingColumnError, for a whole table that hasn't been
+// created yet (e.g. gym_holidays before its migration is run) — PostgREST's
+// schema-cache miss is PGRST205, the raw Postgres error is 42P01. Callers
+// should degrade to "nothing marked" rather than 500, same reasoning as the
+// column case.
+export function isMissingTableError(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (error?.code === "PGRST205" || error?.code === "42P01") return true;
+  const msg = error?.message?.toLowerCase() ?? "";
+  return msg.includes("could not find the table") || (msg.includes("relation") && msg.includes("does not exist"));
+}

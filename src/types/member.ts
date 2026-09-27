@@ -12,4 +12,5 @@ export type CheckInResult =
   | { status: "inactive" }
   | { status: "blocked" }
   | { status: "cooldown"; retryAfterMinutes: number }
-  | { status: "outside_hours" };
+  | { status: "outside_hours" }
+  | { status: "gym_closed"; reason: string };

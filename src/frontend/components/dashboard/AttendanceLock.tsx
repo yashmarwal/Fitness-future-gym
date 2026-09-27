@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
+import AttendanceIssuePopup from "@/frontend/components/attendance/AttendanceIssuePopup";
 
 // Shown by the workout pages INSTEAD of their content when the member hasn't
 // checked in (the server decides — see dashboard/workouts, plan and timer
@@ -16,11 +17,13 @@ export default function AttendanceLock() {
   // Set once the check-in succeeded, to cover the moment before the refresh
   // lands and the real page replaces this card.
   const [unlocking, setUnlocking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Any real reason a check-in couldn't go through — pops up with a buzz
+  // (see AttendanceIssuePopup) instead of a line of text easy to miss on a
+  // phone screen.
+  const [issue, setIssue] = useState<string | null>(null);
 
   async function handleMark() {
     setMarking(true);
-    setError(null);
     try {
       const res = await fetch("/api/dashboard/checkin", { method: "POST" });
       const data = await res.json();
@@ -29,17 +32,19 @@ export default function AttendanceLock() {
         if (data.status === "success") window.dispatchEvent(new Event(CHECKIN_SUCCESS_EVENT));
         router.refresh();
       } else if (data.status === "inactive") {
-        setError("Your membership isn't active — see the front desk.");
+        setIssue("Your membership isn't active — see the front desk.");
       } else if (data.status === "blocked") {
-        setError("Your membership is on hold — see the front desk about your fee.");
+        setIssue("Your membership is on hold — see the front desk about your fee.");
         router.refresh();
       } else if (data.status === "outside_hours") {
-        setError("The floor's closed right now — attendance opens 6 AM–12 PM and 4–10:30 PM.");
+        setIssue("The floor's closed right now — attendance opens 6 AM–12 PM and 4–10:30 PM.");
+      } else if (data.status === "gym_closed") {
+        setIssue(data.reason ?? "The gym is closed today.");
       } else {
-        setError(data.message ?? "Couldn't check you in. Ask the front desk for help.");
+        setIssue(data.message ?? "Couldn't check you in. Ask the front desk for help.");
       }
     } catch {
-      setError("Network error. Please try again.");
+      setIssue("Network error. Please try again.");
     } finally {
       setMarking(false);
     }
@@ -60,11 +65,11 @@ export default function AttendanceLock() {
         >
           {unlocking ? "Unlocking..." : marking ? "Checking In..." : "Mark Attendance"}
         </button>
-        {error && <p className="font-body text-xs text-error">{error}</p>}
         <Link href="/dashboard" className="font-label text-xs uppercase tracking-wider text-tertiary">
           ← Back To Dashboard
         </Link>
       </div>
+      {issue && <AttendanceIssuePopup message={issue} onDismiss={() => setIssue(null)} />}
     </div>
   );
 }

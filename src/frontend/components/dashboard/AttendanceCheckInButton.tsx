@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
 import StreakMilestoneCelebration from "@/frontend/components/dashboard/StreakMilestoneCelebration";
+import AttendanceIssuePopup from "@/frontend/components/attendance/AttendanceIssuePopup";
 import { isStreakMilestone } from "@/frontend/lib/streakTiers";
 
 type Status = { checkedIn: boolean; retryAfterMinutes: number | null };
@@ -22,7 +23,10 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
   const router = useRouter();
   const [status, setStatus] = useState<Status>(initialStatus);
   const [marking, setMarking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Any real reason a check-in couldn't go through — pops up with a buzz
+  // (see AttendanceIssuePopup) instead of a line of text under the button
+  // someone standing on the gym floor could easily miss.
+  const [issue, setIssue] = useState<string | null>(null);
   // Set only when this check-in's streak is a genuine round-number
   // milestone (see isStreakMilestone) — an ordinary day-to-day +1 never
   // shows this, or the popup would stop meaning anything.
@@ -36,7 +40,6 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
   async function handleTap() {
     if (marking || status.checkedIn) return;
     setMarking(true);
-    setError(null);
     try {
       const res = await fetch("/api/dashboard/checkin", { method: "POST" });
       const data = await res.json();
@@ -51,17 +54,19 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       } else if (data.status === "cooldown") {
         setStatus({ checkedIn: true, retryAfterMinutes: data.retryAfterMinutes });
       } else if (data.status === "inactive") {
-        setError("Membership inactive — see the front desk.");
+        setIssue("Membership inactive — see the front desk.");
       } else if (data.status === "blocked") {
-        setError("Your membership is on hold — see the front desk about your fee.");
+        setIssue("Your membership is on hold — see the front desk about your fee.");
         router.refresh();
       } else if (data.status === "outside_hours") {
-        setError("Floor's closed — attendance opens 6 AM–12 PM and 4–10:30 PM.");
+        setIssue("Floor's closed — attendance opens 6 AM–12 PM and 4–10:30 PM.");
+      } else if (data.status === "gym_closed") {
+        setIssue(data.reason ?? "The gym is closed today.");
       } else {
-        setError("Couldn't check you in right now.");
+        setIssue("Couldn't check you in right now.");
       }
     } catch {
-      setError("Network error. Please try again.");
+      setIssue("Network error. Please try again.");
     } finally {
       setMarking(false);
     }
@@ -112,11 +117,8 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       </button>
       <div className="flex-1 min-w-0">
         <p className="font-label text-xs uppercase tracking-wide text-on-surface">Attendance</p>
-        <p
-          key={error ?? statusText}
-          className={`font-body text-xs truncate animate-attendance-status-in ${error ? "text-error" : "text-tertiary"}`}
-        >
-          {error ?? statusText}
+        <p key={statusText} className="font-body text-xs truncate animate-attendance-status-in text-tertiary">
+          {statusText}
         </p>
       </div>
       {milestoneStreak != null && (
@@ -126,6 +128,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
           onDismiss={() => setMilestoneStreak(null)}
         />
       )}
+      {issue && <AttendanceIssuePopup message={issue} onDismiss={() => setIssue(null)} />}
     </div>
   );
 }
