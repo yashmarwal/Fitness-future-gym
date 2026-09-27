@@ -297,7 +297,11 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
     .eq("is_active", true)
     .eq("is_frozen", false)
     .not("fee_due_date", "is", null)
-    .lt("fee_due_date", cutoffStr);
+    // <= , not < : a fee_due_date exactly `cutoffStr` (today - N days) means
+    // exactly N days have elapsed since it was due, which is what "overdue
+    // N+ days" actually promises. `.lt` here would only ever catch N+1 days,
+    // silently giving every member a free extra day.
+    .lte("fee_due_date", cutoffStr);
 
   if (error) throw new Error(`Failed to load overdue members: ${error.message}`);
 
@@ -380,7 +384,12 @@ export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }
     .eq("is_active", true)
     .eq("is_frozen", false)
     .is("fee_due_date", null)
-    .lt("joined_at", cutoffStr);
+    // <= , not < : same off-by-one fix as autoBlockOverdueMembers above — a
+    // joined_at exactly `cutoffStr` (today - N days) means exactly N days
+    // have elapsed since joining, which is what "blocked after N days"
+    // actually means. `.lt` only ever caught N+1 days, giving every new
+    // member a free extra day of unbilled access.
+    .lte("joined_at", cutoffStr);
 
   if (error) throw new Error(`Failed to load never-billed members: ${error.message}`);
 
