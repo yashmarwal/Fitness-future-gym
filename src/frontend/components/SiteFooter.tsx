@@ -116,7 +116,22 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-space-2xl pt-space-md border-t border-surface-variant/30 flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+        <div className="mt-space-xl pt-space-md border-t border-surface-variant/30 flex flex-wrap items-center justify-center gap-x-space-md gap-y-space-2xs">
+          <Link className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors" href="/privacy-policy">
+            Privacy Policy
+          </Link>
+          <Link className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors" href="/terms-conditions">
+            Terms &amp; Conditions
+          </Link>
+          <Link className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors" href="/cookies-policy">
+            Cookies Policy
+          </Link>
+          <Link className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-primary-container transition-colors" href="/refund-policy">
+            Refund &amp; Cancellation
+          </Link>
+        </div>
+
+        <div className="mt-space-md pt-space-md border-t border-surface-variant/30 flex flex-col sm:flex-row items-center justify-between gap-space-sm">
           <p className="font-body-sm text-body-sm text-tertiary">
             © {new Date().getFullYear()} Fitness Future Gym. Nangloi, Delhi. All Rights Reserved. Built for Iron Athletes.
           </p>
