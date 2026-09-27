@@ -62,7 +62,24 @@ export default function PwaInstallPrompt() {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      if (process.env.NODE_ENV === "development") {
+        // sw.js cache-firsts everything under /_next/static/ on the
+        // assumption that a new build always means a new (content-hashed)
+        // URL — true for a real `next build`, not for `next dev`, where a
+        // chunk's URL can stay the same across an edit. Registered here
+        // during dev, it would keep serving a stale cached JS chunk from
+        // Cache Storage forever, no matter how many times the source
+        // changes underneath it (this is exactly why an edited sound
+        // effect kept playing its old version). Actively unregister/clear
+        // anything already cached from before this guard existed, not just
+        // skip registering going forward.
+        navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister())).catch(() => {});
+        if ("caches" in window) {
+          caches.keys().then((keys) => keys.forEach((key) => caches.delete(key))).catch(() => {});
+        }
+      } else {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      }
     }
 
     function handlePrompt(e: Event) {

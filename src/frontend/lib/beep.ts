@@ -32,9 +32,20 @@ export function playTick() {
   playBeep(660, 80);
 }
 
+// A classic phone-style "brring" — two close tones alternating fast, in a
+// short 3-pulse burst — instead of the old single ascending two-note chime.
+// RestTimerAlarmWatcher re-calls this every 1.4s while the alarm is going,
+// so one call here is one "ring" cycle, not the whole alarm; the burst
+// itself finishes well inside that window, leaving a beat of silence
+// between rings like an actual phone.
 export function playFinish() {
-  playBeep(880, 150);
-  setTimeout(() => playBeep(1046, 220), 180);
+  const ring = () => {
+    playBeep(950, 90);
+    setTimeout(() => playBeep(750, 90), 100);
+  };
+  ring();
+  setTimeout(ring, 220);
+  setTimeout(ring, 440);
 }
 
 // Vibration API — mobile only (desktop browsers just don't have the

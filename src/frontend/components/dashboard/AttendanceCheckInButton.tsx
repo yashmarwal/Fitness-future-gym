@@ -81,20 +81,53 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       : "Tap to check in and unlock your dashboard";
 
   return (
-    <div
-      className={`flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 ${
-        checkedIn ? "border-primary-container" : "border-surface-variant"
+    <button
+      type="button"
+      onClick={handleTap}
+      disabled={checkedIn || marking}
+      aria-label={checkedIn ? "Attendance already marked" : "Tap to check in and mark attendance"}
+      className={`relative w-full flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 text-left disabled:cursor-default ${
+        checkedIn ? "border-primary-container" : "border-surface-variant hover:bg-surface-container"
       }`}
     >
-      <button
-        onClick={handleTap}
-        disabled={checkedIn || marking}
-        aria-label={checkedIn ? "Attendance already marked" : "Tap to mark attendance"}
+      {/* A comet of orange stroke traveling around the whole pill, not just
+          the small circular button, for as long as the request is in
+          flight — pathLength=100 keeps the dash math independent of the
+          pill's actual rendered width (see attendance-pill-trace).
+          Deliberately setting ONLY ry (not rx) to "50%": per the SVG spec,
+          when only ry is given, rx is inferred to the same resolved value
+          (height / 2) rather than each being clamped independently against
+          its own axis — that's what keeps both end-caps true semicircles
+          (a real pill/stadium) instead of the flattened ellipse you get
+          from something like rx="9999" on a rect much wider than it is
+          tall (rx clamps to width/2, ry clamps to height/2 separately). */}
+      {marking && (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+          <rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            ry="50%"
+            pathLength={100}
+            fill="none"
+            stroke="var(--color-primary-container)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeDasharray="16 84"
+            className="animate-attendance-pill-trace"
+          />
+        </svg>
+      )}
+      {/* Purely decorative now — the whole pill above is the real tap
+          target (aria-label there covers it), this is just the icon badge. */}
+      <span
+        aria-hidden="true"
         className={`relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft transition-all
           ${
             checkedIn
-              ? "bg-surface-container-high text-primary-container cursor-default"
-              : "bg-primary-container text-on-primary-container hover:bg-secondary-container active:scale-90"
+              ? "bg-surface-container-high text-primary-container"
+              : "bg-primary-container text-on-primary-container"
           }
           ${marking ? "animate-attendance-pulse" : ""}
         `}
@@ -114,13 +147,13 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         >
           {checkedIn ? "check_circle" : "event_available"}
         </span>
-      </button>
-      <div className="flex-1 min-w-0">
-        <p className="font-label text-xs uppercase tracking-wide text-on-surface">Attendance</p>
-        <p key={statusText} className="font-body text-xs truncate animate-attendance-status-in text-tertiary">
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block font-label text-xs uppercase tracking-wide text-on-surface">Attendance</span>
+        <span key={statusText} className="block font-body text-xs truncate animate-attendance-status-in text-tertiary">
           {statusText}
-        </p>
-      </div>
+        </span>
+      </span>
       {milestoneStreak != null && (
         <StreakMilestoneCelebration
           days={milestoneStreak}
@@ -129,6 +162,6 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         />
       )}
       {issue && <AttendanceIssuePopup message={issue} onDismiss={() => setIssue(null)} />}
-    </div>
+    </button>
   );
 }
