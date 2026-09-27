@@ -406,7 +406,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
                         <Link
-                          href={`/admin/members/${m.id}`}
+                          href={`/admin-2G/members/${m.id}`}
                           aria-label="View member profile"
                           className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
                         >
@@ -470,7 +470,7 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                 </div>
                 <div className="flex gap-2 pt-1 border-t border-surface-variant/30">
                   <Link
-                    href={`/admin/members/${m.id}`}
+                    href={`/admin-2G/members/${m.id}`}
                     className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-surface-container-high active:bg-surface-container-highest text-on-surface transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">person</span>

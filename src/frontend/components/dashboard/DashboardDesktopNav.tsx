@@ -18,7 +18,11 @@ export default function DashboardDesktopNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden lg:flex items-center gap-1 bg-surface-container-low border-b border-surface-variant/50 px-gutter-desktop overflow-x-auto">
+    // bg-black, same reasoning as DashboardHeader — this full-width strip
+    // sits directly on the page background, not as a floating/elevated
+    // element (unlike DashboardTabBar's floating glass pill), so it should
+    // match the page's pure black exactly.
+    <nav className="hidden lg:flex items-center gap-1 bg-black border-b border-surface-variant/50 px-gutter-desktop overflow-x-auto">
       {LINKS.map((link) => {
         const active = pathname === link.href;
         return (

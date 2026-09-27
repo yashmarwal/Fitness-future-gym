@@ -108,7 +108,7 @@ export default function MemberProfileView({
   return (
     <div className="flex flex-col gap-6 max-w-4xl">
       <Link
-        href="/admin/members"
+        href="/admin-2G/members"
         className="inline-flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors w-fit"
       >
         <span className="material-symbols-outlined text-base leading-none">arrow_back</span>
@@ -187,7 +187,7 @@ export default function MemberProfileView({
 
         <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-surface-variant/30">
           <Link
-            href={`/admin/members?edit=${member.id}`}
+            href={`/admin-2G/members?edit=${member.id}`}
             className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
           >
             <span className="material-symbols-outlined text-sm leading-none">edit</span>

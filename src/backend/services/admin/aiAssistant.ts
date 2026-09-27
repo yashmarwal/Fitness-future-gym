@@ -1,10 +1,13 @@
 import "server-only";
 import { listOverdueFeeMembers, listUpcomingDueMembers, listRecentlyMissedMembers, listInactiveMembers, listTrialOverMembers, listUpcomingBirthdays } from "@/backend/services/admin/alerts";
 import { listRecentAttendance, getMemberAttendanceTimestamps, countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
-import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/admin/feeAbuse";
+import { listUnpaidActiveMembers, listBlockedMembers, countNeverBilledMembers } from "@/backend/services/admin/feeAbuse";
 import { listFeePayments, sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
-import { listMembers, getMember } from "@/backend/services/admin/members";
+import { listMembers, getMember, countMembers } from "@/backend/services/admin/members";
 import { listTrialRegistrations } from "@/backend/services/admin/trials";
+import { getDailySummary } from "@/backend/services/admin/dailySummary";
+import { getWeeklySummary } from "@/backend/services/admin/weeklySummary";
+import { listUpcomingHolidays } from "@/backend/services/gymCalendar";
 import { friendlyAiError, getAiConfig, modelExtras, redactSecrets } from "@/backend/services/admin/aiClient";
 
 // Curated, READ-ONLY tool surface for the admin AI assistant — every tool
@@ -53,6 +56,12 @@ const TOOLS: Record<string, ToolDef> = {
     description: "Gets full detail for one member by their id (get the id from list_members first).",
     parameters: { type: "object", properties: { id: { type: "string", description: "The member's id" } }, required: ["id"] },
     handler: async (args) => getMember(String(args.id)),
+  },
+  count_members: {
+    description:
+      "The exact total member count, plus how many of those are active and how many are currently blocked. ALWAYS use this for any 'how many members' / 'total members' question instead of counting list_members yourself.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => countMembers(),
   },
   list_overdue_fee_members: {
     description: "Members whose fee is currently overdue (past its due date).",
@@ -128,6 +137,29 @@ const TOOLS: Record<string, ToolDef> = {
     description: "All free-trial registrations (name, phone, email, shift, status, trial dates) — includes people who never became members.",
     parameters: { type: "object", properties: {} },
     handler: async () => listTrialRegistrations(),
+  },
+  count_never_billed_members: {
+    description:
+      "How many members total have never been billed at all (no fee/plan ever set for them), regardless of whether they're active or currently blocked. Use this for 'how many members were never billed' — list_unpaid_active_members only covers the ones actively using the gym recently, not the full count.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => countNeverBilledMembers(),
+  },
+  get_daily_summary: {
+    description:
+      "Today's full business snapshot: check-ins today (and the usual number for this weekday), revenue today and this month so far, today's payments/new members/new trials/trial conversions, active member count, and every 'Needs Attention' alert count (overdue fees, due soon, no check-in, inactive, trial not converted, birthdays this week, using gym unpaid, currently blocked). Use this for any 'how's today going' / 'what happened today' question.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => getDailySummary(),
+  },
+  get_weekly_summary: {
+    description:
+      "This week vs. last week: check-ins (with a per-day breakdown, busiest/quietest day), revenue, new members, trial signups/conversions, members who used to come regularly but dropped off this week, overdue-fee examples, and the same alert counts as get_daily_summary. Use this for any 'how's this week' / 'compared to last week' / 'busiest day' question.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => getWeeklySummary(),
+  },
+  list_upcoming_holidays: {
+    description: "Every gym closure (admin-marked holiday) from today onward, with its reason. Use this for 'when's the next holiday' / 'are we closed any day this month' — does NOT include Sundays, which are a standing weekly closure, not a marked holiday.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => listUpcomingHolidays(),
   },
 };
 

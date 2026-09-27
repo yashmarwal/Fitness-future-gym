@@ -62,11 +62,11 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  if (pathname.startsWith("/admin-2G") && pathname !== "/admin-2G/login") {
     const token = request.cookies.get(ADMIN_COOKIE)?.value;
     const session = token ? await verifySession<AdminSession>(token) : null;
     if (!session) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      return NextResponse.redirect(new URL("/admin-2G/login", request.url));
     }
 
     // Sliding session, same as the member block above — previously admin
@@ -89,5 +89,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/", "/dashboard/:path*", "/admin-2G/:path*"],
 };

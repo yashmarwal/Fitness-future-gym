@@ -107,7 +107,7 @@ export default function AlertsList({
               </p>
             </div>
             <Link
-              href="/admin/members"
+              href="/admin-2G/members"
               className="font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors shrink-0"
             >
               View →

@@ -1,10 +1,10 @@
 {
-  "id": "/admin",
+  "id": "/admin-2G",
   "name": "Fitness Future Admin",
   "short_name": "FF Admin",
   "description": "Admin panel for Fitness Future Gym — members, fees, attendance, and more.",
-  "start_url": "/admin",
-  "scope": "/admin",
+  "start_url": "/admin-2G",
+  "scope": "/admin-2G",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#141311",

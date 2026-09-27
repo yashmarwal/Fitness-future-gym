@@ -24,7 +24,7 @@ export default function AdminLoginForm() {
         // for why this is deliberately the one place that bypasses
         // Next.js's client-side router, as the most reliable way to
         // confirm the new session cookie actually landed.
-        window.location.href = "/admin";
+        window.location.href = "/admin-2G";
       } else {
         setError("Invalid username or password.");
       }
@@ -36,7 +36,10 @@ export default function AdminLoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-gutter-mobile py-16">
+    // bg-black, same pure-black treatment as the rest of the admin panel —
+    // otherwise this screen alone would still show the site-wide warm
+    // near-black (#141311) since it sits outside admin-2G/(dashboard)/layout.tsx.
+    <div className="min-h-screen bg-black flex items-center justify-center px-gutter-mobile py-16">
       <div className="w-full max-w-sm bg-surface-container-low rounded-2xl shadow-soft-lg p-8">
         <span className="material-symbols-outlined text-3xl text-primary-container leading-none">lock</span>
         <span className="font-label text-xs uppercase tracking-widest text-primary-container block mt-3">

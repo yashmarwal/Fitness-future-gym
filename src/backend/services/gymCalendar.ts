@@ -78,6 +78,26 @@ export async function getTodayHoliday(): Promise<GymHoliday | null> {
   return mapHolidayRow(data as { holiday_date: string; reason: string | null });
 }
 
+// Every gym-marked closure from today onward — currently only consumed by
+// the admin AI assistant's list_upcoming_holidays tool ("when's the next
+// gym holiday", "how many days are we closed this month"). Fails open
+// (empty list) if the migration hasn't run, same as getTodayHoliday above.
+export async function listUpcomingHolidays(): Promise<GymHoliday[]> {
+  const db = getDb();
+  const today = getIstDateString();
+  const { data, error } = await db
+    .from("gym_holidays")
+    .select("holiday_date, reason")
+    .gte("holiday_date", today)
+    .order("holiday_date", { ascending: true });
+
+  if (error) {
+    if (isMissingTableError(error)) return [];
+    throw new Error(`Failed to load holidays: ${error.message}`);
+  }
+  return (data ?? []).map((row) => mapHolidayRow(row as { holiday_date: string; reason: string | null }));
+}
+
 // Holiday dates within an inclusive IST date range, as a Set for O(1)
 // membership checks in the day-by-day loops below. Fails open (empty set)
 // if the migration hasn't run — Sunday-exemption still works either way,

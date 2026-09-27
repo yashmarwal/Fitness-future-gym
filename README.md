@@ -36,7 +36,7 @@ reminder jobs).
    ```bash
    npm run dev
    ```
-   Visit `http://localhost:3000` for the public site, `/admin/login` for the
+   Visit `http://localhost:3000` for the public site, `/admin-2G/login` for the
    admin panel, `/login` for member sign-in, and `/signup` for a member to
    create their own account (no admin step needed — see below).
 

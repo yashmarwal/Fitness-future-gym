@@ -11,6 +11,31 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
+// Categorizes a block reason into a small badge — only for the three
+// automatic reasons feeAbuse.ts's blockMember calls actually produce
+// ("Fee overdue N+ days (automatic)", "No check-in for N+ attendance days
+// (automatic)", "Never billed — N+ days since joining (automatic)").
+// Matched by keyword rather than exact string so it survives the "N" in
+// each changing, and returns null for anything else (an admin's own
+// free-typed reason from the manual Block flow below) rather than forcing
+// a generic "Manual" pill onto text that's already self-explanatory.
+type BlockReasonCategory = "never_billed" | "fee_due" | "not_checked_in";
+
+function categorizeBlockReason(reason: string | null): BlockReasonCategory | null {
+  if (!reason) return null;
+  const r = reason.toLowerCase();
+  if (r.includes("never billed")) return "never_billed";
+  if (r.includes("overdue")) return "fee_due";
+  if (r.includes("check-in") || r.includes("check in")) return "not_checked_in";
+  return null;
+}
+
+const REASON_PILL: Record<BlockReasonCategory, { label: string; className: string }> = {
+  never_billed: { label: "Never Billed", className: "bg-error/10 text-error border-error/40" },
+  fee_due: { label: "Fee Due", className: "bg-primary-container/15 text-primary-container border-primary-container/40" },
+  not_checked_in: { label: "Not Checked In", className: "bg-surface-container-high text-tertiary border-surface-variant" },
+};
+
 function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [reason, setReason] = useState(member.flagReason);
@@ -81,6 +106,8 @@ function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked
 
 function BlockedRow({ member, onUnblocked }: { member: AdminMember; onUnblocked: () => void }) {
   const [submitting, setSubmitting] = useState(false);
+  const category = categorizeBlockReason(member.blockedReason);
+  const pill = category ? REASON_PILL[category] : null;
 
   async function handleUnblock() {
     setSubmitting(true);
@@ -98,7 +125,14 @@ function BlockedRow({ member, onUnblocked }: { member: AdminMember; onUnblocked:
         <p className="font-label text-sm uppercase text-on-surface">{member.fullName}</p>
         <p className="font-body text-xs text-tertiary">{member.membershipNumber}</p>
         {member.blockedReason && (
-          <p className="font-body text-xs text-error mt-0.5">{member.blockedReason}</p>
+          <div className="flex items-center flex-wrap gap-2 mt-1">
+            {pill && (
+              <span className={`shrink-0 font-label text-[9px] uppercase tracking-wide px-2 py-0.5 rounded-full border ${pill.className}`}>
+                {pill.label}
+              </span>
+            )}
+            <p className="font-body text-xs text-error">{member.blockedReason}</p>
+          </div>
         )}
       </div>
       <button

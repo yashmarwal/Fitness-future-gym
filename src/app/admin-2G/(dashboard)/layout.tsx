@@ -4,7 +4,7 @@ import { getAdminSession } from "@/backend/auth/session";
 import AdminNav from "@/frontend/components/admin/AdminNav";
 
 // Overrides the root layout's manifest link (which points at
-// admin-manifest.json — start_url "/admin" instead of "/dashboard" — the
+// admin-manifest.json — start_url "/admin-2G" instead of "/dashboard" — the
 // root manifest.json's start_url is member-facing). Without this, "Add to
 // Home Screen" from anywhere in the admin panel installs a shortcut that
 // still launches to the member dashboard, since Chrome/Android read
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdminSession();
-  if (!session) redirect("/admin/login");
+  if (!session) redirect("/admin-2G/login");
 
   return (
     // dvh, not vh/min-h-screen: vh is the STATIC viewport height (the area
@@ -27,7 +27,10 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     // anything sized off it doesn't shrink when the keyboard opens — which
     // is exactly why the AI assistant's input could end up stuck behind
     // the keyboard. dvh tracks the real, current visible viewport.
-    <div className="flex flex-col min-h-dvh overflow-x-hidden">
+    // bg-black — same pure-black page background as the member dashboard
+    // (dashboard/layout.tsx), instead of falling through to the site-wide
+    // --color-background (#141311, a warm near-black) via body.
+    <div className="flex flex-col min-h-dvh overflow-x-hidden bg-black">
       <AdminNav username={session.username} />
       {/* overflow-x-hidden here is a safety net, not a fix for anything
           specific to this file — one unshrinkable flex child anywhere
