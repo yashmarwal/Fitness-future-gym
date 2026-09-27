@@ -6,15 +6,15 @@ import { usePathname, useRouter } from "next/navigation";
 import type { MemberSearchResult } from "@/types/admin";
 
 const LINKS = [
-  { href: "/admin", label: "Overview", icon: "dashboard" },
-  { href: "/admin/alerts", label: "Alerts", icon: "notifications" },
-  { href: "/admin/members", label: "Members", icon: "group" },
-  { href: "/admin/trials", label: "Trials", icon: "person_add" },
-  { href: "/admin/attendance", label: "Attendance", icon: "event_available" },
-  { href: "/admin/fees", label: "Fees", icon: "payments" },
-  { href: "/admin/access-control", label: "Access Control", icon: "block" },
-  { href: "/admin/broadcast", label: "Broadcast", icon: "campaign" },
-  { href: "/admin/ai-assistant", label: "Ask AI", icon: "smart_toy" },
+  { href: "/admin-2G", label: "Overview", icon: "dashboard" },
+  { href: "/admin-2G/alerts", label: "Alerts", icon: "notifications" },
+  { href: "/admin-2G/members", label: "Members", icon: "group" },
+  { href: "/admin-2G/trials", label: "Trials", icon: "person_add" },
+  { href: "/admin-2G/attendance", label: "Attendance", icon: "event_available" },
+  { href: "/admin-2G/fees", label: "Fees", icon: "payments" },
+  { href: "/admin-2G/access-control", label: "Access Control", icon: "block" },
+  { href: "/admin-2G/broadcast", label: "Broadcast", icon: "campaign" },
+  { href: "/admin-2G/ai-assistant", label: "Ask AI", icon: "smart_toy" },
 ];
 
 const SEARCH_DEBOUNCE_MS = 250;
@@ -70,7 +70,7 @@ function QuickMemberSearch() {
     setOpen(false);
     setQuery("");
     setResults([]);
-    router.push(`/admin/members/${id}`);
+    router.push(`/admin-2G/members/${id}`);
   }
 
   const showing = open && query.trim().length >= 2;
@@ -127,11 +127,15 @@ export default function AdminNav({ username }: { username: string }) {
     // Not also calling router.refresh() — see LoginForm.tsx for why that
     // combination races with the pending push transition. push() alone
     // still re-runs middleware with the now-cleared cookie.
-    router.push("/admin/login");
+    router.push("/admin-2G/login");
   }
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-surface-container-lowest border-b border-surface-variant/50">
+    // bg-black, not bg-surface-container-lowest — matches the admin
+    // dashboard layout's own pure-black background exactly (see
+    // admin-2G/(dashboard)/layout.tsx), same fix as the member dashboard's
+    // header.
+    <header className="sticky top-0 z-20 w-full bg-black border-b border-surface-variant/50">
       <div className="flex items-center justify-between gap-3 px-gutter-mobile lg:px-gutter-desktop h-16">
         <span className="font-display text-xl text-on-surface uppercase tracking-wide shrink-0">
           Admin <span className="text-primary-container">Panel</span>

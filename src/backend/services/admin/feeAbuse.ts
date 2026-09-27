@@ -66,6 +66,20 @@ const RECENTLY_ACTIVE_DAYS = 7;
 
 export type UnpaidActiveMember = AdminMember & { lastCheckedInAt: string | null; flagReason: string };
 
+// The total count of never-billed members — everyone with no fee_due_date
+// on file, regardless of activity or block status. Distinct from
+// listUnpaidActiveMembers below, which only surfaces the ones actively
+// using the floor recently; this answers the broader "how many members
+// have we never actually billed" question, which that list can't (it's
+// scoped to active + recently-checked-in + not-already-blocked). Currently
+// only consumed by the admin AI assistant's count_never_billed_members tool.
+export async function countNeverBilledMembers(): Promise<number> {
+  const db = getDb();
+  const { count, error } = await db.from("members").select("id", { count: "exact", head: true }).is("fee_due_date", null);
+  if (error) throw new Error(`Failed to count never-billed members: ${error.message}`);
+  return count ?? 0;
+}
+
 function computeFlagReason(row: Record<string, unknown>): string {
   const dueDate = row.fee_due_date as string | null;
   if (!dueDate) return "Never billed — no fee due date on file";

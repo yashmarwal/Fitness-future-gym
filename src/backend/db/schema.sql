@@ -411,7 +411,7 @@ create table if not exists whatsapp_messages (
   member_id uuid references members(id) on delete set null,
   phone text not null,
   template text not null, -- 'otp' | 'fee_reminder' | 'fee_received' | 'birthday' | 'announcement' | 'welcome_card' | 'trial_pass' | 'trial_reminder' | 'account_blocked' | 'account_unblocked' | 'auto_reply_contact_info' (webhook auto-reply, see whatsappInbound.ts)
-  status text not null default 'sent', -- 'sent' | 'failed'
+  status text not null default 'sent', -- 'sent' | 'failed' | 'dev_mode' (no WHATSAPP_ACCESS_TOKEN/WHATSAPP_PHONE_NUMBER_ID configured — nothing was actually sent, see whatsapp.ts)
   error text,
   created_at timestamptz not null default now()
 );
@@ -424,7 +424,7 @@ create table if not exists email_messages (
   member_id uuid references members(id) on delete set null,
   email text not null,
   template text not null, -- 'welcome_card' | 'fee_reminder' | 'birthday' | 'announcement'
-  status text not null default 'sent', -- 'sent' | 'failed'
+  status text not null default 'sent', -- 'sent' | 'failed' | 'dev_mode' (no RESEND_API_KEY configured — nothing was actually sent, see email.ts)
   error text,
   created_at timestamptz not null default now()
 );

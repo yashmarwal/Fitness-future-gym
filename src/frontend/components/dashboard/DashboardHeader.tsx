@@ -47,7 +47,11 @@ export default function DashboardHeader({
   }, [settingsOpen]);
 
   return (
-    <header className="w-full bg-surface-container-lowest border-b border-surface-variant/50 px-gutter-mobile lg:px-gutter-desktop h-16 flex items-center justify-between">
+    // bg-black, not bg-surface-container-lowest (#0f0e0c) — matches the
+    // dashboard layout's own pure-black page background exactly, instead of
+    // this header bar reading as a visibly different, slightly warmer shade
+    // sitting on top of it.
+    <header className="w-full bg-black border-b border-surface-variant/50 px-gutter-mobile lg:px-gutter-desktop h-16 flex items-center justify-between">
       <div className="flex flex-col leading-none">
         <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
           Welcome Back

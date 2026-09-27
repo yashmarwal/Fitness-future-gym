@@ -521,10 +521,16 @@ export async function sendEmailTemplate(params: {
   const { to, template, bodyParams, memberId, attachments } = params;
   const { subject, html } = buildEmail(template, bodyParams);
 
-  let status: "sent" | "failed" = "sent";
+  // "dev_mode" is its own status, not "sent" — see whatsapp.ts's identical
+  // fix for the same bug: without RESEND_API_KEY configured (e.g. local
+  // dev), this used to default to "sent" and never get corrected in the
+  // no-op branch, making email_messages falsely claim delivery when
+  // nothing actually reached Resend.
+  let status: "sent" | "failed" | "dev_mode" = "sent";
   let error: string | undefined;
 
   if (!isConfigured()) {
+    status = "dev_mode";
     console.log(`[email:dev-mode] to=${to} template=${template} subject="${subject}"`);
   } else {
     try {

@@ -54,10 +54,10 @@ export default function PwaInstallPrompt() {
   const showIosInstructions = useShowIosInstructions();
   const [dismissed, setDismissed] = useState(false);
   // The banner's copy follows whichever manifest is actually active on this
-  // page (see admin/(dashboard)/layout.tsx) — installing from an admin page
-  // installs the admin shortcut (start_url "/admin"), so the label should
-  // say so instead of always reading "Fitness Future".
-  const isAdmin = usePathname()?.startsWith("/admin") ?? false;
+  // page (see admin-2G/(dashboard)/layout.tsx) — installing from an admin
+  // page installs the admin shortcut (start_url "/admin-2G"), so the label
+  // should say so instead of always reading "Fitness Future".
+  const isAdmin = usePathname()?.startsWith("/admin-2G") ?? false;
   const appLabel = isAdmin ? "Fitness Future Admin" : "Fitness Future";
 
   useEffect(() => {

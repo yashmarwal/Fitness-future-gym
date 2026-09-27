@@ -129,10 +129,16 @@ async function sendTextViaCloudApi(phone: string, body: string) {
 // dedupe repeat replies to the same sender.
 export async function sendWhatsAppReplyText(params: { phone: string; body: string }): Promise<void> {
   const { phone, body } = params;
-  let status: "sent" | "failed" = "sent";
+  // "dev_mode" is its own status, not "sent" — no credentials configured
+  // means nothing actually reaches Meta at all, just a console.log below.
+  // This used to default to "sent" and never get corrected in the no-op
+  // branch, which made whatsapp_messages lie about local/unconfigured
+  // sends actually having gone out.
+  let status: "sent" | "failed" | "dev_mode" = "sent";
   let error: string | undefined;
 
   if (!isConfigured()) {
+    status = "dev_mode";
     console.log(`[whatsapp:dev-mode] reply to=${phone} body=${body}`);
   } else {
     try {
@@ -171,10 +177,16 @@ export async function sendWhatsAppTemplate(params: {
   // is required" and no obvious cause. `|| ` (falsy) catches that case too.
   const templateName = process.env[TEMPLATE_NAME_ENV[template]] || TEMPLATE_NAME_DEFAULT[template];
 
-  let status: "sent" | "failed" = "sent";
+  // "dev_mode" is its own status, not "sent" — see sendWhatsAppReplyText
+  // above for why this used to be a false positive in whatsapp_messages
+  // whenever WHATSAPP_ACCESS_TOKEN/WHATSAPP_PHONE_NUMBER_ID aren't set
+  // (e.g. local dev), silently claiming a template was delivered when
+  // nothing left the server at all.
+  let status: "sent" | "failed" | "dev_mode" = "sent";
   let error: string | undefined;
 
   if (!isConfigured()) {
+    status = "dev_mode";
     console.log(
       `[whatsapp:dev-mode] to=${phone} template=${templateName} params=${JSON.stringify(bodyParams)}`
     );

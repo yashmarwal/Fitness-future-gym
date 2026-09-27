@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/frontend/lib/siteConfig";
 
-// /admin/* and /dashboard/* are already session-gated (see proxy.ts — an
+// /admin-2G/* and /dashboard/* are already session-gated (see proxy.ts — an
 // unauthenticated request just gets redirected to a login page), but
 // disallowing them here too avoids crawlers wasting budget on redirect
 // chains into private areas. /login, /signup, and /attendance are real,
@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin", "/dashboard", "/api"],
+      disallow: ["/admin-2G", "/dashboard", "/api"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

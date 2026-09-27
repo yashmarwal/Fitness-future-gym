@@ -9,7 +9,7 @@ export default async function AdminMonthlyAttendancePage() {
     <div className="flex flex-col gap-6">
       <div>
         <Link
-          href="/admin/attendance"
+          href="/admin-2G/attendance"
           className="flex items-center gap-1 font-label text-[10px] uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors w-fit mb-3"
         >
           <span className="material-symbols-outlined text-sm leading-none">arrow_back</span>

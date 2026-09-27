@@ -47,28 +47,28 @@ export default async function AdminOverviewPage() {
     // Each card links to wherever that figure's actual detail already lives
     // — no new "detail view" built for any of these, they all reuse an
     // existing page rather than duplicate its list a second time.
-    { label: "Check-Ins Today", value: todaysCheckIns, icon: "event_available", tone: "text-primary-container", href: "/admin/attendance" },
-    { label: "Revenue This Month", value: `₹${revenueThisMonth}`, icon: "payments", tone: "text-on-surface", href: "/admin/fees" },
+    { label: "Check-Ins Today", value: todaysCheckIns, icon: "event_available", tone: "text-primary-container", href: "/admin-2G/attendance" },
+    { label: "Revenue This Month", value: `₹${revenueThisMonth}`, icon: "payments", tone: "text-on-surface", href: "/admin-2G/fees" },
     {
       label: "Overdue Fees",
       value: overdueCount,
       icon: "error",
       tone: overdueCount > 0 ? "text-error" : "text-on-surface",
       accent: overdueCount > 0,
-      href: "/admin/members?filter=fee_due",
+      href: "/admin-2G/members?filter=fee_due",
     },
-    { label: "Active Members", value: activeCount, icon: "group", tone: "text-on-surface", href: "/admin/members" },
+    { label: "Active Members", value: activeCount, icon: "group", tone: "text-on-surface", href: "/admin-2G/members" },
   ];
 
   const alertCounts = [
-    { label: "Fee Overdue", count: overdue.length, tone: "text-error", icon: "error", href: "/admin/alerts" },
-    { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container", icon: "schedule", href: "/admin/alerts" },
-    { label: "No Check-In 3+ Days", count: recentlyMissed.length, tone: "text-primary-container", icon: "event_busy", href: "/admin/alerts" },
-    { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container", icon: "person_off", href: "/admin/alerts" },
-    { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container", icon: "person_add", href: "/admin/alerts" },
-    { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface", icon: "cake", href: "/admin/alerts" },
-    { label: "Using Gym, Unpaid", count: unpaidActive.length, tone: "text-error", icon: "warning", href: "/admin/access-control" },
-    { label: "Currently Blocked", count: blocked.length, tone: "text-error", icon: "block", href: "/admin/access-control" },
+    { label: "Fee Overdue", count: overdue.length, tone: "text-error", icon: "error", href: "/admin-2G/alerts" },
+    { label: "Due Within 3 Days", count: upcomingDue.length, tone: "text-primary-container", icon: "schedule", href: "/admin-2G/alerts" },
+    { label: "No Check-In 3+ Days", count: recentlyMissed.length, tone: "text-primary-container", icon: "event_busy", href: "/admin-2G/alerts" },
+    { label: "Inactive 4+ Months", count: inactive.length, tone: "text-primary-container", icon: "person_off", href: "/admin-2G/alerts" },
+    { label: "Trial Not Converted", count: trialOver.length, tone: "text-primary-container", icon: "person_add", href: "/admin-2G/alerts" },
+    { label: "Birthdays This Week", count: birthdays.length, tone: "text-on-surface", icon: "cake", href: "/admin-2G/alerts" },
+    { label: "Using Gym, Unpaid", count: unpaidActive.length, tone: "text-error", icon: "warning", href: "/admin-2G/access-control" },
+    { label: "Currently Blocked", count: blocked.length, tone: "text-error", icon: "block", href: "/admin-2G/access-control" },
   ];
 
   return (
@@ -108,7 +108,7 @@ export default async function AdminOverviewPage() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-xl text-on-surface uppercase tracking-wide">Needs Attention</h2>
           <Link
-            href="/admin/alerts"
+            href="/admin-2G/alerts"
             className="font-label text-xs uppercase tracking-wider text-primary-container hover:text-secondary transition-colors"
           >
             View All →

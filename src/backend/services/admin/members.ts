@@ -51,6 +51,26 @@ export async function listMembers(): Promise<AdminMember[]> {
   return (base.data ?? []).map(mapRow);
 }
 
+// A cheap head-count query (no rows fetched) rather than listMembers().length
+// — powers the admin AI assistant's "how many members" question (see
+// aiAssistant.ts's count_members tool). Without a dedicated count tool the
+// model's only option was list_members, and its own system prompt telling
+// it to "never guess or invent a number" made it reluctant to count that
+// list itself rather than risk being wrong — the same reasoning already
+// applied to count_overdue_members/count_todays_checkins elsewhere.
+export async function countMembers(): Promise<{ total: number; active: number; blocked: number }> {
+  const db = getDb();
+  const [totalRes, activeRes, blockedRes] = await Promise.all([
+    db.from("members").select("id", { count: "exact", head: true }),
+    db.from("members").select("id", { count: "exact", head: true }).eq("is_active", true),
+    db.from("members").select("id", { count: "exact", head: true }).eq("is_frozen", true),
+  ]);
+  if (totalRes.error) throw new Error(`Failed to count members: ${totalRes.error.message}`);
+  if (activeRes.error) throw new Error(`Failed to count members: ${activeRes.error.message}`);
+  if (blockedRes.error) throw new Error(`Failed to count members: ${blockedRes.error.message}`);
+  return { total: totalRes.count ?? 0, active: activeRes.count ?? 0, blocked: blockedRes.count ?? 0 };
+}
+
 export async function getMember(id: string): Promise<AdminMember | null> {
   const db = getDb();
   const full = await db.from("members").select(FULL_COLUMNS).eq("id", id).maybeSingle();
