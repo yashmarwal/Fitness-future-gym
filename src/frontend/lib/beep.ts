@@ -53,3 +53,11 @@ export function vibrateTick() {
 export function vibrateFinish() {
   vibrate([200, 100, 200, 100, 400]);
 }
+
+// A distinct "something's wrong" buzz — short double-pulse, easy to tell
+// apart from the single check-in success jolt ([40, 30, 90] in
+// CheckInCelebration.tsx). Used by AttendanceIssuePopup for every reason
+// attendance couldn't be marked (blocked, outside hours, gym closed, etc).
+export function vibrateError() {
+  vibrate([60, 80, 60]);
+}

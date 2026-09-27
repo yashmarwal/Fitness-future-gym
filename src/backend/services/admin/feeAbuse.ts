@@ -8,6 +8,8 @@ import { sendEmailTemplate } from "@/backend/services/email";
 import { createNotification } from "@/backend/services/memberNotifications";
 import { sendPushToMember } from "@/backend/services/pushNotifications";
 import { mapWithConcurrency } from "@/backend/lib/concurrency";
+import { getIstDateString } from "@/frontend/lib/date";
+import { hasMissedAtLeastNEligibleDays } from "@/backend/services/gymCalendar";
 
 // How many members get messaged in parallel from the loops below
 // (autoBlockOverdueMembers) — high enough to clear a few hundred overdue
@@ -306,6 +308,84 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
   // backend/lib/concurrency.ts.
   await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, (member) =>
     blockMember(member.id, `Fee overdue ${AUTO_BLOCK_OVERDUE_DAYS}+ days (automatic)`)
+  );
+
+  return { blocked: (members ?? []).length };
+}
+
+const AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS = 3;
+
+// Daily cron (same fee-reminders cron as autoBlockOverdueMembers above — no
+// new cron needed). Blocks a member who hasn't checked in for 3 continuous
+// *attendance-eligible* days: Sundays and admin-marked holidays
+// (gymCalendar.ts) don't count against this clock, same "not a member-side
+// issue" reasoning the streak calc uses (see attendance.ts) — a member
+// can't be penalized for a day the gym itself was closed. Only ever
+// considers members who have checked in at least once (last_checked_in_at
+// not null); a member who hasn't had their first visit yet is governed by
+// autoBlockNeverBilledMembers below instead, not this one.
+export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
+  const db = getDb();
+  const today = getIstDateString();
+  // Loose calendar-day pre-filter, done in SQL to avoid pulling every
+  // active member: the real eligible-day count (which excludes Sundays and
+  // holidays) can only ever be <= the raw calendar gap, so this can exclude
+  // members who are definitely not due yet, but never miss one who is.
+  const looseCutoff = new Date();
+  looseCutoff.setDate(looseCutoff.getDate() - AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS);
+
+  const { data: members, error } = await db
+    .from("members")
+    .select("id, full_name, phone, email, last_checked_in_at")
+    .eq("is_active", true)
+    .eq("is_frozen", false)
+    .not("last_checked_in_at", "is", null)
+    .lt("last_checked_in_at", looseCutoff.toISOString());
+
+  if (error) throw new Error(`Failed to load inactive members: ${error.message}`);
+
+  const toBlock: { id: string; full_name: string; phone: string | null; email: string | null }[] = [];
+  for (const member of members ?? []) {
+    const lastDay = getIstDateString(new Date(member.last_checked_in_at as string));
+    if (await hasMissedAtLeastNEligibleDays(lastDay, today, AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS)) {
+      toBlock.push(member as { id: string; full_name: string; phone: string | null; email: string | null });
+    }
+  }
+
+  await mapWithConcurrency(toBlock, NOTIFY_CONCURRENCY, (member) =>
+    blockMember(member.id, `No check-in for ${AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS}+ attendance days (automatic)`)
+  );
+
+  return { blocked: toBlock.length };
+}
+
+const NEVER_BILLED_GRACE_DAYS = 3;
+
+// Daily cron (same fee-reminders cron). A member who was never billed at
+// all (no fee_due_date ever set — front desk simply hasn't entered a
+// plan/fee for them yet) gets a short grace window from their joining date,
+// then is blocked automatically so an unbilled membership can't quietly use
+// the floor for free indefinitely. Plain calendar days, not eligible-day
+// counting — this is a billing-hygiene grace period tied to a fixed joining
+// date, not an attendance expectation, so gym-closure days don't extend it.
+export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - NEVER_BILLED_GRACE_DAYS);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+  const { data: members, error } = await db
+    .from("members")
+    .select("id, full_name, phone, email")
+    .eq("is_active", true)
+    .eq("is_frozen", false)
+    .is("fee_due_date", null)
+    .lt("joined_at", cutoffStr);
+
+  if (error) throw new Error(`Failed to load never-billed members: ${error.message}`);
+
+  await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, (member) =>
+    blockMember(member.id, `Never billed — ${NEVER_BILLED_GRACE_DAYS}+ days since joining (automatic)`)
   );
 
   return { blocked: (members ?? []).length };

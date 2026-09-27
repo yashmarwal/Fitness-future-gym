@@ -2,9 +2,10 @@ import "server-only";
 import { cache } from "react";
 import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
-import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
+import { getIstDateString, getIstWeekday, daysBetweenIstDates } from "@/frontend/lib/date";
 import { sendCheckInPrompt } from "@/backend/services/workoutPrompt";
 import { isStreakMilestone } from "@/frontend/lib/streakTiers";
+import { getTodayHoliday, isGapFullyRestDays } from "@/backend/services/gymCalendar";
 import type { CheckInResult } from "@/types/member";
 
 // Below this, a "please review us" ask feels premature — a 7 or 14-day
@@ -72,6 +73,19 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
     return { status: "blocked" };
   }
 
+  // Standing weekly closure, no migration required — checked before the
+  // admin-marked holiday lookup since it's pure day-of-week math with no DB
+  // round-trip. Takes priority over the opening-hours check for the same
+  // reason "blocked" does: a member showing up on a closed day shouldn't be
+  // told "come back at 4 PM," they should be told the gym is shut all day.
+  if (getIstWeekday() === "Sunday") {
+    return { status: "gym_closed", reason: "It's Sunday — the gym is closed today." };
+  }
+  const holiday = await getTodayHoliday();
+  if (holiday) {
+    return { status: "gym_closed", reason: `Gym closed today — ${holiday.reason}.` };
+  }
+
   if (!isWithinAttendanceHours()) {
     return { status: "outside_hours" };
   }
@@ -115,9 +129,14 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   if (member.last_checked_in_at) {
     const lastCheckInDay = getIstDateString(new Date(member.last_checked_in_at));
     const gap = daysBetweenIstDates(lastCheckInDay, today);
-    if (gap === 1) newStreak = member.current_streak_days + 1;
-    else if (gap === 0) newStreak = member.current_streak_days || 1;
-    // gap >= 2: a real missed day — streak restarts at 1 (the default above).
+    if (gap === 0) newStreak = member.current_streak_days || 1;
+    // A gap of 1+ still continues the streak as long as every day strictly
+    // in between was a Sunday or an admin-marked holiday (gymCalendar.ts) —
+    // a gym-mandated closure isn't a member-side lapse, so it can't be what
+    // breaks a streak. A gap bridged by even one real open day the member
+    // just didn't show up for still resets to 1 below.
+    else if (await isGapFullyRestDays(lastCheckInDay, today)) newStreak = member.current_streak_days + 1;
+    // otherwise: a real missed day — streak restarts at 1 (the default above).
   }
   const newLongest = Math.max(member.longest_streak_days, newStreak);
 

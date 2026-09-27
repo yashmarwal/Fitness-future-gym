@@ -107,6 +107,22 @@ create extension if not exists pgcrypto;
 -- (isMissingColumnError falls back to the base check-in columns).
 --
 --   alter table members add column if not exists review_prompted_at timestamptz;
+--
+-- Also run this — the gym-closure calendar behind admin's "Mark Holiday"
+-- button on the Broadcast page (see gymCalendar.ts). Each row is one closed
+-- date; attendance check-in is blocked on it (attendance.ts) and it's
+-- excluded from both the streak-gap calc and the 3-day inactivity
+-- auto-block (admin/feeAbuse.ts), same as a Sunday. Without this migration
+-- the "Mark Holiday" action fails with a clear error instead of silently
+-- doing nothing — Sunday closures still work either way, since those are
+-- pure day-of-week logic with no dependency on this table.
+--
+--   create table if not exists gym_holidays (
+--     id uuid primary key default gen_random_uuid(),
+--     holiday_date date not null unique,
+--     reason text,
+--     created_at timestamptz not null default now()
+--   );
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -185,6 +201,17 @@ create table if not exists attendance (
 
 create index if not exists attendance_member_id_checked_in_at_idx
   on attendance (member_id, checked_in_at desc);
+
+-- Admin-marked gym closures (see the migration note above and
+-- gymCalendar.ts) — one row per closed calendar date, up to 5 at a time via
+-- the Broadcast page's "Mark Holiday" action. Sundays are a standing
+-- closure handled in code with no row needed here at all.
+create table if not exists gym_holidays (
+  id uuid primary key default gen_random_uuid(),
+  holiday_date date not null unique,
+  reason text,
+  created_at timestamptz not null default now()
+);
 
 -- ── Auth ────────────────────────────────────────────────────────────────
 

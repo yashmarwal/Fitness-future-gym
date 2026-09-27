@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDeviceMember, saveDeviceMember } from "@/frontend/lib/deviceMember";
+import AttendanceIssuePopup from "@/frontend/components/attendance/AttendanceIssuePopup";
 
 type SubmitState =
   | { phase: "idle" }
@@ -53,6 +54,8 @@ export default function AttendanceForm() {
           phase: "error",
           message: "The floor is closed right now. Attendance can only be marked 6:00 AM–12:00 PM or 4:00–10:30 PM.",
         });
+      } else if (data.status === "gym_closed") {
+        setState({ phase: "error", message: data.reason ?? "The gym is closed today." });
       } else {
         setState({ phase: "error", message: data.message ?? "Something went wrong." });
       }
@@ -119,7 +122,7 @@ export default function AttendanceForm() {
         </p>
       )}
       {state.phase === "error" && (
-        <p className="mt-6 font-body text-sm text-error">{state.message}</p>
+        <AttendanceIssuePopup message={state.message} onDismiss={() => setState({ phase: "idle" })} />
       )}
     </div>
   );
