@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
+import { getBlockReason } from "@/backend/services/admin/feeAbuse";
 import BlockedScreen from "@/frontend/components/dashboard/BlockedScreen";
 
 // A dedicated route, not a conditional inside dashboard/layout.tsx — using
@@ -24,5 +25,5 @@ export default async function AccountBlockedPage() {
   // stranding them on a blocked screen that's no longer true.
   if (!member.isBlocked) redirect("/dashboard");
 
-  return <BlockedScreen fullName={member.fullName} />;
+  return <BlockedScreen fullName={member.fullName} reason={await getBlockReason(member.id)} />;
 }

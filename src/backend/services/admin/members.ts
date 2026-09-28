@@ -6,6 +6,8 @@ import { deliverMembershipCard } from "@/backend/services/membershipCardDelivery
 import { normalizePhone } from "@/backend/lib/phone";
 import { normalizeEmail } from "@/backend/lib/email";
 import { isMissingColumnError } from "@/backend/db/errors";
+import { getIstDateString } from "@/frontend/lib/date";
+import { liftAutomaticFeeBlock } from "@/backend/services/admin/feeAbuse";
 
 function mapRow(row: Record<string, unknown>): AdminMember {
   return {
@@ -69,6 +71,21 @@ export async function countMembers(): Promise<{ total: number; active: number; b
   if (activeRes.error) throw new Error(`Failed to count members: ${activeRes.error.message}`);
   if (blockedRes.error) throw new Error(`Failed to count members: ${blockedRes.error.message}`);
   return { total: totalRes.count ?? 0, active: activeRes.count ?? 0, blocked: blockedRes.count ?? 0 };
+}
+
+// Minimal batch lookup (name + membership number only) — powers the Audit
+// Log page's "which member was this about" resolution, one query for every
+// memberId referenced on the page instead of one per row.
+export async function getMemberLabelsByIds(ids: string[]): Promise<Map<string, { fullName: string; membershipNumber: string }>> {
+  const map = new Map<string, { fullName: string; membershipNumber: string }>();
+  if (ids.length === 0) return map;
+  const db = getDb();
+  const { data, error } = await db.from("members").select("id, full_name, membership_number").in("id", ids);
+  if (error) throw new Error(`Failed to load member labels: ${error.message}`);
+  for (const row of data ?? []) {
+    map.set(row.id as string, { fullName: row.full_name as string, membershipNumber: row.membership_number as string });
+  }
+  return map;
 }
 
 export async function getMember(id: string): Promise<AdminMember | null> {
@@ -167,6 +184,13 @@ export async function updateMember(id: string, input: Partial<MemberInput> & { i
 
   const { error } = await db.from("members").update(patch).eq("id", id);
   if (error) throw new Error(`Failed to update member: ${error.message}`);
+
+  // Setting a due date in the future means "billed and current" — lifts an
+  // automatic never-billed / fee-overdue block without a separate Unblock
+  // click (see liftAutomaticFeeBlock for exactly what it will and won't touch).
+  if (input.feeDueDate && input.feeDueDate > getIstDateString()) {
+    await liftAutomaticFeeBlock(id).catch(() => {});
+  }
 
   if (cardRelevantChange) {
     const { data: member } = await db

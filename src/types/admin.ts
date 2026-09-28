@@ -62,7 +62,7 @@ export type FeePaymentRow = {
   createdAt: string;
 };
 
-export type BroadcastSegment = "all" | "overdue" | "inactive_14d";
+export type BroadcastSegment = "all" | "overdue" | "inactive_14d" | "selected";
 
 export type AlertMember = {
   id: string;

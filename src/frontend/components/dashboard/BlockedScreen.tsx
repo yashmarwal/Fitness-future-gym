@@ -11,7 +11,7 @@ async function handleSignOut() {
 // everything, including nutrition logging. Rendered by dashboard/layout.tsx
 // INSTEAD of the normal header/nav/gate shell entirely, before any of it
 // mounts, so there's no route a blocked member can reach.
-export default function BlockedScreen({ fullName }: { fullName: string }) {
+export default function BlockedScreen({ fullName, reason }: { fullName: string; reason: string | null }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-surface">
       <div className="bg-surface-container-low shadow-soft-lg rounded-3xl p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
@@ -19,10 +19,16 @@ export default function BlockedScreen({ fullName }: { fullName: string }) {
         <div>
           <h1 className="font-display text-xl text-on-surface uppercase tracking-wide">Membership On Hold</h1>
           <p className="font-body text-sm text-tertiary mt-2">
-            Hi {fullName}, check-in and dashboard access are on hold for your account. This usually means an
-            overdue fee — please see the front desk to sort it out.
+            Hi {fullName}, check-in and dashboard access are on hold for your account. Please see the front
+            desk to sort it out.
           </p>
         </div>
+        {reason && (
+          <p className="font-body text-xs text-on-surface bg-surface-container rounded-xl p-3">
+            <span className="font-label uppercase tracking-wider text-tertiary">Reason: </span>
+            {reason}
+          </p>
+        )}
         <p className="font-body text-xs text-tertiary bg-surface-container rounded-xl p-3">
           Everything reopens automatically the moment your fee is recorded as paid.
         </p>

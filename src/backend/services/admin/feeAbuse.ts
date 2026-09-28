@@ -268,26 +268,58 @@ export async function unblockMember(id: string): Promise<void> {
   if (beforeError) throw new Error(`Failed to load member: ${beforeError.message}`);
   if (!before?.is_frozen) return;
 
-  const { data, error } = await db
-    .from("members")
-    .update({ is_frozen: false, frozen_reason: null, frozen_at: null })
-    .eq("id", id)
-    .select("full_name, phone, email")
-    .maybeSingle();
-
-  if (error) {
-    if (!isMissingColumnError(error)) throw new Error(`Failed to unblock member: ${error.message}`);
-    const { data: fallbackData, error: fallbackError } = await db
+  // unblocked_at starts the inactivity rule's grace window below
+  // (autoBlockInactiveMembers) — without it, a member unblocked in the
+  // evening could be caught by the very next 8:30 AM cron for "no check-in"
+  // before ever having a chance to come in, since that rule otherwise
+  // measures purely from their last real check-in, which happened BEFORE
+  // they were locked out. The fee-overdue and never-billed rules don't need
+  // this: a payment either brings fee_due_date into the future (they're
+  // simply not in those queries anymore) or doesn't (and the owner wants
+  // them to stay blockable until it does) — see recordManualPayment.
+  // Written in tiers so a not-yet-run migration degrades to the old
+  // behavior instead of failing the unblock.
+  const payloads: Record<string, unknown>[] = [
+    { is_frozen: false, frozen_reason: null, frozen_at: null, unblocked_at: new Date().toISOString() },
+    { is_frozen: false, frozen_reason: null, frozen_at: null },
+    { is_frozen: false },
+  ];
+  for (let i = 0; i < payloads.length; i++) {
+    const { data, error } = await db
       .from("members")
-      .update({ is_frozen: false })
+      .update(payloads[i])
       .eq("id", id)
       .select("full_name, phone, email")
       .maybeSingle();
-    if (fallbackError) throw new Error(`Failed to unblock member: ${fallbackError.message}`);
-    after(() => notifyUnblocked(id, fallbackData));
-    return;
+    if (!error) {
+      after(() => notifyUnblocked(id, data));
+      return;
+    }
+    if (!isMissingColumnError(error) || i === payloads.length - 1) {
+      throw new Error(`Failed to unblock member: ${error.message}`);
+    }
   }
-  after(() => notifyUnblocked(id, data));
+}
+
+// The reason text of an active block, for the member-facing blocked screen.
+// Null when not blocked or the frozen_reason migration hasn't run.
+export async function getBlockReason(id: string): Promise<string | null> {
+  const { data, error } = await getDb().from("members").select("frozen_reason").eq("id", id).maybeSingle();
+  if (error) return null;
+  return (data?.frozen_reason as string | null) ?? null;
+}
+
+// Editing a member's fee due date to a future date is the admin saying
+// "this member is billed and current" — if they were sitting in an
+// AUTOMATIC fee-type block (never billed / fee overdue), lift it, instead
+// of leaving the admin to also remember a separate Unblock click. Only
+// touches automatic fee blocks: a manual block, or an inactivity block
+// (unrelated to the fee), is left exactly as it was.
+const AUTO_FEE_BLOCK_RE = /^(never billed|fee overdue).*\(automatic\)$/i;
+
+export async function liftAutomaticFeeBlock(id: string): Promise<void> {
+  const reason = await getBlockReason(id);
+  if (reason && AUTO_FEE_BLOCK_RE.test(reason)) await unblockMember(id);
 }
 
 const AUTO_BLOCK_OVERDUE_DAYS = 5;
@@ -305,6 +337,11 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
   cutoff.setDate(cutoff.getDate() - AUTO_BLOCK_OVERDUE_DAYS);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
 
+  // No post-unblock grace window here (unlike the inactivity rule below) —
+  // deliberately: once a payment is recorded, fee_due_date is either back in
+  // the future (this member simply isn't in this query at all) or still in
+  // the past because the payment didn't cover the full gap, in which case
+  // the owner wants them to stay blockable, not get a few free days.
   const { data: members, error } = await db
     .from("members")
     .select("id, full_name, phone, email")
@@ -352,21 +389,42 @@ export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
   const looseCutoff = new Date();
   looseCutoff.setDate(looseCutoff.getDate() - AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS);
 
-  const { data: members, error } = await db
-    .from("members")
-    .select("id, full_name, phone, email, last_checked_in_at")
-    .eq("is_active", true)
-    .eq("is_frozen", false)
-    .not("last_checked_in_at", "is", null)
-    .lt("last_checked_in_at", looseCutoff.toISOString());
+  type Row = {
+    id: string;
+    full_name: string;
+    phone: string | null;
+    email: string | null;
+    last_checked_in_at: string;
+    unblocked_at?: string | null;
+  };
+  const query = (columns: string) =>
+    db
+      .from("members")
+      .select(columns)
+      .eq("is_active", true)
+      .eq("is_frozen", false)
+      .not("last_checked_in_at", "is", null)
+      .lt("last_checked_in_at", looseCutoff.toISOString());
 
-  if (error) throw new Error(`Failed to load inactive members: ${error.message}`);
+  // unblocked_at needs its migration; without it this degrades to counting
+  // from the last check-in alone (the pre-grace behavior).
+  let res = await query("id, full_name, phone, email, last_checked_in_at, unblocked_at");
+  if (res.error && isMissingColumnError(res.error)) res = await query("id, full_name, phone, email, last_checked_in_at");
+  if (res.error) throw new Error(`Failed to load inactive members: ${res.error.message}`);
+  const members = (res.data ?? []) as unknown as Row[];
 
-  const toBlock: { id: string; full_name: string; phone: string | null; email: string | null }[] = [];
-  for (const member of members ?? []) {
-    const lastDay = getIstDateString(new Date(member.last_checked_in_at as string));
-    if (await hasMissedAtLeastNEligibleDays(lastDay, today, AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS)) {
-      toBlock.push(member as { id: string; full_name: string; phone: string | null; email: string | null });
+  const toBlock: Row[] = [];
+  for (const member of members) {
+    // The clock starts at the LATER of their last real check-in and the
+    // moment they were last unblocked — a blocked member can't check in, so
+    // measuring only from last_checked_in_at would count the whole time they
+    // were locked out against them and re-block them the morning after they
+    // pay, before they've had one open day to show up.
+    const lastDay = getIstDateString(new Date(member.last_checked_in_at));
+    const unblockedDay = member.unblocked_at ? getIstDateString(new Date(member.unblocked_at)) : null;
+    const fromDay = unblockedDay && unblockedDay > lastDay ? unblockedDay : lastDay;
+    if (await hasMissedAtLeastNEligibleDays(fromDay, today, AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS)) {
+      toBlock.push(member);
     }
   }
 
@@ -392,6 +450,10 @@ export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }
   cutoff.setDate(cutoff.getDate() - NEVER_BILLED_GRACE_DAYS);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
 
+  // No post-unblock grace window here either, same reasoning as
+  // autoBlockOverdueMembers above — a member only leaves this query once a
+  // real fee_due_date is actually recorded for them (recordManualPayment),
+  // at which point they're governed by that rule instead, not this one.
   const { data: members, error } = await db
     .from("members")
     .select("id, full_name, phone, email")

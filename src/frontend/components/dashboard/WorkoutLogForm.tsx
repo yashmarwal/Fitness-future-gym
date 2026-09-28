@@ -20,6 +20,21 @@ function normalizeExerciseName(name: string): string {
 
 type LastEntry = { exerciseName: string; sets: number; reps: number; weightKg: number | null };
 
+// A light, conservative progressive-overload nudge — single-variable, never
+// both at once, and never touching sets: a weighted exercise suggests +2.5kg
+// (the smallest standard plate jump, matching WeightStepper's own +/-
+// increment) at the same reps; a bodyweight exercise (no weight logged)
+// suggests +1 rep instead, since there's nothing to add weight to. This is
+// deliberately NOT a prescriptive program (no target rep ranges, no
+// deload logic) — just "you did this before, here's a small next step,"
+// offered as a plain optional choice next to (not instead of) an exact repeat.
+function progressiveSuggestion(entry: LastEntry): { sets: number; reps: number; weightKg: number | null } {
+  if (entry.weightKg != null && entry.weightKg > 0) {
+    return { sets: entry.sets, reps: entry.reps, weightKg: Math.round((entry.weightKg + 2.5) * 2) / 2 };
+  }
+  return { sets: entry.sets, reps: entry.reps + 1, weightKg: null };
+}
+
 export default function WorkoutLogForm({
   logs,
   todaysPlan,
@@ -29,8 +44,8 @@ export default function WorkoutLogForm({
 }) {
   const router = useRouter();
   const [exerciseName, setExerciseName] = useState("");
-  const [sets, setSets] = useState(3);
-  const [reps, setReps] = useState(10);
+  const [sets, setSets] = useState("3");
+  const [reps, setReps] = useState("10");
   const [weightKg, setWeightKg] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [suggestion, setSuggestion] = useState<LastEntry | null>(null);
@@ -57,17 +72,17 @@ export default function WorkoutLogForm({
 
   function applyEntry(entry: LastEntry) {
     setExerciseName(entry.exerciseName);
-    setSets(entry.sets);
-    setReps(entry.reps);
+    setSets(String(entry.sets));
+    setReps(String(entry.reps));
     setWeightKg(entry.weightKg != null ? String(entry.weightKg) : "");
     setSuggestion(null);
   }
 
   function handlePickPlanExercise(ex: WorkoutPlanExercise) {
     setExerciseName(ex.name);
-    setSets(ex.sets);
+    setSets(String(ex.sets));
     const parsedReps = firstNumber(ex.reps);
-    if (parsedReps != null) setReps(parsedReps);
+    if (parsedReps != null) setReps(String(parsedReps));
     setWeightKg("");
     setSuggestion(null);
   }
@@ -84,22 +99,47 @@ export default function WorkoutLogForm({
 
   function handleUseSuggestion() {
     if (!suggestion) return;
-    setSets(suggestion.sets);
-    setReps(suggestion.reps);
+    setSets(String(suggestion.sets));
+    setReps(String(suggestion.reps));
     setWeightKg(suggestion.weightKg != null ? String(suggestion.weightKg) : "");
     setSuggestion(null);
   }
 
+  function handleUseProgressive() {
+    if (!suggestion) return;
+    const next = progressiveSuggestion(suggestion);
+    setSets(String(next.sets));
+    setReps(String(next.reps));
+    setWeightKg(next.weightKg != null ? String(next.weightKg) : "");
+    setSuggestion(null);
+  }
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Sets/Reps are free-typed strings now (NumberStepper, matching
+    // WeightStepper) — they can be empty or 0 mid-edit, so this is the one
+    // place that actually enforces "a real set has at least 1 of each."
+    const setsNum = Math.trunc(Number(sets));
+    const repsNum = Math.trunc(Number(reps));
+    if (!exerciseName.trim() || !sets.trim() || !reps.trim() || !Number.isFinite(setsNum) || setsNum < 1 || !Number.isFinite(repsNum) || repsNum < 1) {
+      setSubmitError("Exercise, sets, and reps are required.");
+      return;
+    }
+    setSubmitError(null);
     setSubmitting(true);
     try {
       const res = await fetch("/api/dashboard/workouts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exerciseName, sets, reps, weightKg: weightKg || undefined }),
+        body: JSON.stringify({ exerciseName, sets: setsNum, reps: repsNum, weightKg: weightKg || undefined }),
       });
       const data = await res.json().catch(() => null);
+      if (data?.status !== "ok") {
+        setSubmitError(data?.message ?? "Couldn't log that set — try again.");
+        return;
+      }
       // Only a genuine improvement over a past attempt gets the big
       // celebration — a first-ever log of an exercise has nothing to
       // compare against yet, so checkAndRecordPr still records it as a
@@ -177,20 +217,41 @@ export default function WorkoutLogForm({
         />
 
         {suggestion && (
-          <button
-            type="button"
-            onClick={handleUseSuggestion}
-            className="flex items-center justify-between gap-2 font-body text-xs px-3 py-2.5 rounded-xl bg-surface-container border border-primary-container/40 text-on-surface hover:border-primary-container transition-colors text-left"
-          >
-            <span>
-              Last time:{" "}
-              <span className="text-primary-container font-semibold">
-                {suggestion.weightKg ? `${suggestion.weightKg}kg × ` : ""}
-                {suggestion.reps} reps
+          <div className="flex flex-col gap-1.5">
+            <button
+              type="button"
+              onClick={handleUseSuggestion}
+              className="flex items-center justify-between gap-2 font-body text-xs px-3 py-2.5 rounded-xl bg-surface-container border border-primary-container/40 text-on-surface hover:border-primary-container transition-colors text-left"
+            >
+              <span>
+                Last time:{" "}
+                <span className="text-primary-container font-semibold">
+                  {suggestion.weightKg ? `${suggestion.weightKg}kg × ` : ""}
+                  {suggestion.reps} reps
+                </span>
               </span>
-            </span>
-            <span className="font-label text-[9px] uppercase text-primary-container shrink-0">Use these</span>
-          </button>
+              <span className="font-label text-[9px] uppercase text-primary-container shrink-0">Use these</span>
+            </button>
+            {/* A small, optional next step beyond an exact repeat — never
+                required, never both weight and reps at once. See
+                progressiveSuggestion. */}
+            <button
+              type="button"
+              onClick={handleUseProgressive}
+              className="flex items-center justify-between gap-2 font-body text-xs px-3 py-2.5 rounded-xl bg-surface-container border border-dashed border-primary-container/30 text-on-surface hover:border-primary-container transition-colors text-left"
+            >
+              <span>
+                Progressive:{" "}
+                <span className="text-primary-container font-semibold">
+                  {(() => {
+                    const next = progressiveSuggestion(suggestion);
+                    return next.weightKg != null ? `${next.weightKg}kg × ${next.reps} reps` : `${next.sets}×${next.reps} (+1 rep)`;
+                  })()}
+                </span>
+              </span>
+              <span className="font-label text-[9px] uppercase text-primary-container shrink-0">Try This</span>
+            </button>
+          </div>
         )}
 
         {/* Weight gets noticeably more width than Sets/Reps (1.3fr vs 1fr) —
@@ -199,10 +260,12 @@ export default function WorkoutLogForm({
             equal 3-column split, tight enough on mobile to look like the
             digits vanished rather than just being close to the edge. */}
         <div className="grid grid-cols-[1fr_1fr_1.3fr] gap-2">
-          <NumberStepper label="Sets" value={sets} min={1} onChange={setSets} />
-          <NumberStepper label="Reps" value={reps} min={1} onChange={setReps} />
+          <NumberStepper label="Sets" value={sets} min={0} onChange={setSets} />
+          <NumberStepper label="Reps" value={reps} min={0} onChange={setReps} />
           <WeightStepper value={weightKg} onChange={setWeightKg} />
         </div>
+
+        {submitError && <p className="font-body text-xs text-error">{submitError}</p>}
 
         <button
           type="submit"
@@ -216,24 +279,41 @@ export default function WorkoutLogForm({
   );
 }
 
-function NumberStepper({
+// Exported for reuse by WorkoutLogHistory.tsx's inline edit row, so both
+// the log form and the edit-a-past-set flow share one implementation.
+//
+// String state, not number — the same shape as WeightStepper below, on
+// purpose. The old version held `value` as a live-clamped number and reset
+// the field to a real digit ("1", the min) the instant it was cleared —
+// which meant the next keystroke landed AFTER that leftover digit instead
+// of replacing it: typing "25" over a snapped-back "1" produced "125". A
+// plain string with no onChange clamping never has this problem: clearing
+// the field really empties it (nothing to type "after"), and 0 only ever
+// shows as a greyed `placeholder`, never a real character sitting in the
+// field. min still governs the +/- buttons (a deliberate, discrete action,
+// not free typing) and 0/empty is still rejected at submit time — this only
+// changes what's allowed to pass through while typing, never what gets saved.
+export function NumberStepper({
   label,
   value,
   min,
   onChange,
 }: {
   label: string;
-  value: number;
+  value: string;
   min: number;
-  onChange: (v: number) => void;
+  onChange: (v: string) => void;
 }) {
+  function step(delta: number) {
+    onChange(String(Math.max(min, Math.trunc(Number(value) || 0) + delta)));
+  }
   return (
     <label className="flex flex-col gap-1">
       <span className="font-label text-[9px] uppercase tracking-wider text-outline">{label}</span>
       <div className="flex items-stretch rounded-xl overflow-hidden border border-surface-variant">
         <button
           type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
+          onClick={() => step(-1)}
           aria-label={`Decrease ${label}`}
           className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
@@ -242,13 +322,13 @@ function NumberStepper({
         <input
           type="number"
           value={value}
-          min={min}
-          onChange={(e) => onChange(Math.max(min, Number(e.target.value) || min))}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="0"
           className="w-full min-w-0 bg-surface-container text-on-surface font-body text-sm tabular-nums text-center px-0.5 py-3 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           type="button"
-          onClick={() => onChange(value + 1)}
+          onClick={() => step(1)}
           aria-label={`Increase ${label}`}
           className="w-8 shrink-0 flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform"
         >
@@ -259,7 +339,7 @@ function NumberStepper({
   );
 }
 
-function WeightStepper({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+export function WeightStepper({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   function step(delta: number) {
     const next = Math.max(0, Math.round(((Number(value) || 0) + delta) * 2) / 2);
     onChange(String(next));

@@ -26,6 +26,12 @@ export async function POST(request: Request) {
   // with nothing sent, instead of members getting told about a closure that
   // never actually got recorded.
   const holiday = body.holiday as { from?: string; till?: string } | undefined;
+  const segment = (body.segment as BroadcastSegment) ?? "all";
+  const memberIds = Array.isArray(body.memberIds) ? body.memberIds.filter((id: unknown): id is string => typeof id === "string") : undefined;
+
+  if (segment === "selected" && (!memberIds || memberIds.length === 0)) {
+    return NextResponse.json({ status: "error", message: "No members selected." }, { status: 400 });
+  }
 
   try {
     let holidayDates: string[] | undefined;
@@ -36,8 +42,8 @@ export async function POST(request: Request) {
       holidayDates = (await markHolidayRange(holiday.from, holiday.till, body.subject ?? "")).dates;
     }
 
-    const result = await sendBroadcast((body.segment as BroadcastSegment) ?? "all", body.message, body.subject);
-    await recordAuditLog(session.adminId, "broadcast", { segment: body.segment, sent: result.sent, ...(holidayDates ? { holidayDates } : {}) });
+    const result = await sendBroadcast(segment, body.message, body.subject, memberIds);
+    await recordAuditLog(session.adminId, "broadcast", { segment, sent: result.sent, ...(holidayDates ? { holidayDates } : {}) });
     return NextResponse.json({ status: "ok", ...result, ...(holidayDates ? { holidayDates } : {}) });
   } catch (err) {
     console.error(err);
