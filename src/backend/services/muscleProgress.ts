@@ -94,9 +94,12 @@ export async function getMemberMuscleProgress(memberId: string): Promise<MuscleP
 export async function awardWorkoutXp(memberId: string, exerciseName: string, sets: number): Promise<void> {
   const category = matchExerciseCategory(exerciseName);
   if (!category || sets <= 0) return;
+  await adjustMuscleXp(memberId, category, sets * XP_PER_SET);
+}
 
+async function adjustMuscleXp(memberId: string, category: ExerciseCategory, delta: number): Promise<void> {
+  if (delta === 0) return;
   const db = getDb();
-  const xpGain = sets * XP_PER_SET;
 
   const { data: existing, error: selectError } = await db
     .from("member_muscle_xp")
@@ -109,11 +112,39 @@ export async function awardWorkoutXp(memberId: string, exerciseName: string, set
   if (existing) {
     const { error } = await db
       .from("member_muscle_xp")
-      .update({ xp: existing.xp + xpGain, updated_at: new Date().toISOString() })
+      .update({ xp: Math.max(0, existing.xp + delta), updated_at: new Date().toISOString() })
       .eq("id", existing.id);
     if (error) throw error;
-  } else {
-    const { error } = await db.from("member_muscle_xp").insert({ member_id: memberId, category, xp: xpGain });
+  } else if (delta > 0) {
+    const { error } = await db.from("member_muscle_xp").insert({ member_id: memberId, category, xp: delta });
     if (error) throw error;
   }
+  // delta < 0 with no existing row: nothing to subtract from — a no-op,
+  // not an error (can happen if the exercise's category changed and this
+  // member never logged anything else in the old category).
+}
+
+// Keeps a corrected workout log's XP contribution honest — XP is exactly
+// `sets * XP_PER_SET` in the exercise's matched category (see awardWorkoutXp
+// above), which makes an edit exactly reversible: subtract what the OLD
+// sets/exercise earned, add what the NEW sets/exercise earns. No re-scan of
+// history needed, unlike Personal Records (see personalRecords.ts's
+// reconcilePrAfterEdit) — XP was never derived from anything but this one
+// log's own (sets, category) pair in the first place.
+export async function reconcileXpAfterEdit(
+  memberId: string,
+  oldExerciseName: string,
+  oldSets: number,
+  newExerciseName: string,
+  newSets: number
+): Promise<void> {
+  const oldCategory = matchExerciseCategory(oldExerciseName);
+  const newCategory = matchExerciseCategory(newExerciseName);
+
+  if (oldCategory === newCategory) {
+    if (oldCategory) await adjustMuscleXp(memberId, oldCategory, (newSets - oldSets) * XP_PER_SET);
+    return;
+  }
+  if (oldCategory) await adjustMuscleXp(memberId, oldCategory, -oldSets * XP_PER_SET);
+  if (newCategory) await adjustMuscleXp(memberId, newCategory, newSets * XP_PER_SET);
 }

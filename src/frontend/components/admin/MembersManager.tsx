@@ -40,6 +40,19 @@ function FeePendingTag({ member }: { member: AdminMember }) {
   );
 }
 
+const MEMBER_CSV_COLUMNS: { key: keyof AdminMember; label: string }[] = [
+  { key: "membershipNumber", label: "Membership No." },
+  { key: "fullName", label: "Name" },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "plan", label: "Plan" },
+  { key: "feeAmount", label: "Fee Amount (INR)" },
+  { key: "feeDueDate", label: "Fee Due Date" },
+  { key: "joinedAt", label: "Joined" },
+  { key: "isActive", label: "Active" },
+  { key: "isBlocked", label: "Blocked" },
+];
+
 const EMPTY_FORM = {
   membershipNumber: "",
   fullName: "",
@@ -61,6 +74,15 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [query, setQuery] = useState("");
+  // Hand-picked selection for bulk actions (Broadcast to Selected, Export
+  // Selected) — deliberately NOT cleared when the filter tab or search
+  // changes, so an admin can select a few from "Fee Due", switch to "Never
+  // Billed", and add more to the same selection before acting on all of
+  // them together.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMessage, setBulkMessage] = useState("");
+  const [bulkSending, setBulkSending] = useState(false);
+  const [bulkResult, setBulkResult] = useState<string | null>(null);
   // Deep-linkable from the Overview page's "Overdue Fees" stat card
   // (?filter=fee_due) — read once on initial render, same as the planner's
   // ?tab=templates. Switching tabs by hand after that is plain client state.
@@ -161,22 +183,62 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
   }
 
   function handleExportCsv() {
+    downloadCsv(`members-${new Date().toISOString().slice(0, 10)}.csv`, filtered, MEMBER_CSV_COLUMNS);
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  // Selects/deselects every currently-VISIBLE (filtered) row at once — not
+  // the full member list, so "select all" on the Fee Due tab doesn't
+  // silently pull in members outside that filter.
+  function toggleSelectAllVisible() {
+    const visibleIds = filtered.map((m) => m.id);
+    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      for (const id of visibleIds) {
+        if (allVisibleSelected) next.delete(id);
+        else next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function handleExportSelectedCsv() {
     downloadCsv(
-      `members-${new Date().toISOString().slice(0, 10)}.csv`,
-      filtered,
-      [
-        { key: "membershipNumber", label: "Membership No." },
-        { key: "fullName", label: "Name" },
-        { key: "phone", label: "Phone" },
-        { key: "email", label: "Email" },
-        { key: "plan", label: "Plan" },
-        { key: "feeAmount", label: "Fee Amount (INR)" },
-        { key: "feeDueDate", label: "Fee Due Date" },
-        { key: "joinedAt", label: "Joined" },
-        { key: "isActive", label: "Active" },
-        { key: "isBlocked", label: "Blocked" },
-      ]
+      `members-selected-${new Date().toISOString().slice(0, 10)}.csv`,
+      members.filter((m) => selectedIds.has(m.id)),
+      MEMBER_CSV_COLUMNS
     );
+  }
+
+  async function handleBulkBroadcast() {
+    if (!bulkMessage.trim() || selectedIds.size === 0) return;
+    setBulkSending(true);
+    setBulkResult(null);
+    try {
+      const res = await fetch("/api/admin/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ segment: "selected", memberIds: Array.from(selectedIds), message: bulkMessage }),
+      });
+      const data = await res.json().catch(() => null);
+      if (data?.status === "ok") {
+        setBulkResult(`Sent to ${data.sent} member(s).`);
+        setBulkMessage("");
+      } else {
+        setBulkResult(data?.message ?? "Something went wrong.");
+      }
+    } finally {
+      setBulkSending(false);
+    }
   }
 
   // Counts are always against the full member list, not the currently
@@ -220,6 +282,57 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
           </button>
         ))}
       </div>
+
+      {/* Bulk actions — only appears once at least one member is
+          hand-picked (checkboxes below), stays out of the way otherwise. */}
+      {selectedIds.size > 0 && (
+        <div className="flex flex-col gap-3 bg-surface-container-low border border-primary-container/40 rounded-2xl p-4 shadow-soft">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="font-label text-xs uppercase tracking-wide text-primary-container font-bold">
+              {selectedIds.size} member{selectedIds.size === 1 ? "" : "s"} selected
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleExportSelectedCsv}
+                className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm leading-none">download</span>
+                Export CSV
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedIds(new Set());
+                  setBulkResult(null);
+                }}
+                className="font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg text-tertiary hover:text-on-surface transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <textarea
+              value={bulkMessage}
+              onChange={(e) => setBulkMessage(e.target.value)}
+              placeholder="Message to send these members over WhatsApp, push, and in-app..."
+              rows={2}
+              className="flex-1 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-primary-container resize-none"
+            />
+            <button
+              type="button"
+              onClick={handleBulkBroadcast}
+              disabled={bulkSending || !bulkMessage.trim()}
+              className="shrink-0 flex items-center justify-center gap-1.5 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 rounded-xl shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            >
+              <span className="material-symbols-outlined text-base leading-none">campaign</span>
+              {bulkSending ? "Sending..." : "Broadcast To Selected"}
+            </button>
+          </div>
+          {bulkResult && <p className="font-body text-xs text-tertiary">{bulkResult}</p>}
+        </div>
+      )}
 
       {/* flex-wrap, not a rigid single row — on a narrow phone, a flex-1
           search input plus two shrink-0 buttons ("CSV", "+ Add Member" in
@@ -367,6 +480,15 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b-2 border-surface-variant/60">
+                  <th className="py-3 px-4 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all visible members"
+                      checked={filtered.length > 0 && filtered.every((m) => selectedIds.has(m.id))}
+                      onChange={toggleSelectAllVisible}
+                      className="w-4 h-4 rounded accent-primary-container cursor-pointer"
+                    />
+                  </th>
                   <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">No.</th>
                   <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Name</th>
                   <th className="font-label text-[10px] uppercase tracking-wider text-outline py-3 px-4">Phone</th>
@@ -380,7 +502,19 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               </thead>
               <tbody className="divide-y divide-surface-variant/30">
                 {filtered.map((m) => (
-                  <tr key={m.id} className="hover:bg-surface-container transition-colors">
+                  <tr
+                    key={m.id}
+                    className={`hover:bg-surface-container transition-colors ${selectedIds.has(m.id) ? "bg-primary-container/5" : ""}`}
+                  >
+                    <td className="py-3 px-4">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${m.fullName}`}
+                        checked={selectedIds.has(m.id)}
+                        onChange={() => toggleSelected(m.id)}
+                        className="w-4 h-4 rounded accent-primary-container cursor-pointer"
+                      />
+                    </td>
                     <td className="py-3 px-4 font-body text-sm text-primary-container">{m.membershipNumber}</td>
                     <td className="py-3 px-4 font-body text-sm text-on-surface">{m.fullName}</td>
                     <td className="py-3 px-4 font-body text-sm text-tertiary">{m.phone ?? "—"}</td>
@@ -439,14 +573,30 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
 
           {/* Card list — mobile only. */}
           <div className="md:hidden flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={toggleSelectAllVisible}
+              className="self-start font-label text-[10px] uppercase font-bold text-tertiary hover:text-on-surface transition-colors"
+            >
+              {filtered.length > 0 && filtered.every((m) => selectedIds.has(m.id)) ? "Deselect All" : "Select All"}
+            </button>
             {filtered.map((m) => (
               <div key={m.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
-                      {m.membershipNumber}
-                    </span>
-                    <p className="font-body text-sm font-semibold text-on-surface truncate">{m.fullName}</p>
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <input
+                      type="checkbox"
+                      aria-label={`Select ${m.fullName}`}
+                      checked={selectedIds.has(m.id)}
+                      onChange={() => toggleSelected(m.id)}
+                      className="mt-0.5 w-4 h-4 rounded accent-primary-container cursor-pointer shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
+                        {m.membershipNumber}
+                      </span>
+                      <p className="font-body text-sm font-semibold text-on-surface truncate">{m.fullName}</p>
+                    </div>
                   </div>
                   <div className="shrink-0 flex items-center justify-end gap-1.5 flex-wrap">
                     <button

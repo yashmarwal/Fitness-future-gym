@@ -123,6 +123,15 @@ create extension if not exists pgcrypto;
 --     reason text,
 --     created_at timestamptz not null default now()
 --   );
+--
+-- Also run this — the grace window after an unblock (see admin/feeAbuse.ts):
+-- every automatic block rule (no check-in, never billed, fee overdue) leaves
+-- a member alone for a few days after they were unblocked, and the
+-- inactivity rule counts from this moment instead of a last check-in that
+-- happened before they were locked out. Without it everything still works,
+-- a just-unblocked member can just be re-blocked by the next daily cron.
+--
+--   alter table members add column if not exists unblocked_at timestamptz;
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -146,6 +155,9 @@ create table if not exists members (
   is_frozen boolean not null default false,
   frozen_reason text,
   frozen_at timestamptz,
+  -- Set by unblockMember; the automatic block rules measure their grace
+  -- window from this — see the migration note near the top of this file.
+  unblocked_at timestamptz,
   -- Internal, staff-only — never shown to the member. Edited from the
   -- admin member profile page (admin/members/[id]).
   notes text,

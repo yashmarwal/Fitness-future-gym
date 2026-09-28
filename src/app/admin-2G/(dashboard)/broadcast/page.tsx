@@ -1,6 +1,12 @@
 import BroadcastComposer from "@/frontend/components/admin/BroadcastComposer";
+import { listMembers } from "@/backend/services/admin/members";
 
-export default function AdminBroadcastPage() {
+export default async function AdminBroadcastPage() {
+  // Needed for the "Selected Members" send-to option's search picker — the
+  // fixed segments (all/overdue/inactive) don't need this, but hand-picking
+  // specific members does.
+  const members = await listMembers();
+
   return (
     <div className="flex flex-col gap-10">
       <div>
@@ -8,7 +14,7 @@ export default function AdminBroadcastPage() {
         <p className="font-body text-sm text-tertiary mb-6">
           Sends over WhatsApp only — members with a phone number on file get it there; no email is sent.
         </p>
-        <BroadcastComposer />
+        <BroadcastComposer members={members} />
       </div>
     </div>
   );

@@ -16,8 +16,20 @@ const SEND_CONCURRENCY = 8;
 
 const HAS_CONTACT_INFO = "phone.not.is.null,email.not.is.null";
 
-async function resolveRecipients(segment: BroadcastSegment) {
+async function resolveRecipients(segment: BroadcastSegment, memberIds?: string[]) {
   const db = getDb();
+
+  if (segment === "selected") {
+    if (!memberIds || memberIds.length === 0) return [];
+    // No is_active / contact-info filter here, unlike every segment below —
+    // this is a deliberately hand-picked list from the Members page (see
+    // MembersManager.tsx's checkbox selection), not a broad blast, so even
+    // a member with no phone/email on file should still get the in-app/push
+    // legs instead of being silently dropped from the recipient list.
+    const { data, error } = await db.from("members").select("id, phone, email, full_name").in("id", memberIds);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  }
 
   if (segment === "overdue") {
     const { data, error } = await db
@@ -69,9 +81,10 @@ async function resolveRecipients(segment: BroadcastSegment) {
 export async function sendBroadcast(
   segment: BroadcastSegment,
   message: string,
-  subject?: string
+  subject?: string,
+  memberIds?: string[]
 ): Promise<{ sent: number }> {
-  const recipients = await resolveRecipients(segment);
+  const recipients = await resolveRecipients(segment, memberIds);
 
   await mapWithConcurrency(recipients, SEND_CONCURRENCY, async (recipient) => {
     if (recipient.phone) {

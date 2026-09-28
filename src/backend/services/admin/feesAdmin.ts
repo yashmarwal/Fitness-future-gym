@@ -113,6 +113,15 @@ export async function recordManualPayment(
   nextDueDate.setMonth(nextDueDate.getMonth() + durationMonths);
   const nextDueDateStr = nextDueDate.toISOString().slice(0, 10);
 
+  // Deliberately no "if this still lands in the past, start from today"
+  // fallback — the owner's explicit call: the due date always stays
+  // anchored to the billing cycle (same day-of-month, every time), even if
+  // a payment that doesn't cover the full gap leaves the member still
+  // showing overdue afterward. That's intentional — it's how paying for
+  // fewer months than they're behind gets reflected, not a bug to paper
+  // over. A member 2+ cycles behind has to pay enough months to actually
+  // reach a future due date if they want to stop being blockable.
+
   // Member profile's plan/fee_amount always reflect this payment — not
   // just backfilled when empty. Admin -> Members shows these fields, and
   // the flagging logic reads the member row, so a payment recorded here

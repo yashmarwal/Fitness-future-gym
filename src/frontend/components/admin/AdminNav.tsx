@@ -15,6 +15,7 @@ const LINKS = [
   { href: "/admin-2G/access-control", label: "Access Control", icon: "block" },
   { href: "/admin-2G/broadcast", label: "Broadcast", icon: "campaign" },
   { href: "/admin-2G/ai-assistant", label: "Ask AI", icon: "smart_toy" },
+  { href: "/admin-2G/audit-log", label: "Activity", icon: "history" },
 ];
 
 const SEARCH_DEBOUNCE_MS = 250;
