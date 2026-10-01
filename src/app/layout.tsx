@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, Oswald, Inter } from "next/font/google";
+import { Bebas_Neue, Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import PwaInstallPrompt from "@/frontend/components/PwaInstallPrompt";
 import CookieConsentBanner from "@/frontend/components/CookieConsentBanner";
 import {
@@ -30,6 +30,13 @@ const oswald = Oswald({
 const inter = Inter({
   variable: "--font-body",
   weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
+// Beast Mode only (BeastMode.tsx) — its numeric HUD readouts.
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-beast",
+  weight: ["600", "700", "800"],
   subsets: ["latin"],
 });
 
@@ -129,7 +136,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`dark ${bebasNeue.variable} ${oswald.variable} ${inter.variable}`}
+      className={`dark ${bebasNeue.variable} ${oswald.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -141,7 +148,7 @@ export default function RootLayout({
             connection. Adding a new icon anywhere in the app means adding
             its name to this list too, or it'll render as a blank glyph. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=accessibility_new,add,add_circle,add_task,arrow_back,arrow_forward,auto_awesome,autorenew,badge,bedtime,block,bolt,cake,calculate,calendar_month,call,campaign,check,check_box,check_circle,chevron_left,chevron_right,close,construction,dashboard,delete,directions_run,diversity_3,download,edit,edit_note,emoji_events,error,event_available,event_busy,event_note,expand_less,expand_more,fitness_center,format_quote,group,history,home,hourglass_top,how_to_reg,info,ios_share,local_fire_department,location_on,lock,lock_open,logout,mail,menu,menu_book,military_tech,monitor_heart,navigation,notifications,notifications_active,notifications_off,pause,payments,person,person_add,person_off,person_remove,pin_drop,play_arrow,precision_manufacturing,qr_code_2,qr_code_scanner,refresh,remove,repeat,restart_alt,restaurant,rowing,schedule,search,self_improvement,settings,shield,smart_toy,sports_gymnastics,sports_kabaddi,sports_martial_arts,stars,sticky_note_2,stop,storefront,timelapse,timer,today,verified,view_compact,volume_off,volume_up,warning,water_drop,wb_twilight,workspace_premium&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=accessibility_new,add,add_circle,add_task,arrow_back,arrow_forward,auto_awesome,autorenew,badge,bedtime,block,bolt,cake,calculate,calendar_month,call,campaign,cancel,check,check_box,check_circle,chevron_left,chevron_right,close,construction,dashboard,delete,directions_run,diversity_3,download,edit,edit_note,emoji_events,error,event_available,event_busy,event_note,expand_less,expand_more,fitness_center,format_quote,group,history,home,hourglass_top,how_to_reg,info,ios_share,local_fire_department,location_on,lock,lock_open,logout,mail,menu,menu_book,military_tech,monitor_heart,navigation,notifications,notifications_active,notifications_off,pause,payments,person,person_add,person_off,person_remove,pin_drop,play_arrow,precision_manufacturing,qr_code_2,qr_code_scanner,refresh,remove,repeat,restart_alt,restaurant,rowing,schedule,search,self_improvement,settings,shield,smart_toy,sports_gymnastics,sports_kabaddi,sports_martial_arts,stars,sticky_note_2,stop,storefront,timelapse,timer,today,touch_app,verified,view_compact,volume_off,volume_up,warning,water_drop,wb_twilight,workspace_premium&display=swap"
           rel="stylesheet"
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

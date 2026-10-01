@@ -368,10 +368,10 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
   return { blocked: (members ?? []).length };
 }
 
-const AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS = 3;
+const AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS = 6;
 
 // Daily cron (same fee-reminders cron as autoBlockOverdueMembers above — no
-// new cron needed). Blocks a member who hasn't checked in for 3 continuous
+// new cron needed). Blocks a member who hasn't checked in for 6 continuous
 // *attendance-eligible* days: Sundays and admin-marked holidays
 // (gymCalendar.ts) don't count against this clock, same "not a member-side
 // issue" reasoning the streak calc uses (see attendance.ts) — a member

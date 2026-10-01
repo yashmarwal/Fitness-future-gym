@@ -7,6 +7,7 @@ import { getRecentAttendance } from "@/backend/services/attendance";
 import { listWorkoutLogs } from "@/backend/services/workouts";
 import { listPersonalRecords, type PersonalRecord } from "@/backend/services/personalRecords";
 import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
+import { getRoom } from "@/backend/services/playground";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { BUSINESS_ADDRESS, SITE_URL } from "@/frontend/lib/siteConfig";
 import { weightComparison } from "@/frontend/lib/weightComparisons";
@@ -44,7 +45,7 @@ const HEIGHT = 1440;
 // hub (see the exercise/prevWeight/prevReps params below for why: the
 // "previous" value doesn't exist in the database anymore by the time this
 // route runs, since checkAndRecordPr already overwrote it).
-export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate"] as const;
+export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate", "playground"] as const;
 export type CardType = (typeof CARD_TYPES)[number];
 
 // Brand tokens as literal hex — Satori renders independently of the site's
@@ -247,12 +248,19 @@ function CertificateCard({
   logoDataUri,
   exerciseName,
   statLabel,
+  achievementLine = "has set a personal record in",
+  detailLine,
   name,
   dateLabel,
 }: {
   logoDataUri: string;
   exerciseName: string;
   statLabel: string;
+  // Lets the same template serve a second moment (a Playground challenge
+  // win) without a second template — just different words around the same
+  // name/stat/date frame.
+  achievementLine?: string;
+  detailLine?: string;
   name: string;
   dateLabel: string;
 }) {
@@ -299,15 +307,18 @@ function CertificateCard({
           {name.toUpperCase()}
         </div>
         <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 22, color: MUTED, marginBottom: 30 }}>
-          has set a personal record in
+          {achievementLine}
         </div>
 
         <div style={{ display: "flex", fontFamily: "Oswald-Bold", fontSize: 30, color: TEXT, letterSpacing: 2, marginBottom: 16 }}>
           {exerciseName.toUpperCase()}
         </div>
-        <div style={{ display: "flex", fontFamily: "Bebas Neue", fontSize: 104, color: ORANGE, lineHeight: 1, marginBottom: 30 }}>
+        <div style={{ display: "flex", fontFamily: "Bebas Neue", fontSize: 104, color: ORANGE, lineHeight: 1, marginBottom: detailLine ? 14 : 30 }}>
           {statLabel}
         </div>
+        {detailLine && (
+          <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 22, color: MUTED, marginBottom: 30 }}>{detailLine}</div>
+        )}
 
         <div style={{ display: "flex", fontFamily: "Oswald-Medium", fontSize: 20, color: MUTED }}>Achieved {dateLabel}</div>
       </div>
@@ -399,6 +410,48 @@ export async function GET(request: Request) {
 
     return new ImageResponse(
       <CertificateCard logoDataUri={logoDataUri} exerciseName={record.exerciseName} statLabel={statLabel} name={name} dateLabel={achievedDateLabel} />,
+      {
+        width: WIDTH,
+        height: HEIGHT,
+        fonts: [
+          { name: "Oswald-Bold", data: oswaldBoldData, weight: 700, style: "normal" },
+          { name: "Oswald-Medium", data: oswaldMediumData, weight: 500, style: "normal" },
+          { name: "Bebas Neue", data: bebasNeueData, weight: 400, style: "normal" },
+        ],
+        headers: { "Cache-Control": "private, no-store" },
+      }
+    );
+  }
+
+  if (type === "playground") {
+    // Only ever reachable while the room still exists (getRoom enforces
+    // the caller is a participant) — since Playground deletes a room
+    // outright once everyone's left it, this card has to be generated
+    // and shared BEFORE that happens, from the room's own ended-state
+    // summary screen. Only the actual winner gets a card for it; a
+    // participant who didn't win has nothing to certify.
+    const roomId = params.get("room")?.trim();
+    const room = roomId ? await getRoom(roomId, session.memberId) : null;
+    if (!room || room.status !== "ended" || room.winnerMemberId !== session.memberId) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    const winnerEntry = room.members.find((m) => m.memberId === session.memberId);
+    const opponents = room.members.filter((m) => m.memberId !== session.memberId && m.status === "accepted").map((m) => m.firstName);
+    const modeLabel = room.mode === "xp_race" ? "an XP Race" : room.exerciseName ?? "a Challenge";
+    const statLabel = room.mode === "xp_race" ? `${winnerEntry?.score ?? 0} XP` : `${winnerEntry?.score ?? 0}KG`;
+    const detailLine = opponents.length === 1 ? `Beat ${opponents[0]}` : opponents.length > 1 ? `Beat ${opponents.length} others` : undefined;
+
+    return new ImageResponse(
+      <CertificateCard
+        logoDataUri={logoDataUri}
+        exerciseName={modeLabel.toUpperCase()}
+        statLabel={statLabel}
+        achievementLine="has won a Playground Challenge in"
+        detailLine={detailLine}
+        name={name}
+        dateLabel={dateLabel}
+      />,
       {
         width: WIDTH,
         height: HEIGHT,

@@ -4,6 +4,8 @@ import { deleteOldFoodLogs } from "@/backend/services/nutrition";
 import { deleteOldNotifications } from "@/backend/services/memberNotifications";
 import { deleteOldPendingSignups } from "@/backend/services/memberAuth";
 import { deleteExpiredLegacyFeeImports } from "@/backend/services/legacyFeeImport";
+import { deleteOldBeastModeSessions, deleteStaleGymBeastModeRecords } from "@/backend/services/beastMode";
+import { deleteAbandonedRooms } from "@/backend/services/playground";
 
 // Streak data lives entirely in each member's browser localStorage, not the
 // database — nothing to delete here for it, and nothing ever will be.
@@ -14,13 +16,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [workouts, food, notifications, pendingSignups, legacyFeeImports] = await Promise.all([
-      deleteOldWorkoutLogs(),
-      deleteOldFoodLogs(),
-      deleteOldNotifications(),
-      deleteOldPendingSignups(),
-      deleteExpiredLegacyFeeImports(),
-    ]);
+    const [workouts, food, notifications, pendingSignups, legacyFeeImports, beastModeSessions, beastModeRecords, abandonedRooms] =
+      await Promise.all([
+        deleteOldWorkoutLogs(),
+        deleteOldFoodLogs(),
+        deleteOldNotifications(),
+        deleteOldPendingSignups(),
+        deleteExpiredLegacyFeeImports(),
+        deleteOldBeastModeSessions(),
+        deleteStaleGymBeastModeRecords(),
+        deleteAbandonedRooms(),
+      ]);
     return NextResponse.json({
       status: "ok",
       workoutLogsDeleted: workouts.deleted,
@@ -28,6 +34,9 @@ export async function GET(request: Request) {
       notificationsDeleted: notifications.deleted,
       pendingSignupsDeleted: pendingSignups.deleted,
       legacyFeeImportsDeleted: legacyFeeImports.deleted,
+      beastModeSessionsDeleted: beastModeSessions.deleted,
+      beastModeRecordsCleared: beastModeRecords.deleted,
+      abandonedPlaygroundRoomsDeleted: abandonedRooms.deleted,
     });
   } catch (err) {
     console.error(err);

@@ -16,6 +16,16 @@ const REVIEW_PROMPT_MIN_STREAK = 30;
 const COOLDOWN_HOURS = 3;
 const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
 
+// Same window getAttendanceStatus uses, exposed for callers that already
+// have a member row in hand (playground.ts's live-member search) and would
+// otherwise need a second query just to ask "is this member checked in
+// right now" — last_checked_in_at is updated on every real check-in
+// (checkInMemberRow), so it's equivalent without the extra round trip.
+export function isRecentlyCheckedIn(lastCheckedInAt: string | null): boolean {
+  if (!lastCheckedInAt) return false;
+  return Date.now() - new Date(lastCheckedInAt).getTime() < COOLDOWN_MS;
+}
+
 // The gym floor's actual open windows. Computed in IST specifically (not
 // server-local time) since Vercel's serverless functions run in UTC — using
 // the server's own clock would silently gate attendance by the wrong hours

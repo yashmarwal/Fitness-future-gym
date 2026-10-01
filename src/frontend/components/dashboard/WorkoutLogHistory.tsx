@@ -210,18 +210,35 @@ function DayDrawer({
   );
 }
 
+const DAYS_SHOWN_COLLAPSED = 5;
+
 // Only the most recent day starts open — everything older is one tap away
 // instead of pre-expanded, which is what actually fixes "very long list"
-// (grouping by day alone still shows every session's sets at once).
+// (grouping by day alone still shows every session's sets at once). The
+// day list itself is capped to 5 for the same reason — listWorkoutLogs now
+// fetches up to a month's worth of rows, which for an active lifter can be
+// 20+ day groups, not just a handful.
 export default function WorkoutLogHistory({ logs }: { logs: WorkoutLog[] }) {
   const todayKey = getIstDateString();
   const groups = groupByDay(logs);
+  const [showAll, setShowAll] = useState(false);
+  const visibleGroups = showAll ? groups : groups.slice(0, DAYS_SHOWN_COLLAPSED);
+  const hiddenCount = groups.length - visibleGroups.length;
 
   return (
     <div className="flex flex-col gap-3">
-      {groups.map((group, i) => (
+      {visibleGroups.map((group, i) => (
         <DayDrawer key={group.dateKey} dateKey={group.dateKey} logs={group.logs} todayKey={todayKey} defaultOpen={i === 0} />
       ))}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="font-label text-xs uppercase font-bold px-4 py-3 rounded-2xl bg-surface-container-low border border-surface-variant/40 text-primary-container hover:bg-surface-container transition-colors"
+        >
+          View All — {hiddenCount} More Day{hiddenCount === 1 ? "" : "s"}
+        </button>
+      )}
     </div>
   );
 }

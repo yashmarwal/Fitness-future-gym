@@ -7,6 +7,7 @@ import AttendanceLock from "@/frontend/components/dashboard/AttendanceLock";
 import WorkoutLogForm from "@/frontend/components/dashboard/WorkoutLogForm";
 import WorkoutLogHistory from "@/frontend/components/dashboard/WorkoutLogHistory";
 import WorkoutTimerBar from "@/frontend/components/dashboard/WorkoutTimerBar";
+import BeastModeLauncher from "@/frontend/components/dashboard/BeastMode";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function WorkoutsPage() {
@@ -17,7 +18,12 @@ export default async function WorkoutsPage() {
   if (!checkedIn) return <AttendanceLock />;
 
   const [logs, todaysPlan] = await Promise.all([
-    listWorkoutLogs(session!.memberId, 30),
+    // 400, not 30 — listWorkoutLogs caps by row count, not days, and every
+    // Beast Mode set logs as its own row. 30 rows could be eaten by 2-3
+    // sessions, well short of the 30-day retention window (workouts.ts);
+    // 400 is the same "comfortably covers a full month" cap the dashboard,
+    // achievements, and achievement-card pages already use.
+    listWorkoutLogs(session!.memberId, 400),
     findTodaysWorkout(session!.memberId),
   ]);
 
@@ -25,16 +31,29 @@ export default async function WorkoutsPage() {
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide">Workout Log</h1>
-        <Link
-          href="/dashboard/plan"
-          className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
-        >
-          <span className="material-symbols-outlined text-sm leading-none">event_note</span>
-          Plan Workouts
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard/playground"
+            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm leading-none">group</span>
+            Playground
+          </Link>
+          <Link
+            href="/dashboard/plan"
+            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm leading-none">event_note</span>
+            Plan Workouts
+          </Link>
+        </div>
       </div>
 
       <WorkoutTimerBar />
+
+      <div className="mb-3">
+        <BeastModeLauncher />
+      </div>
 
       <WorkoutLogForm logs={logs} todaysPlan={todaysPlan} />
 

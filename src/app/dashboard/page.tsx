@@ -40,17 +40,24 @@ const GREETING_SUBLINES: Record<string, string> = {
 // way: tapping a gated one while not checked in just lands on that page's
 // own "mark attendance" screen, same as always — this is only about giving
 // a visual heads-up before the tap, not a new block.
+// Ordered by priority — daily/frequent actions first, admin/reference
+// stuff (fees, the exercise library) last — not alphabetical or by
+// whenever each was added. `featured` marks the two standout, high-energy
+// features (Beast Mode, Playground) for the distinct card treatment below;
+// everything else shares the one plain "quick link" look.
 const QUICK_LINKS = [
-  { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false },
-  { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true },
-  { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false },
-  { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note", gated: true },
-  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome", gated: true },
-  { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant", gated: false },
-  { href: "/dashboard/timer", label: "Rest Timer", icon: "timer", gated: true },
-  { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false },
-  { href: "/dashboard/fees", label: "Fee Status", icon: "payments", gated: false },
-  { href: "/dashboard/exercises", label: "Exercise Library", icon: "menu_book", gated: false },
+  { href: "/dashboard/workouts?beastMode=open", label: "Beast Mode", icon: "bolt", gated: true, featured: true },
+  { href: "/dashboard/playground", label: "Playground", icon: "group", gated: true, featured: true },
+  { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true, featured: false },
+  { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note", gated: true, featured: false },
+  { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant", gated: false, featured: false },
+  { href: "/dashboard/timer", label: "Rest Timer", icon: "timer", gated: true, featured: false },
+  { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false, featured: false },
+  { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false, featured: false },
+  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome", gated: true, featured: false },
+  { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false, featured: false },
+  { href: "/dashboard/exercises", label: "Exercise Library", icon: "menu_book", gated: false, featured: false },
+  { href: "/dashboard/fees", label: "Fee Status", icon: "payments", gated: false, featured: false },
 ];
 
 // Small badge shown on a gated tile/link when the member hasn't checked in
@@ -64,6 +71,74 @@ function LockBadge() {
     >
       <span className="material-symbols-outlined text-xs leading-none">lock</span>
     </span>
+  );
+}
+
+// The four top-of-page shortcuts — a bold brand gradient with a glossy
+// corner highlight (bottom-right, so it never fights LockBadge's own
+// top-right spot), an icon housed in a frosted chip rather than bare, and
+// tighter rounding than the Quick Actions grid below — deliberately a
+// different card language for what's the primary CTA row, not a
+// browsable list.
+// Restrained glass, not decorated glass: a neutral (never brand-tinted)
+// translucent fill, a thin low-opacity border, backdrop-blur — no glow,
+// no icon chip-inside-a-chip. Two things make it read as real glass
+// rather than a flat tinted panel, both subtle: backdrop-saturate (the
+// same blur+saturate pairing Apple's own glass recipe uses, so whatever's
+// faintly visible through it looks a little richer, not washed out) and a
+// two-layer shadow — an inset hairline highlight along the top edge
+// (light catching the glass) plus a soft, neutral outer shadow (real
+// depth, not a colored glow).
+const GLASS_SHADOW = "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_8px_24px_-4px_rgba(0,0,0,0.35)]";
+
+function ShortcutTile({ href, icon, label, locked }: { href: string; icon: string; label: string; locked: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`relative bg-white/6 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-white/10 hover:bg-white/8 hover:border-white/20 active:scale-95 transition-all duration-200 flex flex-col items-center gap-2 text-center ${
+        locked ? "opacity-40 grayscale" : ""
+      }`}
+    >
+      {locked && <LockBadge />}
+      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
+      <span className="font-label text-[10px] uppercase font-bold tracking-wide text-on-surface">{label}</span>
+    </Link>
+  );
+}
+
+// The plain Quick Actions tile — same premium glass as above, tighter
+// padding since there are a dozen of these on screen at once.
+function QuickLink({ href, icon, label, dim }: { href: string; icon: string; label: string; dim: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`relative bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-white/10 hover:bg-white/6 hover:border-white/20 active:scale-[0.97] transition-all duration-200 flex flex-col gap-3 ${
+        dim ? "opacity-40 grayscale" : ""
+      }`}
+    >
+      {dim && <LockBadge />}
+      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
+      <span className="font-label text-[11px] uppercase tracking-wide text-on-surface font-bold">{label}</span>
+    </Link>
+  );
+}
+
+// Beast Mode and Playground still stand out from the plain tiles, but the
+// distinction is just a brand-colored border and label instead of a glow,
+// a pulsing dot, and an extra tint layer — one clear signal instead of
+// four competing ones.
+function FeaturedQuickLink({ href, icon, label, dim }: { href: string; icon: string; label: string; dim: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`relative bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-primary-container/40 hover:bg-white/6 hover:border-primary-container/70 active:scale-[0.97] transition-all duration-200 flex flex-col gap-3 ${
+        dim ? "opacity-40 grayscale" : ""
+      }`}
+    >
+      {dim && <LockBadge />}
+      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
+      <span className="font-label text-[11px] uppercase tracking-wide text-primary-container font-bold">{label}</span>
+    </Link>
   );
 }
 
@@ -108,40 +183,10 @@ export default async function DashboardPage() {
           distinct from the full "Quick Actions" link grid further down,
           which covers every dashboard route rather than just the top 3. */}
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${checkedIn ? "mb-6" : "mb-2"}`}>
-        <Link
-          href="/dashboard/workouts"
-          className={`relative bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
-            checkedIn ? "" : "opacity-45 grayscale"
-          }`}
-        >
-          {!checkedIn && <LockBadge />}
-          <span className="material-symbols-outlined text-2xl leading-none">fitness_center</span>
-          <span className="font-label text-[10px] uppercase tracking-wide">Log Workout</span>
-        </Link>
-        <Link
-          href="/dashboard/nutrition"
-          className="bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
-        >
-          <span className="material-symbols-outlined text-2xl leading-none">restaurant</span>
-          <span className="font-label text-[10px] uppercase tracking-wide">Log Food</span>
-        </Link>
-        <Link
-          href="/dashboard/timer"
-          className={`relative bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform ${
-            checkedIn ? "" : "opacity-45 grayscale"
-          }`}
-        >
-          {!checkedIn && <LockBadge />}
-          <span className="material-symbols-outlined text-2xl leading-none">timer</span>
-          <span className="font-label text-[10px] uppercase tracking-wide">Start Timer</span>
-        </Link>
-        <Link
-          href="/dashboard/bmi"
-          className="bg-primary-container text-on-primary-container p-4 shadow-soft rounded-2xl flex flex-col items-center gap-1.5 text-center active:scale-[0.98] transition-transform"
-        >
-          <span className="material-symbols-outlined text-2xl leading-none">calculate</span>
-          <span className="font-label text-[10px] uppercase tracking-wide">BMI Calc</span>
-        </Link>
+        <ShortcutTile href="/dashboard/workouts" icon="fitness_center" label="Log Workout" locked={!checkedIn} />
+        <ShortcutTile href="/dashboard/nutrition" icon="restaurant" label="Log Food" locked={false} />
+        <ShortcutTile href="/dashboard/timer" icon="timer" label="Start Timer" locked={!checkedIn} />
+        <ShortcutTile href="/dashboard/bmi" icon="calculate" label="BMI Calc" locked={false} />
       </div>
       {!checkedIn && (
         <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mb-6">
@@ -272,24 +317,13 @@ async function DashboardBelowFold({
 
       <h2 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-        {QUICK_LINKS.map((link) => {
-          const dim = link.gated && !checkedIn;
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`relative bg-surface-container p-5 shadow-soft rounded-2xl flex flex-col gap-3 hover:border-primary-container hover:-translate-y-0.5 border border-transparent active:scale-[0.98] transition-all ${
-                dim ? "opacity-45 grayscale" : ""
-              }`}
-            >
-              {dim && <LockBadge />}
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-high text-primary-container shrink-0">
-                <span className="material-symbols-outlined text-xl leading-none">{link.icon}</span>
-              </span>
-              <span className="font-label text-xs uppercase tracking-wide text-on-surface">{link.label}</span>
-            </Link>
-          );
-        })}
+        {QUICK_LINKS.map((link) =>
+          link.featured ? (
+            <FeaturedQuickLink key={link.href} {...link} dim={link.gated && !checkedIn} />
+          ) : (
+            <QuickLink key={link.href} {...link} dim={link.gated && !checkedIn} />
+          )
+        )}
       </div>
     </>
   );

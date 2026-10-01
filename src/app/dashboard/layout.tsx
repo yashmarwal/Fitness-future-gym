@@ -7,6 +7,7 @@ import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
 import RestTimerAlarmWatcher from "@/frontend/components/dashboard/RestTimerAlarmWatcher";
 import WorkoutTimerActivityWatcher from "@/frontend/components/dashboard/WorkoutTimerActivityWatcher";
 import CheckInCelebration from "@/frontend/components/dashboard/CheckInCelebration";
+import PlaygroundInviteWatcher from "@/frontend/components/dashboard/PlaygroundInviteWatcher";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getMemberSession();
@@ -45,6 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <RestTimerAlarmWatcher />
       <WorkoutTimerActivityWatcher />
       <CheckInCelebration />
+      <PlaygroundInviteWatcher />
       <DashboardHeader fullName={member.fullName} membershipNumber={member.membershipNumber} plan={member.plan} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">

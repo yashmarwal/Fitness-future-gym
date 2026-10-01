@@ -358,6 +358,118 @@ create table if not exists member_exercise_prs (
 create index if not exists member_exercise_prs_member_id_idx
   on member_exercise_prs (member_id);
 
+-- Beast Mode: a guided, live progressive-overload session (setup → tap to
+-- confirm each set → auto rest → summary). Each confirmed set is ALSO
+-- logged through the normal workout_logs/PR/XP path (one POST
+-- /api/dashboard/workouts call per set) — this table is only the
+-- session-level record ("3 sets, 2 hit, 240kg total volume") used for
+-- history and for deciding gym records below. Short-lived on purpose: kept
+-- 7 days (see deleteOldBeastModeSessions), then purged, so storage never
+-- grows unbounded from session history the same way workout_logs is purged
+-- after 30 days.
+create table if not exists beast_mode_sessions (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  exercise_name text not null,
+  rest_seconds integer not null,
+  -- One entry per attempted set, in order: {plannedWeightKg, plannedReps,
+  -- actualWeightKg, actualReps, hit}. Kept as the full breakdown for the
+  -- session summary/history view; not queried by column.
+  sets jsonb not null,
+  sets_completed integer not null,
+  sets_hit integer not null,
+  total_volume_kg numeric(10, 2) not null default 0,
+  completed_at timestamptz not null default now()
+);
+
+create index if not exists beast_mode_sessions_member_id_idx
+  on beast_mode_sessions (member_id, completed_at desc);
+create index if not exists beast_mode_sessions_completed_at_idx
+  on beast_mode_sessions (completed_at);
+
+-- Gym-wide — one row per exercise, holding whoever has lifted the heaviest
+-- COMPLETED (target hit, not a target fail) weight for that exercise in
+-- any Beast Mode session. Deliberately NOT derived from
+-- beast_mode_sessions on read (purged after 7 days), so a record set today
+-- is still on the board long after the session itself has aged out.
+-- Unlike member_exercise_prs, this ISN'T kept forever: a record nobody
+-- beats within 30 days clears (deleteStaleGymBeastModeRecords,
+-- beastMode.ts), so the board turns over instead of one lift being
+-- permanently unbeatable.
+create table if not exists gym_beast_mode_records (
+  id uuid primary key default gen_random_uuid(),
+  exercise_key text not null unique,
+  exercise_name text not null,
+  member_id uuid not null references members(id) on delete cascade,
+  weight_kg numeric(6, 2) not null,
+  reps integer not null,
+  achieved_at timestamptz not null default now()
+);
+
+-- Playground: opt-in 1v1/group challenges between members who are
+-- currently checked in. A room is created by inviting other
+-- playground-enabled, currently-checked-in members; once everyone invited
+-- has responded, the room auto-starts and runs for its chosen duration.
+-- The live leaderboard is computed on read from data that already exists
+-- (workout_logs, member_muscle_xp) — a room never intercepts or
+-- duplicates normal logging, it just measures the delta from when it
+-- started. See playground.ts.
+create table if not exists playground_rooms (
+  id uuid primary key default gen_random_uuid(),
+  created_by uuid not null references members(id) on delete cascade,
+  -- Member-chosen ("Friday Night Showdown") — required by createRoom
+  -- (playground.ts), not enforced here at the column level (same
+  -- convention as the other createRoom validations, e.g. exercise being
+  -- required for common_exercise mode) since this table's "if not exists"
+  -- migration path can't safely retrofit a not-null constraint onto rows
+  -- that might already exist without one. displayName() still falls back
+  -- to the mode/exercise label for any such row.
+  name text,
+  mode text not null check (mode in ('common_exercise', 'xp_race')),
+  -- Only set (and only meaningful) for 'common_exercise' mode.
+  exercise_name text,
+  duration_minutes integer not null,
+  status text not null default 'pending' check (status in ('pending', 'active', 'ended')),
+  started_at timestamptz,
+  ends_at timestamptz,
+  -- Set once, when the room's time runs out and the leaderboard is
+  -- finalized (getRoom in playground.ts) — kept even after the fact so the
+  -- /tv feed can show "X won a challenge" without recomputing the whole
+  -- leaderboard from scratch.
+  winner_member_id uuid references members(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists playground_rooms_status_idx on playground_rooms (status);
+
+create table if not exists playground_room_members (
+  id uuid primary key default gen_random_uuid(),
+  room_id uuid not null references playground_rooms(id) on delete cascade,
+  member_id uuid not null references members(id) on delete cascade,
+  status text not null default 'invited' check (status in ('invited', 'accepted', 'declined')),
+  -- Total XP (summed across every muscle category) at the moment the room
+  -- started — only meaningful for 'xp_race' mode, where the leaderboard
+  -- ranks by how much each accepted member's total has grown SINCE this
+  -- snapshot, not their all-time total.
+  xp_snapshot integer,
+  -- Same total, captured again the moment the room FINISHES (xp_race
+  -- only). Without this, viewing an ended room later would keep showing a
+  -- growing delta as the member's real total XP climbs from ordinary
+  -- training that happened after the room closed — freezing xp_final at
+  -- finalization is what makes the result actually final.
+  xp_final integer,
+  -- Set once this member explicitly leaves an ENDED room (leaveRoom,
+  -- playground.ts) — once every accepted member has left, the whole room
+  -- (this table's rows and the playground_rooms row) gets deleted outright.
+  -- Playground deliberately doesn't keep a history: once nobody's left to
+  -- look at the result, there's nothing to look at it for.
+  left_at timestamptz,
+  unique (room_id, member_id)
+);
+
+create index if not exists playground_room_members_member_id_idx
+  on playground_room_members (member_id);
+
 create table if not exists workout_plans (
   id uuid primary key default gen_random_uuid(),
   member_id uuid not null references members(id) on delete cascade,

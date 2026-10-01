@@ -75,6 +75,12 @@
   --font-label: "Oswald", sans-serif;
   --font-title: var(--font-label);
   --font-body: "Inter", sans-serif;
+  /* Only used for Beast Mode's numeric HUD readouts (BeastMode.tsx). Its
+     own token, NOT --font-mono — that utility is already in use elsewhere
+     (SiteHeader, DesktopHome, MuscleProgressBoard) falling through to
+     Tailwind's default system-monospace stack; overriding --font-mono here
+     would have silently reskinned all of those too. */
+  --font-beast: "JetBrains Mono", monospace;
 
   /* Spacing Scale */
   --spacing-space-2xs: 0.125rem;
@@ -659,4 +665,267 @@ body {
   .plan-loader-letter {
     opacity: 1;
   }
+}
+
+/* ── Beast Mode (BeastMode.tsx) ───────────────────────────────────────────
+   Deliberately louder than the rest of the app — a looping radar-ping pulse
+   draws the eye to the tap-to-confirm button, each new target "slams in"
+   with an overshoot pop, and a brief full-screen tint gives instant
+   hit/fail feedback like a scoreboard would. */
+@keyframes beast-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes beast-target-in {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes beast-flash {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes beast-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 90, 31, 0.65);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 90, 31, 0);
+  }
+}
+
+@keyframes beast-glow-text {
+  0%,
+  100% {
+    text-shadow: 0 0 12px rgba(255, 90, 31, 0.35);
+  }
+  50% {
+    text-shadow: 0 0 24px rgba(255, 90, 31, 0.75);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-beast-ping {
+    animation: beast-ping 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  }
+  .animate-beast-target-in {
+    animation: beast-target-in 380ms cubic-bezier(0.3, 1.3, 0.5, 1) both;
+  }
+  .animate-beast-flash {
+    animation: beast-flash 550ms ease-out forwards;
+  }
+  .animate-beast-dot-pulse {
+    animation: beast-dot-pulse 1.4s ease-out infinite;
+  }
+  .animate-beast-glow-text {
+    animation: beast-glow-text 2.2s ease-in-out infinite;
+  }
+}
+
+/* ── Brand loader (BrandLoader.tsx) ───────────────────────────────────────
+   A Uiverse.io concept (RiccardoRapelli) — four liquid blobs orbiting and
+   merging via an SVG gooey filter, the whole thing slowly rotating. Same
+   animation values and geometry as the source (180x180, 50px blobs),
+   just recolored to this app's brand orange instead of the source's
+   blue-to-purple gradient — actual display size is handled by a wrapping
+   CSS scale in BrandLoader.tsx, not by changing any of these values. */
+.brand-loader-content {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  /* The gooey filter itself is applied via inline style in BrandLoader.tsx
+     with a React-generated unique id, so two loaders on screen at once
+     never collide over one #id. */
+}
+
+@keyframes brand-loader-rotate {
+  0% {
+    transform: rotate(360deg);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.brand-loader-liquid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-primary-container);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.brand-loader-liquid:nth-child(1) {
+  top: 0;
+}
+.brand-loader-liquid:nth-child(2) {
+  left: 0;
+}
+.brand-loader-liquid:nth-child(3) {
+  left: 100%;
+}
+.brand-loader-liquid:nth-child(4) {
+  top: 100%;
+}
+
+@keyframes brand-loader-a1 {
+  0% {
+    top: 0;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+@keyframes brand-loader-a2 {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+@keyframes brand-loader-a3 {
+  0% {
+    left: 100%;
+  }
+  50% {
+    left: 0;
+  }
+  100% {
+    left: 0;
+  }
+}
+@keyframes brand-loader-a4 {
+  0% {
+    top: 100%;
+  }
+  50% {
+    top: 0;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+/* A simple, generic fade-in for content that should ease into view once it
+   finishes loading, rather than popping in abruptly — reusable anywhere,
+   not tied to any one feature. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand-loader-content {
+    animation: brand-loader-rotate 4s ease-in-out infinite;
+  }
+  .brand-loader-liquid:nth-child(1) {
+    animation: brand-loader-a1 4s ease-in-out infinite;
+  }
+  .brand-loader-liquid:nth-child(2) {
+    animation: brand-loader-a2 4s ease-in-out infinite;
+  }
+  .brand-loader-liquid:nth-child(3) {
+    animation: brand-loader-a3 4s ease-in-out infinite;
+  }
+  .brand-loader-liquid:nth-child(4) {
+    animation: brand-loader-a4 4s ease-in-out infinite;
+  }
+  .animate-fade-in {
+    animation: fade-in 400ms ease-out both;
+  }
+}
+
+/* ── TV marquee (TvFeed.tsx) ──────────────────────────────────────────────
+   The classic seamless-loop trick: content is rendered twice back to back,
+   and the track only ever slides exactly -50% (one copy's width) before
+   snapping back to 0 — since the two copies are identical, that snap is
+   invisible and the scroll reads as continuous. Deliberately NOT gated
+   behind prefers-reduced-motion like every other animation in this file:
+   this scroll isn't decorative, it's the only way the full message is ever
+   readable (the content is wider than the banner on purpose), so a
+   reduced-motion viewer disabling it would just mean the text never moves
+   and most of it stays permanently off-screen. Durations are set inline
+   per instance (see Marquee's `seconds` prop), so the number here is just
+   a fallback. */
+@keyframes tv-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-tv-marquee {
+  animation: tv-marquee 22s linear infinite;
+}
+
+/* ── TV top banner (TvFeed.tsx, TopBanner) ────────────────────────────────
+   A from-scratch rebuild of the CTA banner specifically, using a different
+   technique than the ticker above: one copy of the text, animating `left`
+   (a container-relative percentage) from 100% down to 0% for the entrance,
+   combined with a self-relative `transform: translateX(-100%)` at the end
+   for the exit. That combination is what makes a SHORT line of text
+   correctly start fully off the right edge of a WIDE banner and fully
+   clear the left edge before looping, regardless of how narrow the text
+   is relative to the banner — translateX alone (percentages relative to
+   the element's own width) can't express "off past the container edge"
+   when the text is much narrower than the container. Also deliberately
+   not gated behind prefers-reduced-motion, same reasoning as the ticker
+   above. */
+@keyframes tv-banner-slide {
+  from {
+    left: 100%;
+    transform: translateY(-50%) translateX(0);
+  }
+  to {
+    left: 0%;
+    transform: translateY(-50%) translateX(-100%);
+  }
+}
+
+.animate-tv-banner-slide {
+  position: absolute;
+  top: 50%;
+  white-space: nowrap;
+  animation: tv-banner-slide 14s linear infinite;
 }

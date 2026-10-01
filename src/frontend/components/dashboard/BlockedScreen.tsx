@@ -5,6 +5,10 @@ async function handleSignOut() {
   window.location.href = "/";
 }
 
+function handleRefresh() {
+  window.location.reload();
+}
+
 // A full-screen wall, not the usual attendance gate — this is a punitive
 // access-control state (fee-abuse tool, admin/feeAbuse.ts), not a routine
 // "haven't checked in recently" nudge, so unlike AttendanceLock it blocks
@@ -13,7 +17,14 @@ async function handleSignOut() {
 // mounts, so there's no route a blocked member can reach.
 export default function BlockedScreen({ fullName, reason }: { fullName: string; reason: string | null }) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-surface">
+    <div className="min-h-screen relative flex items-center justify-center p-6 bg-surface">
+      <button
+        onClick={handleSignOut}
+        className="absolute top-4 right-4 flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors"
+      >
+        <span className="material-symbols-outlined text-base leading-none">logout</span>
+        Sign Out
+      </button>
       <div className="bg-surface-container-low shadow-soft-lg rounded-3xl p-8 max-w-sm w-full flex flex-col items-center gap-4 text-center">
         <span className="material-symbols-outlined text-5xl text-error">block</span>
         <div>
@@ -33,11 +44,11 @@ export default function BlockedScreen({ fullName, reason }: { fullName: string; 
           Everything reopens automatically the moment your fee is recorded as paid.
         </p>
         <button
-          onClick={handleSignOut}
-          className="flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors"
+          onClick={handleRefresh}
+          className="flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-primary hover:text-on-surface transition-colors"
         >
-          <span className="material-symbols-outlined text-base leading-none">logout</span>
-          Sign Out
+          <span className="material-symbols-outlined text-base leading-none">refresh</span>
+          Refresh
         </button>
       </div>
     </div>
