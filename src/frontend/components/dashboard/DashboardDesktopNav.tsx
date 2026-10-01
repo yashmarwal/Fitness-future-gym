@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUnreadNotifications } from "@/frontend/lib/useUnreadNotifications";
 
 const LINKS = [
   { href: "/dashboard", label: "Home", icon: "home" },
@@ -12,11 +13,12 @@ const LINKS = [
   { href: "/dashboard/playground", label: "Playground", icon: "group" },
   { href: "/dashboard/nutrition", label: "Nutrition", icon: "restaurant" },
   { href: "/dashboard/timer", label: "Timer", icon: "timer" },
-  { href: "/dashboard/fees", label: "Fees", icon: "payments" },
+  { href: "/dashboard/settings", label: "Settings", icon: "settings" },
 ];
 
 export default function DashboardDesktopNav() {
   const pathname = usePathname();
+  const hasUnread = useUnreadNotifications();
 
   return (
     // bg-black, same reasoning as DashboardHeader — this full-width strip
@@ -37,7 +39,15 @@ export default function DashboardDesktopNav() {
                 : "text-on-surface-variant border-transparent hover:text-on-surface hover:bg-surface-container-high/30"
             }`}
           >
-            <span className="material-symbols-outlined text-base leading-none">{link.icon}</span>
+            <span className="relative">
+              <span className="material-symbols-outlined text-base leading-none">{link.icon}</span>
+              {link.href === "/dashboard/settings" && hasUnread && (
+                <span
+                  className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-black"
+                  aria-hidden="true"
+                />
+              )}
+            </span>
             {link.label}
           </Link>
         );

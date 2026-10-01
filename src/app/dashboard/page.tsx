@@ -12,6 +12,7 @@ import { getFitnessProfile } from "@/backend/services/fitnessProfile";
 import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { StatCard, Skeleton } from "@/frontend/components/dashboard/Primitives";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
 import PersonalRecordsBar from "@/frontend/components/dashboard/PersonalRecordsBar";
@@ -35,16 +36,18 @@ const GREETING_SUBLINES: Record<string, string> = {
 // `gated: true` marks a link to one of the three attendance-locked pages
 // (workouts, plan, timer — see AttendanceLock.tsx / getAttendanceStatus)
 // — everything else here works with no check-in, matching the exemptions
-// already decided (snapshot, attendance history, muscle progress, streak,
-// fee status, membership card, personal records). Still clickable either
-// way: tapping a gated one while not checked in just lands on that page's
-// own "mark attendance" screen, same as always — this is only about giving
-// a visual heads-up before the tap, not a new block.
-// Ordered by priority — daily/frequent actions first, admin/reference
-// stuff (fees, the exercise library) last — not alphabetical or by
-// whenever each was added. `featured` marks the two standout, high-energy
-// features (Beast Mode, Playground) for the distinct card treatment below;
-// everything else shares the one plain "quick link" look.
+// already decided (snapshot, muscle progress, streak, membership card,
+// personal records). Still clickable either way: tapping a gated one while
+// not checked in just lands on that page's own "mark attendance" screen,
+// same as always — this is only about giving a visual heads-up before the
+// tap, not a new block. Fee Status and Attendance History used to be here
+// too — moved into Settings (dashboard/settings/page.tsx) as account
+// lookups rather than frequent actions.
+// Ordered by priority — daily/frequent actions first, the exercise library
+// last — not alphabetical or by whenever each was added. `featured` marks
+// the two standout, high-energy features (Beast Mode, Playground) for the
+// distinct card treatment below; everything else shares the one plain
+// "quick link" look.
 const QUICK_LINKS = [
   { href: "/dashboard/workouts?beastMode=open", label: "Beast Mode", icon: "bolt", gated: true, featured: true },
   { href: "/dashboard/playground", label: "Playground", icon: "group", gated: true, featured: true },
@@ -55,9 +58,7 @@ const QUICK_LINKS = [
   { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false, featured: false },
   { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false, featured: false },
   { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome", gated: true, featured: false },
-  { href: "/dashboard/attendance", label: "Attendance History", icon: "calendar_month", gated: false, featured: false },
   { href: "/dashboard/exercises", label: "Exercise Library", icon: "menu_book", gated: false, featured: false },
-  { href: "/dashboard/fees", label: "Fee Status", icon: "payments", gated: false, featured: false },
 ];
 
 // Small badge shown on a gated tile/link when the member hasn't checked in
@@ -88,8 +89,8 @@ function LockBadge() {
 // faintly visible through it looks a little richer, not washed out) and a
 // two-layer shadow — an inset hairline highlight along the top edge
 // (light catching the glass) plus a soft, neutral outer shadow (real
-// depth, not a colored glow).
-const GLASS_SHADOW = "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_8px_24px_-4px_rgba(0,0,0,0.35)]";
+// depth, not a colored glow). Shared with DashboardTabBar — see
+// frontend/lib/glass.ts.
 
 function ShortcutTile({ href, icon, label, locked }: { href: string; icon: string; label: string; locked: boolean }) {
   return (
@@ -178,14 +179,16 @@ export default async function DashboardPage() {
 
       <PersonalNoteArea />
 
-      {/* One-tap access to the three most common actions, kept right at
-          the top so they never require scrolling past everything else —
-          distinct from the full "Quick Actions" link grid further down,
-          which covers every dashboard route rather than just the top 3. */}
+      {/* One-tap access to the four most prominent actions — Beast Mode
+          and Playground first, matching their featured treatment in the
+          Quick Actions grid below — kept right at the top so they never
+          require scrolling past everything else. Distinct from that full
+          "Quick Actions" link grid further down, which covers every
+          dashboard route rather than just these four. */}
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${checkedIn ? "mb-6" : "mb-2"}`}>
+        <ShortcutTile href="/dashboard/workouts?beastMode=open" icon="bolt" label="Beast Mode" locked={!checkedIn} />
+        <ShortcutTile href="/dashboard/playground" icon="group" label="Playground" locked={!checkedIn} />
         <ShortcutTile href="/dashboard/workouts" icon="fitness_center" label="Log Workout" locked={!checkedIn} />
-        <ShortcutTile href="/dashboard/nutrition" icon="restaurant" label="Log Food" locked={false} />
-        <ShortcutTile href="/dashboard/timer" icon="timer" label="Start Timer" locked={!checkedIn} />
         <ShortcutTile href="/dashboard/bmi" icon="calculate" label="BMI Calc" locked={false} />
       </div>
       {!checkedIn && (

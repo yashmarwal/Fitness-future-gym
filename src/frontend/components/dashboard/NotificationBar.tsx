@@ -13,10 +13,11 @@ const TYPE_ICON: Record<Notification["type"], string> = {
   account_unblocked: "lock_open",
 };
 
-// initialNotifications comes from the server render (dashboard/page.tsx
-// already fetches listNotifications for this), so the bar's unread count
-// is correct on first paint instead of popping in after a second
-// client→API round-trip that only starts once the page has hydrated.
+// initialNotifications comes from the server render (dashboard/settings/
+// page.tsx already fetches listNotifications for this), so the bar's
+// unread count is correct on first paint instead of popping in after a
+// second client→API round-trip that only starts once the page has
+// hydrated.
 export default function NotificationBar({ initialNotifications }: { initialNotifications: Notification[] }) {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [expanded, setExpanded] = useState(false);

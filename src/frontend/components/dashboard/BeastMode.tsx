@@ -751,7 +751,7 @@ function BeastMode({ onClose }: { onClose: () => void }) {
 
           {prsEarned > 0 && (
             <p className="font-body text-sm text-primary-container">
-              ðŸŽ‰ {prsEarned} new personal record{prsEarned > 1 ? "s" : ""} this session
+              🎉 {prsEarned} new personal record{prsEarned > 1 ? "s" : ""} this session
             </p>
           )}
 

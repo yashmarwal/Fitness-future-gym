@@ -86,14 +86,27 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       onClick={handleTap}
       disabled={checkedIn || marking}
       aria-label={checkedIn ? "Attendance already marked" : "Tap to check in and mark attendance"}
-      className={`relative w-full flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 text-left disabled:cursor-default ${
-        checkedIn ? "border-primary-container" : "border-surface-variant hover:bg-surface-container"
+      className={`relative w-full flex items-center gap-3 pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 text-left disabled:cursor-default ${
+        checkedIn
+          ? "bg-surface-container-low border-primary-container/50"
+          : // The single most important action on this page — a check-in
+            // unlocks the rest of the dashboard — so it needs to read as
+            // distinct from the neutral ShortcutTile cards above it, not
+            // just another dark pill in the same row. A dull gray border
+            // on the same near-black fill as everything around it was
+            // exactly why it blended in; a bright full-opacity brand
+            // border plus a tinted fill fixes that without needing an
+            // extra glow/pulse layer on top.
+            "bg-primary-container/10 border-primary-container hover:bg-primary-container/15"
       }`}
     >
-      {/* A comet of orange stroke traveling around the whole pill, not just
-          the small circular button, for as long as the request is in
-          flight — pathLength=100 keeps the dash math independent of the
-          pill's actual rendered width (see attendance-pill-trace).
+      {/* A comet of stroke traveling around the whole pill, not just the
+          small circular button, for as long as the request is in flight —
+          pathLength=100 keeps the dash math independent of the pill's
+          actual rendered width (see attendance-pill-trace). Pure white,
+          not the brand orange this used before: the pill's own border is
+          now solid primary-container (see the not-checked-in classes
+          above), so an orange trace over an orange border was invisible.
           Deliberately setting ONLY ry (not rx) to "50%": per the SVG spec,
           when only ry is given, rx is inferred to the same resolved value
           (height / 2) rather than each being clamped independently against
@@ -111,7 +124,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
             ry="50%"
             pathLength={100}
             fill="none"
-            stroke="var(--color-primary-container)"
+            stroke="#ffffff"
             strokeWidth="2"
             strokeLinecap="round"
             strokeDasharray="16 84"

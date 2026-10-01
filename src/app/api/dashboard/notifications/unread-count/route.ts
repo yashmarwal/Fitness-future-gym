@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
 import { countUnreadNotifications } from "@/backend/services/memberNotifications";
 
-// Polled by DashboardHeader.tsx (client-side, on mount and whenever the
-// Settings panel closes) to light up the red dot on the Settings button —
-// a dedicated lightweight endpoint rather than reusing GET
-// /api/dashboard/notifications, which returns full notification rows.
+// Polled by useUnreadNotifications.ts (client-side, on mount and whenever
+// the route changes) to light up the red dot on the Settings tab in
+// DashboardTabBar/DashboardDesktopNav — a dedicated lightweight endpoint
+// rather than reusing GET /api/dashboard/notifications, which returns full
+// notification rows.
 export async function GET() {
   const session = await getMemberSession();
   if (!session) return NextResponse.json({ status: "error" }, { status: 401 });

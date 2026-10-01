@@ -25,15 +25,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // route tree via redirect() stops that work from happening at all.
   if (member.isBlocked) redirect("/account-blocked");
 
-  // Deliberately NOT fetching notifications/workout-prompt-pref here for
-  // SettingsPanel — this layout wraps every dashboard route, so anything
-  // awaited here adds latency to every single navigation (and to a cold
-  // PWA launch, which already has no warm client cache to fall back on).
-  // SettingsPanel almost never opens on a given page view, so it fetches
-  // that data itself, lazily, only once actually opened (GET
-  // /api/dashboard/notification-prefs, /api/dashboard/notifications) —
-  // this used to await both eagerly and got reverted once it showed up as
-  // real added latency on every dashboard page load.
   return (
     // bg-black (pure #000), not the site-wide --color-background token
     // (#141311, a warm near-black used everywhere else via body's own
@@ -47,7 +38,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <WorkoutTimerActivityWatcher />
       <CheckInCelebration />
       <PlaygroundInviteWatcher />
-      <DashboardHeader fullName={member.fullName} membershipNumber={member.membershipNumber} plan={member.plan} />
+      <DashboardHeader fullName={member.fullName} />
       <DashboardDesktopNav />
       <main className="flex-1 pb-20 lg:pb-8">
         {children}
