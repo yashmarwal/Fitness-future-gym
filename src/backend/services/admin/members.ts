@@ -53,6 +53,24 @@ export async function listMembers(): Promise<AdminMember[]> {
   return (base.data ?? []).map(mapRow);
 }
 
+// Powers the Overview page's "New Joinees This Month" card and the AI
+// assistant's matching tool. joined_at is a plain `date` column (not
+// timestamptz — see schema.sql), so comparing it against an IST calendar
+// date string needs no timezone conversion, unlike paid_at/checked_in_at
+// elsewhere in admin/ which are real timestamps.
+export async function listNewJoineesThisMonth(): Promise<AdminMember[]> {
+  const db = getDb();
+  const startOfMonth = `${getIstDateString().slice(0, 7)}-01`;
+
+  const full = await db.from("members").select(FULL_COLUMNS).gte("joined_at", startOfMonth).order("joined_at", { ascending: false });
+  if (!full.error) return (full.data ?? []).map(mapRow);
+  if (!isMissingColumnError(full.error)) throw new Error(`Failed to load new joinees: ${full.error.message}`);
+
+  const base = await db.from("members").select(BASE_COLUMNS).gte("joined_at", startOfMonth).order("joined_at", { ascending: false });
+  if (base.error) throw new Error(`Failed to load new joinees: ${base.error.message}`);
+  return (base.data ?? []).map(mapRow);
+}
+
 // A cheap head-count query (no rows fetched) rather than listMembers().length
 // — powers the admin AI assistant's "how many members" question (see
 // aiAssistant.ts's count_members tool). Without a dedicated count tool the

@@ -2,8 +2,8 @@ import "server-only";
 import { listOverdueFeeMembers, listUpcomingDueMembers, listRecentlyMissedMembers, listInactiveMembers, listTrialOverMembers, listUpcomingBirthdays } from "@/backend/services/admin/alerts";
 import { listRecentAttendance, getMemberAttendanceTimestamps, countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
 import { listUnpaidActiveMembers, listBlockedMembers, countNeverBilledMembers } from "@/backend/services/admin/feeAbuse";
-import { listFeePayments, sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
-import { listMembers, getMember, countMembers } from "@/backend/services/admin/members";
+import { listFeePayments, sumPaidThisMonth, countOverdueMembers, getRevenueLast12Months } from "@/backend/services/admin/feesAdmin";
+import { listMembers, getMember, countMembers, listNewJoineesThisMonth } from "@/backend/services/admin/members";
 import { listTrialRegistrations } from "@/backend/services/admin/trials";
 import { getDailySummary } from "@/backend/services/admin/dailySummary";
 import { getWeeklySummary } from "@/backend/services/admin/weeklySummary";
@@ -117,6 +117,17 @@ const TOOLS: Record<string, ToolDef> = {
     description: "How many active members currently have an overdue fee.",
     parameters: { type: "object", properties: {} },
     handler: async () => countOverdueMembers(),
+  },
+  get_revenue_last_12_months: {
+    description:
+      "Total paid revenue over the last 12 calendar months, plus a month-by-month breakdown (label and total for each). Use this for any 'total revenue', 'revenue this year', 'revenue by month', or 'which month made the most' question — sum_paid_this_month only covers the current month.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => getRevenueLast12Months(),
+  },
+  list_new_joinees_this_month: {
+    description: "Members who joined this calendar month (name, membership number, plan, joined date). Use this for 'new members this month' / 'who joined recently' questions.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => listNewJoineesThisMonth(),
   },
   list_recent_attendance: {
     description: "Recent check-in records across all members (who checked in, when).",

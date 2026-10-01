@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
-import { sumPaidThisMonth, countOverdueMembers } from "@/backend/services/admin/feesAdmin";
-import { listMembers } from "@/backend/services/admin/members";
+import { sumPaidThisMonth, countOverdueMembers, getRevenueLast12Months } from "@/backend/services/admin/feesAdmin";
+import { listMembers, listNewJoineesThisMonth } from "@/backend/services/admin/members";
+import RevenueCard from "@/frontend/components/admin/RevenueCard";
+import NewJoineesCard from "@/frontend/components/admin/NewJoineesCard";
 import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/admin/feeAbuse";
 import {
   listOverdueFeeMembers,
@@ -26,6 +28,8 @@ export default async function AdminOverviewPage() {
     birthdays,
     unpaidActive,
     blocked,
+    yearlyRevenue,
+    newJoinees,
   ] = await Promise.all([
     countTodaysCheckIns(),
     sumPaidThisMonth(),
@@ -39,6 +43,8 @@ export default async function AdminOverviewPage() {
     listUpcomingBirthdays(),
     listUnpaidActiveMembers(),
     listBlockedMembers(),
+    getRevenueLast12Months(),
+    listNewJoineesThisMonth(),
   ]);
 
   const activeCount = members.filter((m) => m.isActive).length;
@@ -101,6 +107,12 @@ export default async function AdminOverviewPage() {
               <span className={`font-display text-3xl ${s.tone}`}>{s.value}</span>
             </Link>
           ))}
+          {/* Popups, not Links — these two show their own detail inline
+              (monthly breakdown / the actual joinee list) rather than
+              reusing an existing page the way every statCards entry
+              above does, since no such page exists yet for either. */}
+          <RevenueCard total={yearlyRevenue.total} months={yearlyRevenue.months} />
+          <NewJoineesCard joinees={newJoinees} />
         </div>
       </div>
 

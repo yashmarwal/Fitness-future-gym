@@ -294,6 +294,54 @@ export async function sumPaidThisMonth(): Promise<number> {
   return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
 }
 
+export type MonthlyRevenue = { month: string; label: string; total: number };
+
+// Pure integer month arithmetic, not Date-object rollover — month is
+// 1-indexed (matches getIstDateString's slice), delta can be negative.
+// Keeping this off real Date math (which in a non-UTC-fixed timezone can
+// land on a different calendar day than intended) means the YYYY-MM key
+// this produces is never at risk of silently drifting a month off.
+function addMonths(year: number, month: number, delta: number): { year: number; month: number } {
+  const total = year * 12 + (month - 1) + delta;
+  return { year: Math.floor(total / 12), month: (total % 12 + 12) % 12 + 1 };
+}
+
+function monthLabel(year: number, month: number): string {
+  // Date is only ever used here to borrow Intl's month-name formatting —
+  // pinned to UTC with a UTC-constructed date so there's no local-timezone
+  // rollover risk turning "Jan 1" into "Dec 31" or vice versa.
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString("en-IN", { month: "short", year: "2-digit", timeZone: "UTC" });
+}
+
+// Powers the Overview page's "Total Revenue" card (12-month total, click
+// through to the monthly breakdown) and the AI assistant's matching tool.
+// Same "paid" filter and IST-explicit date handling as sumPaidThisMonth
+// above, just grouped by calendar month instead of summed into one number.
+export async function getRevenueLast12Months(): Promise<{ total: number; months: MonthlyRevenue[] }> {
+  const db = getDb();
+  const [curYear, curMonth] = getIstDateString().slice(0, 7).split("-").map(Number);
+  const start = addMonths(curYear, curMonth, -11);
+  const startIso = `${start.year}-${String(start.month).padStart(2, "0")}-01T00:00:00+05:30`;
+
+  const { data, error } = await db.from("fee_payments").select("amount, paid_at").eq("status", "paid").gte("paid_at", new Date(startIso).toISOString());
+  if (error) throw new Error(`Failed to load revenue: ${error.message}`);
+
+  const totalsByMonth = new Map<string, number>();
+  for (const row of data ?? []) {
+    const key = getIstDateString(new Date(row.paid_at)).slice(0, 7);
+    totalsByMonth.set(key, (totalsByMonth.get(key) ?? 0) + Number(row.amount));
+  }
+
+  const months: MonthlyRevenue[] = [];
+  for (let i = 0; i < 12; i++) {
+    const { year, month } = addMonths(start.year, start.month, i);
+    const key = `${year}-${String(month).padStart(2, "0")}`;
+    months.push({ month: key, label: monthLabel(year, month), total: totalsByMonth.get(key) ?? 0 });
+  }
+
+  return { total: months.reduce((sum, m) => sum + m.total, 0), months };
+}
+
 export async function countOverdueMembers(): Promise<number> {
   const db = getDb();
   const { count, error } = await db
