@@ -9,6 +9,7 @@ import { listPersonalRecords, type PersonalRecord } from "@/backend/services/per
 import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
 import { getRoom } from "@/backend/services/playground";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
+import { getIstDateString } from "@/frontend/lib/date";
 import { BUSINESS_ADDRESS, SITE_URL } from "@/frontend/lib/siteConfig";
 import { weightComparison } from "@/frontend/lib/weightComparisons";
 import { streakTier, type StreakTier } from "@/frontend/lib/streakTiers";
@@ -45,7 +46,7 @@ const HEIGHT = 1440;
 // hub (see the exercise/prevWeight/prevReps params below for why: the
 // "previous" value doesn't exist in the database anymore by the time this
 // route runs, since checkAndRecordPr already overwrote it).
-export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate", "playground"] as const;
+export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate", "playground", "today"] as const;
 export type CardType = (typeof CARD_TYPES)[number];
 
 // Brand tokens as literal hex — Satori renders independently of the site's
@@ -383,6 +384,28 @@ export async function GET(request: Request) {
   const name = member.fullName;
   const dateLabel = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
 
+  // Today's session only — not snapshot.lifting, which is a 7-day rolling
+  // total. This is the Strava-style "just finished, share it now" card:
+  // the whole point is it's about what you JUST did, not the week.
+  const todayKey = getIstDateString();
+  const todayLogs = workoutLogs.filter((l) => getIstDateString(new Date(l.loggedAt)) === todayKey);
+  let todayVolumeKg = 0;
+  let todayHeaviest: { name: string; weightKg: number; reps: number } | null = null;
+  for (const log of todayLogs) {
+    if (log.weightKg != null && log.weightKg > 0) {
+      todayVolumeKg += log.sets * log.reps * log.weightKg;
+      if (!todayHeaviest || log.weightKg > todayHeaviest.weightKg) {
+        todayHeaviest = { name: log.exerciseName, weightKg: log.weightKg, reps: log.reps };
+      }
+    }
+  }
+  const today = {
+    sets: todayLogs.reduce((sum, l) => sum + l.sets, 0),
+    volumeKg: Math.round(todayVolumeKg),
+    exercises: new Set(todayLogs.map((l) => l.exerciseName.trim().toLowerCase())).size,
+    heaviest: todayHeaviest,
+  };
+
   if (type === "certificate") {
     // Any exercise, any time — not just the current single best lift and
     // not just the instant a record breaks (that's still the "pr" type
@@ -533,6 +556,19 @@ export async function GET(request: Request) {
       big: `${snapshot.lifting.volumeKg.toLocaleString("en-IN")}KG`,
       sub: `${snapshot.lifting.sets} sets logged`,
       comparisonLine: weightComparison(snapshot.lifting.volumeKg),
+    };
+  } else if (type === "today") {
+    // The Strava "share right after you finish" card — a 404 (not a
+    // pointless "0KG, 0 sets" card) if nothing's actually been logged yet
+    // today, same posture as certificate/playground above.
+    if (todayLogs.length === 0) return new Response("Nothing logged today", { status: 404 });
+    const exerciseWord = today.exercises === 1 ? "exercise" : "exercises";
+    props = {
+      eyebrow: "TODAY'S SESSION",
+      label: today.heaviest ? today.heaviest.name.toUpperCase() : "WORKOUT LOGGED",
+      big: today.volumeKg > 0 ? `${today.volumeKg.toLocaleString("en-IN")}KG` : `${today.sets} SETS`,
+      sub: `${today.sets} sets across ${today.exercises} ${exerciseWord}`,
+      comparisonLine: today.volumeKg > 0 ? weightComparison(today.volumeKg) : null,
     };
   } else if (type === "rank") {
     props = {

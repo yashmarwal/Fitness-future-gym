@@ -19,10 +19,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "error", message: "Invalid request." }, { status: 400 });
   }
 
-  const prefs: { water?: boolean; mealLog?: boolean; streak?: boolean } = {};
+  const prefs: { water?: boolean; mealLog?: boolean; streak?: boolean; shareReminder?: boolean } = {};
   if (typeof body.water === "boolean") prefs.water = body.water;
   if (typeof body.mealLog === "boolean") prefs.mealLog = body.mealLog;
   if (typeof body.streak === "boolean") prefs.streak = body.streak;
+  if (typeof body.shareReminder === "boolean") prefs.shareReminder = body.shareReminder;
 
   try {
     await updateNotificationPrefs(session.memberId, prefs);

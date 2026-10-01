@@ -18,13 +18,14 @@ export type MemberProfile = {
   notifyWater: boolean;
   notifyMealLog: boolean;
   notifyStreak: boolean;
+  notifyShareReminder: boolean;
   currentStreakDays: number;
   longestStreakDays: number;
 };
 
 const BASE_COLUMNS =
   "id, membership_number, full_name, phone, plan, fee_amount, fee_due_date, joined_at, is_active, is_frozen, last_checked_in_at";
-const NOTIFY_COLUMNS = "notify_water, notify_meal_log, notify_streak";
+const NOTIFY_COLUMNS = "notify_water, notify_meal_log, notify_streak, notify_share_reminder";
 const STREAK_COLUMNS = "current_streak_days, longest_streak_days";
 
 // The stored current_streak_days is only ever WRITTEN at check-in time
@@ -62,6 +63,7 @@ function mapMemberRow(data: Record<string, unknown>): MemberProfile {
     notifyWater: (data.notify_water as boolean | undefined) ?? false,
     notifyMealLog: (data.notify_meal_log as boolean | undefined) ?? false,
     notifyStreak: (data.notify_streak as boolean | undefined) ?? false,
+    notifyShareReminder: (data.notify_share_reminder as boolean | undefined) ?? false,
     currentStreakDays: effectiveCurrentStreak(storedStreak, lastCheckedInAt),
     longestStreakDays: (data.longest_streak_days as number | undefined) ?? 0,
   };
@@ -103,13 +105,14 @@ export const getMemberById = cache(async function getMemberById(memberId: string
 
 export async function updateNotificationPrefs(
   memberId: string,
-  prefs: { water?: boolean; mealLog?: boolean; streak?: boolean }
+  prefs: { water?: boolean; mealLog?: boolean; streak?: boolean; shareReminder?: boolean }
 ): Promise<void> {
   const db = getDb();
   const update: Record<string, boolean> = {};
   if (prefs.water !== undefined) update.notify_water = prefs.water;
   if (prefs.mealLog !== undefined) update.notify_meal_log = prefs.mealLog;
   if (prefs.streak !== undefined) update.notify_streak = prefs.streak;
+  if (prefs.shareReminder !== undefined) update.notify_share_reminder = prefs.shareReminder;
   if (Object.keys(update).length === 0) return;
 
   const { error } = await db.from("members").update(update).eq("id", memberId);

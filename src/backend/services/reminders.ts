@@ -17,7 +17,9 @@ const NOTIFY_CONCURRENCY = 8;
 // fails open (0 sent, not an error) if the notify_* columns haven't been
 // migrated onto `members` yet, same pattern as feeAbuse.ts.
 
-async function listOptedInMemberIds(column: "notify_water" | "notify_meal_log" | "notify_streak"): Promise<string[]> {
+async function listOptedInMemberIds(
+  column: "notify_water" | "notify_meal_log" | "notify_streak" | "notify_share_reminder"
+): Promise<string[]> {
   const db = getDb();
   const { data, error } = await db.from("members").select("id").eq("is_active", true).eq(column, true);
 
@@ -99,6 +101,42 @@ export async function runStreakReminderCheck(): Promise<{ sent: number }> {
       title: "🔥 Don't Break Your Streak",
       body: "You haven't checked in today yet — get to the floor before it closes.",
       url: "/dashboard",
+    }).catch(() => {});
+    return true;
+  });
+
+  return { sent: results.filter(Boolean).length };
+}
+
+// Smart, not naggy — the other direction from the three reminders above:
+// this only fires for members who DID train today (checked via
+// workout_logs, IST), so it's never pestering someone with nothing to
+// actually share. The whole point is Strava's "share right after you
+// finish" mechanic (free marketing — a member's own post does the
+// advertising) — see the "today" achievement-card type and its share
+// button on the Workouts page history and the Achievements page switcher.
+// App push only, same as every other reminder here — never WhatsApp/email.
+export async function runShareReminderCheck(): Promise<{ sent: number }> {
+  const memberIds = await listOptedInMemberIds("notify_share_reminder");
+  if (memberIds.length === 0) return { sent: 0 };
+
+  const db = getDb();
+  const todayStart = getIstStartOfTodayIso();
+
+  const results = await mapWithConcurrency(memberIds, NOTIFY_CONCURRENCY, async (memberId) => {
+    const { data, error } = await db
+      .from("workout_logs")
+      .select("id")
+      .eq("member_id", memberId)
+      .gte("logged_at", todayStart)
+      .limit(1);
+    if (error) return false;
+    if (!data || data.length === 0) return false; // nothing logged today — nothing to share
+
+    await sendPushToMember(memberId, {
+      title: "📸 Share Today's Session",
+      body: "You put in the work today — show it off. Tap to grab your share card.",
+      url: "/dashboard/achievements",
     }).catch(() => {});
     return true;
   });

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { WorkoutLog } from "@/backend/services/workouts";
 import { getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
 import { NumberStepper, WeightStepper } from "@/frontend/components/dashboard/WorkoutLogForm";
+import { fetchCardFile, shareOrDownloadCard } from "@/frontend/lib/shareCard";
 
 // Groups logs (already most-recent-first from listWorkoutLogs) by IST
 // calendar day — moved here from workouts/page.tsx along with the rest of
@@ -150,6 +151,41 @@ function LogRow({ log }: { log: WorkoutLog }) {
   );
 }
 
+// The Strava-style "just finished, share it now" moment — right on
+// today's own group, not buried in a separate achievements/share page a
+// member would have to go find days later. Only ever rendered for a group
+// that genuinely has logs (DayDrawer only exists for non-empty groups, see
+// groupByDay), so the card route's own "nothing logged today" 404 can
+// never actually trigger from here.
+function ShareTodayButton() {
+  const [busy, setBusy] = useState(false);
+
+  async function handleShare() {
+    setBusy(true);
+    try {
+      const file = await fetchCardFile("/api/dashboard/achievement-card?type=today", "fitness-future-today.png");
+      await shareOrDownloadCard(file, "Today's Session", "Just finished a session at Fitness Future Gym 💪");
+    } catch {
+      // Passive failure — this is a one-tap bonus action on a page whose
+      // real job is logging sets, not something worth an error banner.
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleShare}
+      disabled={busy}
+      aria-label="Share today's workout"
+      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-primary-container hover:bg-surface-container-high transition-colors disabled:opacity-60"
+    >
+      <span className="material-symbols-outlined text-lg leading-none">ios_share</span>
+    </button>
+  );
+}
+
 // One collapsible day — same smooth height animation (grid-template-rows
 // 0fr/1fr on an inner min-h-0 overflow-hidden wrapper) already used by
 // DashboardSnapshot.tsx's panel, so this reads as the same interaction
@@ -166,32 +202,40 @@ function DayDrawer({
   defaultOpen: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const isToday = dateKey === todayKey;
 
   return (
     <div className="bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left"
-      >
-        <span className="flex items-center gap-2.5 min-w-0">
-          <span className="font-label text-xs uppercase tracking-widest text-primary-container shrink-0">
-            {dayLabel(dateKey, todayKey)}
-          </span>
-          <span className="font-label text-[9px] uppercase tracking-wider text-tertiary truncate">
-            {logs.length} {logs.length === 1 ? "exercise" : "exercises"}
-          </span>
-        </span>
-        <span
-          aria-hidden="true"
-          className={`material-symbols-outlined text-lg leading-none text-tertiary shrink-0 transition-transform duration-300 motion-reduce:transition-none ${
-            open ? "rotate-180" : ""
-          }`}
+      {/* A button nested inside a button is invalid HTML — ShareTodayButton
+          needs its own click target separate from the drawer's own
+          open/close toggle, so the toggle is only the label/chevron part,
+          not the whole header row like it used to be. */}
+      <div className="w-full flex items-center justify-between gap-2 pl-5 pr-3 py-3.5">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          className="flex-1 flex items-center justify-between gap-3 min-w-0 text-left"
         >
-          expand_more
-        </span>
-      </button>
+          <span className="flex items-center gap-2.5 min-w-0">
+            <span className="font-label text-xs uppercase tracking-widest text-primary-container shrink-0">
+              {dayLabel(dateKey, todayKey)}
+            </span>
+            <span className="font-label text-[9px] uppercase tracking-wider text-tertiary truncate">
+              {logs.length} {logs.length === 1 ? "exercise" : "exercises"}
+            </span>
+          </span>
+          <span
+            aria-hidden="true"
+            className={`material-symbols-outlined text-lg leading-none text-tertiary shrink-0 transition-transform duration-300 motion-reduce:transition-none ${
+              open ? "rotate-180" : ""
+            }`}
+          >
+            expand_more
+          </span>
+        </button>
+        {isToday && <ShareTodayButton />}
+      </div>
 
       <div
         className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${

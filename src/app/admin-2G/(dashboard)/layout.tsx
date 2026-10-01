@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/backend/auth/session";
 import AdminNav from "@/frontend/components/admin/AdminNav";
+import AdminTabBar from "@/frontend/components/admin/AdminTabBar";
 
 // Overrides the root layout's manifest link (which points at
 // admin-manifest.json — start_url "/admin-2G" instead of "/dashboard" — the
@@ -41,9 +42,15 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
           throughout the admin panel (nav tabs, filter pills, the members
           table) — those still scroll within themselves; this only clips
           whatever manages to escape all the way up past them. */}
-      <main className="flex-1 flex flex-col min-h-0 px-gutter-mobile lg:px-gutter-desktop py-8 max-w-(--container-max) mx-auto w-full overflow-x-hidden">
+      {/* pb-24, not the member dashboard's pb-20 lg:pb-8 — AdminTabBar
+          replaces the old top pill nav outright (no separate desktop nav
+          to fall back to), so unlike DashboardTabBar (mobile-only,
+          lg:hidden) this fixed bar is on screen at every breakpoint and
+          content needs clearance from it everywhere, not just on mobile. */}
+      <main className="flex-1 flex flex-col min-h-0 px-gutter-mobile lg:px-gutter-desktop py-8 pb-24 max-w-(--container-max) mx-auto w-full overflow-x-hidden">
         {children}
       </main>
+      <AdminTabBar />
     </div>
   );
 }

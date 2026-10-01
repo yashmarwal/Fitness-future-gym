@@ -1,22 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { MemberSearchResult } from "@/types/admin";
-
-const LINKS = [
-  { href: "/admin-2G", label: "Overview", icon: "dashboard" },
-  { href: "/admin-2G/alerts", label: "Alerts", icon: "notifications" },
-  { href: "/admin-2G/members", label: "Members", icon: "group" },
-  { href: "/admin-2G/trials", label: "Trials", icon: "person_add" },
-  { href: "/admin-2G/attendance", label: "Attendance", icon: "event_available" },
-  { href: "/admin-2G/fees", label: "Fees", icon: "payments" },
-  { href: "/admin-2G/access-control", label: "Access Control", icon: "block" },
-  { href: "/admin-2G/broadcast", label: "Broadcast", icon: "campaign" },
-  { href: "/admin-2G/ai-assistant", label: "Ask AI", icon: "smart_toy" },
-  { href: "/admin-2G/audit-log", label: "Activity", icon: "history" },
-];
 
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -120,7 +106,6 @@ function QuickMemberSearch() {
 }
 
 export default function AdminNav({ username }: { username: string }) {
-  const pathname = usePathname();
   const router = useRouter();
 
   async function handleLogout() {
@@ -155,22 +140,6 @@ export default function AdminNav({ username }: { username: string }) {
           </button>
         </div>
       </div>
-      <nav className="flex items-center gap-2 px-gutter-mobile lg:px-gutter-desktop py-2.5 overflow-x-auto">
-        {LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-              pathname === link.href
-                ? "bg-primary-container text-on-primary-container"
-                : "bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-            }`}
-          >
-            <span className="material-symbols-outlined text-base leading-none">{link.icon}</span>
-            {link.label}
-          </Link>
-        ))}
-      </nav>
     </header>
   );
 }

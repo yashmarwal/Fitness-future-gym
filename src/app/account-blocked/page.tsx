@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
 import { getBlockReason } from "@/backend/services/admin/feeAbuse";
 import BlockedScreen from "@/frontend/components/dashboard/BlockedScreen";
+
+// No unique search-worthy content of its own, same reasoning as
+// login/signup/onboarding — without this it inherits the root layout's
+// index:true default.
+export const metadata: Metadata = {
+  title: "Account On Hold",
+  robots: { index: false, follow: true },
+};
 
 // A dedicated route, not a conditional inside dashboard/layout.tsx — using
 // redirect() here (rather than the layout just returning different JSX)

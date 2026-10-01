@@ -36,18 +36,32 @@ create extension if not exists pgcrypto;
 --   create index if not exists members_active_fee_due_date_idx
 --     on members (fee_due_date) where is_active = true;
 --
--- Also run these three, for the opt-in water/meal-log/streak reminder
--- toggles on the dashboard (see reminders.ts):
+-- Also run these three, for the water/meal-log/streak reminder toggles on
+-- the dashboard (see reminders.ts) — default true, same as notify_workout
+-- below: on unless a member turns it off, not opt-in. (If you already ran
+-- this migration with the old `default false`, also run:
+--   update members set notify_water = true, notify_meal_log = true, notify_streak = true;
+-- to bring existing members up to the new default — a column default only
+-- applies to rows inserted after it changes, not retroactively.)
 --
---   alter table members add column if not exists notify_water boolean not null default false;
---   alter table members add column if not exists notify_meal_log boolean not null default false;
---   alter table members add column if not exists notify_streak boolean not null default false;
+--   alter table members add column if not exists notify_water boolean not null default true;
+--   alter table members add column if not exists notify_meal_log boolean not null default true;
+--   alter table members add column if not exists notify_streak boolean not null default true;
 --
 -- Also run this one, for the opt-in "Workout Prompt" push (a nudge to start
 -- logging after a front-desk QR check-in — see workoutPrompt.ts). Without it
 -- everything still works; the toggle just can't be switched on:
 --
 --   alter table members add column if not exists notify_workout boolean not null default true;
+--
+-- Also run this one, for the nightly "share your achievements" push (10 PM
+-- IST, see reminders.ts's runShareReminderCheck) — default true, unlike
+-- the water/meal/streak reminders above: this only ever reaches someone
+-- who actually trained that day (see the cron's own "has logged a workout
+-- today" check), so it's closer in spirit to notify_workout's "on unless
+-- you turn it off" than to the opt-in health nudges:
+--
+--   alter table members add column if not exists notify_share_reminder boolean not null default true;
 --
 -- Also run these two — fixes the "Day Streak" dashboard stat silently
 -- capping at ~30 days once a member's older attendance rows get purged
@@ -174,15 +188,17 @@ create table if not exists members (
   -- bug class already avoided for Muscle Progress XP (member_muscle_xp).
   current_streak_days integer not null default 0,
   longest_streak_days integer not null default 0,
-  -- Opt-in personal reminder toggles, shown on the dashboard (not a
-  -- separate settings page) — each independently controls whether that
-  -- member gets pinged by the matching cron (reminders.ts). All default
-  -- false: these are never sent to anyone who hasn't explicitly turned
-  -- them on, unlike fee/birthday/broadcast pushes which don't need opt-in.
-  notify_water boolean not null default false,
-  notify_meal_log boolean not null default false,
-  notify_streak boolean not null default false,
+  -- Personal reminder toggles, shown on the dashboard (not a separate
+  -- settings page) — each independently controls whether that member gets
+  -- pinged by the matching cron (reminders.ts). All default true: on
+  -- unless a member turns one off, same posture as fee/birthday/broadcast
+  -- pushes (which don't need opt-in at all) rather than requiring every
+  -- member to find Settings and switch each one on individually first.
+  notify_water boolean not null default true,
+  notify_meal_log boolean not null default true,
+  notify_streak boolean not null default true,
   notify_workout boolean not null default true,
+  notify_share_reminder boolean not null default true,
   -- The fitness-onboarding wizard's saved answers — see the migration note
   -- above and fitnessProfile.ts. Null until a member completes (or redoes)
   -- the wizard.

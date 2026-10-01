@@ -29,6 +29,7 @@ export default async function SettingsPage() {
     mealLog: member.notifyMealLog,
     streak: member.notifyStreak,
     workout: workoutPromptEnabled,
+    shareReminder: member.notifyShareReminder,
   };
 
   return (

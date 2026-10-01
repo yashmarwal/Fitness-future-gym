@@ -9,7 +9,7 @@ import { isPushSupported, subscribeToPush } from "@/frontend/lib/pushNotificatio
 // member does something positive, rather than only nagging on page load.
 export const CHECKIN_SUCCESS_EVENT = "ff-checkin-success";
 
-type Prefs = { water: boolean; mealLog: boolean; streak: boolean; workout: boolean };
+type Prefs = { water: boolean; mealLog: boolean; streak: boolean; workout: boolean; shareReminder: boolean };
 // "checking" is the only state possible during SSR (and on the client's
 // first paint, before hydration) — Notification.permission genuinely can't
 // be known on the server, so branching a lazy useState initializer on
@@ -57,6 +57,7 @@ const REMINDER_OPTIONS: { key: keyof Prefs; icon: string; label: string; hint: s
   { key: "mealLog", icon: "restaurant", label: "Meal Log Reminders", hint: "if you haven't logged today" },
   { key: "streak", icon: "local_fire_department", label: "Streak Reminders", hint: "if you haven't checked in today" },
   { key: "workout", icon: "fitness_center", label: "Workout Prompt", hint: "the moment you check in" },
+  { key: "shareReminder", icon: "ios_share", label: "Share Reminder", hint: "10 PM, if you trained today" },
 ];
 
 export default function NotificationsCard({ initialPrefs }: { initialPrefs: Prefs }) {

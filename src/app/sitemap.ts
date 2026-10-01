@@ -13,6 +13,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/membership", priority: 0.8, changeFrequency: "monthly" },
     { path: "/location", priority: 0.7, changeFrequency: "monthly" },
     { path: "/calculator", priority: 0.6, changeFrequency: "yearly" },
+    // Indexable, canonical, footer-linked — just missing from this list
+    // before. Low priority/rare change frequency since they're reference
+    // pages, not pages anyone's searching to land on.
+    { path: "/privacy-policy", priority: 0.3, changeFrequency: "yearly" },
+    { path: "/terms-conditions", priority: 0.3, changeFrequency: "yearly" },
+    { path: "/refund-policy", priority: 0.3, changeFrequency: "yearly" },
+    { path: "/cookies-policy", priority: 0.3, changeFrequency: "yearly" },
   ];
 
   // No lastModified here on purpose — this app has no real per-page

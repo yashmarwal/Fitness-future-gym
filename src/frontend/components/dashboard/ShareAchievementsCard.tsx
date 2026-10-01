@@ -6,6 +6,7 @@ import { downloadFile, fetchCardFile, shareOrDownloadCard } from "@/frontend/lib
 const CARD_URL = "/api/dashboard/achievement-card";
 
 const TYPES = [
+  { value: "today", label: "Today" },
   { value: "lift", label: "Best Lift" },
   { value: "streak", label: "Streak" },
   { value: "volume", label: "Volume" },
@@ -27,6 +28,17 @@ export default function ShareAchievementsCard() {
   const [type, setType] = useState<(typeof TYPES)[number]["value"]>("lift");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Only "today" can actually 404 (see the API route) — nothing logged yet
+  // today returns one instead of a pointless "0KG" card. Every other type
+  // gracefully degrades to a "—" placeholder in its own props instead of
+  // failing, so this never triggers for them.
+  const [previewFailed, setPreviewFailed] = useState(false);
+
+  function handleTypeChange(value: (typeof TYPES)[number]["value"]) {
+    setType(value);
+    setPreviewFailed(false);
+    setError(null);
+  }
 
   async function handleDownload() {
     setError(null);
@@ -70,7 +82,7 @@ export default function ShareAchievementsCard() {
           <button
             key={t.value}
             type="button"
-            onClick={() => setType(t.value)}
+            onClick={() => handleTypeChange(t.value)}
             className={`font-label text-[10px] uppercase tracking-wide px-3 py-2 rounded-full border transition-colors ${
               type === t.value
                 ? "bg-primary-container border-primary-container text-on-primary-container font-bold"
@@ -83,8 +95,21 @@ export default function ShareAchievementsCard() {
       </div>
 
       <div className="mx-auto rounded-xl overflow-hidden border border-surface-variant/40 bg-surface-container-lowest aspect-3/4 max-w-55 w-full">
-        {/* eslint-disable-next-line @next/next/no-img-element -- server-generated PNG, not a next/image-optimizable static asset */}
-        <img key={type} src={cardUrl(type)} alt={`${type} achievement card preview`} className="w-full h-full object-cover" />
+        {previewFailed ? (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-center px-4">
+            <span className="material-symbols-outlined text-3xl text-tertiary leading-none">fitness_center</span>
+            <p className="font-body text-xs text-tertiary">Log a workout today to unlock this card.</p>
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element -- server-generated PNG, not a next/image-optimizable static asset
+          <img
+            key={type}
+            src={cardUrl(type)}
+            alt={`${type} achievement card preview`}
+            className="w-full h-full object-cover"
+            onError={() => setPreviewFailed(true)}
+          />
+        )}
       </div>
 
       {error && <p className="font-body text-xs text-error">{error}</p>}
@@ -93,7 +118,7 @@ export default function ShareAchievementsCard() {
         <button
           type="button"
           onClick={handleShare}
-          disabled={busy}
+          disabled={busy || previewFailed}
           className="flex-1 flex items-center justify-center gap-1.5 bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
         >
           <span className="material-symbols-outlined text-base leading-none">ios_share</span>
@@ -102,7 +127,7 @@ export default function ShareAchievementsCard() {
         <button
           type="button"
           onClick={handleDownload}
-          disabled={busy}
+          disabled={busy || previewFailed}
           className="flex-1 flex items-center justify-center gap-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft disabled:opacity-60 transition-colors"
         >
           <span className="material-symbols-outlined text-base leading-none">download</span>
