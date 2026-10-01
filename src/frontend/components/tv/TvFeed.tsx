@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import TvLoader from "@/frontend/components/tv/TvLoader";
+
+const SPLASH_MS = 3000;
 
 type LiveRoomMember = { firstName: string; score: number | null };
 type LiveRoom = {
@@ -124,6 +127,12 @@ function Marquee({ children, className, seconds = 20 }: { children: ReactNode; c
 // deliberately no attendance/check-ins in the ticker anymore, that's not
 // interesting to broadcast next to an actual live match.
 export default function TvFeed() {
+  // A fixed 3s brand splash whenever this page is opened — not tied to
+  // the rooms/feed fetches finishing (those run in parallel underneath
+  // it regardless), since the point is a deliberate opening moment for a
+  // display meant to be glanced at across a gym, not a "data is loading"
+  // spinner that'd otherwise flash by almost instantly on a fast network.
+  const [showSplash, setShowSplash] = useState(true);
   const [rooms, setRooms] = useState<LiveRoom[]>([]);
   const [items, setItems] = useState<FeedItem[]>([]);
   const [now, setNow] = useState(() => Date.now());
@@ -217,12 +226,29 @@ export default function TvFeed() {
     return () => clearInterval(id);
   }, [rooms.length]);
 
+  useEffect(() => {
+    const id = setTimeout(() => setShowSplash(false), SPLASH_MS);
+    return () => clearTimeout(id);
+  }, []);
+
   const totalPages = Math.max(1, Math.ceil(rooms.length / ROOMS_PER_PAGE));
   const safePage = page % totalPages;
   const visibleRooms = rooms.slice(safePage * ROOMS_PER_PAGE, safePage * ROOMS_PER_PAGE + ROOMS_PER_PAGE);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
+      {/* A plain opaque overlay, not a conditional unmount of everything
+          below — the rooms/feed fetches underneath keep running the whole
+          3s so real content is already in place the instant this lifts,
+          instead of the splash finishing into a second, separate loading
+          state. */}
+      {showSplash && (
+        <div className="fixed inset-0 z-60 bg-black flex flex-col items-center justify-center gap-6" aria-hidden="true">
+          <TvLoader size={96} />
+          <p className="font-display text-2xl uppercase tracking-widest text-white/80">Fitness Future Gym</p>
+        </div>
+      )}
+
       <TopBanner text="Mark your attendance to join a room — Playground is live for anyone checked in" />
 
       {/* A breaking-news-style sting for a lead change in ANY live room —
