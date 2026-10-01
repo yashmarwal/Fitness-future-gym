@@ -1,9 +1,26 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 
+const AUDIT_LOG_RETENTION_DAYS = 30;
+
 export async function recordAuditLog(adminId: string, action: string, details?: Record<string, unknown>): Promise<void> {
   const db = getDb();
   await db.from("audit_log").insert({ admin_id: adminId, action, details: details ?? null });
+}
+
+// Unbounded growth here was a real storage-cost risk — every admin action
+// writes a row and nothing ever read them back out again. Same
+// retention-cutoff-delete pattern as deleteOldNotifications/
+// deleteOldWorkoutLogs, wired into the existing /api/cron/logs-cleanup run.
+export async function deleteOldAuditLogEntries(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - AUDIT_LOG_RETENTION_DAYS);
+
+  const { data, error } = await db.from("audit_log").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old audit log entries: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
 }
 
 export type AuditLogEntry = {

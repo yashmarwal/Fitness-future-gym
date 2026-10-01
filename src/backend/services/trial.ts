@@ -10,6 +10,7 @@ import { mapWithConcurrency } from "@/backend/lib/concurrency";
 
 const TRIAL_DURATION_DAYS = 2;
 const NOTIFY_CONCURRENCY = 8;
+const TRIAL_REGISTRATION_RETENTION_DAYS = 30;
 
 function shiftLabel(shift: "morning" | "evening"): string {
   return shift === "morning" ? "Morning (06:00 - 11:00)" : "Evening (16:30 - 22:30)";
@@ -23,9 +24,12 @@ export type ClaimTrialResult =
   | { status: "claimed"; trialCode: string; endsAt: string }
   | { status: "already_claimed" };
 
-// Phone is unique on trial_registrations — that's the real, server-side
-// enforcement of "one free trial per mobile number, ever." Anything the
-// client checks first (localStorage) is just a fast-path UX hint.
+// trial_phone_claims is the real, permanent, server-side enforcement of
+// "one free trial per mobile number, ever" — trial_registrations' own
+// phone-unique constraint only blocks a repeat claim while that detail row
+// is still live, and it's purged 30 days after creation (see
+// deleteOldTrialRegistrations below). Anything the client checks first
+// (localStorage) is just a fast-path UX hint.
 export async function claimTrial(input: {
   fullName: string;
   phone: string;
@@ -39,10 +43,10 @@ export async function claimTrial(input: {
   // Without normalizing first, "+91 98765 43210" and "9876543210" are
   // different strings to this .eq() check even though they're the same
   // number — the actual "one free trial per mobile, ever" enforcement
-  // (the phone unique constraint) has the same gap.
+  // (trial_phone_claims' primary key) has the same gap.
   const { data: existing, error: existingError } = await db
-    .from("trial_registrations")
-    .select("id")
+    .from("trial_phone_claims")
+    .select("phone")
     .eq("phone", phone)
     .maybeSingle();
   if (existingError) throw new Error(`Failed to check existing trial: ${existingError.message}`);
@@ -64,6 +68,13 @@ export async function claimTrial(input: {
     ends_at: endsAtStr,
   });
   if (insertError) throw new Error(`Failed to save trial claim: ${insertError.message}`);
+
+  // Best-effort — trial_registrations' own phone-unique constraint still
+  // catches a near-simultaneous double-claim even if this insert somehow
+  // fails, so a missing claims row isn't a correctness gap today, only a
+  // gap in the post-30-day guard.
+  const { error: claimError } = await db.from("trial_phone_claims").insert({ phone });
+  if (claimError) console.error("[trial] failed to record permanent phone claim:", claimError.message);
 
   const label = shiftLabel(input.shift);
   // Best-effort, and the trial is already claimed (the row's inserted) by
@@ -119,4 +130,18 @@ export async function runTrialConversionReminder(): Promise<{ sent: number }> {
   });
 
   return { sent: (trials ?? []).length };
+}
+
+// Only trial_registrations' own detail row (name/email/shift/code) is
+// purged — trial_phone_claims (the permanent "already had a free trial"
+// record) is never touched here, see claimTrial above.
+export async function deleteOldTrialRegistrations(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - TRIAL_REGISTRATION_RETENTION_DAYS);
+
+  const { data, error } = await db.from("trial_registrations").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old trial registrations: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
 }

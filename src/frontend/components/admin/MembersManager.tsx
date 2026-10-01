@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
 import { downloadCsv } from "@/frontend/lib/csv";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 // Same rule as the Overview "Overdue Fees" count and the Alerts page's "Fee
 // Overdue" list (active member, fee_due_date before today) — deliberately
@@ -263,21 +264,25 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
 
   return (
     <div className="flex flex-col gap-6">
-      {/* overflow-x-auto + shrink-0 tabs, same pattern as AdminNav's own
-          tab row, so this stays usable on a narrow phone screen instead of
-          the three tabs squeezing down to unreadable widths. */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      {/* A 3-up grid, not a horizontally-scrolling row (the previous
+          approach) — 3 pills at comfortable padding genuinely don't fit a
+          narrow phone's width, so overflow-x-auto just meant the 3rd pill
+          sat half off-screen with no visual hint it was scrollable. Each
+          column takes exactly a third of the width instead, so all 3 are
+          always fully visible — label/count shrink to fit via truncation
+          rather than the row itself overflowing. */}
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
         {FILTER_OPTIONS.map((f) => (
           <button
             key={f.key}
             onClick={() => setActiveFilter(f.key)}
-            className={`shrink-0 flex items-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2 rounded-xl transition-colors ${
+            className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 font-label text-[10px] sm:text-xs uppercase font-bold px-2 sm:px-4 py-2 rounded-xl transition-colors truncate ${
               activeFilter === f.key
                 ? "bg-primary-container text-on-primary-container"
                 : "bg-surface-container-low text-tertiary hover:text-on-surface"
             }`}
           >
-            {f.label}
+            <span className="truncate">{f.label}</span>
             <span className={activeFilter === f.key ? "opacity-80" : "opacity-60"}>({filterCounts[f.key]})</span>
           </button>
         ))}
@@ -581,30 +586,43 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
               {filtered.length > 0 && filtered.every((m) => selectedIds.has(m.id)) ? "Deselect All" : "Select All"}
             </button>
             {filtered.map((m) => (
-              <div key={m.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
-                <div className="flex items-start justify-between gap-3">
+              // Name leads (the primary identifier a human reads), the
+              // membership number is the secondary tag underneath it — the
+              // previous layout had the internal code sitting above the
+              // name, backwards from how anyone actually scans a card.
+              // Active/Fee-Pending move to their own column on the right so
+              // they don't compete with the name for the same line, and the
+              // action row is now one edge-to-edge bar with dividers
+              // instead of three separate heavy-filled pills — the same
+              // "sleek list-item footer" pattern most native apps use for
+              // secondary row actions.
+              <div
+                key={m.id}
+                className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW} overflow-hidden flex flex-col`}
+              >
+                <div className="flex items-start justify-between gap-3 p-4 pb-3">
                   <div className="flex items-start gap-2.5 min-w-0">
                     <input
                       type="checkbox"
                       aria-label={`Select ${m.fullName}`}
                       checked={selectedIds.has(m.id)}
                       onChange={() => toggleSelected(m.id)}
-                      className="mt-0.5 w-4 h-4 rounded accent-primary-container cursor-pointer shrink-0"
+                      className="mt-1 w-4 h-4 rounded accent-primary-container cursor-pointer shrink-0"
                     />
                     <div className="min-w-0">
+                      <p className="font-display text-base text-on-surface uppercase tracking-wide leading-tight truncate">
+                        {m.fullName}
+                      </p>
                       <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
                         {m.membershipNumber}
                       </span>
-                      <p className="font-body text-sm font-semibold text-on-surface truncate">{m.fullName}</p>
                     </div>
                   </div>
-                  <div className="shrink-0 flex items-center justify-end gap-1.5 flex-wrap">
+                  <div className="shrink-0 flex flex-col items-end gap-1.5">
                     <button
                       onClick={() => toggleActive(m)}
-                      className={`shrink-0 font-label text-[10px] uppercase px-2 py-1 rounded-full transition-colors ${
-                        m.isActive
-                          ? "bg-primary-container/20 text-primary-container"
-                          : "bg-surface-container-high text-error"
+                      className={`font-label text-[9px] uppercase font-bold px-2.5 py-1 rounded-full border transition-colors ${
+                        m.isActive ? "border-primary-container/40 text-primary-container" : "border-error/40 text-error"
                       }`}
                     >
                       {m.isActive ? "Active" : "Inactive"}
@@ -612,30 +630,44 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                     <FeePendingTag member={m} />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 font-body text-xs text-tertiary">
-                  <span className="truncate">{m.phone ?? "—"}</span>
-                  <span className="truncate">{m.plan ?? "No plan"}</span>
-                  <span>Due: {m.feeDueDate ?? "—"}</span>
-                  <span>Joined: {m.joinedAt}</span>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 px-4 pb-4 font-body text-xs text-tertiary">
+                  <span className="flex items-center gap-1.5 truncate">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">call</span>
+                    {m.phone ?? "—"}
+                  </span>
+                  <span className="flex items-center gap-1.5 truncate">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">badge</span>
+                    {m.plan ?? "No plan"}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">event_busy</span>
+                    Due {m.feeDueDate ?? "—"}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">
+                      calendar_month
+                    </span>
+                    Joined {m.joinedAt}
+                  </span>
                 </div>
-                <div className="flex gap-2 pt-1 border-t border-surface-variant/30">
+                <div className="flex border-t border-white/10">
                   <Link
                     href={`/admin-2G/members/${m.id}`}
-                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-surface-container-high active:bg-surface-container-highest text-on-surface transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-on-surface-variant active:bg-white/5 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">person</span>
                     View
                   </Link>
                   <button
                     onClick={() => startEdit(m)}
-                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-primary-container border-x border-white/10 active:bg-primary-container/10 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">edit</span>
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(m.id)}
-                    className="flex-1 flex items-center justify-center gap-1 font-label text-[10px] uppercase px-3 py-2.5 rounded-lg bg-error-container/40 text-error active:bg-error-container/60 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-error active:bg-error-container/10 transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm leading-none">delete</span>
                     Delete

@@ -218,3 +218,16 @@ export async function sendWhatsAppTemplate(params: {
     throw new Error(error);
   }
 }
+
+const WHATSAPP_LOG_RETENTION_DAYS = 7;
+
+export async function deleteOldWhatsAppMessages(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - WHATSAPP_LOG_RETENTION_DAYS);
+
+  const { data, error } = await db.from("whatsapp_messages").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old WhatsApp messages: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}

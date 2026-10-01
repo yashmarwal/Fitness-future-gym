@@ -4,7 +4,10 @@ import { sumPaidThisMonth, countOverdueMembers, getRevenueLast12Months } from "@
 import { listMembers, listNewJoineesThisMonth } from "@/backend/services/admin/members";
 import RevenueCard from "@/frontend/components/admin/RevenueCard";
 import NewJoineesCard from "@/frontend/components/admin/NewJoineesCard";
+import AiInsightsCard from "@/frontend/components/admin/AiInsightsCard";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/admin/feeAbuse";
+import { getAdminInsights } from "@/backend/services/admin/insights";
 import {
   listOverdueFeeMembers,
   listUpcomingDueMembers,
@@ -47,7 +50,19 @@ export default async function AdminOverviewPage() {
     listNewJoineesThisMonth(),
   ]);
 
+  // Sequential, not folded into the Promise.all above — it reuses
+  // yearlyRevenue/newJoinees (see insights.ts), which only exist once that
+  // batch has actually resolved.
+  const insights = await getAdminInsights(yearlyRevenue, newJoinees);
+
   const activeCount = members.filter((m) => m.isActive).length;
+
+  // Plain thin border on every card, no border-l-4 accent — on a
+  // rounded-2xl card the left border traces the corner's curve too, so a
+  // colored border-l-4 there read as a muddy stain around the arc rather
+  // than a clean marker (same fix applied to AlertsList's own pills). Tone
+  // is already carried by the icon/value color.
+  const CARD_BORDER = "border border-white/10";
 
   const statCards = [
     // Each card links to wherever that figure's actual detail already lives
@@ -60,7 +75,6 @@ export default async function AdminOverviewPage() {
       value: overdueCount,
       icon: "error",
       tone: overdueCount > 0 ? "text-error" : "text-on-surface",
-      accent: overdueCount > 0,
       href: "/admin-2G/members?filter=fee_due",
     },
     { label: "Active Members", value: activeCount, icon: "group", tone: "text-on-surface", href: "/admin-2G/members" },
@@ -81,30 +95,21 @@ export default async function AdminOverviewPage() {
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-3">Overview</h1>
+        <div className="mb-3">
+          <AiInsightsCard insights={insights} />
+        </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {statCards.map((s) => (
             <Link
               key={s.label}
               href={s.href}
-              // The accent card's red left marker is a fixed "needs
-              // attention" indicator, not a hover state — mixing Tailwind's
-              // `border` shorthand (all 4 sides) with `border-l-4` on the
-              // same element is a real risk of one silently overriding the
-              // other, so the two never combine on one element: accent
-              // cards keep their border-l-4 and only lift on hover (shadow),
-              // non-accent cards get the border-color hover treatment
-              // instead, matching the "Needs Attention" cards below.
-              className={
-                s.accent
-                  ? "bg-surface-container-low p-5 rounded-2xl shadow-soft hover:shadow-soft-lg flex flex-col gap-3 border-l-4 border-l-error transition-shadow"
-                  : "bg-surface-container-low p-5 rounded-2xl shadow-soft hover:shadow-soft-lg hover:border-primary-container border border-transparent flex flex-col gap-3 transition-all"
-              }
+              className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-5 rounded-2xl hover:bg-white/6 hover:shadow-soft-lg hover:-translate-y-0.5 flex flex-col gap-3 ${CARD_BORDER} transition-all`}
             >
               <div className="flex items-center justify-between">
-                <p className="font-label text-[10px] uppercase tracking-wider text-tertiary">{s.label}</p>
-                <span className={`material-symbols-outlined text-lg leading-none ${s.tone}`}>{s.icon}</span>
+                <span className={`material-symbols-outlined text-xl leading-none ${s.tone}`}>{s.icon}</span>
+                <span className={`font-display text-3xl leading-none ${s.tone}`}>{s.value}</span>
               </div>
-              <span className={`font-display text-3xl ${s.tone}`}>{s.value}</span>
+              <p className="font-label text-[10px] uppercase tracking-wider text-tertiary leading-snug">{s.label}</p>
             </Link>
           ))}
           {/* Popups, not Links — these two show their own detail inline
@@ -131,11 +136,13 @@ export default async function AdminOverviewPage() {
             <Link
               key={a.label}
               href={a.href}
-              className="bg-surface-container-low p-4 rounded-2xl shadow-soft hover:shadow-soft-lg hover:border-primary-container border border-transparent transition-all flex flex-col gap-2"
+              className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl hover:bg-white/6 hover:shadow-soft-lg hover:-translate-y-0.5 ${CARD_BORDER} transition-all flex flex-col gap-2`}
             >
-              <span className={`material-symbols-outlined text-lg leading-none ${a.tone}`}>{a.icon}</span>
-              <span className={`font-display text-2xl ${a.tone}`}>{a.count}</span>
-              <p className="font-label text-[10px] uppercase tracking-wider text-tertiary">{a.label}</p>
+              <div className="flex items-center justify-between">
+                <span className={`material-symbols-outlined text-xl leading-none ${a.tone}`}>{a.icon}</span>
+                <span className={`font-display text-2xl leading-none ${a.tone}`}>{a.count}</span>
+              </div>
+              <p className="font-label text-[10px] uppercase tracking-wider text-tertiary leading-snug">{a.label}</p>
             </Link>
           ))}
         </div>

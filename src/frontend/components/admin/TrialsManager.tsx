@@ -3,11 +3,18 @@
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { TrialRegistration } from "@/types/admin";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 const STATUS_STYLES: Record<string, string> = {
   active: "text-primary-container",
   converted: "text-secondary",
   expired: "text-tertiary",
+};
+
+const STATUS_CHIP_STYLES: Record<string, string> = {
+  active: "border-primary-container/40 text-primary-container",
+  converted: "border-secondary/40 text-secondary",
+  expired: "border-surface-variant text-tertiary",
 };
 
 export default function TrialsManager({ trials }: { trials: TrialRegistration[] }) {
@@ -59,7 +66,12 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
   }
 
   if (trials.length === 0) {
-    return <p className="font-body text-sm text-tertiary">No trial claims yet.</p>;
+    return (
+      <div className="bg-surface-container-low rounded-2xl shadow-soft py-10 px-4 flex flex-col items-center gap-2 text-center">
+        <span className="material-symbols-outlined text-3xl text-tertiary/60 leading-none">person_add</span>
+        <p className="font-body text-sm text-tertiary">No trial claims yet.</p>
+      </div>
+    );
   }
 
   // The convert form is the same markup either way — reused for both the
@@ -175,35 +187,61 @@ export default function TrialsManager({ trials }: { trials: TrialRegistration[] 
 
       <div className="md:hidden flex flex-col gap-3">
         {trials.map((t) => (
-          <div key={t.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
+          <div
+            key={t.id}
+            className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW} overflow-hidden flex flex-col`}
+          >
+            <div className="flex items-start justify-between gap-3 p-4 pb-3">
               <div className="min-w-0">
-                <p className="font-body text-sm font-semibold text-on-surface truncate">{t.fullName}</p>
+                <p className="font-display text-base text-on-surface uppercase tracking-wide leading-tight truncate">
+                  {t.fullName}
+                </p>
                 <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
                   {t.trialCode}
                 </span>
               </div>
-              <span className={`shrink-0 font-label text-[10px] uppercase ${STATUS_STYLES[t.status] ?? ""}`}>
+              <span
+                className={`shrink-0 font-label text-[9px] uppercase font-bold px-2.5 py-1 rounded-full border ${
+                  STATUS_CHIP_STYLES[t.status] ?? "border-surface-variant text-tertiary"
+                }`}
+              >
                 {t.status}
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 font-body text-xs text-tertiary">
-              <span className="truncate">{t.phone}</span>
-              <span className="truncate">{t.email}</span>
-              <span className="uppercase">{t.shift} shift</span>
-              <span>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 px-4 pb-4 font-body text-xs text-tertiary">
+              <span className="flex items-center gap-1.5 truncate">
+                <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">call</span>
+                {t.phone}
+              </span>
+              <span className="flex items-center gap-1.5 truncate">
+                <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">mail</span>
+                {t.email}
+              </span>
+              <span className="flex items-center gap-1.5 uppercase">
+                <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">schedule</span>
+                {t.shift} shift
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">
+                  calendar_month
+                </span>
                 {t.startsAt} → {t.endsAt}
               </span>
             </div>
             {t.status === "active" && (
               <button
                 onClick={() => (openId === t.id ? setOpenId(null) : openConvert(t.id))}
-                className="w-full rounded-lg font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors border-t border-surface-variant/30 pt-3"
+                className="w-full flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-primary-container border-t border-white/10 active:bg-primary-container/10 transition-colors"
               >
+                <span className="material-symbols-outlined text-sm leading-none">how_to_reg</span>
                 {openId === t.id ? "Cancel" : "Convert To Member"}
               </button>
             )}
-            {openId === t.id && <ConvertForm id={t.id} />}
+            {openId === t.id && (
+              <div className="p-4 border-t border-white/10">
+                <ConvertForm id={t.id} />
+              </div>
+            )}
           </div>
         ))}
       </div>

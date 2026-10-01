@@ -1,7 +1,12 @@
 import "server-only";
 import { listOverdueFeeMembers, listUpcomingDueMembers, listRecentlyMissedMembers, listInactiveMembers, listTrialOverMembers, listUpcomingBirthdays } from "@/backend/services/admin/alerts";
 import { listRecentAttendance, getMemberAttendanceTimestamps, countTodaysCheckIns } from "@/backend/services/admin/attendanceAdmin";
-import { listUnpaidActiveMembers, listBlockedMembers, countNeverBilledMembers } from "@/backend/services/admin/feeAbuse";
+import {
+  listUnpaidActiveMembers,
+  listBlockedMembers,
+  countNeverBilledMembers,
+  previewUpcomingAutoBlocks,
+} from "@/backend/services/admin/feeAbuse";
 import { listFeePayments, sumPaidThisMonth, countOverdueMembers, getRevenueLast12Months } from "@/backend/services/admin/feesAdmin";
 import { listMembers, getMember, countMembers, listNewJoineesThisMonth } from "@/backend/services/admin/members";
 import { listTrialRegistrations } from "@/backend/services/admin/trials";
@@ -102,6 +107,12 @@ const TOOLS: Record<string, ToolDef> = {
     description: "Members whose check-in/dashboard access is currently blocked, and why.",
     parameters: { type: "object", properties: {} },
     handler: async () => listBlockedMembers(),
+  },
+  preview_upcoming_auto_blocks: {
+    description:
+      "Members who will be automatically blocked on tonight's daily sweep if nothing changes before then (fee overdue 5+ days, never billed 3+ days since joining, or no check-in for 6+ attendance days) — a preview, nobody is actually blocked by calling this. Use this for 'who's about to be blocked' / 'who will lose access soon' questions.",
+    parameters: { type: "object", properties: {} },
+    handler: async () => previewUpcomingAutoBlocks(),
   },
   list_fee_payments: {
     description: "Recent fee payment records (amount, method, status, date, which member).",

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { AlertMember } from "@/types/admin";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 type Tone = "error" | "warning" | "info";
 
@@ -42,8 +43,12 @@ export function AlertSummaryPill({
   anchorId: string;
 }) {
   const active = count > 0;
-  const className = `bg-surface-container-low p-4 rounded-2xl shadow-soft flex flex-col gap-2 border-l-4 transition-all ${
-    active ? `${TONE_ACCENT[tone]} hover:shadow-soft-lg hover:-translate-y-0.5` : "border-l-surface-variant"
+  // Plain thin border, not a border-l-4 accent — on a rounded-2xl card the
+  // left border traces the corner's curve too, and a colored border-l-4
+  // there reads as a muddy stain around the arc rather than a clean
+  // marker. Tone is already carried by the icon/count color below.
+  const className = `bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl flex flex-col gap-2 border border-white/10 transition-all ${
+    active ? "hover:shadow-soft-lg hover:-translate-y-0.5" : ""
   }`;
   const content = (
     <>
@@ -94,11 +99,13 @@ export default function AlertsList({
         </span>
       </div>
 
-      <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
+      <div
+        className={`flex flex-col divide-y divide-white/10 bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} rounded-2xl overflow-hidden`}
+      >
         {members.map((m) => (
           <div
             key={m.id}
-            className={`flex items-center justify-between px-4 py-3 gap-4 border-l-4 ${TONE_ACCENT[tone]} hover:bg-surface-container transition-colors`}
+            className={`flex items-center justify-between px-4 py-3 gap-4 border-l-4 ${TONE_ACCENT[tone]} hover:bg-white/5 transition-colors`}
           >
             <div>
               <p className="font-label text-sm uppercase text-on-surface">{m.fullName}</p>

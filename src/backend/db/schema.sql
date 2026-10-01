@@ -146,6 +146,19 @@ create extension if not exists pgcrypto;
 -- a just-unblocked member can just be re-blocked by the next daily cron.
 --
 --   alter table members add column if not exists unblocked_at timestamptz;
+--
+-- Also run this — the permanent "already had a free trial" record (see
+-- trial.ts::claimTrial). trial_registrations itself is now purged 30 days
+-- after creation (deleteOldTrialRegistrations, wired into the nightly
+-- /api/cron/logs-cleanup run) to stop an old lead's full name/email/trial
+-- code sitting in the database forever — but "one free trial per phone,
+-- ever" still has to hold after that row is gone, so the phone number
+-- (and nothing else) moves into this tiny table permanently instead.
+--
+--   create table if not exists trial_phone_claims (
+--     phone text primary key,
+--     claimed_at timestamptz not null default now()
+--   );
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -571,9 +584,11 @@ create table if not exists email_messages (
 
 -- ── Free trial (marketing site "2-Day Free Trial" claim) ───────────────
 -- Separate from `members` entirely — a trial claim is a lead, not yet an
--- account. `phone unique` is what enforces "one trial per mobile number,
--- ever" at the database level (client-side localStorage is just a fast-path
--- UX hint, not the real guard).
+-- account. The full detail row is purged 30 days after creation
+-- (deleteOldTrialRegistrations), so `phone unique` here only blocks a
+-- second claim while the row is still live — trial_phone_claims below is
+-- what actually enforces "one trial per mobile number, ever" past that
+-- 30-day window.
 
 create table if not exists trial_registrations (
   id uuid primary key default gen_random_uuid(),
@@ -587,6 +602,14 @@ create table if not exists trial_registrations (
   ends_at date not null,
   reminder_sent_at timestamptz,
   created_at timestamptz not null default now()
+);
+
+-- Permanent record of "this phone number already had a free trial" — the
+-- only thing that survives trial_registrations' 30-day purge. See the
+-- schema migration note near the top of this file.
+create table if not exists trial_phone_claims (
+  phone text primary key,
+  claimed_at timestamptz not null default now()
 );
 
 -- ── Admin audit log ─────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
 import type { UnpaidActiveMember } from "@/backend/services/admin/feeAbuse";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "Never";
@@ -56,7 +57,7 @@ function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked
   }
 
   return (
-    <div className="flex flex-col gap-3 px-4 py-3 border-l-4 border-l-primary-container hover:bg-surface-container transition-colors">
+    <div className="flex flex-col gap-3 px-4 py-3 border-l-4 border-l-primary-container hover:bg-white/5 transition-colors">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="font-label text-sm uppercase text-on-surface">{member.fullName}</p>
@@ -120,7 +121,7 @@ function BlockedRow({ member, onUnblocked }: { member: AdminMember; onUnblocked:
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-3 border-l-4 border-l-error hover:bg-surface-container transition-colors">
+    <div className="flex items-center justify-between gap-4 px-4 py-3 border-l-4 border-l-error hover:bg-white/5 transition-colors">
       <div>
         <p className="font-label text-sm uppercase text-on-surface">{member.fullName}</p>
         <p className="font-body text-xs text-tertiary">{member.membershipNumber}</p>
@@ -173,7 +174,9 @@ export default function AccessControlManager({
             Nobody&apos;s flagged — every active, recently-checked-in member has a paid-up fee status.
           </DashboardEmptyState>
         ) : (
-          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
+          <div
+            className={`flex flex-col divide-y divide-white/10 bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} rounded-2xl overflow-hidden`}
+          >
             {unpaidActive.map((m) => (
               <BlockRow key={m.id} member={m} onBlocked={() => router.refresh()} />
             ))}
@@ -194,7 +197,9 @@ export default function AccessControlManager({
         {blocked.length === 0 ? (
           <DashboardEmptyState icon="lock_open">No one&apos;s currently blocked.</DashboardEmptyState>
         ) : (
-          <div className="flex flex-col divide-y divide-surface-variant/30 bg-surface-container-low rounded-2xl shadow-soft overflow-hidden">
+          <div
+            className={`flex flex-col divide-y divide-white/10 bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} rounded-2xl overflow-hidden`}
+          >
             {blocked.map((m) => (
               <BlockedRow key={m.id} member={m} onUnblocked={() => router.refresh()} />
             ))}

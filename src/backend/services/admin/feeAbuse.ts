@@ -322,16 +322,15 @@ export async function liftAutomaticFeeBlock(id: string): Promise<void> {
   if (reason && AUTO_FEE_BLOCK_RE.test(reason)) await unblockMember(id);
 }
 
+type PendingBlock = { id: string; full_name: string; phone: string | null; email: string | null };
+
 const AUTO_BLOCK_OVERDUE_DAYS = 5;
 
-// Daily cron (piggybacks on the existing fee-reminders cron — see
-// api/cron/fee-reminders/route.ts, no new cron needed): once a member's
-// fee has been overdue this long, block them automatically and tell them
-// why, on both channels plus an in-app notification. Only touches members
-// who actually HAVE a fee_due_date (were billed) and aren't blocked
-// already — reversed the moment admin records a payment
-// (see feesAdmin.ts::recordManualPayment) or explicitly unblocks them.
-export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
+// The query half of autoBlockOverdueMembers, pulled out so
+// previewUpcomingAutoBlocks (a read-only "what would tonight's sweep
+// catch" check — see below) can reuse the exact same eligibility rule
+// instead of a second, driftable copy of it.
+async function findOverdueMembersToBlock(): Promise<PendingBlock[]> {
   const db = getDb();
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - AUTO_BLOCK_OVERDUE_DAYS);
@@ -342,7 +341,7 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
   // the future (this member simply isn't in this query at all) or still in
   // the past because the payment didn't cover the full gap, in which case
   // the owner wants them to stay blockable, not get a few free days.
-  const { data: members, error } = await db
+  const { data, error } = await db
     .from("members")
     .select("id, full_name, phone, email")
     .eq("is_active", true)
@@ -355,17 +354,29 @@ export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
     .lte("fee_due_date", cutoffStr);
 
   if (error) throw new Error(`Failed to load overdue members: ${error.message}`);
+  return data ?? [];
+}
+
+// Daily cron (piggybacks on the existing fee-reminders cron — see
+// api/cron/fee-reminders/route.ts, no new cron needed): once a member's
+// fee has been overdue this long, block them automatically and tell them
+// why, on both channels plus an in-app notification. Only touches members
+// who actually HAVE a fee_due_date (were billed) and aren't blocked
+// already — reversed the moment admin records a payment
+// (see feesAdmin.ts::recordManualPayment) or explicitly unblocks them.
+export async function autoBlockOverdueMembers(): Promise<{ blocked: number }> {
+  const members = await findOverdueMembersToBlock();
 
   // blockMember (above) already notifies on every channel via notifyBlocked
   // — no need to duplicate that here. Concurrency-limited (not a plain
   // sequential loop) since this cron has no maxDuration override and a
   // gym-wide overdue sweep could realistically hit dozens of members; see
   // backend/lib/concurrency.ts.
-  await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, (member) =>
+  await mapWithConcurrency(members, NOTIFY_CONCURRENCY, (member) =>
     blockMember(member.id, `Fee overdue ${AUTO_BLOCK_OVERDUE_DAYS}+ days (automatic)`)
   );
 
-  return { blocked: (members ?? []).length };
+  return { blocked: members.length };
 }
 
 const AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS = 6;
@@ -379,7 +390,11 @@ const AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS = 6;
 // considers members who have checked in at least once (last_checked_in_at
 // not null); a member who hasn't had their first visit yet is governed by
 // autoBlockNeverBilledMembers below instead, not this one.
-export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
+type InactiveRow = PendingBlock & { last_checked_in_at: string; unblocked_at?: string | null };
+
+// Same extraction as findOverdueMembersToBlock above — the query half of
+// autoBlockInactiveMembers, reused by previewUpcomingAutoBlocks.
+async function findInactiveMembersToBlock(): Promise<InactiveRow[]> {
   const db = getDb();
   const today = getIstDateString();
   // Loose calendar-day pre-filter, done in SQL to avoid pulling every
@@ -389,14 +404,6 @@ export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
   const looseCutoff = new Date();
   looseCutoff.setDate(looseCutoff.getDate() - AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS);
 
-  type Row = {
-    id: string;
-    full_name: string;
-    phone: string | null;
-    email: string | null;
-    last_checked_in_at: string;
-    unblocked_at?: string | null;
-  };
   const query = (columns: string) =>
     db
       .from("members")
@@ -411,9 +418,9 @@ export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
   let res = await query("id, full_name, phone, email, last_checked_in_at, unblocked_at");
   if (res.error && isMissingColumnError(res.error)) res = await query("id, full_name, phone, email, last_checked_in_at");
   if (res.error) throw new Error(`Failed to load inactive members: ${res.error.message}`);
-  const members = (res.data ?? []) as unknown as Row[];
+  const members = (res.data ?? []) as unknown as InactiveRow[];
 
-  const toBlock: Row[] = [];
+  const toBlock: InactiveRow[] = [];
   for (const member of members) {
     // The clock starts at the LATER of their last real check-in and the
     // moment they were last unblocked — a blocked member can't check in, so
@@ -427,6 +434,11 @@ export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
       toBlock.push(member);
     }
   }
+  return toBlock;
+}
+
+export async function autoBlockInactiveMembers(): Promise<{ blocked: number }> {
+  const toBlock = await findInactiveMembersToBlock();
 
   await mapWithConcurrency(toBlock, NOTIFY_CONCURRENCY, (member) =>
     blockMember(member.id, `No check-in for ${AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS}+ attendance days (automatic)`)
@@ -444,7 +456,9 @@ const NEVER_BILLED_GRACE_DAYS = 3;
 // the floor for free indefinitely. Plain calendar days, not eligible-day
 // counting — this is a billing-hygiene grace period tied to a fixed joining
 // date, not an attendance expectation, so gym-closure days don't extend it.
-export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }> {
+// Same extraction as the other two auto-block functions above — the query
+// half, reused by previewUpcomingAutoBlocks.
+async function findNeverBilledMembersToBlock(): Promise<PendingBlock[]> {
   const db = getDb();
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - NEVER_BILLED_GRACE_DAYS);
@@ -454,7 +468,7 @@ export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }
   // autoBlockOverdueMembers above — a member only leaves this query once a
   // real fee_due_date is actually recorded for them (recordManualPayment),
   // at which point they're governed by that rule instead, not this one.
-  const { data: members, error } = await db
+  const { data, error } = await db
     .from("members")
     .select("id, full_name, phone, email")
     .eq("is_active", true)
@@ -468,10 +482,45 @@ export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }
     .lte("joined_at", cutoffStr);
 
   if (error) throw new Error(`Failed to load never-billed members: ${error.message}`);
+  return data ?? [];
+}
 
-  await mapWithConcurrency(members ?? [], NOTIFY_CONCURRENCY, (member) =>
+export async function autoBlockNeverBilledMembers(): Promise<{ blocked: number }> {
+  const members = await findNeverBilledMembersToBlock();
+
+  await mapWithConcurrency(members, NOTIFY_CONCURRENCY, (member) =>
     blockMember(member.id, `Never billed — ${NEVER_BILLED_GRACE_DAYS}+ days since joining (automatic)`)
   );
 
-  return { blocked: (members ?? []).length };
+  return { blocked: members.length };
+}
+
+export type UpcomingAutoBlock = { id: string; fullName: string; reason: string };
+
+// A read-only preview of what tonight's fee-reminders cron sweep (see
+// api/cron/fee-reminders/route.ts) would catch if it ran right now — same
+// three eligibility rules as the real autoBlock* functions above, just
+// without ever calling blockMember. Powers the Overview page's proactive
+// insight card, so a member who's about to be auto-blocked (and would
+// otherwise only be noticed after the fact) surfaces before it happens.
+export async function previewUpcomingAutoBlocks(): Promise<UpcomingAutoBlock[]> {
+  const [overdue, neverBilled, inactive] = await Promise.all([
+    findOverdueMembersToBlock(),
+    findNeverBilledMembersToBlock(),
+    findInactiveMembersToBlock(),
+  ]);
+
+  return [
+    ...overdue.map((m) => ({ id: m.id, fullName: m.full_name, reason: `Fee overdue ${AUTO_BLOCK_OVERDUE_DAYS}+ days` })),
+    ...neverBilled.map((m) => ({
+      id: m.id,
+      fullName: m.full_name,
+      reason: `Never billed, joined ${NEVER_BILLED_GRACE_DAYS}+ days ago`,
+    })),
+    ...inactive.map((m) => ({
+      id: m.id,
+      fullName: m.full_name,
+      reason: `No check-in for ${AUTO_BLOCK_INACTIVE_ELIGIBLE_DAYS}+ attendance days`,
+    })),
+  ];
 }

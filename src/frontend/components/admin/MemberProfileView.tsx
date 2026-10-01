@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AdminMember, FeePaymentRow, TrialRegistration } from "@/types/admin";
 import EditPaymentForm from "@/frontend/components/admin/EditPaymentForm";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
+
+const GLASS_CARD = `bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW}`;
 
 function formatDate(iso: string | null): string {
   if (!iso) return "—";
@@ -116,7 +119,7 @@ export default function MemberProfileView({
       </Link>
 
       {/* Header — identity, status, quick actions */}
-      <div className="bg-surface-container-low rounded-2xl shadow-soft p-6 flex flex-col gap-5">
+      <div className={`${GLASS_CARD} p-6 flex flex-col gap-5`}>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <span className="font-label text-xs uppercase tracking-widest text-primary-container">
@@ -126,14 +129,14 @@ export default function MemberProfileView({
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <span
-              className={`font-label text-[10px] uppercase px-2.5 py-1 rounded-full ${
-                member.isActive ? "bg-primary-container/20 text-primary-container" : "bg-surface-container-high text-error"
+              className={`font-label text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${
+                member.isActive ? "border-primary-container/40 text-primary-container" : "border-error/40 text-error"
               }`}
             >
               {member.isActive ? "Active" : "Inactive"}
             </span>
             {member.isBlocked && (
-              <span className="font-label text-[10px] uppercase px-2.5 py-1 rounded-full bg-error-container/40 text-error">
+              <span className="font-label text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border border-error/40 text-error">
                 Blocked
               </span>
             )}
@@ -185,10 +188,10 @@ export default function MemberProfileView({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-surface-variant/30">
+        <div className="-mx-6 flex flex-wrap border-t border-white/10">
           <Link
             href={`/admin-2G/members?edit=${member.id}`}
-            className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
+            className="flex-1 min-w-32 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-primary-container border-r border-white/10 hover:bg-primary-container/10 transition-colors"
           >
             <span className="material-symbols-outlined text-sm leading-none">edit</span>
             Edit Full Details
@@ -196,7 +199,7 @@ export default function MemberProfileView({
           <button
             onClick={toggleActive}
             disabled={busy}
-            className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface disabled:opacity-60 transition-colors"
+            className="flex-1 min-w-32 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-on-surface-variant border-r border-white/10 hover:bg-white/5 disabled:opacity-60 transition-colors"
           >
             {member.isActive ? "Mark Inactive" : "Mark Active"}
           </button>
@@ -204,7 +207,7 @@ export default function MemberProfileView({
             <button
               onClick={handleUnblock}
               disabled={busy}
-              className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 disabled:opacity-60 transition-colors"
+              className="flex-1 min-w-32 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-primary-container hover:bg-primary-container/10 disabled:opacity-60 transition-colors"
             >
               <span className="material-symbols-outlined text-sm leading-none">lock_open</span>
               Unblock
@@ -213,7 +216,7 @@ export default function MemberProfileView({
             <button
               onClick={() => setShowBlockForm((s) => !s)}
               disabled={busy}
-              className="flex items-center gap-1.5 font-label text-[10px] uppercase font-bold px-3 py-2 rounded-lg bg-error-container/40 hover:bg-error-container/60 text-error disabled:opacity-60 transition-colors"
+              className="flex-1 min-w-32 flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-error hover:bg-error-container/10 disabled:opacity-60 transition-colors"
             >
               <span className="material-symbols-outlined text-sm leading-none">block</span>
               Block
@@ -222,12 +225,12 @@ export default function MemberProfileView({
         </div>
 
         {showBlockForm && (
-          <div className="flex flex-wrap items-center gap-2 bg-surface-container p-3 rounded-xl">
+          <div className="flex flex-wrap items-center gap-2 bg-white/5 border border-white/10 p-3 rounded-xl">
             <input
               value={blockReason}
               onChange={(e) => setBlockReason(e.target.value)}
               placeholder="Reason (shown to the member)"
-              className="flex-1 min-w-48 rounded-lg bg-surface-container-low border border-surface-variant text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-error"
+              className="flex-1 min-w-48 rounded-lg bg-surface-container border border-white/10 text-on-surface font-body text-sm px-3 py-2 outline-none focus:border-error"
             />
             <button
               onClick={handleBlock}
@@ -241,7 +244,7 @@ export default function MemberProfileView({
       </div>
 
       {/* Internal notes — private, never shown to the member */}
-      <div className="bg-surface-container-low rounded-2xl shadow-soft p-6 flex flex-col gap-3">
+      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-lg leading-none text-primary-container">sticky_note_2</span>
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">Internal Notes</h2>
@@ -255,7 +258,7 @@ export default function MemberProfileView({
           }}
           rows={3}
           placeholder="e.g. Asked about a locker, prefers evening slot..."
-          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body text-sm px-3 py-2.5 outline-none focus:border-primary-container resize-none"
+          className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body text-sm px-3 py-2.5 outline-none focus:border-primary-container resize-none"
         />
         <div className="flex items-center gap-3">
           <button
@@ -271,7 +274,7 @@ export default function MemberProfileView({
 
       {/* Trial history, if this member ever registered for one */}
       {trial && (
-        <div className="bg-surface-container-low rounded-2xl shadow-soft p-6 flex flex-col gap-2">
+        <div className={`${GLASS_CARD} p-6 flex flex-col gap-2`}>
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
             <span className="material-symbols-outlined text-lg leading-none text-primary-container">person_add</span>
             Trial History
@@ -300,7 +303,7 @@ export default function MemberProfileView({
       )}
 
       {/* Attendance summary */}
-      <div className="bg-surface-container-low rounded-2xl shadow-soft p-6 flex flex-col gap-3">
+      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
             <span className="material-symbols-outlined text-lg leading-none text-primary-container">calendar_month</span>
@@ -313,7 +316,7 @@ export default function MemberProfileView({
         {recentAttendance.length === 0 ? (
           <p className="font-body text-sm text-tertiary">No check-ins in the last 30 days.</p>
         ) : (
-          <ul className="flex flex-col divide-y divide-surface-variant/30">
+          <ul className="flex flex-col divide-y divide-white/10">
             {recentAttendance.map((ts) => (
               <li key={ts} className="py-2 font-body text-sm text-on-surface flex items-center gap-2">
                 <span className="material-symbols-outlined text-base leading-none text-primary-container">check_circle</span>
@@ -325,7 +328,7 @@ export default function MemberProfileView({
       </div>
 
       {/* Payment history */}
-      <div className="bg-surface-container-low rounded-2xl shadow-soft p-6 flex flex-col gap-3">
+      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
             <span className="material-symbols-outlined text-lg leading-none text-primary-container">payments</span>
@@ -338,7 +341,7 @@ export default function MemberProfileView({
         {payments.length === 0 ? (
           <p className="font-body text-sm text-tertiary">No payments recorded yet.</p>
         ) : (
-          <ul className="flex flex-col divide-y divide-surface-variant/30">
+          <ul className="flex flex-col divide-y divide-white/10">
             {payments.map((p) => (
               <li key={p.id} className="py-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-3 flex-wrap">

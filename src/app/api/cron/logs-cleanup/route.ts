@@ -6,6 +6,11 @@ import { deleteOldPendingSignups } from "@/backend/services/memberAuth";
 import { deleteExpiredLegacyFeeImports } from "@/backend/services/legacyFeeImport";
 import { deleteOldBeastModeSessions, deleteStaleGymBeastModeRecords } from "@/backend/services/beastMode";
 import { deleteAbandonedRooms } from "@/backend/services/playground";
+import { deleteOldAuditLogEntries } from "@/backend/services/admin/auditLog";
+import { deleteOldWhatsAppMessages } from "@/backend/services/whatsapp";
+import { deleteOldEmailMessages } from "@/backend/services/email";
+import { deleteOldOtps } from "@/backend/auth/otp";
+import { deleteOldTrialRegistrations } from "@/backend/services/trial";
 
 // Streak data lives entirely in each member's browser localStorage, not the
 // database — nothing to delete here for it, and nothing ever will be.
@@ -16,17 +21,35 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [workouts, food, notifications, pendingSignups, legacyFeeImports, beastModeSessions, beastModeRecords, abandonedRooms] =
-      await Promise.all([
-        deleteOldWorkoutLogs(),
-        deleteOldFoodLogs(),
-        deleteOldNotifications(),
-        deleteOldPendingSignups(),
-        deleteExpiredLegacyFeeImports(),
-        deleteOldBeastModeSessions(),
-        deleteStaleGymBeastModeRecords(),
-        deleteAbandonedRooms(),
-      ]);
+    const [
+      workouts,
+      food,
+      notifications,
+      pendingSignups,
+      legacyFeeImports,
+      beastModeSessions,
+      beastModeRecords,
+      abandonedRooms,
+      auditLog,
+      whatsappMessages,
+      emailMessages,
+      otps,
+      trialRegistrations,
+    ] = await Promise.all([
+      deleteOldWorkoutLogs(),
+      deleteOldFoodLogs(),
+      deleteOldNotifications(),
+      deleteOldPendingSignups(),
+      deleteExpiredLegacyFeeImports(),
+      deleteOldBeastModeSessions(),
+      deleteStaleGymBeastModeRecords(),
+      deleteAbandonedRooms(),
+      deleteOldAuditLogEntries(),
+      deleteOldWhatsAppMessages(),
+      deleteOldEmailMessages(),
+      deleteOldOtps(),
+      deleteOldTrialRegistrations(),
+    ]);
     return NextResponse.json({
       status: "ok",
       workoutLogsDeleted: workouts.deleted,
@@ -37,6 +60,11 @@ export async function GET(request: Request) {
       beastModeSessionsDeleted: beastModeSessions.deleted,
       beastModeRecordsCleared: beastModeRecords.deleted,
       abandonedPlaygroundRoomsDeleted: abandonedRooms.deleted,
+      auditLogEntriesDeleted: auditLog.deleted,
+      whatsappMessagesDeleted: whatsappMessages.deleted,
+      emailMessagesDeleted: emailMessages.deleted,
+      otpsDeleted: otps.deleted,
+      trialRegistrationsDeleted: trialRegistrations.deleted,
     });
   } catch (err) {
     console.error(err);

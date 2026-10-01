@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { BroadcastSegment, AdminMember } from "@/types/admin";
 import { MAX_HOLIDAY_DAYS } from "@/frontend/lib/holidayConfig";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -76,10 +77,10 @@ function MemberMultiPicker({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           placeholder="Search by name or membership number..."
-          className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="w-full rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
         {open && (
-          <div className="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-surface-container-low border border-surface-variant shadow-soft-lg rounded-xl">
+          <div className="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-surface-container-low border border-white/10 shadow-soft-lg rounded-xl">
             {results.length === 0 ? (
               <p className="px-3 py-3 font-body text-sm text-tertiary">No members match.</p>
             ) : (
@@ -178,13 +179,16 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
   }
 
   return (
-    <form onSubmit={handleSend} className="bg-surface-container-low p-6 rounded-2xl shadow-soft flex flex-col gap-4 max-w-xl">
+    <form
+      onSubmit={handleSend}
+      className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 ${GLASS_SHADOW} p-6 rounded-2xl flex flex-col gap-4 max-w-xl`}
+    >
       <div className="flex flex-col gap-1">
         <label className="font-label text-[10px] uppercase tracking-widest text-outline">Send To</label>
         <select
           value={segment}
           onChange={(e) => setSegment(e.target.value as BroadcastSegment)}
-          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         >
           <option value="all">All Active Members</option>
           <option value="overdue">Fee Overdue</option>
@@ -203,7 +207,7 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder={isHoliday ? "e.g. Diwali" : "Fitness Future Gym — Update"}
-          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
       </div>
       <div className="flex flex-col gap-1">
@@ -214,11 +218,11 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
           onChange={(e) => setMessage(e.target.value)}
           rows={4}
           placeholder="Your announcement..."
-          className="rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
         />
       </div>
 
-      <div className="flex items-center justify-between gap-4 bg-surface-container rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
         <div className="min-w-0">
           <p className="font-label text-xs uppercase tracking-wide text-on-surface">Holiday Announcement</p>
           <p className="font-body text-xs text-tertiary mt-0.5">
@@ -257,7 +261,7 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
                 setFromDate(e.target.value);
                 if (tillDate && tillDate < e.target.value) setTillDate(e.target.value);
               }}
-              className="w-full min-w-0 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+              className="w-full min-w-0 rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
             />
           </div>
           <div className="flex flex-col gap-1 flex-1 min-w-0">
@@ -269,7 +273,7 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
               max={fromDate ? addDaysStr(fromDate, MAX_HOLIDAY_DAYS - 1) : undefined}
               value={tillDate}
               onChange={(e) => setTillDate(e.target.value)}
-              className="w-full min-w-0 rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+              className="w-full min-w-0 rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
             />
           </div>
         </div>
@@ -283,7 +287,7 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
         {submitting ? "Sending..." : isHoliday ? "Mark Holiday & Send Broadcast" : "Send Broadcast"}
       </button>
       {result && (
-        <div className="bg-surface-container border-l-4 border-primary-container p-3 rounded-lg">
+        <div className="bg-white/5 border-l-4 border-primary-container p-3 rounded-lg">
           <p className="font-body text-sm text-on-surface">{result}</p>
         </div>
       )}

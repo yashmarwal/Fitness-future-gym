@@ -555,3 +555,16 @@ export async function sendEmailTemplate(params: {
     throw new Error(error);
   }
 }
+
+const EMAIL_LOG_RETENTION_DAYS = 7;
+
+export async function deleteOldEmailMessages(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - EMAIL_LOG_RETENTION_DAYS);
+
+  const { data, error } = await db.from("email_messages").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old email messages: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}

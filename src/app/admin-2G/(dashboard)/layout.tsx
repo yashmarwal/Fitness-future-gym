@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getAdminSession } from "@/backend/auth/session";
 import AdminNav from "@/frontend/components/admin/AdminNav";
 import AdminTabBar from "@/frontend/components/admin/AdminTabBar";
+import CommandPalette from "@/frontend/components/admin/CommandPalette";
 
 // Overrides the root layout's manifest link (which points at
 // admin-manifest.json — start_url "/admin-2G" instead of "/dashboard" — the
@@ -51,6 +52,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
         {children}
       </main>
       <AdminTabBar />
+      <CommandPalette />
     </div>
   );
 }

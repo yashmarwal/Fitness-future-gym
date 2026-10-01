@@ -63,7 +63,7 @@ export default function EditPaymentForm({
   }
 
   return (
-    <div className="bg-surface-container-high p-4 rounded-xl flex flex-col sm:flex-row sm:items-end gap-3">
+    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col sm:flex-row sm:items-end gap-3">
       <div className="flex flex-wrap gap-3 flex-1">
         <div className="flex flex-col gap-1">
           <label className="font-label text-[10px] uppercase tracking-widest text-outline">Amount (₹)</label>
@@ -71,7 +71,7 @@ export default function EditPaymentForm({
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-32"
+            className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container w-32"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -79,7 +79,7 @@ export default function EditPaymentForm({
           <select
             value={method}
             onChange={(e) => setMethod(e.target.value as "upi" | "cash" | "manual")}
-            className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
+            className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body px-3 py-2 outline-none focus:border-primary-container"
           >
             <option value="upi">UPI</option>
             <option value="cash">Cash</option>

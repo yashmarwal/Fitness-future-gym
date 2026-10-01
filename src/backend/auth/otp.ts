@@ -152,3 +152,16 @@ export async function verifyOtp(phone: string, code: string): Promise<boolean> {
   await consumeOtp(result.otpId);
   return true;
 }
+
+const OTP_LOG_RETENTION_DAYS = 7;
+
+export async function deleteOldOtps(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - OTP_LOG_RETENTION_DAYS);
+
+  const { data, error } = await db.from("login_otps").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old OTPs: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}

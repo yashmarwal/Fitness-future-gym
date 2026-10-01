@@ -2,12 +2,21 @@
 
 import { useRef, useState, useEffect } from "react";
 import { renderChatContent } from "@/frontend/lib/chatMarkdown";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 type ChatMessage = { role: "user" | "model"; content: string };
 
+// Lets AdminTabBar's detached circular shortcut glow while a reply is in
+// flight — same plain-DOM-event pattern CommandPalette's own
+// OPEN_COMMAND_PALETTE_EVENT uses, since the two components share no
+// parent state. detail is a plain boolean (true while loading).
+export const SPOTTER_THINKING_EVENT = "ff-admin-spotter-thinking";
+
 const STARTER_PROMPTS: { text: string; icon: string }[] = [
+  { text: "Give me today's summary", icon: "today" },
+  { text: "How's this week vs last week?", icon: "calendar_month" },
   { text: "Who's overdue on fees right now?", icon: "payments" },
-  { text: "How much revenue this month so far?", icon: "storefront" },
+  { text: "Who's about to be auto-blocked?", icon: "schedule" },
   { text: "Who hasn't checked in recently?", icon: "event_busy" },
   { text: "Any birthdays coming up?", icon: "cake" },
 ];
@@ -57,6 +66,21 @@ export default function AiAssistantChat() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
+  // Syncs AdminTabBar's glow to this component's own `loading` state — a
+  // legitimate effect (dispatching a DOM event is an external-system sync,
+  // not a setState call, so this isn't the set-state-in-effect pattern).
+  // The unmount-only cleanup below is what stops the tab bar's circle
+  // glowing forever if this page is navigated away from mid-request.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(SPOTTER_THINKING_EVENT, { detail: loading }));
+  }, [loading]);
+
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent(SPOTTER_THINKING_EVENT, { detail: false }));
+    };
+  }, []);
+
   async function send(text: string) {
     const question = text.trim();
     if (!question || loading) return;
@@ -92,7 +116,9 @@ export default function AiAssistantChat() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-surface-container-low border border-surface-variant/40 rounded-2xl shadow-soft overflow-hidden">
+    <div
+      className={`flex flex-col flex-1 min-h-0 bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW} overflow-hidden`}
+    >
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 flex flex-col gap-4">
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-6">
@@ -100,26 +126,32 @@ export default function AiAssistantChat() {
             <div className="flex flex-col gap-1.5 items-center">
               <p className="font-label text-[11px] uppercase tracking-[0.2em] text-primary-container font-bold flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm leading-none">auto_awesome</span>
-                Ask AI
+                Spotter AI
               </p>
               <p className="font-body text-sm text-tertiary max-w-sm">
                 Ask anything about your members, fees, attendance, or trials — it reads the same data your admin
                 pages already show, it just answers in plain English.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-2 max-w-md">
+            {/* A grid, not flex-wrap — flex-wrap let unequal pill widths
+                (a long question wrapping to 2 lines next to short ones on
+                one line) create a ragged, undefined-looking block. Every
+                pill is the same width within its column here, and the
+                icon sits in its own chip instead of floating bare, same
+                language as the rest of admin's cards now. */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-md">
               {STARTER_PROMPTS.map((prompt, i) => (
                 <button
                   key={prompt.text}
                   type="button"
                   onClick={() => send(prompt.text)}
                   style={{ animationDelay: `${i * 70}ms` }}
-                  className="animate-snap-tick flex items-center gap-1.5 font-label text-xs uppercase tracking-wide px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant border border-surface-variant/50 hover:border-primary-container hover:text-primary-container hover:-translate-y-0.5 active:scale-95 transition-all"
+                  className={`animate-snap-tick flex items-center gap-2.5 font-label text-xs uppercase tracking-wide px-3 py-2.5 rounded-xl text-left bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 ${GLASS_SHADOW} text-on-surface-variant hover:bg-white/6 hover:border-primary-container hover:text-on-surface active:scale-95 transition-all`}
                 >
-                  <span className="material-symbols-outlined text-base leading-none text-primary-container">
-                    {prompt.icon}
+                  <span className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-white/6 text-primary-container">
+                    <span className="material-symbols-outlined text-sm leading-none">{prompt.icon}</span>
                   </span>
-                  {prompt.text}
+                  <span className="min-w-0">{prompt.text}</span>
                 </button>
               ))}
             </div>
@@ -173,7 +205,7 @@ export default function AiAssistantChat() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-surface-variant/40 p-3 sm:p-4">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-white/10 p-3 sm:p-4">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}

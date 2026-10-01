@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AdminMember } from "@/types/admin";
 import type { TodayAttendanceRow, FeeTag } from "@/backend/services/admin/attendanceAdmin";
 import MemberSearchSelect from "@/frontend/components/admin/MemberSearchSelect";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 const SECTIONS: { key: "morning" | "evening" | "other"; title: string; hint: string }[] = [
   { key: "morning", title: "Morning", hint: "6:00 AM – 12:00 PM" },
@@ -114,8 +115,11 @@ export default function AttendanceManager({
       </div>
 
       {filteredRecords.length === 0 ? (
-        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
-          {records.length === 0 ? "No check-ins yet today." : "No check-ins match your search."}
+        <div className="bg-surface-container-low rounded-2xl shadow-soft py-10 px-4 flex flex-col items-center gap-2 text-center">
+          <span className="material-symbols-outlined text-3xl text-tertiary/60 leading-none">event_available</span>
+          <p className="font-body text-sm text-tertiary">
+            {records.length === 0 ? "No check-ins yet today." : "No check-ins match your search."}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-8">
@@ -196,18 +200,24 @@ function AttendanceSection({
 
       <div className="md:hidden flex flex-col gap-3">
         {rows.map((r) => (
-          <div key={r.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex items-center justify-between gap-3">
+          <div
+            key={r.id}
+            className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW} p-4 flex items-center justify-between gap-3`}
+          >
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-body text-sm font-semibold text-on-surface truncate">{r.memberName}</p>
-                <FeeTagPill tag={r.feeTag} />
-              </div>
+              <p className="font-display text-base text-on-surface uppercase tracking-wide leading-tight truncate">
+                {r.memberName}
+              </p>
               <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
                 {r.membershipNumber}
               </span>
-              <p className="font-body text-xs text-tertiary mt-1">
-                {new Date(r.checkedInAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                <span className="flex items-center gap-1.5 font-body text-xs text-tertiary">
+                  <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">schedule</span>
+                  {new Date(r.checkedInAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                </span>
+                <FeeTagPill tag={r.feeTag} />
+              </div>
             </div>
             <button
               onClick={() => onDelete(r.id)}

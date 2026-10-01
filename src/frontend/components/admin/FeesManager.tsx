@@ -6,6 +6,7 @@ import type { FeePaymentRow, AdminMember } from "@/types/admin";
 import MemberSearchSelect from "@/frontend/components/admin/MemberSearchSelect";
 import EditPaymentForm from "@/frontend/components/admin/EditPaymentForm";
 import { downloadCsv } from "@/frontend/lib/csv";
+import { GLASS_SHADOW } from "@/frontend/lib/glass";
 
 type StatusFilter = "all" | "paid" | "pending";
 type MethodFilter = "all" | "upi" | "cash" | "manual";
@@ -181,8 +182,11 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
       </div>
 
       {filteredPayments.length === 0 ? (
-        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
-          {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
+        <div className="bg-surface-container-low rounded-2xl shadow-soft py-10 px-4 flex flex-col items-center gap-2 text-center">
+          <span className="material-symbols-outlined text-3xl text-tertiary/60 leading-none">payments</span>
+          <p className="font-body text-sm text-tertiary">
+            {payments.length === 0 ? "No payments recorded yet." : "No payments match your search or filters."}
+          </p>
         </div>
       ) : (
         <>
@@ -237,32 +241,55 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
 
           <div className="md:hidden flex flex-col gap-3">
             {filteredPayments.map((p) => (
-              <div key={p.id} className="bg-surface-container-low rounded-2xl shadow-soft p-4 flex flex-col gap-3">
-                <div className="flex items-start justify-between gap-3">
+              <div
+                key={p.id}
+                className={`bg-white/4 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl ${GLASS_SHADOW} overflow-hidden flex flex-col`}
+              >
+                <div className="flex items-start justify-between gap-3 p-4 pb-3">
                   <div className="min-w-0">
-                    <p className="font-body text-sm font-semibold text-on-surface truncate">{p.memberName}</p>
-                    <span className="font-label text-[10px] uppercase tracking-widest text-tertiary">
+                    <p className="font-display text-base text-on-surface uppercase tracking-wide leading-tight truncate">
+                      {p.memberName}
+                    </p>
+                    <span className="font-label text-[10px] uppercase tracking-widest text-primary-container">
                       {p.membershipNumber}
                     </span>
                   </div>
-                  <span className="shrink-0 font-body text-base font-bold text-primary-container">₹{p.amount}</span>
+                  <span className="shrink-0 font-display text-xl text-primary-container">₹{p.amount}</span>
                 </div>
-                <div className="flex items-center justify-between font-label text-[10px] uppercase tracking-wide">
-                  <span className={p.status === "paid" ? "text-primary-container" : "text-tertiary"}>
-                    {p.status} &middot; {p.method}
-                  </span>
-                  <span className="text-outline">{formatDate(p.createdAt)}</span>
-                </div>
-                {editingId === p.id ? (
-                  <EditPaymentForm payment={p} onSaved={() => setEditingId(null)} onCancel={() => setEditingId(null)} />
-                ) : (
-                  <button
-                    onClick={() => setEditingId(p.id)}
-                    className="w-full rounded-lg font-label text-[10px] uppercase px-3 py-2.5 bg-primary-container/15 text-primary-container active:bg-primary-container/25 transition-colors border-t border-surface-variant/30 pt-3"
+                <div className="flex items-center gap-3 px-4 pb-4 font-body text-xs text-tertiary">
+                  <span
+                    className={`font-label text-[9px] uppercase font-bold px-2.5 py-1 rounded-full border ${
+                      p.status === "paid" ? "border-primary-container/40 text-primary-container" : "border-error/40 text-error"
+                    }`}
                   >
-                    Edit / Delete
-                  </button>
-                )}
+                    {p.status}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">payments</span>
+                    {p.method.toUpperCase()}
+                  </span>
+                  <span className="flex items-center gap-1.5 ml-auto">
+                    <span className="material-symbols-outlined text-sm leading-none text-primary-container/70">
+                      calendar_month
+                    </span>
+                    {formatDate(p.createdAt)}
+                  </span>
+                </div>
+                <div className="border-t border-white/10">
+                  {editingId === p.id ? (
+                    <div className="p-4">
+                      <EditPaymentForm payment={p} onSaved={() => setEditingId(null)} onCancel={() => setEditingId(null)} />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setEditingId(p.id)}
+                      className="w-full flex items-center justify-center gap-1.5 font-label text-[10px] uppercase font-bold py-3 text-primary-container active:bg-primary-container/10 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-sm leading-none">edit</span>
+                      Edit / Delete
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
