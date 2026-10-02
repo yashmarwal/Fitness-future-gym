@@ -447,6 +447,7 @@ export type TvRoom = {
   name: string;
   mode: PlaygroundMode;
   exerciseName: string | null;
+  startedAt: string | null;
   endsAt: string | null;
   members: TvRoomMember[];
 };
@@ -489,6 +490,7 @@ export async function listLiveRoomsForTv(): Promise<TvRoom[]> {
       name: displayName(room.name, room.mode, room.exercise_name),
       mode: room.mode as PlaygroundMode,
       exerciseName: room.exercise_name,
+      startedAt: room.started_at,
       endsAt: room.ends_at,
       members: rows.map((r) => ({ firstName: nameFromEmbed(r.members), score: scores.get(r.member_id) ?? null })),
     });
