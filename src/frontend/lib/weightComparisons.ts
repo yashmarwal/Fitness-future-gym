@@ -1,27 +1,35 @@
 // A raw number ("300kg") doesn't mean much to someone scrolling past a
 // shared card who doesn't lift — a relatable comparison is what actually
-// makes a stranger stop and read it. Approximate on purpose (this is a fun
-// aside, not a claim of scientific accuracy), sorted ascending; picks the
-// largest entry at or below the given weight. Covers both a single lift
-// (5-500kg) and a week's total volume (500-50,000kg) in one table since
-// both card types use this.
+// makes a stranger stop and read it. Thresholds are each entry's actual
+// real-world weight (checked against real sources, not invented) — this
+// table used to have several genuinely wrong ones (an "adult panda" at
+// 50kg, a "baby grand piano" at 100kg when real ones are ~300kg, an
+// "adult hippo" at 5000kg when the real figure is ~1500kg, a blue whale's
+// tongue at 40,000kg when it's really ~3,000kg) that happened to go
+// unnoticed because this card is shared publicly under the gym's name —
+// "approximate for fun" is fine, "wrong" isn't, same as every other piece
+// of public-facing copy on this site. Sorted ascending; picks the largest
+// entry at or below the given weight. Covers both a single lift (5-500kg)
+// and a week's total volume (500-50,000kg) in one table since both card
+// types use this.
 const COMPARISONS: [thresholdKg: number, label: string][] = [
   [5, "a bowling ball"],
   [15, "a car tyre"],
   [30, "a mid-size dog"],
-  [50, "an adult panda"],
   [70, "an average adult human"],
-  [100, "a baby grand piano"],
-  [150, "a large motorcycle"],
+  [100, "an adult panda"],
   [250, "a baby elephant"],
+  [300, "a pony"],
+  [350, "a baby grand piano"],
   [400, "a grand piano"],
-  [700, "a small horse"],
+  [420, "a large motorcycle"],
   [1000, "a small car"],
+  [1500, "an adult hippo"],
   [2000, "a large SUV"],
-  [5000, "an adult hippo"],
+  [3000, "a blue whale's tongue"],
   [10000, "a school bus"],
   [20000, "a shipping container"],
-  [40000, "a blue whale's tongue"],
+  [40000, "an adult sperm whale"],
 ];
 
 export function weightComparison(weightKg: number): string | null {
