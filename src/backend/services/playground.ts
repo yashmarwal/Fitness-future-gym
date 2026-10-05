@@ -1,6 +1,8 @@
 import "server-only";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { isRecentlyCheckedIn } from "@/backend/services/attendance";
+import { checkAndAwardBadges } from "@/backend/services/badges";
 
 export type PlaygroundMode = "common_exercise" | "xp_race";
 export type RoomStatus = "pending" | "active" | "ended";
@@ -348,7 +350,50 @@ async function finalizeRoom(
     .eq("status", "active");
   if (error) throw new Error(`Failed to finalize room: ${error.message}`);
 
+  // bestScore > 0 excludes a room where nobody actually logged anything —
+  // without this, a 0-0 room still "declares a winner" (whoever iterates
+  // first in the scores Map above, an existing quirk this doesn't change),
+  // which shouldn't count as a real Playground win for the permanent
+  // playground_wins counter or the badges built on top of it.
+  if (winnerMemberId && bestScore > 0) {
+    // Finalizing the room (the update above) is the part that must never
+    // fail — this is strictly a bonus on top of an already-successful
+    // finalize, so it's never allowed to turn a successful room finalize
+    // into a thrown error even in a freak case awardPlaygroundWin's own
+    // internal error handling doesn't catch.
+    await awardPlaygroundWin(winnerMemberId).catch(() => {});
+  }
+
   return { winnerMemberId, scores };
+}
+
+// Permanent counter, not derived from playground_rooms later — see the
+// migration note in schema.sql: a room is deleted outright once everyone's
+// left it (leaveRoom below), so "count past wins" has nothing left to count
+// by the time anyone would ask. isMissingColumnError-tolerant, same
+// fallback posture as attendance.ts's streak columns: a room still finishes
+// normally even if this particular migration hasn't landed yet.
+async function awardPlaygroundWin(memberId: string): Promise<void> {
+  const db = getDb();
+  const { data: member, error: readError } = await db
+    .from("members")
+    .select("playground_wins")
+    .eq("id", memberId)
+    .maybeSingle();
+  if (readError || !member) return;
+
+  const { error: updateError } = await db
+    .from("members")
+    .update({ playground_wins: ((member as { playground_wins?: number }).playground_wins ?? 0) + 1 })
+    .eq("id", memberId);
+  if (updateError) return;
+
+  // Deferred via after() — safe here since every call path into
+  // finalizeRoom (getRoom, finalizeDueRooms) originates from a Route
+  // Handler. finalizeDueRooms in particular runs on /api/tv/feed's polling
+  // path; badge-checking several extra queries there shouldn't add
+  // latency to a route a gym TV hits every few seconds all day.
+  after(() => checkAndAwardBadges(memberId).catch(() => {}));
 }
 
 export async function getRoom(roomId: string, requestingMemberId: string): Promise<RoomDetail | null> {

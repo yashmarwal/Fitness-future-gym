@@ -1,10 +1,12 @@
 import "server-only";
 import { cache } from "react";
+import { after } from "next/server";
 import { getDb } from "@/backend/db/client";
 import { isMissingColumnError } from "@/backend/db/errors";
 import { getIstDateString, getIstWeekday, daysBetweenIstDates } from "@/frontend/lib/date";
 import { sendCheckInPrompt } from "@/backend/services/workoutPrompt";
 import { isStreakMilestone } from "@/frontend/lib/streakTiers";
+import { checkAndAwardBadges } from "@/backend/services/badges";
 import { getTodayHoliday, isGapFullyRestDays } from "@/backend/services/gymCalendar";
 import type { CheckInResult } from "@/types/member";
 
@@ -63,6 +65,7 @@ type MemberRow = {
   current_streak_days: number;
   longest_streak_days: number;
   review_prompted_at: string | null;
+  total_checkins: number;
 };
 
 // Shared by both check-in paths: the front-desk QR poster (looked up by
@@ -167,6 +170,7 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
       last_checked_in_at: checkedInAt,
       current_streak_days: newStreak,
       longest_streak_days: newLongest,
+      total_checkins: (member.total_checkins ?? 0) + 1,
       ...(shouldPromptReview ? { review_prompted_at: checkedInAt } : {}),
     })
     .eq("id", member.id);
@@ -189,6 +193,14 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
     console.error("[check-in] workout prompt failed:", err instanceof Error ? err.message : err)
   );
 
+  // Deferred via after() — re-evaluating every badge is a handful of extra
+  // queries, no reason to make the member wait on it before their check-in
+  // response comes back. Safe here since checkInMemberRow is only ever
+  // called from a Route Handler (see api/attendance/route.ts,
+  // api/dashboard/checkin/route.ts), same reasoning as feesAdmin.ts's
+  // deferred sends.
+  after(() => checkAndAwardBadges(member.id).catch(() => {}));
+
   return {
     status: "success",
     member: {
@@ -201,7 +213,7 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
 }
 
 const CHECKIN_COLUMNS =
-  "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at, current_streak_days, longest_streak_days, review_prompted_at";
+  "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at, current_streak_days, longest_streak_days, review_prompted_at, total_checkins";
 const CHECKIN_COLUMNS_BASE = "id, full_name, membership_number, is_active, is_frozen, last_checked_in_at";
 
 // Falls back to a query without the streak columns if that migration
@@ -221,7 +233,13 @@ async function fetchMemberForCheckIn(column: "membership_number" | "id", value: 
     .maybeSingle();
   if (fallbackError) throw new Error(`Failed to look up member: ${fallbackError.message}`);
   if (!fallbackData) return null;
-  return { ...fallbackData, current_streak_days: 0, longest_streak_days: 0, review_prompted_at: null } as MemberRow;
+  return {
+    ...fallbackData,
+    current_streak_days: 0,
+    longest_streak_days: 0,
+    review_prompted_at: null,
+    total_checkins: 0,
+  } as MemberRow;
 }
 
 export async function checkInMember(membershipNumber: string): Promise<CheckInResult> {

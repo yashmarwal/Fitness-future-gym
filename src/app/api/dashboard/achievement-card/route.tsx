@@ -13,6 +13,8 @@ import { getIstDateString } from "@/frontend/lib/date";
 import { BUSINESS_ADDRESS, SITE_URL } from "@/frontend/lib/siteConfig";
 import { weightComparison } from "@/frontend/lib/weightComparisons";
 import { streakTier, type StreakTier } from "@/frontend/lib/streakTiers";
+import { listMemberBadges } from "@/backend/services/badges";
+import { BADGE_MAP, type BadgeId } from "@/frontend/lib/badges";
 
 // Bare domain for display ("fitnessfuturegym.in") — SITE_URL carries the
 // https:// scheme, which is redundant clutter on a card, not something
@@ -46,7 +48,7 @@ const HEIGHT = 1440;
 // hub (see the exercise/prevWeight/prevReps params below for why: the
 // "previous" value doesn't exist in the database anymore by the time this
 // route runs, since checkAndRecordPr already overwrote it).
-export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate", "playground", "today"] as const;
+export const CARD_TYPES = ["lift", "streak", "volume", "rank", "pr", "certificate", "playground", "today", "badge"] as const;
 export type CardType = (typeof CARD_TYPES)[number];
 
 // Brand tokens as literal hex — Satori renders independently of the site's
@@ -433,6 +435,46 @@ export async function GET(request: Request) {
 
     return new ImageResponse(
       <CertificateCard logoDataUri={logoDataUri} exerciseName={record.exerciseName} statLabel={statLabel} name={name} dateLabel={achievedDateLabel} />,
+      {
+        width: WIDTH,
+        height: HEIGHT,
+        fonts: [
+          { name: "Oswald-Bold", data: oswaldBoldData, weight: 700, style: "normal" },
+          { name: "Oswald-Medium", data: oswaldMediumData, weight: 500, style: "normal" },
+          { name: "Bebas Neue", data: bebasNeueData, weight: 400, style: "normal" },
+        ],
+        headers: { "Cache-Control": "private, no-store" },
+      }
+    );
+  }
+
+  if (type === "badge") {
+    // `badge` must match one the member has actually earned (never trust
+    // the id alone) — same integrity rule the certificate/pr branches
+    // follow: a 404 for an unearned badge, not a card claiming it anyway.
+    const badgeIdParam = params.get("badge")?.trim();
+    const earnedBadges = await listMemberBadges(session.memberId);
+    const earned = badgeIdParam ? earnedBadges.find((b) => b.badgeId === badgeIdParam) : null;
+    const def = earned ? BADGE_MAP[earned.badgeId as BadgeId] : null;
+    if (!earned || !def) return new Response("Badge not found", { status: 404 });
+
+    const earnedDateLabel = new Date(earned.earnedAt).toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    return new ImageResponse(
+      <CertificateCard
+        logoDataUri={logoDataUri}
+        exerciseName={def.group.toUpperCase()}
+        statLabel={def.name.toUpperCase()}
+        achievementLine="has earned the"
+        detailLine={def.description}
+        name={name}
+        dateLabel={earnedDateLabel}
+      />,
       {
         width: WIDTH,
         height: HEIGHT,

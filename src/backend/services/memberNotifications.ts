@@ -1,7 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 
-export type MemberNotificationType = "broadcast" | "fee_reminder" | "account_blocked" | "account_unblocked";
+export type MemberNotificationType = "broadcast" | "fee_reminder" | "account_blocked" | "account_unblocked" | "badge_earned";
 
 export type MemberNotification = {
   id: string;

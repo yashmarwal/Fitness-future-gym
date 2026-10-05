@@ -7,6 +7,9 @@ import { getMemberMuscleProgress } from "@/backend/services/muscleProgress";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { StatCard } from "@/frontend/components/dashboard/Primitives";
 import ShareAchievementsCard from "@/frontend/components/dashboard/ShareAchievementsCard";
+import BadgeShelf from "@/frontend/components/dashboard/BadgeShelf";
+import { listMemberBadges } from "@/backend/services/badges";
+import type { BadgeId } from "@/frontend/lib/badges";
 
 function bestLift(records: PersonalRecord[]): PersonalRecord | null {
   let best: PersonalRecord | null = null;
@@ -23,13 +26,15 @@ function bestLift(records: PersonalRecord[]): PersonalRecord | null {
 // has, rather than opening something meant to be done on the gym floor.
 export default async function AchievementsPage() {
   const session = await getMemberSession();
-  const [member, workoutLogs, personalRecords, muscleProgress] = await Promise.all([
+  const [member, workoutLogs, personalRecords, muscleProgress, badges] = await Promise.all([
     getMemberById(session!.memberId),
     // 400 comfortably covers this week for even a heavy logger.
     listWorkoutLogs(session!.memberId, 400),
     listPersonalRecords(session!.memberId),
     getMemberMuscleProgress(session!.memberId),
+    listMemberBadges(session!.memberId),
   ]);
+  const earnedBadges: Partial<Record<BadgeId, string>> = Object.fromEntries(badges.map((b) => [b.badgeId, b.earnedAt]));
 
   const snapshot = buildMemberSnapshot({
     member: {
@@ -80,6 +85,11 @@ export default async function AchievementsPage() {
 
       <div className="mb-6">
         <ShareAchievementsCard />
+      </div>
+
+      <div className="mb-6">
+        <h2 className="font-display text-lg text-on-surface uppercase tracking-wide mb-3">Badges</h2>
+        <BadgeShelf earned={earnedBadges} />
       </div>
 
       <div className="flex flex-col gap-2">

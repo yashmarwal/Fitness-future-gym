@@ -159,6 +159,26 @@ create extension if not exists pgcrypto;
 --     phone text primary key,
 --     claimed_at timestamptz not null default now()
 --   );
+--
+-- Also run these — the Achievement Badges feature (see badges.ts). The two
+-- new columns are permanent counters, same reasoning as current_streak_days
+-- above: total_checkins can't be derived from the attendance log (purged
+-- after 30 days) or playground_wins from playground_rooms (a room is
+-- deleted outright once everyone's left it — see leaveRoom in
+-- playground.ts), so both have to be incremented at the moment they happen
+-- instead of ever being counted after the fact.
+--
+--   alter table members add column if not exists total_checkins integer not null default 0;
+--   alter table members add column if not exists playground_wins integer not null default 0;
+--
+--   create table if not exists member_badges (
+--     id uuid primary key default gen_random_uuid(),
+--     member_id uuid not null references members(id) on delete cascade,
+--     badge_id text not null,
+--     earned_at timestamptz not null default now(),
+--     unique (member_id, badge_id)
+--   );
+--   create index if not exists member_badges_member_id_idx on member_badges (member_id);
 
 -- ── Members ─────────────────────────────────────────────────────────────
 
@@ -220,6 +240,11 @@ create table if not exists members (
   -- prompt — see the migration note above and attendance.ts. Null forever
   -- for a member who hasn't yet hit a 30+ day streak milestone.
   review_prompted_at timestamptz,
+  -- Permanent counters behind the Achievement Badges feature (badges.ts) —
+  -- see the migration note above for why these can't be derived from the
+  -- attendance log or playground_rooms after the fact.
+  total_checkins integer not null default 0,
+  playground_wins integer not null default 0,
   created_at timestamptz not null default now()
 );
 
@@ -386,6 +411,24 @@ create table if not exists member_exercise_prs (
 
 create index if not exists member_exercise_prs_member_id_idx
   on member_exercise_prs (member_id);
+
+-- Achievement Badges — one row per member per badge ever earned, never
+-- removed. badge_id is a plain text key matching BADGES in
+-- frontend/lib/badges.ts, not a foreign key to its own table — the catalog
+-- is static app code, not data that needs its own table to be queried or
+-- edited. unique(member_id, badge_id) is what makes awarding idempotent:
+-- checkAndAwardBadges (badges.ts) re-evaluates every condition on every
+-- call and just lets a duplicate insert fail silently on this constraint
+-- rather than tracking "did I already check this one" separately.
+create table if not exists member_badges (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  badge_id text not null,
+  earned_at timestamptz not null default now(),
+  unique (member_id, badge_id)
+);
+
+create index if not exists member_badges_member_id_idx on member_badges (member_id);
 
 -- Beast Mode: a guided, live progressive-overload session (setup → tap to
 -- confirm each set → auto rest → summary). Each confirmed set is ALSO

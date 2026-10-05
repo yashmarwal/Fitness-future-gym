@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { getMemberSession } from "@/backend/auth/session";
 import { logWorkout } from "@/backend/services/workouts";
 import { awardWorkoutXp } from "@/backend/services/muscleProgress";
 import { checkAndRecordPr } from "@/backend/services/personalRecords";
+import { checkAndAwardBadges } from "@/backend/services/badges";
 
 export async function POST(request: Request) {
   const session = await getMemberSession();
@@ -27,6 +28,12 @@ export async function POST(request: Request) {
     // a PR is "heaviest weight for that many reps," never blocks or fails
     // the log itself (checkAndRecordPr swallows its own errors).
     const pr = await checkAndRecordPr(session.memberId, exerciseName, weightKg, reps).catch(() => null);
+    // Deferred via after() — registered AFTER both XP and PR writes above
+    // are already awaited/committed, so the badge check still reads
+    // up-to-date numbers even though it runs post-response. No reason to
+    // make the member wait on a handful of extra queries before their set
+    // is confirmed logged.
+    after(() => checkAndAwardBadges(session.memberId).catch(() => {}));
     return NextResponse.json({ status: "ok", pr });
   } catch (err) {
     console.error(err);

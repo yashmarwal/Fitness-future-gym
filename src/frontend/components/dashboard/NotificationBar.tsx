@@ -11,6 +11,7 @@ const TYPE_ICON: Record<Notification["type"], string> = {
   fee_reminder: "payments",
   account_blocked: "lock",
   account_unblocked: "lock_open",
+  badge_earned: "military_tech",
 };
 
 // initialNotifications comes from the server render (dashboard/settings/
