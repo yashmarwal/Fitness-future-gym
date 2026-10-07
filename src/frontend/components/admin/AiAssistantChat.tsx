@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { renderChatContent } from "@/frontend/lib/chatMarkdown";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
+import SpotterOrb from "@/frontend/components/admin/SpotterOrb";
 
 type ChatMessage = { role: "user" | "model"; content: string };
 
@@ -186,7 +187,7 @@ export default function AiAssistantChat() {
 
         {loading && (
           <div className="flex items-end gap-2 justify-start animate-chat-in-left">
-            <AiAvatar />
+            <SpotterOrb size={32} />
             <div className="bg-surface-container border border-surface-variant/40 px-4 py-2.5 rounded-2xl rounded-bl-md shadow-soft">
               <TypingDots />
             </div>

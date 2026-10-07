@@ -525,6 +525,44 @@ body {
   }
 }
 
+/* Spotter AI's "thinking" orb (SpotterOrb.tsx) — the idle avatar (the
+   empty-state hero, ai-avatar-glow above) stays exactly as it was; this is
+   only for the moment a reply is actually being generated, swapped in at
+   the chat's typing-indicator row and the admin tab bar's Spotter AI
+   circle. A direct port of a Uiverse.io loader by dexter-st — the same
+   designer and the same "rotate + three inset box-shadows" trick already
+   used for the plan-generation loader below, recolored the same way: white
+   kept as the bright highlight, the two color stops swapped for this app's
+   own warm-orange tokens instead of the original purple/blue/pink. The
+   original was authored at 180px; --orb-scale (set inline per instance,
+   see SpotterOrb.tsx) scales every offset/blur in proportion so the exact
+   same shape holds at the 32-40px this actually renders at, instead of the
+   blobs blowing out or shrinking to nothing at a size the original was
+   never tuned for. */
+@keyframes spotter-loader-rotate {
+  0% {
+    transform: rotate(90deg);
+    box-shadow:
+      0 calc(10px * var(--orb-scale, 1)) calc(20px * var(--orb-scale, 1)) 0 #fff inset,
+      0 calc(20px * var(--orb-scale, 1)) calc(30px * var(--orb-scale, 1)) 0 #ffb37a inset,
+      0 calc(60px * var(--orb-scale, 1)) calc(60px * var(--orb-scale, 1)) 0 var(--color-primary-container) inset;
+  }
+  50% {
+    transform: rotate(270deg);
+    box-shadow:
+      0 calc(10px * var(--orb-scale, 1)) calc(20px * var(--orb-scale, 1)) 0 #fff inset,
+      0 calc(20px * var(--orb-scale, 1)) calc(10px * var(--orb-scale, 1)) 0 #c73e0a inset,
+      0 calc(40px * var(--orb-scale, 1)) calc(60px * var(--orb-scale, 1)) 0 var(--color-secondary-container) inset;
+  }
+  100% {
+    transform: rotate(450deg);
+    box-shadow:
+      0 calc(10px * var(--orb-scale, 1)) calc(20px * var(--orb-scale, 1)) 0 #fff inset,
+      0 calc(20px * var(--orb-scale, 1)) calc(30px * var(--orb-scale, 1)) 0 #ffb37a inset,
+      0 calc(60px * var(--orb-scale, 1)) calc(60px * var(--orb-scale, 1)) 0 var(--color-primary-container) inset;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-chat-in-left {
     animation: chat-in-left 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -537,6 +575,9 @@ body {
   }
   .animate-ai-avatar-glow {
     animation: ai-avatar-glow 2.4s ease-in-out infinite;
+  }
+  .animate-spotter-loader-rotate {
+    animation: spotter-loader-rotate 2s linear infinite;
   }
 }
 

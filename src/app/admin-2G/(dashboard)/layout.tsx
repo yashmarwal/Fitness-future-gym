@@ -24,15 +24,26 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   if (!session) redirect("/admin-2G/login");
 
   return (
-    // dvh, not vh/min-h-screen: vh is the STATIC viewport height (the area
-    // a mobile keyboard would cover is still counted as "visible"), so
-    // anything sized off it doesn't shrink when the keyboard opens — which
-    // is exactly why the AI assistant's input could end up stuck behind
-    // the keyboard. dvh tracks the real, current visible viewport.
+    // h-dvh, not min-h-dvh: a MINIMUM still let this grow taller than the
+    // viewport whenever a page's content (the AI chat's message list,
+    // chiefly) needed more room than that — and since AdminTabBar is
+    // `fixed` (pinned to the real viewport, oblivious to page scroll),
+    // once the page grew past the point the bar sits at, that content
+    // scrolled up BEHIND the bar instead of the chat's own internal
+    // flex-1/min-h-0/overflow-y-auto ever kicking in, which only works
+    // when its ancestor chain has a genuinely fixed ceiling to squeeze
+    // against, not just a floor. h-dvh is that real cap; every other admin
+    // page keeps scrolling exactly as before (overflow here is never
+    // `hidden`, so content taller than `main` still overflows visibly and
+    // the page scrolls normally) — only a flex-1 child that actually wants
+    // to be height-constrained, which today is only the chat, is affected.
+    // dvh over vh/min-h-screen for the same original reason: vh is the
+    // STATIC viewport height (still counts the area a mobile keyboard
+    // covers as "visible"), dvh tracks the real, current visible viewport.
     // bg-black — same pure-black page background as the member dashboard
     // (dashboard/layout.tsx), instead of falling through to the site-wide
     // --color-background (#141311, a warm near-black) via body.
-    <div className="flex flex-col min-h-dvh overflow-x-hidden bg-black">
+    <div className="flex flex-col h-dvh overflow-x-hidden bg-black">
       <AdminNav username={session.username} />
       {/* overflow-x-hidden here is a safety net, not a fix for anything
           specific to this file — one unshrinkable flex child anywhere

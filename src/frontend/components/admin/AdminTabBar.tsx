@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
 import { SPOTTER_THINKING_EVENT } from "@/frontend/components/admin/AiAssistantChat";
+import SpotterOrb from "@/frontend/components/admin/SpotterOrb";
 
 // The 4 primary destinations, in tab order — everything else that used to
 // be a pill in AdminNav's old top nav (Alerts, Trials, Attendance, Access
@@ -203,18 +204,22 @@ export default function AdminTabBar() {
         aria-label="Spotter AI"
         className={`shrink-0 w-14 h-14 flex items-center justify-center rounded-full bg-white/6 backdrop-blur-xl backdrop-saturate-150 border ${GLASS_SHADOW} transition-colors ${
           spotterThinking
-            ? "border-primary-container text-primary-container animate-ai-avatar-glow"
+            ? "border-primary-container"
             : aiActive
               ? "border-primary-container text-primary-container"
               : "border-white/10 text-on-surface-variant hover:text-on-surface"
         }`}
       >
-        <span
-          className="material-symbols-outlined text-2xl leading-none"
-          style={aiActive || spotterThinking ? { fontVariationSettings: "'FILL' 1" } : undefined}
-        >
-          smart_toy
-        </span>
+        {spotterThinking ? (
+          <SpotterOrb size={40} />
+        ) : (
+          <span
+            className="material-symbols-outlined text-2xl leading-none"
+            style={aiActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+          >
+            smart_toy
+          </span>
+        )}
       </Link>
     </nav>
   );
