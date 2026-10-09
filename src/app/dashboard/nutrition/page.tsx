@@ -1,13 +1,16 @@
 import { getMemberSession } from "@/backend/auth/session";
 import { listTodaysFoodLogs, listFrequentFoods } from "@/backend/services/nutrition";
+import { listSavedMeals } from "@/backend/services/savedMeals";
 import FoodLogForm from "@/frontend/components/dashboard/FoodLogForm";
+import SavedMealsSection from "@/frontend/components/dashboard/SavedMealsSection";
 import { StatCard, DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function NutritionPage() {
   const session = await getMemberSession();
-  const [logs, frequentFoods] = await Promise.all([
+  const [logs, frequentFoods, savedMeals] = await Promise.all([
     listTodaysFoodLogs(session!.memberId),
     listFrequentFoods(session!.memberId),
+    listSavedMeals(session!.memberId),
   ]);
 
   const totalCalories = logs.reduce((sum, l) => sum + l.calories, 0);
@@ -28,6 +31,8 @@ export default async function NutritionPage() {
         <StatCard value={totalCalories} label="Kcal Today" tone="accent" />
         <StatCard value={`${totalProtein}g`} label="Protein Today" />
       </div>
+
+      <SavedMealsSection savedMeals={savedMeals} todaysLogs={logs} />
 
       <FoodLogForm frequentFoods={frequentFoods} />
 

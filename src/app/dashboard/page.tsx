@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
 import { getRecentAttendance, getAttendanceStatus } from "@/backend/services/attendance";
@@ -12,7 +13,6 @@ import { getFitnessProfile } from "@/backend/services/fitnessProfile";
 import { daysUntil, getIstHour, greetingForHour, isWithinMinutes } from "@/frontend/lib/date";
 import { buildMemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { StatCard, Skeleton } from "@/frontend/components/dashboard/Primitives";
-import { GLASS_SHADOW } from "@/frontend/lib/glass";
 import PersonalNoteArea from "@/frontend/components/dashboard/PersonalNoteArea";
 import AttendanceCheckInButton from "@/frontend/components/dashboard/AttendanceCheckInButton";
 import PersonalRecordsBar from "@/frontend/components/dashboard/PersonalRecordsBar";
@@ -45,20 +45,25 @@ const GREETING_SUBLINES: Record<string, string> = {
 // lookups rather than frequent actions.
 // Ordered by priority — daily/frequent actions first, the exercise library
 // last — not alphabetical or by whenever each was added. `featured` marks
-// the two standout, high-energy features (Beast Mode, Playground) for the
-// distinct card treatment below; everything else shares the one plain
-// "quick link" look.
+// the two standout, high-energy features (Beast Mode, Playground) for an
+// extra accent border in QuickActionCard below; `category` is the small
+// eyebrow label every card shows above its bold title; `image` is the
+// filename (no extension) under public/images/quick-actions/ — real
+// illustrated card art the user supplied as one combined grid image,
+// cropped into these 10 individual files (see the crop script's row/column
+// boundary detection — not a plain even split, the source grid's cells
+// weren't perfectly uniform).
 const QUICK_LINKS = [
-  { href: "/dashboard/workouts?beastMode=open", label: "Beast Mode", icon: "bolt", gated: true, featured: true },
-  { href: "/dashboard/playground", label: "Playground", icon: "group", gated: true, featured: true },
-  { href: "/dashboard/workouts", label: "Log A Workout", icon: "fitness_center", gated: true, featured: false },
-  { href: "/dashboard/plan", label: "Plan Workouts", icon: "event_note", gated: true, featured: false },
-  { href: "/dashboard/nutrition", label: "Log Food", icon: "restaurant", gated: false, featured: false },
-  { href: "/dashboard/timer", label: "Rest Timer", icon: "timer", gated: true, featured: false },
-  { href: "/dashboard/progress", label: "Muscle Progress", icon: "military_tech", gated: false, featured: false },
-  { href: "/dashboard/streak", label: "Streak Tracker", icon: "local_fire_department", gated: false, featured: false },
-  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", icon: "auto_awesome", gated: true, featured: false },
-  { href: "/dashboard/exercises", label: "Exercise Library", icon: "menu_book", gated: false, featured: false },
+  { href: "/dashboard/workouts?beastMode=open", label: "Beast Mode", category: "Beast Mode", icon: "bolt", image: "beast-mode", gated: true, featured: true },
+  { href: "/dashboard/playground", label: "Playground", category: "Community", icon: "group", image: "playground", gated: true, featured: true },
+  { href: "/dashboard/workouts", label: "Log A Workout", category: "Training", icon: "fitness_center", image: "log-workout", gated: true, featured: false },
+  { href: "/dashboard/plan", label: "Plan Workouts", category: "Planning", icon: "event_note", image: "plan-workouts", gated: true, featured: false },
+  { href: "/dashboard/nutrition", label: "Log Food", category: "Nutrition", icon: "restaurant", image: "log-food", gated: false, featured: false },
+  { href: "/dashboard/timer", label: "Rest Timer", category: "Recovery", icon: "timer", image: "rest-timer", gated: true, featured: false },
+  { href: "/dashboard/progress", label: "Muscle Progress", category: "Progress", icon: "military_tech", image: "muscle-progress", gated: false, featured: false },
+  { href: "/dashboard/streak", label: "Streak Tracker", category: "Consistency", icon: "local_fire_department", image: "streak-tracker", gated: false, featured: false },
+  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", category: "Programs", icon: "auto_awesome", image: "workout-templates", gated: true, featured: false },
+  { href: "/dashboard/exercises", label: "Exercise Library", category: "Reference", icon: "menu_book", image: "exercise-library", gated: false, featured: false },
 ];
 
 // Small badge shown on a gated tile/link when the member hasn't checked in
@@ -75,70 +80,73 @@ function LockBadge() {
   );
 }
 
-// The four top-of-page shortcuts — a bold brand gradient with a glossy
-// corner highlight (bottom-right, so it never fights LockBadge's own
-// top-right spot), an icon housed in a frosted chip rather than bare, and
-// tighter rounding than the Quick Actions grid below — deliberately a
-// different card language for what's the primary CTA row, not a
-// browsable list.
-// Restrained glass, not decorated glass: a neutral (never brand-tinted)
-// translucent fill, a thin low-opacity border, backdrop-blur — no glow,
-// no icon chip-inside-a-chip. Two things make it read as real glass
-// rather than a flat tinted panel, both subtle: backdrop-saturate (the
-// same blur+saturate pairing Apple's own glass recipe uses, so whatever's
-// faintly visible through it looks a little richer, not washed out) and a
-// two-layer shadow — an inset hairline highlight along the top edge
-// (light catching the glass) plus a soft, neutral outer shadow (real
-// depth, not a colored glow). Shared with DashboardTabBar — see
-// frontend/lib/glass.ts.
-
-function ShortcutTile({ href, icon, label, locked }: { href: string; icon: string; label: string; locked: boolean }) {
+// Every Quick Action is this one card now — the real illustrated card art
+// (public/images/quick-actions/, see the QUICK_LINKS comment above) as a
+// full-bleed background, with the small category eyebrow + bold title laid
+// over it. `featured` (Beast Mode, Playground) gets a brand-orange border;
+// everything else gets a plain hairline one — matching the reference,
+// where only those two stood out with an accent outline. `image` is
+// optional: a card with none falls back to a plain dark fill with a corner
+// gradient instead of either breaking or reverting to the old,
+// visually-inconsistent tile style — only used until real art exists.
+function QuickActionCard({
+  href,
+  icon,
+  category,
+  label,
+  image,
+  featured,
+  dim,
+  priority = false,
+}: {
+  href: string;
+  icon: string;
+  category: string;
+  label: string;
+  image?: string;
+  featured: boolean;
+  dim: boolean;
+  /** Preload instead of lazy-loading — only for cards visible on first
+   * paint with no scroll, so they never flash in after the frame. */
+  priority?: boolean;
+}) {
   return (
     <Link
       href={href}
-      className={`relative bg-white/6 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-white/10 hover:bg-white/8 hover:border-white/20 active:scale-95 transition-all duration-200 flex flex-col items-center gap-2 text-center ${
-        locked ? "opacity-40 grayscale" : ""
-      }`}
-    >
-      {locked && <LockBadge />}
-      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
-      <span className="font-label text-[10px] uppercase font-bold tracking-wide text-on-surface">{label}</span>
-    </Link>
-  );
-}
-
-// The plain Quick Actions tile — same premium glass as above, tighter
-// padding since there are a dozen of these on screen at once.
-function QuickLink({ href, icon, label, dim }: { href: string; icon: string; label: string; dim: boolean }) {
-  return (
-    <Link
-      href={href}
-      className={`relative bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-white/10 hover:bg-white/6 hover:border-white/20 active:scale-[0.97] transition-all duration-200 flex flex-col gap-3 ${
-        dim ? "opacity-40 grayscale" : ""
-      }`}
-    >
-      {dim && <LockBadge />}
-      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
-      <span className="font-label text-[11px] uppercase tracking-wide text-on-surface font-bold">{label}</span>
-    </Link>
-  );
-}
-
-// Beast Mode and Playground still stand out from the plain tiles, but the
-// distinction is just a brand-colored border and label instead of a glow,
-// a pulsing dot, and an extra tint layer — one clear signal instead of
-// four competing ones.
-function FeaturedQuickLink({ href, icon, label, dim }: { href: string; icon: string; label: string; dim: boolean }) {
-  return (
-    <Link
-      href={href}
-      className={`relative bg-white/4 backdrop-blur-xl backdrop-saturate-150 ${GLASS_SHADOW} p-4 rounded-2xl border border-primary-container/40 hover:bg-white/6 hover:border-primary-container/70 active:scale-[0.97] transition-all duration-200 flex flex-col gap-3 ${
-        dim ? "opacity-40 grayscale" : ""
-      }`}
+      className={`relative overflow-hidden rounded-2xl min-h-28 border active:scale-[0.97] transition-all duration-200 ${
+        featured ? "border-primary-container/70" : "border-white/10"
+      } ${dim ? "opacity-40 grayscale" : ""} ${image ? "bg-black" : "bg-surface-container-high"}`}
+      style={
+        image
+          ? undefined
+          : {
+              backgroundImage:
+                "radial-gradient(130% 130% at 100% 100%, rgba(199,62,10,0.55) 0%, rgba(199,62,10,0.18) 35%, rgba(0,0,0,0) 65%)",
+            }
+      }
     >
       {dim && <LockBadge />}
-      <span className="material-symbols-outlined text-2xl leading-none text-primary-container">{icon}</span>
-      <span className="font-label text-[11px] uppercase tracking-wide text-primary-container font-bold">{label}</span>
+      {image && (
+        <Image
+          src={`/images/quick-actions/${image}.jpg`}
+          alt=""
+          fill
+          priority={priority}
+          sizes="(max-width: 1024px) 50vw, 33vw"
+          className="object-cover pointer-events-none"
+        />
+      )}
+      <div className="relative z-10 h-full flex flex-col justify-between p-4">
+        <span className="material-symbols-outlined text-xl leading-none text-primary-container drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          {icon}
+        </span>
+        <div>
+          <p className="font-body text-[11px] text-white/70 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{category}</p>
+          <p className="font-display text-lg uppercase tracking-wide text-white leading-tight max-w-[75%] drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+            {label}
+          </p>
+        </div>
+      </div>
     </Link>
   );
 }
@@ -186,10 +194,46 @@ export default async function DashboardPage() {
           "Quick Actions" link grid further down, which covers every
           dashboard route rather than just these four. */}
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${checkedIn ? "mb-6" : "mb-2"}`}>
-        <ShortcutTile href="/dashboard/workouts?beastMode=open" icon="bolt" label="Beast Mode" locked={!checkedIn} />
-        <ShortcutTile href="/dashboard/playground" icon="group" label="Playground" locked={!checkedIn} />
-        <ShortcutTile href="/dashboard/workouts" icon="fitness_center" label="Log Workout" locked={!checkedIn} />
-        <ShortcutTile href="/dashboard/bmi" icon="calculate" label="BMI Calc" locked={false} />
+        <QuickActionCard
+          href="/dashboard/workouts?beastMode=open"
+          icon="bolt"
+          category="Beast Mode"
+          label="Beast Mode"
+          image="beast-mode"
+          featured
+          dim={!checkedIn}
+          priority
+        />
+        <QuickActionCard
+          href="/dashboard/playground"
+          icon="group"
+          category="Community"
+          label="Playground"
+          image="playground"
+          featured
+          dim={!checkedIn}
+          priority
+        />
+        <QuickActionCard
+          href="/dashboard/workouts"
+          icon="fitness_center"
+          category="Training"
+          label="Log Workout"
+          image="log-workout"
+          featured={false}
+          dim={!checkedIn}
+          priority
+        />
+        <QuickActionCard
+          href="/dashboard/bmi"
+          icon="calculate"
+          category="Health"
+          label="BMI Calc"
+          image="bmi-calc"
+          featured={false}
+          dim={false}
+          priority
+        />
       </div>
       {!checkedIn && (
         <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mb-6">
@@ -289,9 +333,30 @@ async function DashboardBelowFold({
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard value={member?.currentStreakDays ?? 0} label="Day Streak" tone="accent" icon="local_fire_department" />
-        <StatCard value={attendance.length} label="Recent Check-Ins" icon="calendar_month" />
-        <StatCard value={member?.plan ?? "—"} label="Current Plan" size="md" uppercase icon="badge" />
+        <StatCard
+          value={member?.currentStreakDays ?? 0}
+          label="Day Streak"
+          tone="accent"
+          icon="local_fire_department"
+          image="/images/dashboard-stats/day-streak.jpg"
+          priority
+        />
+        <StatCard
+          value={attendance.length}
+          label="Recent Check-Ins"
+          icon="calendar_month"
+          image="/images/dashboard-stats/recent-checkins.jpg"
+          priority
+        />
+        <StatCard
+          value={member?.plan ?? "—"}
+          label="Current Plan"
+          size="md"
+          uppercase
+          icon="badge"
+          image="/images/dashboard-stats/current-plan.jpg"
+          priority
+        />
         <StatCard
           value={daysUntilDue !== null ? `${daysUntilDue}d` : "—"}
           label="Until Fee Due"
@@ -299,6 +364,8 @@ async function DashboardBelowFold({
           uppercase
           icon="payments"
           tone={daysUntilDue !== null && daysUntilDue <= 3 ? "alert" : "default"}
+          image="/images/dashboard-stats/fee-due.jpg"
+          priority
         />
       </div>
 
@@ -320,13 +387,9 @@ async function DashboardBelowFold({
 
       <h2 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-        {QUICK_LINKS.map((link) =>
-          link.featured ? (
-            <FeaturedQuickLink key={link.href} {...link} dim={link.gated && !checkedIn} />
-          ) : (
-            <QuickLink key={link.href} {...link} dim={link.gated && !checkedIn} />
-          )
-        )}
+        {QUICK_LINKS.map((link) => (
+          <QuickActionCard key={link.href} {...link} dim={link.gated && !checkedIn} />
+        ))}
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CHECKIN_SUCCESS_EVENT } from "@/frontend/components/dashboard/NotificationsCard";
 import StreakMilestoneCelebration from "@/frontend/components/dashboard/StreakMilestoneCelebration";
@@ -86,9 +87,9 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       onClick={handleTap}
       disabled={checkedIn || marking}
       aria-label={checkedIn ? "Attendance already marked" : "Tap to check in and mark attendance"}
-      className={`relative w-full flex items-center gap-3 pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 text-left disabled:cursor-default ${
+      className={`relative overflow-hidden bg-black w-full pl-3 pr-4 py-2.5 shadow-soft mb-6 rounded-full border-2 transition-colors duration-300 text-left disabled:cursor-default ${
         checkedIn
-          ? "bg-surface-container-low border-primary-container/50"
+          ? "border-primary-container/50"
           : // The single most important action on this page — a check-in
             // unlocks the rest of the dashboard — so it needs to read as
             // distinct from the neutral ShortcutTile cards above it, not
@@ -97,9 +98,17 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
             // exactly why it blended in; a bright full-opacity brand
             // border plus a tinted fill fixes that without needing an
             // extra glow/pulse layer on top.
-            "bg-primary-container/10 border-primary-container hover:bg-primary-container/15"
+            "border-primary-container hover:bg-primary-container/5"
       }`}
     >
+      <Image
+        src="/images/dashboard-stats/attendance-pill.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-top-right pointer-events-none"
+      />
       {/* A comet of stroke traveling around the whole pill, not just the
           small circular button, for as long as the request is in flight —
           pathLength=100 keeps the dash math independent of the pill's
@@ -115,7 +124,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
           from something like rx="9999" on a rect much wider than it is
           tall (rx clamps to width/2, ry clamps to height/2 separately). */}
       {marking && (
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" aria-hidden="true">
           <rect
             x="0"
             y="0"
@@ -134,6 +143,7 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
       )}
       {/* Purely decorative now — the whole pill above is the real tap
           target (aria-label there covers it), this is just the icon badge. */}
+      <span className="relative z-10 flex items-center gap-3 w-full">
       <span
         aria-hidden="true"
         className={`relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft transition-all
@@ -162,10 +172,16 @@ export default function AttendanceCheckInButton({ initialStatus }: { initialStat
         </span>
       </span>
       <span className="flex-1 min-w-0">
-        <span className="block font-label text-xs uppercase tracking-wide text-on-surface">Attendance</span>
-        <span key={statusText} className="block font-body text-xs truncate animate-attendance-status-in text-tertiary">
+        <span className="block font-label text-xs uppercase tracking-wide text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          Attendance
+        </span>
+        <span
+          key={statusText}
+          className="block font-body text-xs truncate animate-attendance-status-in text-white/80 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+        >
           {statusText}
         </span>
+      </span>
       </span>
       {milestoneStreak != null && (
         <StreakMilestoneCelebration

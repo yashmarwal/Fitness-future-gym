@@ -564,6 +564,27 @@ create table if not exists food_logs (
 create index if not exists food_logs_member_id_logged_at_idx
   on food_logs (member_id, logged_at desc);
 
+-- A named, reusable set of food_logs-shaped items (e.g. "My Usual
+-- Breakfast") a member builds once from what they already logged today and
+-- quick-adds on later days — see savedMeals.ts. `items` is read and written
+-- as one unit, same reasoning as workout_plans.days' existing jsonb use:
+-- there's no independent query need per item, so a child table would only
+-- add a join for no benefit. `category` is a free-typed label
+-- (Breakfast/Lunch/Dinner by default, or anything the member types under
+-- "Custom") rather than an enum/lookup table — this app already favors a
+-- flat string over a join table for this level of complexity (see
+-- QuickActionCard's `category` eyebrow label).
+create table if not exists saved_meals (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references members(id) on delete cascade,
+  name text not null,
+  category text not null default 'Breakfast',
+  items jsonb not null default '[]',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists saved_meals_member_id_idx on saved_meals (member_id);
+
 -- ── In-app notifications (dashboard notification bar) ──────────────────
 -- Mirrors what already goes out over WhatsApp/email for broadcasts and fee
 -- reminders, so members also see it inside the dashboard itself. Purged

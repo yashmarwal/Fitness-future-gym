@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { FitnessProfile } from "@/backend/services/fitnessProfile";
 
@@ -18,20 +19,23 @@ export default function GeneratePlanBar({ fitnessProfile }: { fitnessProfile: Fi
     <button
       type="button"
       onClick={() => router.push("/onboarding")}
-      className="w-full flex items-center gap-3 bg-surface-container-low shadow-soft rounded-2xl px-4 py-3 mb-6 hover:bg-surface-container transition-colors text-left"
+      className="relative overflow-hidden bg-black w-full flex items-center gap-3 shadow-soft rounded-2xl px-4 py-3 mb-6 text-left"
     >
-      <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
+      <Image src="/images/dashboard-stats/generate-plan.jpg" alt="" fill priority sizes="100vw" className="object-cover pointer-events-none" />
+      <span className="relative z-10 w-9 h-9 rounded-xl flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
         <span className="material-symbols-outlined text-lg leading-none">auto_awesome</span>
       </span>
-      <span className="flex-1 min-w-0">
-        <span className="block font-label text-xs uppercase tracking-wide text-on-surface">
+      <span className="relative z-10 flex-1 min-w-0">
+        <span className="block font-label text-xs uppercase tracking-wide text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           {fitnessProfile ? "Generate A Fresh Plan" : "Get A Plan Generated For You"}
         </span>
-        <span className="block font-body text-xs text-tertiary truncate">
+        <span className="block font-body text-xs text-white/75 truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           {fitnessProfile ? "Review your answers and build a fresh plan" : "Answer a few questions, 1 minute"}
         </span>
       </span>
-      <span className="material-symbols-outlined text-lg leading-none text-tertiary shrink-0">chevron_right</span>
+      <span className="relative z-10 material-symbols-outlined text-lg leading-none text-white/75 shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+        chevron_right
+      </span>
     </button>
   );
 }

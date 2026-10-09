@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 // Two pills side by side, not one full-width pill — Personal Records
 // (unchanged link) and Achievements (the hub for the downloadable/
@@ -15,21 +16,27 @@ export default function PersonalRecordsBar() {
     <div className="flex gap-3 mb-6">
       <Link
         href="/dashboard/records"
-        className="flex-1 min-w-0 flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-3 shadow-soft rounded-full border-2 border-surface-variant hover:border-primary-container transition-colors"
+        className="relative overflow-hidden bg-black flex-1 min-w-0 flex items-center gap-3 pl-3 pr-4 py-3 shadow-soft rounded-full border-2 border-surface-variant hover:border-primary-container transition-colors"
       >
-        <span className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
+        <Image src="/images/dashboard-stats/personal-records.jpg" alt="" fill priority sizes="50vw" className="object-cover pointer-events-none" />
+        <span className="relative z-10 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
           <span className="material-symbols-outlined text-lg leading-none">emoji_events</span>
         </span>
-        <p className="flex-1 min-w-0 font-label text-xs uppercase tracking-wide text-on-surface truncate">Personal Records</p>
+        <p className="relative z-10 flex-1 min-w-0 font-label text-xs uppercase tracking-wide text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          Personal Records
+        </p>
       </Link>
       <Link
         href="/dashboard/achievements"
-        className="flex-1 min-w-0 flex items-center gap-3 bg-surface-container-low pl-3 pr-4 py-3 shadow-soft rounded-full border-2 border-surface-variant hover:border-primary-container transition-colors"
+        className="relative overflow-hidden bg-black flex-1 min-w-0 flex items-center gap-3 pl-3 pr-4 py-3 shadow-soft rounded-full border-2 border-surface-variant hover:border-primary-container transition-colors"
       >
-        <span className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
+        <Image src="/images/dashboard-stats/achievements.jpg" alt="" fill priority sizes="50vw" className="object-cover pointer-events-none" />
+        <span className="relative z-10 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
           <span className="material-symbols-outlined text-lg leading-none">workspace_premium</span>
         </span>
-        <p className="flex-1 min-w-0 font-label text-xs uppercase tracking-wide text-on-surface truncate">Achievements</p>
+        <p className="relative z-10 flex-1 min-w-0 font-label text-xs uppercase tracking-wide text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          Achievements
+        </p>
       </Link>
     </div>
   );

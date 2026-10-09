@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useWorkoutTimerState, startTimer, stopTimer, getPreviousDays, getTodayMs, formatDuration } from "@/frontend/lib/workoutTimer";
 
 // A separate stat from the rest timer (RestTimer.tsx, untouched) — this
@@ -44,18 +45,21 @@ export default function WorkoutTimerWidget() {
   const previousDays = getPreviousDays(state, now);
 
   return (
-    <div className="bg-surface-container-low p-5 shadow-soft rounded-2xl mb-6 flex items-center justify-between gap-4">
-      <div className="min-w-0">
-        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+    <div className="relative overflow-hidden bg-black p-5 shadow-soft rounded-2xl mb-6 flex items-center justify-between gap-4">
+      <Image src="/images/dashboard-stats/workout-timer.jpg" alt="" fill priority sizes="100vw" className="object-cover pointer-events-none" />
+      <div className="relative z-10 min-w-0">
+        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           <span className="material-symbols-outlined text-base leading-none">timelapse</span>
           Workout Timer
         </span>
-        <p className="font-display text-2xl text-on-surface leading-tight mt-1">{formatDuration(todayTotal)}</p>
-        <p className="font-label text-[9px] uppercase tracking-wider text-tertiary mt-0.5">
+        <p className="font-display text-2xl text-white leading-tight mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          {formatDuration(todayTotal)}
+        </p>
+        <p className="font-label text-[9px] uppercase tracking-wider text-white/75 mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           Today &middot; resets at midnight
         </p>
         {state.running && (
-          <p className="font-body text-[10px] text-tertiary mt-1.5 flex items-center gap-1">
+          <p className="font-body text-[10px] text-white/75 mt-1.5 flex items-center gap-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
             <span className="material-symbols-outlined text-xs leading-none">info</span>
             Stops automatically after 10 min of inactivity
           </p>
@@ -63,8 +67,11 @@ export default function WorkoutTimerWidget() {
         {previousDays.length > 0 && (
           <ul className="flex flex-wrap gap-x-3 gap-y-1 mt-2" aria-label="Previous days">
             {previousDays.map((day) => (
-              <li key={day.date} className="font-label text-[9px] uppercase tracking-wider text-outline">
-                {day.label} <span className="text-tertiary">{formatDuration(day.ms)}</span>
+              <li
+                key={day.date}
+                className="font-label text-[9px] uppercase tracking-wider text-white/60 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+              >
+                {day.label} <span className="text-white/75">{formatDuration(day.ms)}</span>
               </li>
             ))}
           </ul>
@@ -74,7 +81,7 @@ export default function WorkoutTimerWidget() {
         type="button"
         onClick={handleToggle}
         aria-pressed={state.running}
-        className={`shrink-0 flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft transition-colors ${
+        className={`relative z-10 shrink-0 flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft transition-colors ${
           state.running
             ? "bg-error-container/40 text-error hover:bg-error-container/60"
             : "bg-primary-container text-on-primary-container hover:bg-secondary-container"

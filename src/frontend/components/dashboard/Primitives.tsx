@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 
 type Tone = "default" | "accent" | "alert";
 
@@ -20,6 +21,8 @@ export function StatCard({
   size = "lg",
   uppercase = false,
   icon,
+  image,
+  priority = false,
 }: {
   value: ReactNode;
   label: string;
@@ -27,18 +30,37 @@ export function StatCard({
   size?: "md" | "lg";
   uppercase?: boolean;
   icon?: string;
+  /** Optional background art (path under /public) — only the member dashboard's
+   * overview grid passes this; every other StatCard usage is unaffected. */
+  image?: string;
+  /** Preload the image instead of lazy-loading — only for cards visible on
+   * first paint with no scroll, so they never flash in after the frame. */
+  priority?: boolean;
 }) {
   return (
-    <div className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-1 transition-transform hover:-translate-y-0.5">
+    <div
+      className={`relative overflow-hidden p-5 shadow-soft rounded-2xl flex flex-col gap-1 transition-transform hover:-translate-y-0.5 ${image ? "bg-black" : "bg-surface-container-low"}`}
+    >
+      {image && <Image src={image} alt="" fill priority={priority} sizes="50vw" className="object-cover pointer-events-none" />}
       {icon && (
-        <span className={`material-symbols-outlined text-lg leading-none mb-1 ${toneClass(tone)}`}>{icon}</span>
+        <span
+          className={`relative z-10 material-symbols-outlined text-lg leading-none mb-1 ${toneClass(tone)} ${image ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" : ""}`}
+        >
+          {icon}
+        </span>
       )}
       <span
-        className={`font-display leading-none ${size === "md" ? "text-2xl" : "text-3xl"} ${uppercase ? "uppercase" : ""} ${toneClass(tone)}`}
+        className={`relative z-10 font-display leading-none ${size === "md" ? "text-2xl" : "text-3xl"} ${uppercase ? "uppercase" : ""} ${
+          tone === "default" && image ? "text-white" : toneClass(tone)
+        } ${image ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" : ""}`}
       >
         {value}
       </span>
-      <p className="font-label text-[10px] uppercase tracking-wider text-tertiary">{label}</p>
+      <p
+        className={`relative z-10 font-label text-[10px] uppercase tracking-wider ${image ? "text-white/75 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" : "text-tertiary"}`}
+      >
+        {label}
+      </p>
     </div>
   );
 }
