@@ -248,9 +248,10 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
           priority
           sizes="100vw"
           className="object-cover pointer-events-none"
+          style={{ filter: "hue-rotate(220deg) saturate(1) brightness(1.1)" }}
         />
         <span className="relative z-10 flex items-center gap-3 pl-3 pr-4 py-2.5">
-          <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
+          <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-sky-400">
             <span className="material-symbols-outlined text-xl leading-none">monitor_heart</span>
           </span>
           <span className="flex-1 min-w-0">

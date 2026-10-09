@@ -46,9 +46,17 @@ export default function WorkoutTimerWidget() {
 
   return (
     <div className="relative overflow-hidden bg-black p-5 shadow-soft rounded-2xl mb-6 flex items-center justify-between gap-4">
-      <Image src="/images/dashboard-stats/workout-timer.jpg" alt="" fill priority sizes="100vw" className="object-cover pointer-events-none" />
+      <Image
+        src="/images/dashboard-stats/workout-timer.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover pointer-events-none"
+        style={{ filter: "hue-rotate(200deg) saturate(1.15)" }}
+      />
       <div className="relative z-10 min-w-0">
-        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-blue-400 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           <span className="material-symbols-outlined text-base leading-none">timelapse</span>
           Workout Timer
         </span>
@@ -84,7 +92,7 @@ export default function WorkoutTimerWidget() {
         className={`relative z-10 shrink-0 flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl shadow-soft transition-colors ${
           state.running
             ? "bg-error-container/40 text-error hover:bg-error-container/60"
-            : "bg-primary-container text-on-primary-container hover:bg-secondary-container"
+            : "bg-blue-600 text-white hover:bg-blue-500"
         }`}
       >
         <span className="material-symbols-outlined text-lg leading-none">

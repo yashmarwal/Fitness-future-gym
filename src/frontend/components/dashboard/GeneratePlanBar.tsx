@@ -21,8 +21,16 @@ export default function GeneratePlanBar({ fitnessProfile }: { fitnessProfile: Fi
       onClick={() => router.push("/onboarding")}
       className="relative overflow-hidden bg-black w-full flex items-center gap-3 shadow-soft rounded-2xl px-4 py-3 mb-6 text-left"
     >
-      <Image src="/images/dashboard-stats/generate-plan.jpg" alt="" fill priority sizes="100vw" className="object-cover pointer-events-none" />
-      <span className="relative z-10 w-9 h-9 rounded-xl flex items-center justify-center bg-primary-container text-on-primary-container shrink-0">
+      <Image
+        src="/images/dashboard-stats/generate-plan.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover pointer-events-none"
+        style={{ filter: "hue-rotate(-46deg) saturate(0.55) brightness(1.35)" }}
+      />
+      <span className="relative z-10 w-9 h-9 rounded-xl flex items-center justify-center bg-pink-200 text-pink-950 shrink-0">
         <span className="material-symbols-outlined text-lg leading-none">auto_awesome</span>
       </span>
       <span className="relative z-10 flex-1 min-w-0">

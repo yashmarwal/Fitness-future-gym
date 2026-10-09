@@ -11,7 +11,7 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
   return (
     <Link
       href="/dashboard/progress"
-      className="relative overflow-hidden block bg-black p-5 shadow-soft rounded-2xl mb-6 hover:border-primary-container border border-transparent transition-colors"
+      className="relative overflow-hidden block bg-black p-5 shadow-soft rounded-2xl mb-6 hover:border-fuchsia-400 border border-transparent transition-colors"
     >
       <Image
         src="/images/dashboard-stats/muscle-progress.jpg"
@@ -20,9 +20,10 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
         priority
         sizes="100vw"
         className="object-cover pointer-events-none"
+        style={{ filter: "hue-rotate(-76deg) saturate(1) brightness(1.05)" }}
       />
       <div className="relative z-10 flex items-center justify-between mb-3">
-        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-fuchsia-400">
           <span className="material-symbols-outlined text-base leading-none">military_tech</span>
           Muscle Progress
         </span>

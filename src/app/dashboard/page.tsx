@@ -53,17 +53,24 @@ const GREETING_SUBLINES: Record<string, string> = {
 // cropped into these 10 individual files (see the crop script's row/column
 // boundary detection — not a plain even split, the source grid's cells
 // weren't perfectly uniform).
+// `filter`/`iconColor`: a per-card hue-rotate (same technique as the
+// Workout Timer and Generate Plan bars — recolors the existing art, no new
+// images) grouping cards by function so the color itself carries meaning
+// rather than being decorative: blue for training, green for nutrition,
+// cyan for recovery, purple/magenta for social & growth, gold for streaks,
+// teal for programs, slate for reference material. Beast Mode keeps the
+// original orange — it's the flagship feature, not part of the system.
 const QUICK_LINKS = [
   { href: "/dashboard/workouts?beastMode=open", label: "Beast Mode", category: "Beast Mode", icon: "bolt", image: "beast-mode", gated: true, featured: true },
-  { href: "/dashboard/playground", label: "Playground", category: "Community", icon: "group", image: "playground", gated: true, featured: true },
-  { href: "/dashboard/workouts", label: "Log A Workout", category: "Training", icon: "fitness_center", image: "log-workout", gated: true, featured: false },
-  { href: "/dashboard/plan", label: "Plan Workouts", category: "Planning", icon: "event_note", image: "plan-workouts", gated: true, featured: false },
-  { href: "/dashboard/nutrition", label: "Log Food", category: "Nutrition", icon: "restaurant", image: "log-food", gated: false, featured: false },
-  { href: "/dashboard/timer", label: "Rest Timer", category: "Recovery", icon: "timer", image: "rest-timer", gated: true, featured: false },
-  { href: "/dashboard/progress", label: "Muscle Progress", category: "Progress", icon: "military_tech", image: "muscle-progress", gated: false, featured: false },
-  { href: "/dashboard/streak", label: "Streak Tracker", category: "Consistency", icon: "local_fire_department", image: "streak-tracker", gated: false, featured: false },
-  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", category: "Programs", icon: "auto_awesome", image: "workout-templates", gated: true, featured: false },
-  { href: "/dashboard/exercises", label: "Exercise Library", category: "Reference", icon: "menu_book", image: "exercise-library", gated: false, featured: false },
+  { href: "/dashboard/playground", label: "Playground", category: "Community", icon: "group", image: "playground", gated: true, featured: true, filter: "hue-rotate(-85deg) saturate(1) brightness(1.1)", iconColor: "text-purple-400" },
+  { href: "/dashboard/workouts", label: "Log A Workout", category: "Training", icon: "fitness_center", image: "log-workout", gated: true, featured: false, filter: "hue-rotate(200deg) saturate(1.15)", iconColor: "text-blue-400" },
+  { href: "/dashboard/plan", label: "Plan Workouts", category: "Planning", icon: "event_note", image: "plan-workouts", gated: true, featured: false, filter: "hue-rotate(265deg)", iconColor: "text-violet-400" },
+  { href: "/dashboard/nutrition", label: "Log Food", category: "Nutrition", icon: "restaurant", image: "log-food", gated: false, featured: false, filter: "hue-rotate(114deg) brightness(1.1)", iconColor: "text-green-400" },
+  { href: "/dashboard/timer", label: "Rest Timer", category: "Recovery", icon: "timer", image: "rest-timer", gated: true, featured: false, filter: "hue-rotate(174deg) saturate(0.9) brightness(1.15)", iconColor: "text-cyan-400" },
+  { href: "/dashboard/progress", label: "Muscle Progress", category: "Progress", icon: "military_tech", image: "muscle-progress", gated: false, featured: false, filter: "hue-rotate(-76deg) brightness(1.05)", iconColor: "text-fuchsia-400" },
+  { href: "/dashboard/streak", label: "Streak Tracker", category: "Consistency", icon: "local_fire_department", image: "streak-tracker", gated: false, featured: false, filter: "hue-rotate(29deg) brightness(1.1)", iconColor: "text-amber-400" },
+  { href: "/dashboard/plan?tab=templates", label: "Workout Templates", category: "Programs", icon: "auto_awesome", image: "workout-templates", gated: true, featured: false, filter: "hue-rotate(159deg) saturate(0.95) brightness(1.05)", iconColor: "text-teal-400" },
+  { href: "/dashboard/exercises", label: "Exercise Library", category: "Reference", icon: "menu_book", image: "exercise-library", gated: false, featured: false, filter: "hue-rotate(194deg) saturate(0.4) brightness(1.1)", iconColor: "text-slate-400" },
 ];
 
 // Small badge shown on a gated tile/link when the member hasn't checked in
@@ -98,6 +105,8 @@ function QuickActionCard({
   featured,
   dim,
   priority = false,
+  filter,
+  iconColor = "text-primary-container",
 }: {
   href: string;
   icon: string;
@@ -109,6 +118,10 @@ function QuickActionCard({
   /** Preload instead of lazy-loading — only for cards visible on first
    * paint with no scroll, so they never flash in after the frame. */
   priority?: boolean;
+  /** CSS filter (hue-rotate/saturate/brightness) recoloring the shared art
+   * per-card — see the QUICK_LINKS comment above. */
+  filter?: string;
+  iconColor?: string;
 }) {
   return (
     <Link
@@ -134,10 +147,11 @@ function QuickActionCard({
           priority={priority}
           sizes="(max-width: 1024px) 50vw, 33vw"
           className="object-cover pointer-events-none"
+          style={filter ? { filter } : undefined}
         />
       )}
       <div className="relative z-10 h-full flex flex-col justify-between p-4">
-        <span className="material-symbols-outlined text-xl leading-none text-primary-container drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+        <span className={`material-symbols-outlined text-xl leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${iconColor}`}>
           {icon}
         </span>
         <div>
@@ -213,6 +227,8 @@ export default async function DashboardPage() {
           featured
           dim={!checkedIn}
           priority
+          filter="hue-rotate(-85deg) saturate(1) brightness(1.1)"
+          iconColor="text-purple-400"
         />
         <QuickActionCard
           href="/dashboard/workouts"
@@ -223,6 +239,8 @@ export default async function DashboardPage() {
           featured={false}
           dim={!checkedIn}
           priority
+          filter="hue-rotate(200deg) saturate(1.15)"
+          iconColor="text-blue-400"
         />
         <QuickActionCard
           href="/dashboard/bmi"
@@ -233,6 +251,8 @@ export default async function DashboardPage() {
           featured={false}
           dim={false}
           priority
+          filter="hue-rotate(150deg) saturate(0.9) brightness(1.1)"
+          iconColor="text-emerald-400"
         />
       </div>
       {!checkedIn && (
