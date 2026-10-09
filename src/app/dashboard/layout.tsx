@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { getMemberSession } from "@/backend/auth/session";
 import { getMemberById } from "@/backend/services/member";
 import DashboardHeader from "@/frontend/components/dashboard/DashboardHeader";
-import DashboardDesktopNav from "@/frontend/components/dashboard/DashboardDesktopNav";
 import DashboardTabBar from "@/frontend/components/dashboard/DashboardTabBar";
+import DesktopBlockedScreen from "@/frontend/components/dashboard/DesktopBlockedScreen";
 import RestTimerAlarmWatcher from "@/frontend/components/dashboard/RestTimerAlarmWatcher";
 import WorkoutTimerActivityWatcher from "@/frontend/components/dashboard/WorkoutTimerActivityWatcher";
 import CheckInCelebration from "@/frontend/components/dashboard/CheckInCelebration";
@@ -32,20 +32,28 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // background-color in globals.css) — a deliberate, dashboard-only
     // override, not a site-wide color change.
     <div className="flex flex-col min-h-screen bg-black">
-      {/* Watches the rest timer and shows the finish alarm no matter which
-          dashboard page is currently open — see the component's own
-          comment for why this can't live on the workouts page alone. */}
-      <RestTimerAlarmWatcher />
-      <WorkoutTimerActivityWatcher />
-      <CheckInCelebration />
-      <PlaygroundInviteWatcher />
-      <EnableNotificationsPrompt />
-      <DashboardHeader fullName={member.fullName} />
-      <DashboardDesktopNav />
-      <main className="flex-1 pb-20 lg:pb-8">
-        {children}
-      </main>
-      <DashboardTabBar />
+      {/* The real dashboard is mobile-only now — lg:hidden on this wrapper,
+          DesktopBlockedScreen (hidden lg:flex) below is the only thing a
+          wide viewport ever renders. DashboardDesktopNav, which used to
+          serve exactly that lg+ range, was deleted outright rather than
+          left mounted-but-dead — nothing can ever reach it once this
+          wrapper hides the entire tree it lived in. */}
+      <div className="lg:hidden flex flex-col min-h-screen">
+        {/* Watches the rest timer and shows the finish alarm no matter which
+            dashboard page is currently open — see the component's own
+            comment for why this can't live on the workouts page alone. */}
+        <RestTimerAlarmWatcher />
+        <WorkoutTimerActivityWatcher />
+        <CheckInCelebration />
+        <PlaygroundInviteWatcher />
+        <EnableNotificationsPrompt />
+        <DashboardHeader fullName={member.fullName} />
+        <main className="flex-1 pb-20">
+          {children}
+        </main>
+        <DashboardTabBar />
+      </div>
+      <DesktopBlockedScreen />
     </div>
   );
 }
