@@ -543,30 +543,37 @@ export default function MembersManager({ members }: { members: AdminMember[] }) 
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex gap-2">
+                      {/* Icon-only, not icon+label — with 9 other columns
+                          already in play, three full text buttons here
+                          (View/Edit/Delete) alone cost 300px+ and were the
+                          main reason this table needed horizontal scroll
+                          even after the page got more room. aria-label
+                          keeps it accessible; title adds a mouse tooltip
+                          for anyone who wants the label back. */}
+                      <div className="flex items-center gap-1">
                         <Link
                           href={`/admin-2G/members/${m.id}`}
                           aria-label="View member profile"
-                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
+                          title="View"
+                          className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm leading-none">person</span>
-                          View
+                          <span className="material-symbols-outlined text-base leading-none">person</span>
                         </Link>
                         <button
                           onClick={() => startEdit(m)}
                           aria-label="Edit member"
-                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
+                          title="Edit"
+                          className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-container/15 text-primary-container hover:bg-primary-container/25 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm leading-none">edit</span>
-                          Edit
+                          <span className="material-symbols-outlined text-base leading-none">edit</span>
                         </button>
                         <button
                           onClick={() => handleDelete(m.id)}
                           aria-label="Delete member"
-                          className="flex items-center gap-1 font-label text-[10px] uppercase px-3 py-2 rounded-lg bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
+                          title="Delete"
+                          className="flex items-center justify-center w-8 h-8 rounded-lg bg-error-container/40 text-error hover:bg-error-container/60 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm leading-none">delete</span>
-                          Delete
+                          <span className="material-symbols-outlined text-base leading-none">delete</span>
                         </button>
                       </div>
                     </td>

@@ -44,6 +44,10 @@ function isActive(pathname: string, href: string, exact = false): boolean {
 // circular AI shortcut alongside it, matching the reference layout (a main
 // 4-up bar with one separate action circle to its right) rather than
 // cramming a 5th item into the bar itself.
+//
+// lg:hidden — mobile/tablet only now that AdminSidebar covers desktop,
+// same mutually-exclusive split the member dashboard already has between
+// DashboardTabBar (lg:hidden) and DashboardDesktopNav (hidden lg:flex).
 export default function AdminTabBar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -97,7 +101,7 @@ export default function AdminTabBar() {
   return (
     <nav
       ref={navRef}
-      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md flex items-center gap-3"
+      className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md flex items-center gap-3"
     >
       <div
         className={`relative flex-1 grid grid-cols-4 overflow-hidden bg-white/6 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-full ${GLASS_SHADOW} px-1 py-1`}

@@ -158,7 +158,12 @@ export default function AccessControlManager({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col gap-10">
+    // grid lg:grid-cols-2 — matches this page's own loading.tsx skeleton,
+    // which already promised two side-by-side columns on desktop that this
+    // component never actually delivered (it was flex-col at every
+    // breakpoint). gap-10 preserved as the vertical gap between the two
+    // sections when stacked below lg.
+    <div className="grid gap-10 lg:grid-cols-2 lg:gap-x-6 lg:items-start">
       <div>
         <div className="flex items-center gap-3 mb-3">
           <span className="material-symbols-outlined text-lg leading-none text-primary-container">warning</span>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/backend/auth/session";
 import AdminNav from "@/frontend/components/admin/AdminNav";
+import AdminSidebar from "@/frontend/components/admin/AdminSidebar";
 import AdminTabBar from "@/frontend/components/admin/AdminTabBar";
 import CommandPalette from "@/frontend/components/admin/CommandPalette";
 
@@ -54,14 +55,37 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
           throughout the admin panel (nav tabs, filter pills, the members
           table) — those still scroll within themselves; this only clips
           whatever manages to escape all the way up past them. */}
-      {/* pb-24, not the member dashboard's pb-20 lg:pb-8 — AdminTabBar
-          replaces the old top pill nav outright (no separate desktop nav
-          to fall back to), so unlike DashboardTabBar (mobile-only,
-          lg:hidden) this fixed bar is on screen at every breakpoint and
-          content needs clearance from it everywhere, not just on mobile. */}
-      <main className="flex-1 flex flex-col min-h-0 px-gutter-mobile lg:px-gutter-desktop py-8 pb-24 max-w-(--container-max) mx-auto w-full overflow-x-hidden">
-        {children}
-      </main>
+      {/* pb-24 lg:pb-8 — same split as the member dashboard's own
+          pb-20 lg:pb-8: AdminTabBar is mobile-only now (lg:hidden, see
+          below), so the floating-bar clearance only needs to apply below
+          `lg`. On desktop, AdminSidebar (fixed, lg:w-60) replaces it.
+
+          The lg:pl-60 reserving the sidebar's width lives on THIS wrapper,
+          not on <main> itself — <main>'s own w-full needs to resolve
+          against an already-narrowed containing block for the sidebar
+          offset to work at all. Putting it there instead (lg:ml-60 on a
+          still-w-full <main>) doesn't reduce the width <main> computes
+          100% against, so margin + full width together push its right
+          edge straight past the viewport — exactly the right-side overflow
+          this replaced. flex-1 min-h-0 here takes over the role <main>
+          used to have directly as the outer flex-col's one flexible row;
+          <main> now gets that same resolved height back via h-full.
+
+          lg:max-w-none on <main> — the site-wide max-(--container-max)
+          (1280px) is right for prose/marketing pages, but combined with
+          the sidebar's 240px it left data tables (Members' 9 columns,
+          chiefly) LESS room than before the sidebar existed on common
+          laptop widths, tipping them into their own horizontal-scroll
+          fallback. Admin is a data-dense panel, not a reading page — pages
+          that genuinely want a narrower column (MemberProfileView) already
+          cap themselves tighter from inside, so lifting the cap here only
+          ever gives every other admin page MORE room, never less. */}
+      <div className="flex-1 min-h-0 lg:pl-60">
+        <main className="h-full flex flex-col min-h-0 px-gutter-mobile lg:px-gutter-desktop py-8 pb-24 lg:pb-8 max-w-(--container-max) lg:max-w-none mx-auto lg:mx-0 w-full overflow-x-hidden">
+          {children}
+        </main>
+      </div>
+      <AdminSidebar />
       <AdminTabBar />
       <CommandPalette />
     </div>

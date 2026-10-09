@@ -109,7 +109,7 @@ export default function MemberProfileView({
   const recentAttendance = attendanceTimestamps.slice(0, RECENT_ATTENDANCE_SHOWN);
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl">
+    <div className="flex flex-col gap-6 max-w-4xl lg:max-w-6xl">
       <Link
         href="/admin-2G/members"
         className="inline-flex items-center gap-1.5 font-label text-xs uppercase tracking-wider text-tertiary hover:text-on-surface transition-colors w-fit"
@@ -243,128 +243,139 @@ export default function MemberProfileView({
         )}
       </div>
 
-      {/* Internal notes — private, never shown to the member */}
-      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-lg leading-none text-primary-container">sticky_note_2</span>
-          <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">Internal Notes</h2>
-          <span className="font-label text-[9px] uppercase tracking-wider text-outline">Staff-only — never shown to the member</span>
-        </div>
-        <textarea
-          value={notes}
-          onChange={(e) => {
-            setNotes(e.target.value);
-            setNotesSaved(false);
-          }}
-          rows={3}
-          placeholder="e.g. Asked about a locker, prefers evening slot..."
-          className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body text-sm px-3 py-2.5 outline-none focus:border-primary-container resize-none"
-        />
-        <div className="flex items-center gap-3">
-          <button
-            onClick={saveNotes}
-            disabled={savingNotes || notes === (member.notes ?? "")}
-            className="w-fit rounded-lg bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
-            {savingNotes ? "Saving..." : "Save Notes"}
-          </button>
-          {notesSaved && <span className="font-label text-[10px] uppercase text-primary-container">Saved</span>}
-        </div>
-      </div>
-
-      {/* Trial history, if this member ever registered for one */}
-      {trial && (
-        <div className={`${GLASS_CARD} p-6 flex flex-col gap-2`}>
-          <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
-            <span className="material-symbols-outlined text-lg leading-none text-primary-container">person_add</span>
-            Trial History
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 font-body text-sm mt-1">
-            <div>
-              <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Code</p>
-              <p className="text-primary-container">{trial.trialCode}</p>
+      {/* Notes/Trial and Attendance/Payments pair up into two columns at
+          lg — on mobile this div contributes no layout of its own
+          (flex-col is the default, same gap-6 as every other top-level
+          card here), so the four cards still stack in the exact same
+          order/spacing as before; only lg:flex-row changes anything. */}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="flex-1 flex flex-col gap-6 min-w-0">
+          {/* Internal notes — private, never shown to the member */}
+          <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg leading-none text-primary-container">sticky_note_2</span>
+              <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold">Internal Notes</h2>
+              <span className="font-label text-[9px] uppercase tracking-wider text-outline">Staff-only — never shown to the member</span>
             </div>
-            <div>
-              <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Status</p>
-              <p className="text-on-surface uppercase">{trial.status}</p>
-            </div>
-            <div>
-              <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Shift</p>
-              <p className="text-on-surface uppercase">{trial.shift}</p>
-            </div>
-            <div>
-              <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Window</p>
-              <p className="text-on-surface">
-                {formatDate(trial.startsAt)} → {formatDate(trial.endsAt)}
-              </p>
+            <textarea
+              value={notes}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setNotesSaved(false);
+              }}
+              rows={3}
+              placeholder="e.g. Asked about a locker, prefers evening slot..."
+              className="rounded-xl bg-surface-container border border-white/10 text-on-surface font-body text-sm px-3 py-2.5 outline-none focus:border-primary-container resize-none"
+            />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={saveNotes}
+                disabled={savingNotes || notes === (member.notes ?? "")}
+                className="w-fit rounded-lg bg-primary-container hover:bg-secondary-container text-on-primary-container font-label text-xs uppercase font-bold px-4 py-2 shadow-soft disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              >
+                {savingNotes ? "Saving..." : "Save Notes"}
+              </button>
+              {notesSaved && <span className="font-label text-[10px] uppercase text-primary-container">Saved</span>}
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Attendance summary */}
-      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
-            <span className="material-symbols-outlined text-lg leading-none text-primary-container">calendar_month</span>
-            Attendance
-          </h2>
-          <span className="font-label text-[10px] uppercase tracking-wider text-tertiary">
-            {attendanceTimestamps.length} check-in{attendanceTimestamps.length === 1 ? "" : "s"} in the last 30 days
-          </span>
-        </div>
-        {recentAttendance.length === 0 ? (
-          <p className="font-body text-sm text-tertiary">No check-ins in the last 30 days.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-white/10">
-            {recentAttendance.map((ts) => (
-              <li key={ts} className="py-2 font-body text-sm text-on-surface flex items-center gap-2">
-                <span className="material-symbols-outlined text-base leading-none text-primary-container">check_circle</span>
-                {formatDateTime(ts)}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Payment history */}
-      <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
-            <span className="material-symbols-outlined text-lg leading-none text-primary-container">payments</span>
-            Payment History
-          </h2>
-          <span className="font-label text-[10px] uppercase tracking-wider text-primary-container">
-            Total Paid: ₹{totalPaid.toLocaleString("en-IN")}
-          </span>
-        </div>
-        {payments.length === 0 ? (
-          <p className="font-body text-sm text-tertiary">No payments recorded yet.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-white/10">
-            {payments.map((p) => (
-              <li key={p.id} className="py-3 flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div className="flex items-center gap-3">
-                    <span className="font-display text-lg text-primary-container">₹{p.amount}</span>
-                    <span className="font-label text-[10px] uppercase text-tertiary">
-                      {p.method} &middot; {p.status} &middot; {formatDate(p.createdAt)}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setEditingPaymentId(editingPaymentId === p.id ? null : p.id)}
-                    className="font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
-                  >
-                    {editingPaymentId === p.id ? "Cancel" : "Edit"}
-                  </button>
+          {/* Trial history, if this member ever registered for one */}
+          {trial && (
+            <div className={`${GLASS_CARD} p-6 flex flex-col gap-2`}>
+              <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg leading-none text-primary-container">person_add</span>
+                Trial History
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 font-body text-sm mt-1">
+                <div>
+                  <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Code</p>
+                  <p className="text-primary-container">{trial.trialCode}</p>
                 </div>
-                {editingPaymentId === p.id && (
-                  <EditPaymentForm payment={p} onSaved={() => setEditingPaymentId(null)} onCancel={() => setEditingPaymentId(null)} />
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+                <div>
+                  <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Status</p>
+                  <p className="text-on-surface uppercase">{trial.status}</p>
+                </div>
+                <div>
+                  <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Shift</p>
+                  <p className="text-on-surface uppercase">{trial.shift}</p>
+                </div>
+                <div>
+                  <p className="font-label text-[9px] uppercase tracking-widest text-outline mb-0.5">Window</p>
+                  <p className="text-on-surface">
+                    {formatDate(trial.startsAt)} → {formatDate(trial.endsAt)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 flex flex-col gap-6 min-w-0">
+          {/* Attendance summary */}
+          <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg leading-none text-primary-container">calendar_month</span>
+                Attendance
+              </h2>
+              <span className="font-label text-[10px] uppercase tracking-wider text-tertiary">
+                {attendanceTimestamps.length} check-in{attendanceTimestamps.length === 1 ? "" : "s"} in the last 30 days
+              </span>
+            </div>
+            {recentAttendance.length === 0 ? (
+              <p className="font-body text-sm text-tertiary">No check-ins in the last 30 days.</p>
+            ) : (
+              <ul className="flex flex-col divide-y divide-white/10">
+                {recentAttendance.map((ts) => (
+                  <li key={ts} className="py-2 font-body text-sm text-on-surface flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base leading-none text-primary-container">check_circle</span>
+                    {formatDateTime(ts)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Payment history */}
+          <div className={`${GLASS_CARD} p-6 flex flex-col gap-3`}>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="font-label text-sm uppercase tracking-widest text-on-surface font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg leading-none text-primary-container">payments</span>
+                Payment History
+              </h2>
+              <span className="font-label text-[10px] uppercase tracking-wider text-primary-container">
+                Total Paid: ₹{totalPaid.toLocaleString("en-IN")}
+              </span>
+            </div>
+            {payments.length === 0 ? (
+              <p className="font-body text-sm text-tertiary">No payments recorded yet.</p>
+            ) : (
+              <ul className="flex flex-col divide-y divide-white/10">
+                {payments.map((p) => (
+                  <li key={p.id} className="py-3 flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-3">
+                        <span className="font-display text-lg text-primary-container">₹{p.amount}</span>
+                        <span className="font-label text-[10px] uppercase text-tertiary">
+                          {p.method} &middot; {p.status} &middot; {formatDate(p.createdAt)}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setEditingPaymentId(editingPaymentId === p.id ? null : p.id)}
+                        className="font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
+                      >
+                        {editingPaymentId === p.id ? "Cancel" : "Edit"}
+                      </button>
+                    </div>
+                    {editingPaymentId === p.id && (
+                      <EditPaymentForm payment={p} onSaved={() => setEditingPaymentId(null)} onCancel={() => setEditingPaymentId(null)} />
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
