@@ -39,7 +39,7 @@ export function StatCard({
 }) {
   return (
     <div
-      className={`relative overflow-hidden p-5 shadow-soft rounded-2xl flex flex-col gap-1 transition-transform hover:-translate-y-0.5 ${image ? "bg-black" : "bg-surface-container-low"}`}
+      className={`relative overflow-hidden p-5 shadow-soft rounded-2xl flex flex-col gap-1 transition-transform hover:-translate-y-0.5 ${image ? "bg-black" : "card-corner-glow bg-surface-container-low"}`}
     >
       {image && <Image src={image} alt="" fill priority={priority} sizes="50vw" className="object-cover pointer-events-none" />}
       {icon && (

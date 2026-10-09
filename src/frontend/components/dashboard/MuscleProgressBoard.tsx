@@ -82,8 +82,8 @@ export default function MuscleProgressBoard({
             <button
               key={p.category}
               onClick={() => setExpanded(isExpanded ? null : p.category)}
-              className={`text-left bg-surface-container-low p-4 shadow-soft rounded-2xl border transition-all hover:-translate-y-0.5 ${
-                isExpanded ? "col-span-2 border-primary-container" : "border-transparent"
+              className={`relative overflow-hidden text-left bg-surface-container-low p-4 shadow-soft rounded-2xl border transition-all hover:-translate-y-0.5 ${
+                isExpanded ? "col-span-2 card-corner-glow card-glow-border" : "border-transparent"
               } ${justLeveled ? "animate-[notif-glow_1.4s_ease-in-out_3]" : ""}`}
             >
               <div className="flex items-center justify-between mb-2">

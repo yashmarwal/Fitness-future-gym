@@ -23,7 +23,7 @@ export default async function MembershipCardPage() {
         Digital Membership Card
       </h1>
 
-      <div className="bg-surface-container-low border border-surface-variant/40 shadow-soft-lg rounded-3xl relative overflow-hidden">
+      <div className="bg-surface-container-low border card-glow-border card-corner-glow shadow-soft-lg rounded-3xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-primary-container" />
 
         <div className="p-6 flex flex-col gap-6">

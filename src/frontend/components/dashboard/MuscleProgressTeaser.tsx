@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { MuscleProgress } from "@/backend/services/muscleProgress";
 import { CATEGORY_ICON, tierClasses } from "@/frontend/lib/muscleRankStyle";
 
@@ -10,16 +11,26 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
   return (
     <Link
       href="/dashboard/progress"
-      className="block bg-surface-container-low p-5 shadow-soft rounded-2xl mb-6 hover:border-primary-container border border-transparent transition-colors"
+      className="relative overflow-hidden block bg-black p-5 shadow-soft rounded-2xl mb-6 hover:border-primary-container border border-transparent transition-colors"
     >
-      <div className="flex items-center justify-between mb-3">
+      <Image
+        src="/images/dashboard-stats/muscle-progress.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover pointer-events-none"
+      />
+      <div className="relative z-10 flex items-center justify-between mb-3">
         <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
           <span className="material-symbols-outlined text-base leading-none">military_tech</span>
           Muscle Progress
         </span>
-        <span className="material-symbols-outlined text-base text-tertiary leading-none">arrow_forward</span>
+        <span className="material-symbols-outlined text-base text-white/75 leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          arrow_forward
+        </span>
       </div>
-      <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
+      <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-0.5">
         {progress.map((p) => {
           const tier = tierClasses(p.rankIndex);
           return (
@@ -32,7 +43,7 @@ export default function MuscleProgressTeaser({ progress }: { progress: MusclePro
                   {CATEGORY_ICON[p.category] ?? "fitness_center"}
                 </span>
               </span>
-              <span className="font-label text-[8px] uppercase tracking-wide text-tertiary truncate w-full text-center">
+              <span className="font-label text-[8px] uppercase tracking-wide text-white/75 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate w-full text-center">
                 {p.category}
               </span>
             </div>

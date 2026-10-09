@@ -163,8 +163,9 @@ export default function WorkoutLogForm({
       <RestTimerBar />
 
       {todaysPlan && (
-        <div className="bg-surface-container-low p-4 shadow-soft rounded-2xl flex flex-col gap-2">
-          <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+        <div className="relative overflow-hidden card-corner-glow bg-surface-container-low p-4 shadow-soft rounded-2xl flex flex-col gap-2">
+          <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+            <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
             <span className="material-symbols-outlined text-base leading-none">event_note</span>
             Today&apos;s Plan — {todaysPlan.day}
             {todaysPlan.focus ? ` (${todaysPlan.focus})` : ""}
@@ -197,8 +198,12 @@ export default function WorkoutLogForm({
         </button>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-3">
-        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+      <form
+        onSubmit={handleSubmit}
+        className="relative overflow-hidden card-corner-glow card-glow-border bg-surface-container-low p-5 shadow-soft rounded-2xl border flex flex-col gap-3"
+      >
+        <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+          <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
           <span className="material-symbols-outlined text-base leading-none">fitness_center</span>
           Log A Set
         </span>
@@ -310,7 +315,7 @@ export function NumberStepper({
   return (
     <label className="flex flex-col gap-1">
       <span className="font-label text-[9px] uppercase tracking-wider text-outline">{label}</span>
-      <div className="flex items-stretch rounded-xl overflow-hidden border border-surface-variant">
+      <div className="flex items-stretch rounded-xl overflow-hidden border border-primary-container/40">
         <button
           type="button"
           onClick={() => step(-1)}
@@ -347,7 +352,7 @@ export function WeightStepper({ value, onChange }: { value: string; onChange: (v
   return (
     <label className="flex flex-col gap-1">
       <span className="font-label text-[9px] uppercase tracking-wider text-outline">Weight (kg)</span>
-      <div className="flex items-stretch rounded-xl overflow-hidden border border-surface-variant">
+      <div className="flex items-stretch rounded-xl overflow-hidden border border-primary-container/40">
         <button
           type="button"
           onClick={() => step(-2.5)}

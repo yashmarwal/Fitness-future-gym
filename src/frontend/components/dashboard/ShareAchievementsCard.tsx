@@ -66,9 +66,10 @@ export default function ShareAchievementsCard() {
   }
 
   return (
-    <div className="bg-surface-container-low shadow-soft rounded-2xl p-5 flex flex-col gap-4">
+    <div className="relative overflow-hidden card-corner-glow card-glow-border bg-surface-container-low shadow-soft rounded-2xl border p-5 flex flex-col gap-4">
       <div>
-        <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+        <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+          <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
           <span className="material-symbols-outlined text-base leading-none">ios_share</span>
           Share Your Achievements
         </span>

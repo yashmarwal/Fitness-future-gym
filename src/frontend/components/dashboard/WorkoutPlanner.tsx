@@ -196,7 +196,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Plan name (e.g. Push Pull Legs)"
-          className="rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
+          className="rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-4 py-3 outline-none focus:border-primary-container"
         />
 
         <div className="flex flex-col gap-4">
@@ -365,7 +365,7 @@ export default function WorkoutPlanner({ plans: initialPlans }: { plans: Workout
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {plans.map((plan) => (
-            <div key={plan.id} className="bg-surface-container-low shadow-soft rounded-2xl p-5">
+            <div key={plan.id} className="relative overflow-hidden card-corner-glow bg-surface-container-low shadow-soft rounded-2xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-display text-lg text-on-surface uppercase tracking-wide">{plan.name}</h3>
                 <div className="flex gap-2">

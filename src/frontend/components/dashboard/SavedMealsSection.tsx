@@ -237,8 +237,9 @@ export default function SavedMealsSection({
   const mealsInCategory = savedMeals.filter((m) => m.category === activeCategory);
 
   return (
-    <div className="bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-3 mb-6">
-      <span className="flex items-center gap-1.5 font-label text-xs uppercase tracking-widest text-primary-container">
+    <div className="relative overflow-hidden card-corner-glow bg-surface-container-low p-5 shadow-soft rounded-2xl flex flex-col gap-3 mb-6">
+      <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+        <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
         <span className="material-symbols-outlined text-base leading-none">bookmark</span>
         Saved Meals
       </span>
@@ -271,7 +272,7 @@ export default function SavedMealsSection({
             return (
               <div
                 key={meal.id}
-                className="bg-surface-container border border-surface-variant rounded-xl overflow-hidden"
+                className="bg-surface-container border border-surface-variant border-l-2 border-l-primary-container rounded-xl overflow-hidden"
               >
                 <div className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high transition-colors">
                   <button
@@ -344,7 +345,7 @@ export default function SavedMealsSection({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Meal name, e.g. My Usual Breakfast"
-            className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2.5 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-4 py-2.5 outline-none focus:border-primary-container"
           />
 
           <div className="flex flex-wrap gap-2">
@@ -444,7 +445,7 @@ export default function SavedMealsSection({
                 onFocus={() => itemSearch.results.length > 0 && itemSearch.setShowResults(true)}
                 onBlur={() => setTimeout(() => itemSearch.setShowResults(false), 150)}
                 placeholder="e.g. Banana — start typing to look up calories"
-                className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-4 py-2.5 outline-none focus:border-primary-container"
+                className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-4 py-2.5 outline-none focus:border-primary-container"
               />
               {itemSearch.searching && (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 font-label text-[9px] uppercase text-tertiary">
@@ -503,28 +504,28 @@ export default function SavedMealsSection({
                 value={itemSearch.calories}
                 onChange={(e) => itemSearch.handleMacroFieldChange(itemSearch.setCalories, e.target.value)}
                 placeholder="Kcal"
-                className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
+                className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
               />
               <input
                 type="number"
                 value={itemSearch.proteinG}
                 onChange={(e) => itemSearch.handleMacroFieldChange(itemSearch.setProteinG, e.target.value)}
                 placeholder="Protein"
-                className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
+                className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
               />
               <input
                 type="number"
                 value={itemSearch.carbsG}
                 onChange={(e) => itemSearch.handleMacroFieldChange(itemSearch.setCarbsG, e.target.value)}
                 placeholder="Carbs"
-                className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
+                className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
               />
               <input
                 type="number"
                 value={itemSearch.fatG}
                 onChange={(e) => itemSearch.handleMacroFieldChange(itemSearch.setFatG, e.target.value)}
                 placeholder="Fat"
-                className="w-full rounded-xl bg-surface-container-low border border-surface-variant text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
+                className="w-full rounded-xl bg-surface-container-low border border-primary-container/40 text-on-surface font-body px-2 py-2.5 text-sm outline-none focus:border-primary-container"
               />
             </div>
             {itemError && <p className="font-body text-xs text-error">{itemError}</p>}
@@ -562,9 +563,9 @@ export default function SavedMealsSection({
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="flex items-center justify-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2.5 rounded-xl bg-surface-container border border-dashed border-surface-variant hover:border-primary-container text-tertiary hover:text-on-surface transition-colors"
+          className="flex items-center justify-center gap-1.5 font-label text-xs uppercase font-bold px-4 py-2.5 rounded-xl bg-surface-container border border-dashed border-surface-variant border-l-2 border-l-primary-container hover:border-primary-container text-tertiary hover:text-on-surface transition-colors"
         >
-          <span className="material-symbols-outlined text-sm leading-none">add</span>
+          <span className="material-symbols-outlined text-sm leading-none text-primary-container">add</span>
           Save A New Meal
         </button>
       )}

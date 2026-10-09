@@ -147,6 +147,23 @@
 @utility shadow-soft { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 28px -10px rgba(0, 0, 0, 0.5); }
 @utility shadow-soft-lg { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 24px 48px -12px rgba(0, 0, 0, 0.6); }
 
+/* A faint brand-orange radial glow pinned to a card's top-right corner —
+   the CSS equivalent of the illustrated card-art backgrounds used
+   elsewhere on the member dashboard, for pages where a real image doesn't
+   fit (data-heavy forms/lists). Deliberately dim (0.22 peak opacity) so it
+   reads as ambient depth, not another glowing-everything "AI slop" card. */
+@utility card-corner-glow {
+  background-image: radial-gradient(120% 120% at 100% 0%, rgba(255, 90, 31, 0.22) 0%, rgba(255, 90, 31, 0.08) 35%, transparent 65%);
+}
+
+/* Same recipe as card-highlight-cycle's lit state (see its keyframes
+   below), used statically here for a card that should always read as the
+   "active" one on the page rather than cycling through a row of peers. */
+@utility card-glow-border {
+  border-color: var(--color-primary-container);
+  box-shadow: 0 0 20px 1px rgba(255, 90, 31, 0.3);
+}
+
 html,
 body {
   margin: 0;

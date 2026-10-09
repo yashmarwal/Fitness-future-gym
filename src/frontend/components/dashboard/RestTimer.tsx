@@ -59,8 +59,10 @@ export default function RestTimer() {
       </div>
 
       <div
-        className={`w-full aspect-square max-w-xs flex flex-col items-center justify-center shadow-soft rounded-3xl mb-6 ${
-          state.alarming ? "bg-primary-container animate-pulse" : "bg-surface-container-low"
+        className={`relative overflow-hidden w-full aspect-square max-w-xs flex flex-col items-center justify-center shadow-soft rounded-3xl border mb-6 ${
+          state.alarming
+            ? "bg-primary-container animate-pulse border-transparent"
+            : "card-corner-glow card-glow-border bg-surface-container-low"
         }`}
       >
         <span

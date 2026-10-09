@@ -50,7 +50,7 @@ export default async function ExerciseGuidePage({
       </div>
 
       {!category && !q ? (
-        <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
+        <div className="relative overflow-hidden card-corner-glow bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
           Pick a category above or search to see exercises.
         </div>
       ) : (

@@ -31,7 +31,7 @@ export default function WorkoutTimerBar() {
   const todayTotal = getTodayMs(state, now);
 
   return (
-    <div className="shadow-soft rounded-2xl mb-4 flex flex-col gap-1.5 px-4 py-3 bg-surface-container-low">
+    <div className="relative overflow-hidden card-corner-glow shadow-soft rounded-2xl mb-4 flex flex-col gap-1.5 px-4 py-3 bg-surface-container-low">
       <div className="flex items-center gap-2.5">
         <span className="material-symbols-outlined text-xl leading-none shrink-0 text-primary-container">timelapse</span>
         <span className="font-display text-3xl tabular-nums leading-none shrink-0 text-primary-container">{formatDuration(todayTotal)}</span>

@@ -317,7 +317,7 @@ export default function ExerciseSearchField({
           aria-autocomplete="list"
           aria-activedescendant={showing && activeIndex >= 0 ? optionId(activeIndex) : undefined}
           // 16px on phones: anything smaller makes iOS Safari zoom the page in on focus.
-          className={`w-full rounded-xl border border-surface-variant text-on-surface font-body outline-none focus:border-primary-container placeholder:text-outline/70 ${
+          className={`w-full rounded-xl border border-primary-container/40 text-on-surface font-body outline-none focus:border-primary-container placeholder:text-outline/70 ${
             compact ? "bg-surface-container-low pl-8 pr-8 py-2 text-base sm:text-sm" : "bg-surface-container pl-10 pr-10 py-3"
           }`}
         />

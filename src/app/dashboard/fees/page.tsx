@@ -15,7 +15,7 @@ export default async function FeesPage() {
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-md mx-auto">
       <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-6">Fee Status</h1>
 
-      <div className="bg-surface-container-low p-6 shadow-soft rounded-2xl border border-surface-variant/40 flex flex-col gap-4">
+      <div className="relative overflow-hidden card-corner-glow card-glow-border bg-surface-container-low p-6 shadow-soft rounded-2xl border flex flex-col gap-4">
         <div className="flex justify-between">
           <span className="font-label text-[10px] uppercase tracking-widest text-outline">Amount Due</span>
           <span className="font-display text-2xl text-primary-container">

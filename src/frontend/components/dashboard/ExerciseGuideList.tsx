@@ -83,7 +83,7 @@ function ExerciseRow({ entry }: { entry: ExerciseGuideEntry }) {
 export default function ExerciseGuideList({ results }: { results: ExerciseGuideEntry[] }) {
   if (results.length === 0) {
     return (
-      <div className="bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
+      <div className="relative overflow-hidden card-corner-glow bg-surface-container-low rounded-2xl shadow-soft py-8 px-4 text-center font-body text-sm text-tertiary">
         No exercises match — try a different search or category.
       </div>
     );

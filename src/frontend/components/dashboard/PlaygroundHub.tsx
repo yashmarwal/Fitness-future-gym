@@ -153,8 +153,11 @@ export default function PlaygroundHub({
         <p className="font-body text-xs text-tertiary">You&apos;re discoverable and challengeable by any checked-in member right now.</p>
       </div>
 
-      <div className="bg-surface-container-low p-4 rounded-2xl shadow-soft flex flex-col gap-3">
-        <span className="font-label text-xs uppercase tracking-widest text-primary-container">New Challenge</span>
+      <div className="relative overflow-hidden card-corner-glow card-glow-border bg-surface-container-low p-4 rounded-2xl shadow-soft border flex flex-col gap-3">
+        <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+          <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
+          New Challenge
+        </span>
 
         <div className="flex flex-col gap-1">
           <label className="font-label text-[9px] uppercase tracking-wider text-outline">Room Name</label>
@@ -164,7 +167,7 @@ export default function PlaygroundHub({
             placeholder="e.g. Friday Night Showdown"
             maxLength={40}
             required
-            className="w-full rounded-xl bg-surface-container border border-surface-variant text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
+            className="w-full rounded-xl bg-surface-container border border-primary-container/40 text-on-surface font-body px-3 py-2.5 outline-none focus:border-primary-container"
           />
         </div>
 
@@ -416,7 +419,7 @@ function RoomView({ roomId, myMemberId, onExit }: { roomId: string; myMemberId: 
         </div>
       ) : (
         <div className="flex flex-col gap-5 animate-fade-in">
-          <div className="relative bg-surface-container-low p-5 rounded-2xl shadow-soft flex flex-col items-center gap-2 text-center overflow-hidden">
+          <div className="relative card-corner-glow card-glow-border bg-surface-container-low p-5 rounded-2xl shadow-soft border flex flex-col items-center gap-2 text-center overflow-hidden">
             <div className="flex items-center gap-2">
               {room.status === "active" && (
                 <span className="relative flex h-2 w-2">
@@ -728,8 +731,11 @@ function LogSetForm({ room, onLogged }: { room: RoomDetail; onLogged: () => void
   }
 
   return (
-    <div className="bg-surface-container-low p-4 rounded-2xl shadow-soft flex flex-col gap-3">
-      <span className="font-label text-xs uppercase tracking-widest text-primary-container">Log A Set</span>
+    <div className="relative overflow-hidden card-corner-glow bg-surface-container-low p-4 rounded-2xl shadow-soft flex flex-col gap-3">
+      <span className="flex items-center gap-2 font-label text-xs uppercase tracking-widest text-primary-container">
+        <span className="w-1 h-4 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
+        Log A Set
+      </span>
 
       {room.mode === "common_exercise" ? (
         <div className="flex items-center gap-2 bg-surface-container px-3 py-2.5 rounded-xl">

@@ -95,7 +95,7 @@ export default async function AchievementsPage() {
       <div className="flex flex-col gap-2">
         <Link
           href="/dashboard/records"
-          className="flex items-center justify-between gap-3 bg-surface-container-low p-4 shadow-soft rounded-2xl hover:border-primary-container border border-transparent transition-colors"
+          className="relative overflow-hidden card-corner-glow flex items-center justify-between gap-3 bg-surface-container-low p-4 shadow-soft rounded-2xl hover:border-primary-container border border-transparent transition-colors"
         >
           <span className="flex items-center gap-2.5 font-label text-xs uppercase tracking-wide text-on-surface">
             <span className="material-symbols-outlined text-lg leading-none text-primary-container">emoji_events</span>
@@ -105,7 +105,7 @@ export default async function AchievementsPage() {
         </Link>
         <Link
           href="/dashboard/progress"
-          className="flex items-center justify-between gap-3 bg-surface-container-low p-4 shadow-soft rounded-2xl hover:border-primary-container border border-transparent transition-colors"
+          className="relative overflow-hidden card-corner-glow flex items-center justify-between gap-3 bg-surface-container-low p-4 shadow-soft rounded-2xl hover:border-primary-container border border-transparent transition-colors"
         >
           <span className="flex items-center gap-2.5 font-label text-xs uppercase tracking-wide text-on-surface">
             <span className="material-symbols-outlined text-lg leading-none text-primary-container">military_tech</span>

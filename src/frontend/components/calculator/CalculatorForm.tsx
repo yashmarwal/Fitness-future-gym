@@ -47,6 +47,13 @@ export default function CalculatorForm({
   // rather than repeating the ternary at every call site below.
   const cardShadow = dashboardStyle ? "shadow-soft" : "shadow-hard";
   const cardRadius = dashboardStyle ? "rounded-2xl" : "";
+  const cardGlow = dashboardStyle ? "card-corner-glow" : "";
+  // Full glow-border reserved for the macro card alone — it's the page's
+  // one actual "hero" result (the actionable target numbers), the other
+  // three cards get the subtler corner glow only. Overrides the plain
+  // border-surface-variant/40 these cards otherwise all share, so the two
+  // border-color utilities never have to fight over cascade order.
+  const heroCardGlow = dashboardStyle ? "card-corner-glow card-glow-border" : "border-surface-variant/40";
   const fieldRadius = dashboardStyle ? "rounded-xl" : "";
   const chipRadius = dashboardStyle ? "rounded-full" : "";
   const subCardRadius = dashboardStyle ? "rounded-xl" : "";
@@ -119,7 +126,7 @@ export default function CalculatorForm({
   return (
     <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
       {/* Parameters Panel */}
-      <div className={`lg:col-span-5 bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border border-surface-variant/40`}>
+      <div className={`lg:col-span-5 bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40`}>
         <div className="flex items-center justify-between pb-space-sm mb-space-lg border-b border-surface-variant/40">
           <span className="font-title-md text-title-md uppercase text-on-surface">
             01 / Athlete Parameters
@@ -450,7 +457,7 @@ export default function CalculatorForm({
         {/* Top Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
           {/* BMI Card */}
-          <div className={`bg-surface-container-low p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} border border-surface-variant/40 relative overflow-hidden`}>
+          <div className={`bg-surface-container-low p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 01 // Body Index</span>
@@ -495,7 +502,7 @@ export default function CalculatorForm({
           </div>
 
           {/* Calories Card */}
-          <div className={`bg-surface-container p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} border border-surface-variant/40 relative overflow-hidden`}>
+          <div className={`bg-surface-container p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-label-md text-label-md uppercase text-outline">Metric 02 // Energy Budget</span>
@@ -539,7 +546,7 @@ export default function CalculatorForm({
         </div>
 
         {/* Macro Distribution Cards */}
-        <div className={`bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border border-surface-variant/40`}>
+        <div className={`relative overflow-hidden bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border ${heroCardGlow}`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs pb-space-sm mb-space-lg border-b border-surface-variant/40">
             <span className="font-title-md text-title-md uppercase text-on-surface">
               02 / Daily Macro Target Distribution

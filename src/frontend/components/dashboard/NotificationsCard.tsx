@@ -131,7 +131,7 @@ export default function NotificationsCard({ initialPrefs }: { initialPrefs: Pref
 
   return (
     <div
-      className={`bg-surface-container-low border border-primary-container/40 shadow-soft rounded-2xl p-4 mb-6 flex flex-col gap-3 ${
+      className={`relative overflow-hidden card-corner-glow bg-surface-container-low border border-primary-container/40 shadow-soft rounded-2xl p-4 mb-6 flex flex-col gap-3 ${
         highlighted ? "animate-[notif-glow_1.4s_ease-in-out_3]" : ""
       }`}
     >

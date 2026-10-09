@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { MemberSnapshot } from "@/frontend/lib/memberSnapshot";
 import { CATEGORY_ICON, tierClasses } from "@/frontend/lib/muscleRankStyle";
@@ -126,7 +127,8 @@ function Block({
   return (
     <div style={{ animationDelay: `${delay}ms` }} className={`min-w-0 ${wide ? "lg:col-span-2" : ""} ${played ? "animate-snap-in" : "opacity-0"}`}>
       <div className="flex items-center justify-between gap-3 mb-2.5">
-        <span className="flex items-center gap-1.5 font-label text-[10px] uppercase tracking-widest text-outline">
+        <span className="flex items-center gap-2 font-label text-[10px] uppercase tracking-widest text-outline">
+          <span className="w-1 h-3.5 rounded-full bg-primary-container shrink-0" aria-hidden="true" />
           <span className="material-symbols-outlined text-sm leading-none text-primary-container">{icon}</span>
           {title}
         </span>
@@ -160,7 +162,7 @@ function Tile({
     <Link
       href={href}
       style={{ animationDelay: `${delay}ms` }}
-      className={`min-w-0 bg-surface-container border border-surface-variant/40 rounded-xl p-3 flex flex-col gap-1 hover:border-primary-container transition-colors ${
+      className={`relative overflow-hidden card-corner-glow min-w-0 bg-surface-container border border-surface-variant/40 rounded-xl p-3 flex flex-col gap-1 hover:border-primary-container transition-colors ${
         played ? "animate-snap-in" : "opacity-0"
       }`}
     >
@@ -237,33 +239,47 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
         onClick={toggle}
         aria-expanded={open}
         aria-controls={panelId}
-        className="w-full flex items-center gap-3 pl-3 pr-4 py-2.5 text-left"
+        className="relative overflow-hidden bg-black w-full text-left"
       >
-        <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
-          <span className="material-symbols-outlined text-xl leading-none">monitor_heart</span>
-        </span>
-        <span className="flex-1 min-w-0">
-          <span className="block font-label text-xs uppercase tracking-wide text-on-surface">Your Snapshot</span>
-          <span className="block font-body text-xs text-tertiary truncate">{snapshot.teaser}</span>
-        </span>
-        <span aria-hidden="true" className="flex items-center gap-0.75 shrink-0">
-          {week.days.map((day, i) => (
-            <span
-              key={day.date}
-              style={{ animationDelay: `${300 + i * 60}ms` }}
-              className={`block w-2 h-2 ${
-                day.trained ? "bg-primary-container" : day.isToday ? "border border-primary-container/70" : "bg-surface-variant/70"
-              } ${revealed ? "animate-snap-pop" : "opacity-0"}`}
-            />
-          ))}
-        </span>
-        <span
-          aria-hidden="true"
-          className={`material-symbols-outlined text-xl leading-none text-tertiary shrink-0 transition-transform duration-300 motion-reduce:transition-none ${
-            open ? "rotate-180" : ""
-          }`}
-        >
-          expand_more
+        <Image
+          src="/images/dashboard-stats/snapshot-bar.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover pointer-events-none"
+        />
+        <span className="relative z-10 flex items-center gap-3 pl-3 pr-4 py-2.5">
+          <span className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-soft bg-surface-container-high text-primary-container">
+            <span className="material-symbols-outlined text-xl leading-none">monitor_heart</span>
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block font-label text-xs uppercase tracking-wide text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+              Your Snapshot
+            </span>
+            <span className="block font-body text-xs text-white/75 truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+              {snapshot.teaser}
+            </span>
+          </span>
+          <span aria-hidden="true" className="flex items-center gap-0.75 shrink-0">
+            {week.days.map((day, i) => (
+              <span
+                key={day.date}
+                style={{ animationDelay: `${300 + i * 60}ms` }}
+                className={`block w-2 h-2 ${
+                  day.trained ? "bg-primary-container" : day.isToday ? "border border-primary-container/70" : "bg-surface-variant/70"
+                } ${revealed ? "animate-snap-pop" : "opacity-0"}`}
+              />
+            ))}
+          </span>
+          <span
+            aria-hidden="true"
+            className={`material-symbols-outlined text-xl leading-none text-white/75 shrink-0 transition-transform duration-300 motion-reduce:transition-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
+              open ? "rotate-180" : ""
+            }`}
+          >
+            expand_more
+          </span>
         </span>
       </button>
 
@@ -579,7 +595,7 @@ export default function DashboardSnapshot({ snapshot }: { snapshot: MemberSnapsh
               }
             >
               {rank && tier ? (
-                <div className="flex items-center gap-3 bg-surface-container border border-surface-variant/40 rounded-xl p-3">
+                <div className="relative overflow-hidden card-corner-glow flex items-center gap-3 bg-surface-container border border-surface-variant/40 rounded-xl p-3">
                   <span className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center border ${tier.badge}`}>
                     <span className="material-symbols-outlined text-base leading-none">{CATEGORY_ICON[rank.category] ?? "fitness_center"}</span>
                   </span>
