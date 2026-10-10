@@ -16,12 +16,11 @@ import { getIstDateString } from "@/frontend/lib/date";
 // most one flush interval of time, never a whole session.
 
 const STORAGE_KEY = "ff_workout_timer_v1";
-// Days kept in total, today included: today plus the 4 before it. Older days
+// Days kept in total, today included: today plus the 5 before it. Older days
 // are dropped whenever the state is read. The headline figure is always
-// *today's* time (it starts from zero each IST midnight) — nothing reads
-// the days before it right now, but the cutoff below still prunes storage
-// to this window regardless.
-const RETENTION_DAYS = 5;
+// *today's* time (it starts from zero each IST midnight); the 5 days before
+// it are the history strip WorkoutTimerWidget shows below it.
+const RETENTION_DAYS = 6;
 export const INACTIVITY_LIMIT_MS = 10 * 60 * 1000;
 export const FLUSH_INTERVAL_MS = 15_000;
 
@@ -168,6 +167,30 @@ export function getTodayMs(state: WorkoutTimerState, now: number): number {
   const liveSegment =
     state.running && state.startedAt != null && state.startedDate === today ? Math.max(0, now - state.startedAt) : 0;
   return flushedToday + liveSegment;
+}
+
+export type PreviousDay = { date: string; label: string; ms: number };
+
+// Every retained day before today (oldest first, so a flex/grid row of
+// these reads left-to-right as the week unfolding), one entry per day
+// regardless of whether anything was logged — a day with 0ms is a genuine
+// rest day, not a gap to hide. Deliberately NOT filtering out zero days:
+// an earlier version of this skipped them, which made its first entry
+// "whatever the most recent logged day was" instead of literally
+// yesterday, silently mislabeling an older day's total as "yesterday's"
+// whenever yesterday itself was a rest day.
+export function getPreviousDays(state: WorkoutTimerState, now: number): PreviousDay[] {
+  const out: PreviousDay[] = [];
+  for (let back = RETENTION_DAYS - 1; back >= 1; back--) {
+    const date = getIstDateString(new Date(now - back * 86_400_000));
+    const ms = state.days[date] ?? 0;
+    const label = new Date(`${date}T12:00:00+05:30`).toLocaleDateString("en-IN", {
+      weekday: "short",
+      timeZone: "Asia/Kolkata",
+    });
+    out.push({ date, label, ms });
+  }
+  return out;
 }
 
 export function formatDuration(ms: number): string {

@@ -190,11 +190,13 @@ export default function WorkoutLogForm({
         <button
           type="button"
           onClick={() => applyEntry(lastLog)}
-          className="flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-xl bg-surface-container-low border border-primary-container/50 text-primary-container hover:bg-surface-container transition-colors w-fit"
+          className="w-full flex items-center gap-2 font-label text-xs uppercase font-bold px-4 py-3 rounded-full bg-surface-container-low border border-primary-container/50 text-primary-container hover:bg-surface-container transition-colors"
         >
-          <span className="material-symbols-outlined text-base leading-none">repeat</span>
-          Repeat Last Set — {lastLog.exerciseName} {lastLog.sets}×{lastLog.reps}
-          {lastLog.weightKg ? ` @ ${lastLog.weightKg}kg` : ""}
+          <span className="material-symbols-outlined text-base leading-none shrink-0">repeat</span>
+          <span className="min-w-0 truncate">
+            Repeat Last Set — {lastLog.exerciseName} {lastLog.sets}×{lastLog.reps}
+            {lastLog.weightKg ? ` @ ${lastLog.weightKg}kg` : ""}
+          </span>
         </button>
       )}
 

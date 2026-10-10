@@ -29,19 +29,20 @@ export default async function WorkoutsPage() {
 
   return (
     <div className="px-gutter-mobile lg:px-gutter-desktop py-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide">Workout Log</h1>
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-2 mb-6">
+        <h1 className="font-display text-lg text-on-surface uppercase tracking-wide whitespace-nowrap">Workout Log</h1>
+        <div className="flex items-center gap-2.5 bg-surface-container-low border border-surface-variant rounded-full pl-2.5 pr-3 py-1.5 shrink-0">
           <Link
             href="/dashboard/playground"
-            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
+            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-sm leading-none">group</span>
             Playground
           </Link>
+          <span className="w-px h-4 bg-surface-variant" aria-hidden="true" />
           <Link
             href="/dashboard/plan"
-            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors"
+            className="flex items-center gap-1 font-label text-[10px] uppercase text-primary-container hover:text-secondary transition-colors whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-sm leading-none">event_note</span>
             Plan Workouts
