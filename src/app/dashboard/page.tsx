@@ -264,6 +264,8 @@ export default async function DashboardPage() {
 
       <AttendanceCheckInButton initialStatus={attendanceStatus} />
 
+      <WorkoutTimerWidget />
+
       <PersonalRecordsBar />
 
       <Suspense fallback={<DashboardBelowFoldSkeleton />}>
@@ -388,8 +390,6 @@ async function DashboardBelowFold({
           priority
         />
       </div>
-
-      <WorkoutTimerWidget />
 
       <DashboardSnapshot snapshot={snapshot} />
 

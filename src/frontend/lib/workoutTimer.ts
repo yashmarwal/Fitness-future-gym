@@ -18,7 +18,9 @@ import { getIstDateString } from "@/frontend/lib/date";
 const STORAGE_KEY = "ff_workout_timer_v1";
 // Days kept in total, today included: today plus the 4 before it. Older days
 // are dropped whenever the state is read. The headline figure is always
-// *today's* time (it starts from zero each IST midnight); the rest is history.
+// *today's* time (it starts from zero each IST midnight) — nothing reads
+// the days before it right now, but the cutoff below still prunes storage
+// to this window regardless.
 const RETENTION_DAYS = 5;
 export const INACTIVITY_LIMIT_MS = 10 * 60 * 1000;
 export const FLUSH_INTERVAL_MS = 15_000;
@@ -158,25 +160,6 @@ export function recordWorkoutActivity(now: number = Date.now()): void {
   const state = readSnapshot();
   if (!state.running) return;
   commit({ ...state, lastActivityAt: now });
-}
-
-export type PreviousDay = { date: string; label: string; ms: number };
-
-// The retained days before today (newest first) that have any recorded time —
-// days with nothing logged are left out rather than shown as empty rows.
-export function getPreviousDays(state: WorkoutTimerState, now: number): PreviousDay[] {
-  const out: PreviousDay[] = [];
-  for (let back = 1; back < RETENTION_DAYS; back++) {
-    const date = getIstDateString(new Date(now - back * 86_400_000));
-    const ms = state.days[date] ?? 0;
-    if (ms <= 0) continue;
-    const label =
-      back === 1
-        ? "Yesterday"
-        : new Date(`${date}T12:00:00+05:30`).toLocaleDateString("en-IN", { weekday: "short", timeZone: "Asia/Kolkata" });
-    out.push({ date, label, ms });
-  }
-  return out;
 }
 
 export function getTodayMs(state: WorkoutTimerState, now: number): number {
