@@ -5,6 +5,7 @@ import { listMembers, listNewJoineesThisMonth } from "@/backend/services/admin/m
 import RevenueCard from "@/frontend/components/admin/RevenueCard";
 import NewJoineesCard from "@/frontend/components/admin/NewJoineesCard";
 import AiInsightsCard from "@/frontend/components/admin/AiInsightsCard";
+import DailyWarningPopup, { type DailyWarning } from "@/frontend/components/admin/DailyWarningPopup";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
 import { listUnpaidActiveMembers, listBlockedMembers } from "@/backend/services/admin/feeAbuse";
 import { getAdminInsights } from "@/backend/services/admin/insights";
@@ -91,8 +92,22 @@ export default async function AdminOverviewPage() {
     { label: "Currently Blocked", count: blocked.length, tone: "text-error", icon: "block", href: "/admin-2G/access-control" },
   ];
 
+  // Feeds the once-a-day popup below — every entry reuses data already
+  // fetched above for the stat/alert cards, so this adds no new queries.
+  // Add a new warning by appending another entry here; the popup renders
+  // whatever has count > 0 with no further wiring needed.
+  const dailyWarnings: DailyWarning[] = [
+    { key: "blocked", icon: "block", tone: "error", title: "Members Currently Blocked", count: blocked.length, href: "/admin-2G/access-control" },
+    { key: "unpaidActive", icon: "warning", tone: "error", title: "Using Gym Without Paying", count: unpaidActive.length, href: "/admin-2G/access-control" },
+    { key: "overdue", icon: "error", tone: "error", title: "Fee Overdue", count: overdue.length, href: "/admin-2G/alerts#overdue" },
+    { key: "recentlyMissed", icon: "event_busy", tone: "warning", title: "No Check-In In 3+ Days", count: recentlyMissed.length, href: "/admin-2G/alerts#recentlyMissed" },
+    { key: "inactive", icon: "person_off", tone: "warning", title: "Inactive 4+ Months", count: inactive.length, href: "/admin-2G/alerts#inactive" },
+    { key: "trialOver", icon: "person_add", tone: "warning", title: "Trial Over, No Plan", count: trialOver.length, href: "/admin-2G/alerts#trialOver" },
+  ];
+
   return (
     <div className="flex flex-col gap-8">
+      <DailyWarningPopup warnings={dailyWarnings} />
       <div>
         <h1 className="font-display text-2xl text-on-surface uppercase tracking-wide mb-3">Overview</h1>
         <div className="mb-3">
