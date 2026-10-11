@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { SavedMeal, SavedMealItem } from "@/backend/services/savedMeals";
 import type { FoodLog } from "@/backend/services/nutrition";
 import { useFoodSearch } from "@/frontend/lib/useFoodSearch";
+import { recordFoodLogged } from "@/frontend/lib/foodLogHistory";
 
 const DEFAULT_CATEGORIES = ["Breakfast", "Lunch", "Dinner"];
 
@@ -100,6 +101,19 @@ export default function SavedMealsSection({
             .catch(() => ({ status: "error" }))
         )
       );
+      // Only tally the local history strip for items that actually saved —
+      // zipped against `results` by index since Promise.all preserves order.
+      items.forEach((item, i) => {
+        if (results[i]?.status === "ok") {
+          recordFoodLogged({
+            description: item.description,
+            calories: item.calories,
+            proteinG: item.proteinG,
+            carbsG: item.carbsG,
+            fatG: item.fatG,
+          });
+        }
+      });
       const failedCount = results.filter((r) => r.status !== "ok").length;
       if (failedCount > 0) {
         setAddError(

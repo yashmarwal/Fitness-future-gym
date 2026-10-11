@@ -3,6 +3,7 @@ import { listTodaysFoodLogs, listFrequentFoods } from "@/backend/services/nutrit
 import { listSavedMeals } from "@/backend/services/savedMeals";
 import FoodLogForm from "@/frontend/components/dashboard/FoodLogForm";
 import SavedMealsSection from "@/frontend/components/dashboard/SavedMealsSection";
+import FoodLogHistoryStrip from "@/frontend/components/dashboard/FoodLogHistoryStrip";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 
 export default async function NutritionPage() {
@@ -73,6 +74,8 @@ export default async function NutritionPage() {
           </>
         )}
       </div>
+
+      <FoodLogHistoryStrip />
 
       <SavedMealsSection savedMeals={savedMeals} todaysLogs={logs} />
 

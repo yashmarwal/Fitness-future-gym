@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { FrequentFood } from "@/backend/services/nutrition";
 import { useFoodSearch } from "@/frontend/lib/useFoodSearch";
+import { recordFoodLogged } from "@/frontend/lib/foodLogHistory";
 
 export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: FrequentFood[] }) {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
   async function logAgain(item: FrequentFood) {
     setLoggingAgain(item.description);
     try {
-      await fetch("/api/dashboard/food", {
+      const res = await fetch("/api/dashboard/food", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -26,6 +27,18 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
           fatG: item.fatG ?? undefined,
         }),
       });
+      const data = await res.json().catch(() => null);
+      // Only tally the local history strip on confirmed success — it should
+      // never show an item that didn't actually save.
+      if (data?.status === "ok") {
+        recordFoodLogged({
+          description: item.description,
+          calories: item.calories,
+          proteinG: item.proteinG,
+          carbsG: item.carbsG,
+          fatG: item.fatG,
+        });
+      }
       router.refresh();
     } finally {
       setLoggingAgain(null);
@@ -41,7 +54,7 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
       // shows how much was eaten without needing a migration.
       const finalDescription = search.baseValues ? `${search.description} (${search.quantity}g)` : search.description;
 
-      await fetch("/api/dashboard/food", {
+      const res = await fetch("/api/dashboard/food", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -52,6 +65,16 @@ export default function FoodLogForm({ frequentFoods = [] }: { frequentFoods?: Fr
           fatG: search.fatG || undefined,
         }),
       });
+      const data = await res.json().catch(() => null);
+      if (data?.status === "ok") {
+        recordFoodLogged({
+          description: finalDescription,
+          calories: Number(search.calories),
+          proteinG: search.proteinG ? Number(search.proteinG) : undefined,
+          carbsG: search.carbsG ? Number(search.carbsG) : undefined,
+          fatG: search.fatG ? Number(search.fatG) : undefined,
+        });
+      }
       search.reset();
       router.refresh();
     } finally {

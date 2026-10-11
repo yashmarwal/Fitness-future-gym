@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useWorkoutTimerState, startTimer, stopTimer, getTodayMs, getPreviousDays, formatDuration } from "@/frontend/lib/workoutTimer";
+import { useWorkoutTimerState, startTimer, stopTimer, getTodayMs, getPreviousDays, formatDuration, type PreviousDay } from "@/frontend/lib/workoutTimer";
+import DayDetailPopup from "@/frontend/components/dashboard/DayDetailPopup";
 
 // Zero-padded HH:MM:SS for the big digital readout — distinct from the
 // shared formatDuration() (which stays compact, "5m"/"13s"/"1h 23m", and is
@@ -41,6 +42,9 @@ export default function WorkoutTimerWidget() {
   // ever updated from inside the interval callback below, never read via a
   // fresh Date.now() call during render.
   const [now, setNow] = useState(0);
+  // The pill a member tapped, if any — mirrors FoodLogHistoryStrip's
+  // DayDetailPopup wiring for consistency between the two history strips.
+  const [selectedDay, setSelectedDay] = useState<PreviousDay | null>(null);
 
   // Live display tick — purely visual. The zero-delay first tick gets the
   // real clock in immediately instead of showing "0s" for a full second.
@@ -139,18 +143,35 @@ export default function WorkoutTimerWidget() {
         {previousDays.map((day) => {
           const active = day.ms > 0;
           return (
-            <div
+            <button
+              type="button"
               key={day.date}
-              className="relative overflow-hidden card-corner-glow flex-1 min-w-0 bg-black border border-white/10 rounded-xl px-2.5 py-2.5 flex flex-col gap-1.5"
+              onClick={() => setSelectedDay(day)}
+              className="relative overflow-hidden card-corner-glow flex-1 min-w-0 bg-black border border-white/10 rounded-xl px-2.5 py-2.5 flex flex-col gap-1.5 text-left hover:border-blue-400 transition-colors"
             >
               <span className="font-label text-[9px] uppercase tracking-wider text-blue-400">{day.label}</span>
               <span className={`font-display text-sm leading-none whitespace-nowrap ${active ? "text-white" : "text-white/40"}`}>
                 {active ? formatDuration(day.ms) : "0m"}
               </span>
-            </div>
+            </button>
           );
         })}
       </div>
+
+      {selectedDay && (
+        <DayDetailPopup
+          date={selectedDay.date}
+          icon="timelapse"
+          value={selectedDay.ms > 0 ? formatDuration(selectedDay.ms) : "0m"}
+          sublabel={
+            selectedDay.ms > 0
+              ? "Time spent working out on this device that day."
+              : "No workout timer activity on this device that day."
+          }
+          accentClass="text-blue-400"
+          onDismiss={() => setSelectedDay(null)}
+        />
+      )}
     </>
   );
 }
