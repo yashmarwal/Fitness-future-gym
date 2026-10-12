@@ -11,14 +11,13 @@ import { deleteOldWhatsAppMessages } from "@/backend/services/whatsapp";
 import { deleteOldEmailMessages } from "@/backend/services/email";
 import { deleteOldOtps } from "@/backend/auth/otp";
 import { deleteOldTrialRegistrations } from "@/backend/services/trial";
+import { verifyCronRequest } from "@/backend/lib/cronAuth";
 
 // Streak data lives entirely in each member's browser localStorage, not the
 // database — nothing to delete here for it, and nothing ever will be.
 export async function GET(request: Request) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ status: "error", message: "Unauthorized." }, { status: 401 });
-  }
+  const unauthorized = verifyCronRequest(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const [

@@ -344,7 +344,21 @@ function CertificateCard({
   );
 }
 
+// Thin wrapper so an unhandled failure anywhere below (a DB call, font/logo
+// loading, ImageResponse itself) returns a plain error response instead of
+// Next's raw 500 crash page — every other dashboard API route already has
+// this safety net, this one didn't. handleGet's body is untouched, just
+// renamed from GET so it can be called from inside the try.
 export async function GET(request: Request) {
+  try {
+    return await handleGet(request);
+  } catch (err) {
+    console.error(err);
+    return new Response("Something went wrong.", { status: 500 });
+  }
+}
+
+async function handleGet(request: Request) {
   const session = await getMemberSession();
   if (!session) return new Response("Unauthorized", { status: 401 });
 

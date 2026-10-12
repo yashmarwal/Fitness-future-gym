@@ -13,6 +13,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ status: "error", message: "Exercise is required." }, { status: 400 });
   }
 
-  const record = await getGymBeastModeRecord(exerciseName);
-  return NextResponse.json({ status: "ok", record });
+  try {
+    const record = await getGymBeastModeRecord(exerciseName);
+    return NextResponse.json({ status: "ok", record });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ status: "error", message: "Something went wrong." }, { status: 500 });
+  }
 }

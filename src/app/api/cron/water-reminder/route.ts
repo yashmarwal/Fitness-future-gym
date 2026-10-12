@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runWaterReminderCheck } from "@/backend/services/reminders";
+import { verifyCronRequest } from "@/backend/lib/cronAuth";
 
 // Registered 3x in vercel.json with different schedules (11am/3pm/6pm
 // IST) — same route, no query param or state needed since it's just a
@@ -8,10 +9,8 @@ import { runWaterReminderCheck } from "@/backend/services/reminders";
 export const maxDuration = 60;
 
 export async function GET(request: Request) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ status: "error", message: "Unauthorized." }, { status: 401 });
-  }
+  const unauthorized = verifyCronRequest(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const result = await runWaterReminderCheck();

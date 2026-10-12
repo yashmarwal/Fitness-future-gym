@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runBirthdayCheck } from "@/backend/services/notifications";
+import { verifyCronRequest } from "@/backend/lib/cronAuth";
 
 // Sends run concurrency-limited (see backend/lib/concurrency.ts) but a
 // gym-wide sweep can still take a while — matches the headroom already
@@ -7,10 +8,8 @@ import { runBirthdayCheck } from "@/backend/services/notifications";
 export const maxDuration = 60;
 
 export async function GET(request: Request) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ status: "error", message: "Unauthorized." }, { status: 401 });
-  }
+  const unauthorized = verifyCronRequest(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const result = await runBirthdayCheck();
