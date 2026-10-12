@@ -6,6 +6,7 @@ import type { AdminMember } from "@/types/admin";
 import type { UnpaidActiveMember } from "@/backend/services/admin/feeAbuse";
 import { DashboardEmptyState } from "@/frontend/components/dashboard/Primitives";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
+import { vibrateSuccess } from "@/frontend/lib/beep";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "Never";
@@ -45,11 +46,13 @@ function BlockRow({ member, onBlocked }: { member: UnpaidActiveMember; onBlocked
   async function handleConfirmBlock() {
     setSubmitting(true);
     try {
-      await fetch(`/api/admin/members/${member.id}/block`, {
+      const res = await fetch(`/api/admin/members/${member.id}/block`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason }),
       });
+      const data = await res.json().catch(() => null);
+      if (data?.status === "ok") vibrateSuccess();
       onBlocked();
     } finally {
       setSubmitting(false);
@@ -113,7 +116,9 @@ function BlockedRow({ member, onUnblocked }: { member: AdminMember; onUnblocked:
   async function handleUnblock() {
     setSubmitting(true);
     try {
-      await fetch(`/api/admin/members/${member.id}/unblock`, { method: "POST" });
+      const res = await fetch(`/api/admin/members/${member.id}/unblock`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (data?.status === "ok") vibrateSuccess();
       onUnblocked();
     } finally {
       setSubmitting(false);

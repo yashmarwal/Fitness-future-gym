@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { BroadcastSegment, AdminMember } from "@/types/admin";
 import { MAX_HOLIDAY_DAYS } from "@/frontend/lib/holidayConfig";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
+import { vibrateSuccess } from "@/frontend/lib/beep";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -159,6 +160,7 @@ export default function BroadcastComposer({ members }: { members: AdminMember[] 
       });
       const data = await res.json();
       if (data.status === "ok") {
+        vibrateSuccess();
         setResult(
           isHoliday
             ? `Gym marked closed ${fromDate} to ${tillDate}. Sent to ${data.sent} member(s) via WhatsApp.`

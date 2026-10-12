@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminModal from "@/frontend/components/admin/AdminModal";
 import { getIstDateString } from "@/frontend/lib/date";
+import { vibrateSuccess } from "@/frontend/lib/beep";
 
 export type DailyWarning = {
   key: string;
@@ -51,6 +52,7 @@ export default function DailyWarningPopup({ warnings }: { warnings: DailyWarning
       } catch {
         // Storage blocked — just show it this load, worst case is a repeat view.
       }
+      vibrateSuccess();
       setShow(true);
     }, 0);
     return () => clearTimeout(timer);

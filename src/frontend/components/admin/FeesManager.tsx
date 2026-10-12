@@ -7,6 +7,7 @@ import MemberSearchSelect from "@/frontend/components/admin/MemberSearchSelect";
 import EditPaymentForm from "@/frontend/components/admin/EditPaymentForm";
 import { downloadCsv } from "@/frontend/lib/csv";
 import { GLASS_SHADOW } from "@/frontend/lib/glass";
+import { vibrateSuccess } from "@/frontend/lib/beep";
 
 type StatusFilter = "all" | "paid" | "pending";
 type MethodFilter = "all" | "upi" | "cash" | "manual";
@@ -49,14 +50,18 @@ export default function FeesManager({ payments, members }: { payments: FeePaymen
     if (!memberId || !amount) return;
     setSubmitting(true);
     try {
-      await fetch("/api/admin/fees", {
+      const res = await fetch("/api/admin/fees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ memberId, amount: Number(amount), method, durationMonths }),
       });
-      setMemberId("");
-      setAmount("");
-      setDurationMonths(1);
+      const data = await res.json().catch(() => null);
+      if (data?.status === "ok") {
+        vibrateSuccess();
+        setMemberId("");
+        setAmount("");
+        setDurationMonths(1);
+      }
       router.refresh();
     } finally {
       setSubmitting(false);

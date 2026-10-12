@@ -57,7 +57,6 @@ export default function CalculatorForm({
   const fieldRadius = dashboardStyle ? "rounded-xl" : "";
   const chipRadius = dashboardStyle ? "rounded-full" : "";
   const subCardRadius = dashboardStyle ? "rounded-xl" : "";
-  const smallBoxRadius = dashboardStyle ? "rounded-lg" : "";
 
   useEffect(() => {
     if (formRef.current) {
@@ -127,13 +126,8 @@ export default function CalculatorForm({
     <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
       {/* Parameters Panel */}
       <div className={`lg:col-span-5 bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40`}>
-        <div className="flex items-center justify-between pb-space-sm mb-space-lg border-b border-surface-variant/40">
-          <span className="font-title-md text-title-md uppercase text-on-surface">
-            01 / Athlete Parameters
-          </span>
-          <span className={`font-label-sm text-label-sm uppercase px-space-xs py-space-2xs bg-surface text-tertiary ${chipRadius}`}>
-            ISO UNITS (KG / FT-IN)
-          </span>
+        <div className="pb-space-sm mb-space-lg border-b border-surface-variant/40">
+          <span className="font-title-md text-title-md uppercase text-on-surface">Your Details</span>
         </div>
 
         <div className="flex flex-col gap-space-md">
@@ -460,7 +454,7 @@ export default function CalculatorForm({
           <div className={`bg-surface-container-low p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
               <div className="flex items-center justify-between">
-                <span className="font-label-md text-label-md uppercase text-outline">Metric 01 // Body Index</span>
+                <span className="font-label-md text-label-md uppercase text-outline">Body Mass Index</span>
                 {isCalculating ? (
                   <div className="h-5 w-24 bg-surface-container-highest animate-pulse rounded"></div>
                 ) : (
@@ -488,29 +482,21 @@ export default function CalculatorForm({
             </div>
 
             <div className="mt-space-lg pt-space-md">
-              <div className="grid grid-cols-[25%_40%_35%] text-label-sm font-label-sm uppercase text-outline mb-space-2xs">
-                <span className="text-left">Under (18.5)</span>
-                <span className="text-center text-primary-container font-bold">Optimal (18.5-24.9)</span>
-                <span className="text-right">Over (25.0+)</span>
-              </div>
-              <div className="w-full h-2 bg-surface-container-lowest overflow-hidden grid grid-cols-[25%_40%_35%]">
+              <div className="w-full h-2 bg-surface-container-lowest overflow-hidden rounded-full grid grid-cols-[25%_40%_35%]">
                 <div className="h-full bg-surface-container-highest"></div>
                 <div className="h-full bg-primary-container"></div>
                 <div className="h-full bg-surface-container-highest"></div>
               </div>
+              <p className="mt-space-2xs text-center font-label-sm text-label-sm uppercase text-outline">
+                Healthy range: 18.5 – 24.9
+              </p>
             </div>
           </div>
 
           {/* Calories Card */}
           <div className={`bg-surface-container p-space-xl flex flex-col justify-between ${cardShadow} ${cardRadius} ${cardGlow} border border-surface-variant/40 relative overflow-hidden`}>
             <div>
-              <div className="flex items-center justify-between">
-                <span className="font-label-md text-label-md uppercase text-outline">Metric 02 // Energy Budget</span>
-                <span className="flex items-center gap-space-2xs text-primary-container font-label-sm text-label-sm uppercase font-bold">
-                  <span className="inline-block w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-                  ACTIVE RECOVERY
-                </span>
-              </div>
+              <span className="font-label-md text-label-md uppercase text-outline">Daily Calories</span>
 
               <div className="mt-space-md min-h-[56px]">
                 {isCalculating ? (
@@ -534,26 +520,20 @@ export default function CalculatorForm({
               </div>
             </div>
 
-            <div className="mt-space-lg pt-space-md flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm border-t border-surface-variant/30">
+            <div className="mt-space-lg pt-space-md text-on-surface-variant font-body-sm text-body-sm border-t border-surface-variant/30">
               {isCalculating ? (
                 <div className="h-4 w-40 bg-surface-container-highest animate-pulse rounded"></div>
               ) : (
                 <span>Rest Day Budget: <strong className="text-on-surface">{results.restCalories} kcal</strong></span>
               )}
-              <span className="material-symbols-outlined text-title-sm text-outline">info</span>
             </div>
           </div>
         </div>
 
         {/* Macro Distribution Cards */}
         <div className={`relative overflow-hidden bg-surface-container-low p-space-xl ${cardShadow} ${cardRadius} border ${heroCardGlow}`}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs pb-space-sm mb-space-lg border-b border-surface-variant/40">
-            <span className="font-title-md text-title-md uppercase text-on-surface">
-              02 / Daily Macro Target Distribution
-            </span>
-            <span className="font-label-sm text-label-sm uppercase text-tertiary">
-              Progressive Overload Calibrated
-            </span>
+          <div className="pb-space-sm mb-space-lg border-b border-surface-variant/40">
+            <span className="font-title-md text-title-md uppercase text-on-surface">Daily Macro Targets</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
@@ -586,10 +566,10 @@ export default function CalculatorForm({
                   </div>
                 )}
               </div>
-              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
-                <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
+              <p className="mt-space-md font-body-sm text-body-sm text-tertiary">
+                <span className="font-label-sm text-label-sm text-outline uppercase font-semibold">Sources: </span>
                 Eggs, Paneer, Chicken, Soya Chunks, Whey Isolate.
-              </div>
+              </p>
             </div>
 
             {/* Carbs Card */}
@@ -621,10 +601,10 @@ export default function CalculatorForm({
                   </div>
                 )}
               </div>
-              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
-                <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
+              <p className="mt-space-md font-body-sm text-body-sm text-tertiary">
+                <span className="font-label-sm text-label-sm text-outline uppercase font-semibold">Sources: </span>
                 Oats, Brown Rice, Roti, Sweet Potato, Bananas.
-              </div>
+              </p>
             </div>
 
             {/* Fats Card */}
@@ -656,10 +636,10 @@ export default function CalculatorForm({
                   </div>
                 )}
               </div>
-              <div className={`mt-space-md pt-space-sm bg-surface-container-lowest p-space-xs text-body-sm font-body-sm text-on-surface-variant border border-surface-variant/30 ${smallBoxRadius}`}>
-                <span className="block font-label-sm text-label-sm text-outline uppercase font-semibold">Sources</span>
+              <p className="mt-space-md font-body-sm text-body-sm text-tertiary">
+                <span className="font-label-sm text-label-sm text-outline uppercase font-semibold">Sources: </span>
                 Almonds, Desi Ghee, Peanut Butter, Whole Eggs.
-              </div>
+              </p>
             </div>
           </div>
         </div>

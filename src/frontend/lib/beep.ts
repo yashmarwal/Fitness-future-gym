@@ -72,3 +72,14 @@ export function vibrateFinish() {
 export function vibrateError() {
   vibrate([60, 80, 60]);
 }
+
+// A single short, subtle pulse for "that worked" confirmations in the admin
+// panel — recording a payment, sending a broadcast, blocking/unblocking a
+// member. Deliberately smaller than vibrateFinish()'s celebratory pattern:
+// these fire routinely through a normal admin session, so a big buzz every
+// time would get annoying fast. Mobile only, like every vibrate* helper
+// here — desktop browsers don't implement the Vibration API at all, so this
+// is a no-op on a desktop admin session.
+export function vibrateSuccess() {
+  vibrate(35);
+}
