@@ -353,3 +353,38 @@ export async function countOverdueMembers(): Promise<number> {
   if (error) throw new Error(`Failed to count overdue members: ${error.message}`);
   return count ?? 0;
 }
+
+const FEE_PAYMENT_RETENTION_MONTHS = 18;
+
+// Plain Date#setMonth overflows when today's day-of-month doesn't exist in
+// the target month — e.g. March 31 minus 18 months should land on
+// September 30, but setMonth alone rolls it into October 1 instead, which
+// would quietly shrink the retention window by a few days. Clamping to the
+// target month's actual last day (by going via the 1st, so setMonth itself
+// can never overflow) avoids that.
+function monthsAgo(date: Date, months: number): Date {
+  const d = new Date(date);
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() - months);
+  const daysInTargetMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, daysInTargetMonth));
+  return d;
+}
+
+// Payment records would otherwise be the one table nothing ever prunes —
+// deliberately so, since they're the gym's financial history. This 18-month
+// cutoff is a considered exception, not an oversight, and is only safe
+// because the yearly owner archive (admin/feePaymentsArchive.ts) emails
+// every payment in a financial year no later than 12 months after that
+// payment was made — a 6-month margin always separates "archived" from
+// "deleted," so nothing is ever removed before it's already been archived.
+export async function deleteOldFeePayments(): Promise<{ deleted: number }> {
+  const db = getDb();
+  const cutoff = monthsAgo(new Date(), FEE_PAYMENT_RETENTION_MONTHS);
+
+  const { data, error } = await db.from("fee_payments").delete().lt("created_at", cutoff.toISOString()).select("id");
+
+  if (error) throw new Error(`Failed to delete old fee payments: ${error.message}`);
+  return { deleted: data?.length ?? 0 };
+}

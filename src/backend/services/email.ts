@@ -11,8 +11,10 @@ import type { WeeklySummary } from "@/backend/services/admin/weeklySummary";
 // who aren't members yet. account_blocked is the fee-abuse tool
 // (admin/feeAbuse.ts) telling a member why their access is on hold.
 // daily_summary is the owners' 11pm digest (admin/dailySummary.ts) and
-// weekly_summary their Sunday-night report (admin/weeklySummary.ts) — neither
-// is member-facing at all.
+// weekly_summary their Sunday-night report (admin/weeklySummary.ts); neither
+// is member-facing at all. fee_payments_archive is their once-a-year CSV
+// snapshot of every fee payment (admin/feePaymentsArchive.ts) — also
+// owner-only.
 export type EmailTemplate =
   | "otp"
   | "welcome_card"
@@ -25,7 +27,8 @@ export type EmailTemplate =
   | "account_unblocked"
   | "daily_summary"
   | "weekly_summary"
-  | "payment_receipt";
+  | "payment_receipt"
+  | "fee_payments_archive";
 
 function isConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -483,6 +486,25 @@ function buildEmail(template: EmailTemplate, params: string[]): { subject: strin
     case "weekly_summary": {
       const [json] = params;
       return buildWeeklySummaryEmail(JSON.parse(json) as WeeklySummary);
+    }
+    case "fee_payments_archive": {
+      const [label, rowCount, totalAmount] = params;
+      return {
+        subject: `Fitness Future Gym — Fee Payments Archive, ${label}`,
+        html: wrapEmail({
+          preheader: `${rowCount} payments, ${inr(Number(totalAmount))} collected — ${label}`,
+          bodyHtml:
+            heading("Fee Payments Archive") +
+            paragraph(`<span style="color:${BRAND.muted};">${escapeHtml(label)}</span>`) +
+            statSection([
+              { label: "Payments Recorded", value: rowCount },
+              { label: "Total Collected (Paid)", value: inr(Number(totalAmount)) },
+            ]) +
+            paragraph(
+              `<span style="color:${BRAND.muted};">The full itemized record for ${escapeHtml(label)} is attached as a CSV — one row per payment, with member name, membership number, amount, method, and status. Keep this: Admin &rarr; Fees only keeps the last 18 months live, so this attachment becomes the only copy of this year's records once that window passes.</span>`
+            ),
+        }),
+      };
     }
   }
 }

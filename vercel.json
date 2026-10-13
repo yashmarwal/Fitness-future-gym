@@ -12,6 +12,7 @@
     { "path": "/api/cron/streak-reminder", "schedule": "0 15 * * *" },
     { "path": "/api/cron/share-reminder", "schedule": "30 16 * * *" },
     { "path": "/api/cron/daily-summary", "schedule": "30 17 * * *" },
-    { "path": "/api/cron/weekly-summary", "schedule": "0 17 * * 0" }
+    { "path": "/api/cron/weekly-summary", "schedule": "0 17 * * 0" },
+    { "path": "/api/cron/fee-payments-archive", "schedule": "30 3 1 4 *" }
   ]
 }

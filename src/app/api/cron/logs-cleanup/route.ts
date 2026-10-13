@@ -11,6 +11,7 @@ import { deleteOldWhatsAppMessages } from "@/backend/services/whatsapp";
 import { deleteOldEmailMessages } from "@/backend/services/email";
 import { deleteOldOtps } from "@/backend/auth/otp";
 import { deleteOldTrialRegistrations } from "@/backend/services/trial";
+import { deleteOldFeePayments } from "@/backend/services/admin/feesAdmin";
 import { verifyCronRequest } from "@/backend/lib/cronAuth";
 
 // Streak data lives entirely in each member's browser localStorage, not the
@@ -34,6 +35,7 @@ export async function GET(request: Request) {
       emailMessages,
       otps,
       trialRegistrations,
+      feePayments,
     ] = await Promise.all([
       deleteOldWorkoutLogs(),
       deleteOldFoodLogs(),
@@ -48,6 +50,7 @@ export async function GET(request: Request) {
       deleteOldEmailMessages(),
       deleteOldOtps(),
       deleteOldTrialRegistrations(),
+      deleteOldFeePayments(),
     ]);
     return NextResponse.json({
       status: "ok",
@@ -64,6 +67,7 @@ export async function GET(request: Request) {
       emailMessagesDeleted: emailMessages.deleted,
       otpsDeleted: otps.deleted,
       trialRegistrationsDeleted: trialRegistrations.deleted,
+      feePaymentsDeleted: feePayments.deleted,
     });
   } catch (err) {
     console.error(err);
