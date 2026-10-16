@@ -685,3 +685,47 @@ create table if not exists audit_log (
   details jsonb,
   created_at timestamptz not null default now()
 );
+
+-- ── Row Level Security ──────────────────────────────────────────────────
+-- Every table gets RLS enabled, with NO policies added. That's deliberate,
+-- not incomplete: this app's entire backend (src/backend/db/client.ts)
+-- talks to Postgres using the Supabase SERVICE ROLE key only, which always
+-- bypasses RLS regardless of whether it's enabled — so this has zero effect
+-- on the app itself. What it does do is close off the anon/authenticated
+-- roles' default access: a Supabase project's anon key is meant to be
+-- public (embedded in a browser) under the assumption that RLS enforces
+-- what it can touch, and this app never uses that key at all (no
+-- NEXT_PUBLIC_SUPABASE_* anywhere, no client-side @supabase/supabase-js
+-- import anywhere) — so with RLS off, every table here was readable and
+-- writable by anyone who found this project's URL and its anon key,
+-- completely bypassing the app. With RLS on and no policies, that access
+-- is denied by default. Add real per-table policies here only if a future
+-- feature genuinely needs an anon/authenticated client-side Supabase
+-- client — nothing in this codebase does today.
+alter table members enable row level security;
+alter table attendance enable row level security;
+alter table gym_holidays enable row level security;
+alter table login_otps enable row level security;
+alter table pending_signups enable row level security;
+alter table legacy_fee_imports enable row level security;
+alter table legacy_fee_import_batches enable row level security;
+alter table admin_users enable row level security;
+alter table fee_payments enable row level security;
+alter table workout_logs enable row level security;
+alter table member_muscle_xp enable row level security;
+alter table member_exercise_prs enable row level security;
+alter table member_badges enable row level security;
+alter table beast_mode_sessions enable row level security;
+alter table gym_beast_mode_records enable row level security;
+alter table playground_rooms enable row level security;
+alter table playground_room_members enable row level security;
+alter table workout_plans enable row level security;
+alter table food_logs enable row level security;
+alter table saved_meals enable row level security;
+alter table member_notifications enable row level security;
+alter table push_subscriptions enable row level security;
+alter table whatsapp_messages enable row level security;
+alter table email_messages enable row level security;
+alter table trial_registrations enable row level security;
+alter table trial_phone_claims enable row level security;
+alter table audit_log enable row level security;
