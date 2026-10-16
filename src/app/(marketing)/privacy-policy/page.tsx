@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const LAST_UPDATED = "26 September 2026";
+const LAST_UPDATED = "17 October 2026";
 
 function H2({ children }: { children: React.ReactNode }) {
   return (
@@ -137,10 +137,16 @@ export default function PrivacyPolicyPage() {
             <li>Workout logs — kept 30 days.</li>
             <li>Food/nutrition logs — kept 30 days.</li>
             <li>In-app notifications — kept 7 days.</li>
+            <li>Individual fee payment records — kept 18 months, after which they are archived (see below) and removed from the live system.</li>
           </Ul>
           <P>
-            Your permanent streak counters, personal records, and membership/fee history are not subject to this
-            rolling deletion, since they are the record of your membership itself.
+            Before a fee payment record is removed, it is captured in a yearly financial-year archive sent to gym
+            management for accounting records — the underlying data isn&apos;t deleted outright, it moves from the
+            live system to an internal archive copy.
+          </P>
+          <P>
+            Your permanent streak counters and personal records are not subject to this rolling deletion, since
+            they are the record of your membership itself.
           </P>
 
           <H2>5. Your Rights Under the DPDP Act, 2023</H2>

@@ -7,6 +7,13 @@ import NotificationsCard from "@/frontend/components/dashboard/NotificationsCard
 import NotificationBar from "@/frontend/components/dashboard/NotificationBar";
 import SignOutButton from "@/frontend/components/dashboard/SignOutButton";
 
+const LEGAL_LINKS = [
+  { href: "/privacy-policy", icon: "shield", label: "Privacy Policy" },
+  { href: "/terms-conditions", icon: "menu_book", label: "Terms & Conditions" },
+  { href: "/refund-policy", icon: "restart_alt", label: "Refund & Cancellation Policy" },
+  { href: "/cookies-policy", icon: "info", label: "Cookies Policy" },
+] as const;
+
 // A real page — reached from the Settings tab in DashboardTabBar /
 // DashboardDesktopNav — not the bottom-sheet overlay this used to be
 // (SettingsPanel.tsx). That overlay toggled open/closed via plain React
@@ -59,6 +66,27 @@ export default async function SettingsPage() {
         <h3 className="font-label text-[11px] uppercase tracking-widest text-tertiary px-1 mb-3">Notifications</h3>
         <NotificationsCard initialPrefs={prefs} />
         <NotificationBar initialNotifications={notifications} />
+      </div>
+
+      <div>
+        <h3 className="font-label text-[11px] uppercase tracking-widest text-tertiary px-1 mb-3">Legal</h3>
+        <div className="flex flex-col divide-y divide-surface-variant/40 bg-surface-container-low shadow-soft rounded-2xl border border-surface-variant/40 overflow-hidden">
+          {LEGAL_LINKS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-3 px-5 py-3 hover:bg-surface-container transition-colors"
+            >
+              <span className="material-symbols-outlined text-lg text-primary-container leading-none shrink-0">
+                {item.icon}
+              </span>
+              <span className="flex-1 font-label text-xs uppercase tracking-wide text-on-surface">{item.label}</span>
+              <span className="material-symbols-outlined text-base text-tertiary leading-none shrink-0">
+                chevron_right
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <SignOutButton />
