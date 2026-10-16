@@ -55,7 +55,7 @@ function isWithinAttendanceHours(): boolean {
   );
 }
 
-type MemberRow = {
+export type MemberRow = {
   id: string;
   full_name: string;
   membership_number: string;
@@ -68,10 +68,100 @@ type MemberRow = {
   total_checkins: number;
 };
 
-// Shared by both check-in paths: the front-desk QR poster (looked up by
-// membership number, no login needed) and the dashboard's own one-tap
+export type CheckInConsequences = {
+  newStreak: number;
+  shouldPromptReview: boolean;
+};
+
+// Everything that follows from a visit actually having happened — the
+// streak counter, total_checkins, the one-time review prompt, the workout
+// nudge, the badge re-check — shared by both a real self-check-in
+// (checkInMemberRow below) and an admin-added entry (attendanceAdmin.ts::
+// addManualAttendance, used when a member's outside self-check-in hours or
+// the scanner failed). Deliberately has none of the GATES a self-check-in
+// needs (hours, cooldown, frozen/active, Sunday/holiday) — those stay in
+// checkInMemberRow alone, since an admin is meant to be able to override
+// them; this function assumes the visit is already confirmed and just
+// asks "was the gap before this a real miss, or fully rest days?" the same
+// way every single time, regardless of which path recorded it.
+export async function applyCheckInConsequences(member: MemberRow, checkedInAt: string): Promise<CheckInConsequences> {
+  const db = getDb();
+
+  // Permanent streak counter — computed here from the gap since the
+  // member's LAST real check-in (member.last_checked_in_at, which — like
+  // the counters themselves — lives on the member row and survives the
+  // attendance log's 30-day purge), never by re-scanning the log itself.
+  const today = getIstDateString(new Date(checkedInAt));
+  let newStreak = 1;
+  if (member.last_checked_in_at) {
+    const lastCheckInDay = getIstDateString(new Date(member.last_checked_in_at));
+    const gap = daysBetweenIstDates(lastCheckInDay, today);
+    if (gap === 0) newStreak = member.current_streak_days || 1;
+    // A gap of 1+ still continues the streak as long as every day strictly
+    // in between was a Sunday or an admin-marked holiday (gymCalendar.ts) —
+    // a gym-mandated closure isn't a member-side lapse, so it can't be what
+    // breaks a streak. A gap bridged by even one real open day the member
+    // just didn't show up for still resets to 1 below.
+    else if (await isGapFullyRestDays(lastCheckInDay, today)) newStreak = member.current_streak_days + 1;
+    // otherwise: a real missed day — streak restarts at 1 (the default above).
+  }
+  const newLongest = Math.max(member.longest_streak_days, newStreak);
+
+  // A one-time-ever ask, not "every time a milestone happens again" — once
+  // review_prompted_at is set, this member is never asked again regardless
+  // of how many more milestones they hit. Real streak milestones only
+  // (isStreakMilestone), not every day the streak happens to be >= 30, so
+  // this fires exactly once at whichever named milestone comes first.
+  const shouldPromptReview =
+    !member.review_prompted_at && newStreak >= REVIEW_PROMPT_MIN_STREAK && isStreakMilestone(newStreak);
+
+  // Kept on the member row (not just the attendance log) since attendance
+  // rows are purged after 30 days but long-term inactivity — and now the
+  // streak counters too — still need to be readable after that purge.
+  const { error: updateError } = await db
+    .from("members")
+    .update({
+      last_checked_in_at: checkedInAt,
+      current_streak_days: newStreak,
+      longest_streak_days: newLongest,
+      total_checkins: (member.total_checkins ?? 0) + 1,
+      ...(shouldPromptReview ? { review_prompted_at: checkedInAt } : {}),
+    })
+    .eq("id", member.id);
+
+  if (updateError) {
+    if (!isMissingColumnError(updateError)) throw new Error(`Failed to update member: ${updateError.message}`);
+    // Migration not run yet — the visit itself still has to count; the
+    // streak (and review-prompt tracking) just won't persist correctly
+    // until it does.
+    const { error: fallbackError } = await db
+      .from("members")
+      .update({ last_checked_in_at: checkedInAt })
+      .eq("id", member.id);
+    if (fallbackError) throw new Error(`Failed to update member: ${fallbackError.message}`);
+  }
+
+  // "Start logging your workout" nudge. Best-effort: a failure here must
+  // never undo or fail a check-in that has already been recorded.
+  await sendCheckInPrompt(member.id, { streak: newStreak }).catch((err) =>
+    console.error("[check-in] workout prompt failed:", err instanceof Error ? err.message : err)
+  );
+
+  // Deferred via after() — re-evaluating every badge is a handful of extra
+  // queries, no reason to make the member wait on it before the response
+  // comes back. Safe here since this is only ever called from a Route
+  // Handler (api/attendance/route.ts, api/dashboard/checkin/route.ts,
+  // api/admin/attendance/route.ts), same reasoning as feesAdmin.ts's
+  // deferred sends.
+  after(() => checkAndAwardBadges(member.id).catch(() => {}));
+
+  return { newStreak, shouldPromptReview };
+}
+
+// Shared by both self-check-in paths: the front-desk QR poster (looked up
+// by membership number, no login needed) and the dashboard's own one-tap
 // button (already-authenticated member, looked up by id) — same cooldown,
-// same attendance row, same last_checked_in_at update either way.
+// same gates, same attendance row either way.
 async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
   const db = getDb();
 
@@ -133,73 +223,7 @@ async function checkInMemberRow(member: MemberRow): Promise<CheckInResult> {
     throw new Error(`Failed to log attendance: ${insertError.message}`);
   }
 
-  // Permanent streak counter — computed here from the gap since the
-  // member's LAST real check-in (member.last_checked_in_at, which — like
-  // the counters themselves — lives on the member row and survives the
-  // attendance log's 30-day purge), never by re-scanning the log itself.
-  const today = getIstDateString();
-  let newStreak = 1;
-  if (member.last_checked_in_at) {
-    const lastCheckInDay = getIstDateString(new Date(member.last_checked_in_at));
-    const gap = daysBetweenIstDates(lastCheckInDay, today);
-    if (gap === 0) newStreak = member.current_streak_days || 1;
-    // A gap of 1+ still continues the streak as long as every day strictly
-    // in between was a Sunday or an admin-marked holiday (gymCalendar.ts) —
-    // a gym-mandated closure isn't a member-side lapse, so it can't be what
-    // breaks a streak. A gap bridged by even one real open day the member
-    // just didn't show up for still resets to 1 below.
-    else if (await isGapFullyRestDays(lastCheckInDay, today)) newStreak = member.current_streak_days + 1;
-    // otherwise: a real missed day — streak restarts at 1 (the default above).
-  }
-  const newLongest = Math.max(member.longest_streak_days, newStreak);
-
-  // A one-time-ever ask, not "every time a milestone happens again" — once
-  // review_prompted_at is set, this member is never asked again regardless
-  // of how many more milestones they hit. Real streak milestones only
-  // (isStreakMilestone), not every day the streak happens to be >= 30, so
-  // this fires exactly once at whichever named milestone comes first.
-  const shouldPromptReview =
-    !member.review_prompted_at && newStreak >= REVIEW_PROMPT_MIN_STREAK && isStreakMilestone(newStreak);
-
-  // Kept on the member row (not just the attendance log) since attendance
-  // rows are purged after 30 days but long-term inactivity — and now the
-  // streak counters too — still need to be readable after that purge.
-  const { error: updateError } = await db
-    .from("members")
-    .update({
-      last_checked_in_at: checkedInAt,
-      current_streak_days: newStreak,
-      longest_streak_days: newLongest,
-      total_checkins: (member.total_checkins ?? 0) + 1,
-      ...(shouldPromptReview ? { review_prompted_at: checkedInAt } : {}),
-    })
-    .eq("id", member.id);
-
-  if (updateError) {
-    if (!isMissingColumnError(updateError)) throw new Error(`Failed to update member: ${updateError.message}`);
-    // Migration not run yet — check-in itself still has to succeed; the
-    // streak (and review-prompt tracking) just won't persist correctly
-    // until it does.
-    const { error: fallbackError } = await db
-      .from("members")
-      .update({ last_checked_in_at: checkedInAt })
-      .eq("id", member.id);
-    if (fallbackError) throw new Error(`Failed to update member: ${fallbackError.message}`);
-  }
-
-  // "Start logging your workout" nudge. Best-effort: a failure here must
-  // never undo or fail a check-in that has already been recorded.
-  await sendCheckInPrompt(member.id, { streak: newStreak }).catch((err) =>
-    console.error("[check-in] workout prompt failed:", err instanceof Error ? err.message : err)
-  );
-
-  // Deferred via after() — re-evaluating every badge is a handful of extra
-  // queries, no reason to make the member wait on it before their check-in
-  // response comes back. Safe here since checkInMemberRow is only ever
-  // called from a Route Handler (see api/attendance/route.ts,
-  // api/dashboard/checkin/route.ts), same reasoning as feesAdmin.ts's
-  // deferred sends.
-  after(() => checkAndAwardBadges(member.id).catch(() => {}));
+  const { newStreak, shouldPromptReview } = await applyCheckInConsequences(member, checkedInAt);
 
   return {
     status: "success",
@@ -219,7 +243,9 @@ const CHECKIN_COLUMNS_BASE = "id, full_name, membership_number, is_active, is_fr
 // Falls back to a query without the streak columns if that migration
 // hasn't landed yet — check-in is core, member-facing functionality, so it
 // can't just throw and break for everyone until the migration runs.
-async function fetchMemberForCheckIn(column: "membership_number" | "id", value: string): Promise<MemberRow | null> {
+// Exported for attendanceAdmin.ts::addManualAttendance, which needs the
+// exact same member row shape to run applyCheckInConsequences too.
+export async function fetchMemberForCheckIn(column: "membership_number" | "id", value: string): Promise<MemberRow | null> {
   const db = getDb();
   const { data, error } = await db.from("members").select(CHECKIN_COLUMNS).eq(column, value).maybeSingle();
 

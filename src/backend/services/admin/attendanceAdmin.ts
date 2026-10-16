@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/backend/db/client";
 import { getIstStartOfTodayIso, getIstDateString, daysBetweenIstDates } from "@/frontend/lib/date";
+import { applyCheckInConsequences, fetchMemberForCheckIn } from "@/backend/services/attendance";
 import type { AttendanceRow } from "@/types/admin";
 
 // Matches the exact self-check-in windows enforced in attendance.ts's
@@ -115,12 +116,24 @@ export async function addManualAttendance(memberId: string, checkedInAt?: string
   const { error } = await db.from("attendance").insert({ member_id: memberId, checked_in_at: timestamp });
   if (error) throw new Error(`Failed to add attendance: ${error.message}`);
 
-  // Only move the member's "last checked in" marker forward — a backfilled
-  // old date shouldn't overwrite a more recent real check-in.
-  const { data: member } = await db.from("members").select("last_checked_in_at").eq("id", memberId).maybeSingle();
-  if (!member?.last_checked_in_at || new Date(timestamp) > new Date(member.last_checked_in_at)) {
-    await db.from("members").update({ last_checked_in_at: timestamp }).eq("id", memberId);
-  }
+  const member = await fetchMemberForCheckIn("id", memberId);
+  if (!member) return;
+
+  // Only the most recent visit moves last_checked_in_at forward and
+  // recalculates the streak from it — a backfilled older date correcting
+  // history shouldn't override a more recent check-in's already-correct
+  // streak state. Same forward-only rule this function always applied to
+  // last_checked_in_at, now also gating the streak recalculation below.
+  if (member.last_checked_in_at && new Date(timestamp) <= new Date(member.last_checked_in_at)) return;
+
+  // Same streak/total-checkins/badge/workout-prompt consequences a real
+  // check-in gets (attendance.ts::applyCheckInConsequences) — this used to
+  // only move last_checked_in_at forward without ever asking whether the
+  // gap before it was a real miss, which silently froze a stale streak
+  // number in place (and skipped total_checkins/badges) any time the front
+  // desk added an entry instead of the member self-checking in — exactly
+  // how a member could miss a real day and still see their streak survive.
+  await applyCheckInConsequences(member, timestamp);
 }
 
 export async function deleteAttendance(id: string): Promise<void> {
