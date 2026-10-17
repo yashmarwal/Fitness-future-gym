@@ -19,7 +19,12 @@ export default function AttendanceForm() {
   const locked = deviceMember !== null;
 
   const [draftName, setDraftName] = useState("");
-  const [draftMembershipNumber, setDraftMembershipNumber] = useState("");
+  // Pre-filled, not locked — every system-generated membership number is
+  // "FF-####" (see membershipNumber.ts::generateMembershipNumber), so this
+  // saves almost everyone from typing it, but a member whose number was
+  // ever hand-set to something irregular by an admin can still clear/edit
+  // it like a normal text field.
+  const [draftMembershipNumber, setDraftMembershipNumber] = useState("FF-");
   const [state, setState] = useState<SubmitState>({ phase: "idle" });
 
   const name = deviceMember?.name ?? draftName;
