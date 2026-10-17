@@ -11,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function AttendancePage() {
-  return <AttendanceForm />;
+  return (
+    <div className="min-h-[75vh] w-full bg-black flex items-center justify-center px-gutter-mobile lg:px-gutter-desktop py-12">
+      <AttendanceForm />
+    </div>
+  );
 }

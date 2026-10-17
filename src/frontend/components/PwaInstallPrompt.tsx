@@ -1,57 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-// Detects iOS Safari specifically — the one major mobile browser that has
-// never implemented `beforeinstallprompt` and has no plans to (WebKit's
-// position is that the manual Share -> Add to Home Screen flow IS the
-// install mechanism, not a gap to fill). Without this, the banner below
-// simply never appears on Safari at all, since installEvent never gets
-// set — not a bug, just the wrong UI for a browser with no programmatic
-// prompt to react to.
-function isIosSafari(): boolean {
-  const ua = navigator.userAgent;
-  const isIos = /iphone|ipad|ipod/i.test(ua);
-  const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios|chrome|android/i.test(ua);
-  return isIos && isSafari;
-}
-
-function isStandalone(): boolean {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as unknown as { standalone?: boolean }).standalone === true
-  );
-}
-
-// Whether iOS is the one environment doesn't change over the component's
-// lifetime, but reading navigator.userAgent during render would still
-// differ between the server (no navigator at all) and the client — same
-// hydration-mismatch concern as every other client-only value read this
-// way elsewhere in the app (see personalNote.ts). useSyncExternalStore
-// with a no-op subscribe is the SSR-safe way to read a one-time
-// environment fact like this without a setState-in-effect.
-function getIosInstallHintSnapshot(): boolean {
-  if (typeof window === "undefined") return false;
-  return !isStandalone() && isIosSafari();
-}
-
-function subscribeNoop() {
-  return () => {};
-}
-
-function useShowIosInstructions(): boolean {
-  return useSyncExternalStore(subscribeNoop, getIosInstallHintSnapshot, () => false);
-}
+import { useEffect, useState } from "react";
+import { usePwaInstall } from "@/frontend/lib/usePwaInstall";
 
 export default function PwaInstallPrompt() {
-  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const showIosInstructions = useShowIosInstructions();
+  const { installEvent, showIosInstructions, promptInstall } = usePwaInstall();
   const [dismissed, setDismissed] = useState(false);
   // The banner's copy follows whichever manifest is actually active on this
   // page (see admin-2G/(dashboard)/layout.tsx) — installing from an admin
@@ -81,14 +35,6 @@ export default function PwaInstallPrompt() {
         navigator.serviceWorker.register("/sw.js").catch(() => {});
       }
     }
-
-    function handlePrompt(e: Event) {
-      e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
-    }
-
-    window.addEventListener("beforeinstallprompt", handlePrompt);
-    return () => window.removeEventListener("beforeinstallprompt", handlePrompt);
   }, []);
 
   if (dismissed || (!installEvent && !showIosInstructions)) return null;
@@ -102,10 +48,7 @@ export default function PwaInstallPrompt() {
           </p>
           <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={async () => {
-                await installEvent.prompt();
-                setInstallEvent(null);
-              }}
+              onClick={promptInstall}
               className="rounded-lg bg-primary-container text-on-primary-container font-label text-[10px] uppercase font-bold px-3 py-2"
             >
               Install
